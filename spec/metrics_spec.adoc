@@ -210,7 +210,7 @@ MBean: java.lang:type=Memory/HeapMemoryUsage#max
 
 *GCCount*
 ----
-Name: %s.gcCount
+Name: gc.%s.count
 DisplayName: Garbage Collection Count
 Type: Counter
 Unit: None
@@ -222,7 +222,7 @@ Notes: There can be multiple garbage collectors active that are assigned to diff
 
 *GCTime - Approximate accumulated collection elapsed time in ms*
 ----
-Name: %s.gcTime
+Name: gc.%s.time
 DisplayName: Garbage Collection Time
 Type: Counter
 Unit: Milliseconds
