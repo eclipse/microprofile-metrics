@@ -179,7 +179,7 @@ The following is a list of required and optional base metrics. All metrics have 
 
 *UsedHeapMemory*
 ----
-Name: used_heap_memory
+Name: usedHeapMemory
 DisplayName: Used Heap Memory
 Type: Gauge
 Unit: Bytes
@@ -189,7 +189,7 @@ MBean: java.lang:type=Memory/HeapMemoryUsage#used
 
 *CommittedHeapMemory*
 ----
-Name: committed_heap_memory
+Name: committedHeapMemory
 DisplayName: Committed Heap Memory
 Type: Gauge
 Unit: Bytes
@@ -200,7 +200,7 @@ Notes: Also from JSR 77
 
 *MaxHeapMemory*
 ----
-Name: max_heap_memory
+Name: maxHeapMemory
 DisplayName: Max Heap Memory
 Type: Gauge
 Unit: Bytes
@@ -210,31 +210,31 @@ MBean: java.lang:type=Memory/HeapMemoryUsage#max
 
 *GCCount*
 ----
-Name: gc_count_%s
+Name: gc.%s.count
 DisplayName: Garbage Collection Count
 Type: Counter
 Unit: None
 Multi: true
 Description:  Displays the total number of collections that have occurred. This attribute lists -1 if the collection count is undefined for this collector.
 MBean: java.lang:type=GarbageCollector,name=%s/CollectionCount
-Notes: The %s should be substituted with the name of the garbage collector.
+Notes: There can be multiple garbage collectors active that are assigned to different memory pools. The %s should be substituted with the name of the garbage collector.
 ----
 
 *GCTime - Approximate accumulated collection elapsed time in ms*
 ----
-Name: gc_time_%s
+Name: gc.%s.time
 DisplayName: Garbage Collection Time
 Type: Counter
 Unit: Milliseconds
 Multi: true
 Description: Displays the approximate accumulated collection elapsed time in milliseconds. This attribute displays -1 if the collection elapsed time is undefined for this collector. The Java virtual machine implementation may use a high resolution timer to measure the elapsed time. This attribute may display the same value even if the collection count has been incremented if the collection elapsed time is very short.
 MBean: java.lang:type=GarbageCollector,name=%s/CollectionTime
-Notes: The %s should be substituted with the name of the garbage collector.
+Notes: There can be multiple garbage collectors active that are assigned to different memory pools. The %s should be substituted with the name of the garbage collector.
 ----
 
 *JVM Uptime - Up time of the Java Virtual machine*
 ----
-Name: jvm_uptime
+Name: jvmUptime
 DisplayName: JVM Uptime
 Type: Counter
 Unit: Milliseconds
@@ -246,7 +246,7 @@ Notes: Also from JSR 77
 === Thread JVM stats
 *ThreadCount*
 ----
-Name: thread_count
+Name: threadCount
 DisplayName: Thread Count
 Type: Counter
 Unit: None
@@ -256,7 +256,7 @@ MBean: java.lang:type=Threading/ThreadCount
 
 *DaemonThreadCount*
 ----
-Name: daemon_thread_count
+Name: daemonThreadCount
 DisplayName: Daemon Thread Count
 Type: Counter
 Unit: None
@@ -266,7 +266,7 @@ MBean: java.lang:type=Threading/DaemonThreadCount
 
 *PeakThreadCount*
 ----
-Name: peak_thread_count
+Name: peakThreadCount
 DisplayName: Peak Thread Count
 Type: Counter
 Unit: None
@@ -277,7 +277,7 @@ MBean: java.lang:type=Threading/PeakThreadCount
 === Thread Pool Stats
 *(Optional) ActiveThreads*
 ----
-Name: thread_pool_active_threads_%s
+Name: threadPool.%s.activeThreads
 DisplayName: Active Threads
 Type: Gauge
 Unit: None
@@ -288,7 +288,7 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 
 *(Optional) PoolSize*
 ----
-Name: thread_pool_size_%s
+Name: threadPool.%s.size
 DisplayName: Thread Pool Size
 Type: Gauge
 Unit: None
@@ -301,7 +301,7 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 
 *LoadedClassCount*
 ----
-Name: current_loaded_class_count
+Name: currentLoadedClassCount
 DisplayName: Current Loaded Class Count
 Type: Counter
 Unit: None
@@ -311,7 +311,7 @@ MBean: java.lang:type=ClassLoading/LoadedClassCount
 
 *TotalLoadedClassLoaded*
 ----
-Name: total_loaded_class_count
+Name: totalLoadedClassCount
 DisplayName: Total Loaded Class Count
 Type: Counter
 Unit: None
@@ -321,7 +321,7 @@ MBean: java.lang:type=ClassLoading/TotalLoadedClassCount
 
 *UnloadedClassCount*
 ----
-Name: total_unloaded_class_count
+Name: totalUnloadedClassCount
 DisplayName: Total Unloaded Class Count
 Type: Counter
 Unit: None
@@ -332,7 +332,7 @@ MBean:java.lang:type=ClassLoading/UnloadedClassCount
 === Operating System
 *AvailableProcessors*
 ----
-Name: available_processors
+Name: availableProcessors
 DisplayName: Available Processors
 Type: Gauge
 Unit: None
@@ -342,7 +342,7 @@ MBean: java.lang:type=OperatingSystem/AvailableProcessors
 
 *SystemLoadAverage*
 ----
-Name: system_load_average
+Name: systemLoadAverage
 DisplayName: System Load Average
 Type: Gauge
 Unit: None
@@ -352,7 +352,7 @@ MBean: java.lang:type=OperatingSystem/SystemLoadAverage
 
 *(Optional) ProcessCpuLoad*
 ----
-Name: process_cpu_load
+Name: processCpuLoad
 DisplayName: Process CPU Load
 Type: Gauge
 Unit: Percent
