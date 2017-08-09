@@ -413,17 +413,22 @@ Q: should we return 503 Service Unavailable if the server detects an internal ba
 
 A server SHOULD implement TLS encryption by default
 
-== Configuration
+== Setup of metric sources
+
+Metrics that are exposed need to be configured in the server.
+There are two different approaches depending on the scope of the data, which are described next.
 
 === Required + Vendor specific metrics
 
-Each vendor of a Microprofile-compliant server can implement this part in a vendor-specific way. The
-values can be backed into the server.
-The Appendix shows a possible data format.
+Each vendor of a Microprofile-compliant server can implement setting up the metrics in _base_ and _vendor_ scopes in a
+vendor-specific way. The metrics can be hard coded into the server or read from a configuration file.
+The Appendix shows a possible data format for such a configuration.
+The configuration and set up of  _base_ and _vendor_ scopes  are an implementation detail and are not expected to be portable across vendors.
 
-Application specific metrics can not be backed into the server and need to be provided by the application at runtime.
 
 === Application metrics
+
+Application specific metrics can not be backed into the server as they are supposed to be provided by the application at runtime.
 
 To access application metrics and its metadata a class `ApplicationMetric` is made available which can be injected
 via CDI
