@@ -627,19 +627,19 @@ public enum MpMUnit {
   /** 8 {@link #BIT} */
   BYTE ("byte"),
   /** 1024 {@link #BYTE} */
-  KILO_BYTE ("kbyte"),
+  KILOBYTE ("kbyte"),
   /** 1024 {@link #KILO_BYTE} */
-  MEGA_BYTE ("mbyte"),
+  MEGABYTE ("mbyte"),
   /** 1024 {@link #MEGA_BYTE} */
-  GIGA_BYTE("gbyte"),
+  GIGABYTE("gbyte"),
 
-  NANOSECONDS("ns"),
-  MICROSECONDS("us"),
+  NANOSECOND("ns"),
+  MICROSECOND("us"),
   MILLISECOND("ms"),
-  SECONDS("s"),
-  MINUTES("m"),
-  HOURS("h"),
-  DAYS("d"),
+  SECOND("s"),
+  MINUTE("m"),
+  HOUR("h"),
+  DAY("d"),
 
   PERCENT("%")
 
