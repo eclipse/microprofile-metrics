@@ -101,14 +101,14 @@ human readable. This could e.g. be the case when the metric name is a uuid.
 
 Example:
 
-if `GET /metrics/foo` exposes:
+if `GET /metrics/base/fooVal` exposes:
 
 [source]
 ----
 {"fooVal": 12345}
 ----
 
-then `OPTIONS /metrics/foo` will expose:
+then `OPTIONS /metrics/base/fooVal` will expose:
 
 [source]
 ----
