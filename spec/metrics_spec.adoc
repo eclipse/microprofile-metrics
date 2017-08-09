@@ -413,51 +413,22 @@ Q: should we return 503 Service Unavailable if the server detects an internal ba
 
 A server SHOULD implement TLS encryption by default
 
-== Configuration
+== Setup of metric sources
+
+Metrics that are exposed need to be configured in the server.
+There are two different approaches depending on the scope of the data, which are described next.
 
 === Required + Vendor specific metrics
 
-Q: Do we want to mandate this or can/should each vendor do as they like?
+Each vendor of a Microprofile-compliant server can implement setting up the metrics in _base_ and _vendor_ scopes in a
+vendor-specific way. The metrics can be hard coded into the server or read from a configuration file.
+The Appendix shows a possible data format for such a configuration.
+The configuration and set up of  _base_ and _vendor_ scopes  are an implementation detail and are not expected to be portable across vendors.
 
-A sample configuration in YAML may look like this:
-
-[source]
-----
-base:
-  - name: "thread-count"
-    mbean: "java.lang:type=Threading/ThreadCount"
-    description: "Number of currently deployed threads"
-    unit: "none"
-    type: "gauge"
-    displayName: "Current Thread count"
-  - name: "peak-thread-count"
-    mbean: "java.lang:type=Threading/PeakThreadCount"
-    description: "Max number of threads"
-    unit: "none"
-    type: "gauge"
-  - name: "total-started-thread-count"
-    mbean: "java.lang:type=Threading/TotalStartedThreadCount"
-    description: "Number of threads started for this server"
-    unit: "none"
-    type: "counter"
-  - name: "max-heap"
-    mbean: "java.lang:type=Memory/HeapMemoryUsage#max"
-    description: "Number of threads started for this server"
-    unit: "bytes"
-    type: "counter"
-    tags: "kind=memory"
-
-vendor:
-  - name: "msc-loaded-modules"
-    mbean: "jboss.modules:type=ModuleLoader,name=BootModuleLoader-2/LoadedModuleCount"
-    description: "Number of loaded modules"
-    unit: "none"
-    type: "gauge"
-----
-
-This configuration can be backed into the runtime. Application specific metrics don't show up here.
 
 === Application metrics
+
+Application specific metrics can not be backed into the server as they are supposed to be provided by the application at runtime.
 
 To access application metrics and its metadata a class `ApplicationMetric` is made available which can be injected
 via CDI
@@ -502,9 +473,7 @@ applicationMetric.setValue("demo",42);   // set to absolute value 42
 Tags can be supplied in two ways
 
 * At the level of a metric shown in the above examples
-*
-
-At the application server level by passing the list of tags in an environment variable `MP_METRICS_TAGS`
+* At the application server level by passing the list of tags in an environment variable `MP_METRICS_TAGS`
 
 `export MP_METRICS_TAGS=app=shop,tier=integration`
 
@@ -720,3 +689,46 @@ n/a
 
 There exists Jolokia as JMX-HTTP bridge. Using this for application specific metrics requires that those metrics
 are exposed to JMX first, which are many users not familiar with.
+
+== Appendix
+
+=== Example configuration format for base and vendor-specific data
+
+
+The following is an example configuration in YAML format.
+
+[source]
+----
+base:
+  - name: "thread-count"
+    mbean: "java.lang:type=Threading/ThreadCount"
+    description: "Number of currently deployed threads"
+    unit: "none"
+    type: "gauge"
+    displayName: "Current Thread count"
+  - name: "peak-thread-count"
+    mbean: "java.lang:type=Threading/PeakThreadCount"
+    description: "Max number of threads"
+    unit: "none"
+    type: "gauge"
+  - name: "total-started-thread-count"
+    mbean: "java.lang:type=Threading/TotalStartedThreadCount"
+    description: "Number of threads started for this server"
+    unit: "none"
+    type: "counter"
+  - name: "max-heap"
+    mbean: "java.lang:type=Memory/HeapMemoryUsage#max"
+    description: "Number of threads started for this server"
+    unit: "bytes"
+    type: "counter"
+    tags: "kind=memory"
+
+vendor:
+  - name: "msc-loaded-modules"
+    mbean: "jboss.modules:type=ModuleLoader,name=BootModuleLoader-2/LoadedModuleCount"
+    description: "Number of loaded modules"
+    unit: "none"
+    type: "gauge"
+----
+
+This configuration can be backed into the runtime or be provided via an external configuration file.
