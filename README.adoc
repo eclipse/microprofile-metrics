@@ -1,0 +1,10 @@
+= Eclipse Microprofile Metrics
+
+This specification aims at providing a unified way for Microprofile servers to
+export Monitoring data ("Telemetry") to management agents and also a unified
+Java API, that all (application) programmers can use to expose their telemetry
+data.
+
+For the specification see link:spec/metrics_spec.adoc[Metrics spec]
+
+For discussions visit the https://groups.google.com/forum/#!forum/microprofile[Microprofile Google group].
