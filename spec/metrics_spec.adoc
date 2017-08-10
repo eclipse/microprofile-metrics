@@ -68,6 +68,21 @@ The following three sets of sub-resource are exposed.
 NOTE: It is expected that a future version of this specification will also have a sub-resource for integrations
 with other specifications of Microprofile.
 
+
+=== Filtering data returned
+
+It is possible to limit the amount of data returned by appending a query param of `filter=<expr>` where `<expr>` is the
+filter expression.
+
+The filter format uses the asterisk character (`*`) as wildcard.
+It is possible to negate the match with an exclamation mark (`!`) as the first character of the expression.
+
+Examples:
+
+* `GET /metrics?filter=m*` : only return metrics (across all scopes) where the name starts with an _m_.
+* `GET /metrics/base?filter=*s` : only return metrics in base scope where the name ends with an _s_.
+* `GET /metrics?filter=!m*` : only return metrics (across all scopes) where the name does not start with an _m_.
+
 === Metadata
 
 For all exposed metrics, matching metadata is exposed.
