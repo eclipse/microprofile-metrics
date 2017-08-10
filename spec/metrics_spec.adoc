@@ -9,7 +9,7 @@
 
 To ensure reliable operation of the software it is necessary to monitor essential
 system parameters. This enhancement proposes the addition of well-known monitoring
-endpoints and metrics for each process adhering to the microprofile standard.
+endpoints and metrics for each process adhering to the Eclipse Microprofile standard.
 
 This proposal does not talk about health checks. There is a separate proposal
 https://github.com/microprofile/microprofile-evolution-process/issues/14[MP-0003: Health Check Proposal].
@@ -39,14 +39,14 @@ planning and pro-active discovery of issues (e.g. disk usage growing without bou
 Metrics can also help those scheduling systems to make decisions when to scale the application
 to run on more or less machines depending on the metrical values.
 
-== Proposed solution
+== Format of exposed data (external API)
 
-Data is exposed via REST over http under the `/metrics` base path
+Data is exposed via REST over http under the `/metrics` base path in two default data formats for `GET` requests:
 
-* Metrics will respond to GET requests and are exposed in a tree like fashion with sub-trees for various cases described below.
-* A 'shadow tree' that responds to OPTIONS will provide the metadata
-* All data is at least exposed as `application/json` data type.
-* The api is discoverable. GETting a base object will list references to children
+* Json format.
+* Prometheus text format.
+
+Formats are detailed below.
 
 Data access must honour the http response codes, especially
 
@@ -57,9 +57,53 @@ Data access must honour the http response codes, especially
 
 The Api MUST NOT return a 500 Internal Server Error code to represent a non-existing resource.
 
-== Detailed design (draft)
+=== API Sub-resources
 
-=== REST-Api Objects
+The following three sets of sub-resource are exposed.
+
+* base: metrics that all Microprofile vendors have to provide
+* vendor: vendor specific metrics (optional)
+* application: application-specific metrics (optional)
+
+NOTE: It is expected that a future version of this specification will also have a sub-resource for integrations
+with other specifications of Microprofile.
+
+=== Metadata
+
+For all exposed metrics, matching metadata is exposed.
+
+* unit: a fixed set of string units from e.g. [1], [UoM] or [Metrics2.0]
+* type:
+** counter: a monotonically increasing or decreasing numeric value (e.g. total number of requests received)
+** gauge: a numeric value that can arbitrarily go up and down (e.g. cpu or disk usage)
+** bool: a boolean value which can be `true` or `false`
+** string: a string
+* description (optional): A human readable description of the metric
+* displayName (optional): A human readable name of the metric for display purposes if the metric name is not
+human readable. This could e.g. be the case when the metric name is a uuid.
+* tags (optional): A list of `key=value` pairs, which are separated by comma.
+
+Metadata must not change over the lifetime of a process (i.e. it is not allowed
+to return the units as seconds in one retrieval and as hours in a subsequent one).
+The reason behind it is that e.g. a monitoring agent on Kubernetes may read the
+metadata once it sees the new container and store it. It may not periodically
+re-query the process for the metadata.
+
+In fact that metadata should probably not change during the life-time of the
+whole container image or an application, as all containers spawned from it
+will be "the same" and form part of an app, where it would be confusing in
+an overall view if the same metric has different metadata.
+
+Metadata SHOULD support caching via cache control headers and SHOULD reply with a 304 Not Modified response accordingly.
+
+
+=== Json Format
+
+* Metrics will respond to GET requests and are exposed in a tree like fashion with sub-trees for the sub-resources mentioned in the previous section.
+A sub-tree that does not contain data
+* A 'shadow tree' that responds to OPTIONS will provide the metadata
+
+==== REST-Api Objects
 
 Api-objects MAY include one or more metrics as in
 
@@ -83,21 +127,9 @@ or
 }
 ----
 
-=== Metadata
+==== Metadata
 
-Metric values MUST have metadata to attach semantics to the values.
-Metadata is returned as an array of objects with the following content:
-
-* unit: a fixed set of string units from e.g. [1], [UoM] or [Metrics2.0]
-* type:
-** counter: a monotonically increasing or decreasing numeric value (e.g. total number of requests received)
-** gauge: a numeric value that can arbitrarily go up and down (e.g. cpu or disk usage)
-** bool: a boolean value which can be `true` or `false`
-** string: a string
-* description (optional): A human readable description of the metric
-* displayName (optional): A human readable name of the metric for display purposes if the metric name is not
-human readable. This could e.g. be the case when the metric name is a uuid.
-* tags (optional): A list of key=value pairs, which are separated by comma.
+Metadata is returned as an array of objects with the content described above.
 
 Example:
 
@@ -156,18 +188,32 @@ then Metadata is returned as follows:
 ]
 ----
 
-Metadata must not change over the lifetime of a process (i.e. it is not allowed
-to return the units as seconds in one retrieval and as hours in a subsequent one).
-The reason behind it is that e.g. a monitoring agent on Kubernetes may read the
-metadata once it sees the new container and store it. It may not periodically
-re-query the process for the metadata.
 
-In fact that metadata should probably not change during the life-time of the
-whole container image or an application, as all containers spawned from it
-will be "the same" and form part of an app, where it would be confusing in
-an overall view if the same metric has different metadata.
+=== Prometheus format
 
-Metadata SHOULD support caching via cache control headers and SHOULD reply with a 304 Not Modified response accordingly.
+Data is exposed in text format as described in
+https://prometheus.io/docs/instrumenting/exposition_formats/#text-format-details[Prometheus text format] when
+the GET request asks for `text/plain` encoding.
+
+The metadata will be included inline in the Prometheus text format, specified by it.
+
+TIP: Users that want to write tools to transform the metadata can still request the metadata via OPTIONS
+request and json media type.
+
+The above json example would look like this in Prometheus format
+
+[source]
+----
+# TYPE foo_val_seconds gauge   <1>
+# HELP foo_val_seconds The duration of foo after each request <2>
+foo_val_seconds{app="webshop"} 12.345  <3>
+# TYPE bar_val_bytes gauge <1>
+bar_val_bytes{component="backend", app="webshop"} 42000 <3>
+----
+<1> Metric names are turned from camel case into snake_case.
+<2> The description goes into the HELP line
+<3> Metric names gets the base unit of the family appended with `_` and defined labels. Values are scaled accordingly
+
 
 == Base metrics
 
