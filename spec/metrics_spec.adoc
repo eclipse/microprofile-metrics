@@ -129,11 +129,11 @@ or
 
 ==== Metadata
 
-Metadata is returned as an array of objects with the content described above.
+Metadata is exposed in a tree-like fashion with sub-trees for the sub-resources mentioned previously.
 
 Example:
 
-if `GET /metrics/base/fooVal` exposes:
+If `GET /metrics/base/fooVal` exposes:
 
 [source]
 ----
@@ -144,19 +144,20 @@ then `OPTIONS /metrics/base/fooVal` will expose:
 
 [source]
 ----
-[
-  {"fooVal": {
-      "unit": "ms",
-      "type": "gauge",
-      "description": "The size of foo after each request",
-      "displayName": "Size of foo",
-      "tags": "app=webshop"
-     }
+
+{
+  "fooVal": {
+    "unit": "ms",
+    "type": "gauge",
+    "description": "The size of foo after each request",
+    "displayName": "Size of foo",
+    "tags": "app=webshop"
   }
-]
+}
+
 ----
 
-If the endpoint exposes multiple values like this:
+If `GET /metrics/base` exposes multiple values like this:
 
 [source]
 ----
@@ -166,26 +167,24 @@ If the endpoint exposes multiple values like this:
 }
 ----
 
-then Metadata is returned as follows:
+then `OPTIONS /metrics/base` exposes:
 
 [source]
 ----
-[
-  {"fooVal": {
-      "unit": "ms",
-      "type": "gauge",
-      "description": "The duration of foo after each request",
-      "displayName": "Duration of foo",
-      "tags": "app=webshop"
-     }
+{
+  "fooVal": {
+    "unit": "ms",
+    "type": "gauge",
+    "description": "The duration of foo after each request",
+    "displayName": "Duration of foo",
+    "tags": "app=webshop"
   },
-  {"barVal": {
-      "unit": "mbytes",
-      "type": "gauge",
-      "tags": "component=backend,app=webshop"
-     }
+  "barVal": {
+    "unit": "mbytes",
+    "type": "gauge",
+    "tags": "component=backend,app=webshop"
   }
-]
+}
 ----
 
 
