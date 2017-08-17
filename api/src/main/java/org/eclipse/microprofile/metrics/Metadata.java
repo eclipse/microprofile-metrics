@@ -1,0 +1,350 @@
+/*
+ * Copyright 2017 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.eclipse.microprofile.metrics;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
+/**
+ * Bean holding the metadata of one single metric
+ * @author hrupp, Raymond Lam
+ */
+public class Metadata {
+    /**
+     * Name of the metric.
+     * <p>
+     * Exposed over REST
+     * </p>
+     */
+    private String name;
+    /**
+     * Display name of the metric. If not set, the name is taken.
+     * <p>
+     * Exposed over REST
+     * </p>
+     */
+    private String displayName;
+    /**
+     * The mbean info to retrieve the data from. Format is
+     * objectname/attribute[#field], with field being one field in a composite
+     * attribute. E.g. java.lang:type=Memory/HeapMemoryUsage#max
+     */
+
+    private String mbean;
+    /**
+     * A human readable description.
+     * <p>
+     * Exposed over REST
+     * </p>
+     */
+    private String description;
+    /**
+     * Type of the metric.
+     * <p>
+     * Exposed over REST
+     * </p>
+     */
+    private MpMType type = MpMType.INVALID;
+    /**
+     * Unit of the metric.
+     * <p>
+     * Exposed over REST
+     * </p>
+     */
+    private MpMUnit unit = MpMUnit.NONE;
+    /**
+     * Tags of the metric. Augmented by global tags.
+     * <p>
+     * Exposed over REST
+     * </p>
+     */
+
+    private HashMap<String, String> tags = new HashMap<String, String>();
+
+    /**
+     * Defines if the metric can have multiple objects and needs special
+     * treatment or if it is a singleton.
+     * <p/>
+     */
+    private boolean multi = false;
+
+    Metadata() {
+        String globalTagsFromEnv = System.getenv("MP_METRICS_TAGS");
+
+        // We use the parsing logic, but need to save them away, as the yaml
+        // Config will overwrite them otherwise.
+        addTags(globalTagsFromEnv);
+    }
+
+    /**
+     * Constructs a Metadata object with default Units
+     * 
+     * @param name The name of the metric
+     * @param type The type of the metric
+     */
+    public Metadata(String name, MpMType type) {
+        // MP-Metrics, set default value for other fileds
+        this();
+        this.name = name;
+        this.type = type;
+
+        // Assign default units
+        switch (type) {
+        case TIMER:
+        case METERED:
+            this.unit = MpMUnit.NANOSECOND;
+            break;
+        case HISTOGRAM:
+        case GAUGE:
+        case COUNTER:
+        default:
+            this.unit = MpMUnit.NONE;
+            break;
+        }
+    }
+
+    /**
+     * Constructs a Metadata object
+     * 
+     * @param name The name of the metric
+     * @param type The type of the metric
+     * @param unit The units of the metric
+     */
+    public Metadata(String name, MpMType type, MpMUnit unit) {
+        this();
+        this.name = name;
+        this.type = type;
+        this.unit = unit;
+    }
+
+    /**
+     * Constructs a Metadata object
+     * 
+     * @param name The name of the metric
+     * @param displayName The display (friendly) name of the metric
+     * @param description The description of the metric
+     * @param type The type of the metric
+     * @param unit The units of the metric
+     */
+    public Metadata(String name, String displayName, String description, MpMType type, MpMUnit unit) {
+        this();
+        this.name = name;
+        this.displayName = displayName;
+        this.description = description;
+        this.type = type;
+        this.unit = unit;
+    }
+
+    /**
+     * Constructs a Metadata object
+     * 
+     * @param name The name of the metric
+     * @param displayName The display (friendly) name of the metric
+     * @param description The description of the metric
+     * @param type The type of the metric
+     * @param unit The units of the metric
+     * @param tags The tags of the metric
+     */
+    public Metadata(String name, String displayName, String description, MpMType type, MpMUnit unit, String tags) {
+        this();
+        this.name = name;
+        this.displayName = displayName;
+        this.description = description;
+        this.type = type;
+        this.unit = unit;
+        addTags(tags);
+    }
+
+    public Metadata(Map<String, String> in) {
+        this();
+        this.name = (String) in.get("name");
+        this.description = (String) in.get("description");
+        this.displayName = (String) in.get("displayName");
+        this.setType((String) in.get("type"));
+        this.setUnit((String) in.get("unit"));
+        this.setMbean((String) in.get("mbean"));
+        this.setMulti(in.get("multi").equals("true"));
+        if (in.keySet().contains("tags")) {
+            String tagString = (String) in.get("tags");
+            String[] tagList = tagString.split(",");
+            for (String tag : tagList) {
+                this.tags.put(tag.substring(0, tag.indexOf("=")), tag.substring(tag.indexOf("=")));
+            }
+        }
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDisplayName() {
+        if (displayName == null) {
+            return name;
+        }
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getMbean() {
+        return mbean;
+    }
+
+    public void setMbean(String mbean) {
+        this.mbean = mbean;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getType() {
+        return type == null ? MpMType.INVALID.toString() : type.toString();
+    }
+
+    public MpMType getTypeRaw() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = MpMType.from(type);
+    }
+
+    public void setType(MpMType type) {
+        this.type = type;
+    }
+
+    public String getUnit() {
+        return unit.toString();
+    }
+
+    public MpMUnit getUnitRaw() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = MpMUnit.from(unit);
+    }
+
+    public void setUnit(MpMUnit unit) {
+        this.unit = unit;
+    }
+
+    public boolean isMulti() {
+        return multi;
+    }
+
+    public void setMulti(boolean multi) {
+        this.multi = multi;
+    }
+
+    public String getTagsAsString() {
+        StringBuilder result = new StringBuilder();
+
+        Iterator<Entry<String, String>> iterator = this.tags.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, String> pair = iterator.next();
+            result.append(pair.getKey()).append("=\"").append(pair.getValue()).append("\"");
+            if (iterator.hasNext()) {
+                result.append(",");
+            }
+
+        }
+
+        return result.toString();
+    }
+
+    public HashMap<String, String> getTags() {
+
+        return this.tags;
+    }
+
+    /**
+     * Add one single tag. Format is 'key=value'. If the input is empty or does
+     * not contain a '=' sign, the entry is ignored.
+     * 
+     * @param kvString
+     *            Input string
+     */
+    public void addTag(String kvString) {
+        if (kvString == null || kvString.isEmpty() || !kvString.contains("=")) {
+            return;
+        }
+        tags.put(kvString.substring(0, kvString.indexOf("=")), kvString.substring(kvString.indexOf("=") + 1));
+    }
+
+    public void addTags(String tagsString) {
+        if (tagsString == null || tagsString.isEmpty()) {
+            return;
+        }
+
+        String[] singleTags = tagsString.split(",");
+        for (String singleTag : singleTags) {
+            addTag(singleTag.trim());
+        }
+    }
+
+    public void setTags(HashMap<String, String> tags) {
+        this.tags = tags;
+    }
+
+    /**
+     * public boolean equals(Object o) { //if (this == o) return true; //if (o
+     * == null || getClass() != o.getClass()) return false;
+     * 
+     * Metadata that = (Metadata) o;
+     * 
+     * if (!name.equals(that.name)) return false; if (mbean != null ?
+     * !mbean.equals(that.mbean) : that.mbean != null) return false; if
+     * (!type.equals(that.type)) return false; return unit.equals(that.unit); }
+     **/
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + (mbean != null ? mbean.hashCode() : 0);
+        result = 31 * result + type.hashCode();
+        result = 31 * result + unit.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("MetadataEntry{");
+        sb.append("name='").append(name).append('\'');
+        sb.append(", description='").append(description).append('\'');
+        sb.append(", mbean='").append(mbean).append('\'');
+        sb.append(", type='").append(type).append('\'');
+        sb.append(", unit='").append(unit).append('\'');
+        sb.append(", tags='").append(tags).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
+
+}
