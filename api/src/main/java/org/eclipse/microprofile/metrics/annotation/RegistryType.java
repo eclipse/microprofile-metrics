@@ -38,7 +38,7 @@ import org.eclipse.microprofile.metrics.MetricRegistry;
 @Qualifier
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+@Target({ ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
 public @interface RegistryType {
     MetricRegistry.Type type() default MetricRegistry.Type.APPLICATION;
 }
