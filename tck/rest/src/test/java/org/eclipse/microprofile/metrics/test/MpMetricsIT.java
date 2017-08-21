@@ -17,12 +17,13 @@ package org.eclipse.microprofile.metrics.test;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.core.Is.is;
 
 import com.jayway.restassured.response.Header;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.path.json.JsonPath;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -40,6 +41,11 @@ public class MpMetricsIT  {
   private static final Header wantPrometheusFormat = new Header("Accept",TEXT_PLAIN);
 
   private static final String DEFAULT_SERVER_URL = "http://localhost:8080";
+
+  String[] baseNames = {"usedHeapMemory","committedHeapMemory","maxHeapMemory","jvmUptime","threadCount",
+      "daemonThreadCount","peakThreadCount","currentLoadedClassCount","totalLoadedClassCount",
+      "totalUnloadedClassCount","availableProcessors","systemLoadAverage"};
+
 
   @BeforeClass
   static public void setup() {
@@ -125,6 +131,27 @@ public class MpMetricsIT  {
         .body(containsString("totalStartedThreadCount"));
   }
 
+  @Test
+  public void testBaseSingluarItemsPresent() {
+
+    JsonPath jsonPath =
+    given()
+        .header(wantJson)
+        .get("/metrics/base")
+        .jsonPath();
+
+    Map<String, Object> elements = jsonPath.getMap(".");
+    List<String> missing = new ArrayList<>();
+
+    for (String item: baseNames) {
+      if (!elements.containsKey(item)) {
+        missing.add(item);
+      }
+    }
+
+    assert missing.isEmpty() : "Following base items are missing: " + Arrays.toString(missing.toArray());
+  }
+
 
   @Test
   public void testBaseAttributePrometheus() {
@@ -139,52 +166,57 @@ public class MpMetricsIT  {
               containsString("base:total_started_thread_count{tier=\"integration\"}"));
   }
 
+
   @Test
-  public void testVendor() {
+  public void testBaseMetadata() {
     given()
         .header(wantJson)
-        .get("/metrics/vendor")
-        .then()
-        .contentType(MpMetricsIT.APPLICATION_JSON)
-        .and()
-        .body(containsString("mscLoadedModules"));
-
-  }
-
-  //  @Test
-  public void testVendorMetadata() {
-    given()
-        .header(wantJson)
-        .options("/metrics/vendor")
+        .options("/metrics/base")
         .then().statusCode(200)
-        .and().contentType(MpMetricsIT.APPLICATION_JSON)
-        .and().body("[0].name", is("mscLoadedModules"));
+        .and().contentType(MpMetricsIT.APPLICATION_JSON);
   }
 
-  //  @Test
-  public void testVendorMetadata2() {
-    given()
-        .header(wantJson)
-        .options("/metrics/vendor")
-        .then().statusCode(200)
-        .and().contentType(MpMetricsIT.APPLICATION_JSON)
-        .and().body("/vendor/name", hasItem("BufferPool_used_memory_mapped"));
-  }
+  @Test
+  public void testBaseMetadataSingluarItems() {
 
-  //  @Test()
-  public void testVendorMetadata3() {
     JsonPath jsonPath =
-        given()
-            .header(wantJson)
-            .options("/metrics/vendor")
-            .then().statusCode(200)
-            .and().contentType(MpMetricsIT.APPLICATION_JSON)
-            .extract().body().jsonPath();
+    given()
+        .header(wantJson)
+        .options("/metrics/base")
+        .jsonPath();
+
+    Map<String, Object> elements = jsonPath.getMap(".");
+    List<String> missing = new ArrayList<>();
+
+    for (String item: baseNames) {
+      if (!elements.containsKey(item)) {
+        missing.add(item);
+      }
+    }
+
+    assert missing.isEmpty() : "Following base items are missing: " + Arrays.toString(missing.toArray());
+  }
+
+  @Test
+  public void testBaseMetadataGarbageCollection() throws Exception {
+
+    JsonPath jsonPath =
+    given()
+        .header(wantJson)
+        .options("/metrics/base")
+        .jsonPath();
+
+    int count = 0;
+    Map<String, Object> elements = jsonPath.getMap(".");
+    for (String name : elements.keySet()) {
+      if (name.startsWith("gc.")) {
+        assert name.endsWith(".count") || name.endsWith(".time");
+        count++;
+      }
+    }
+    assert count > 0;
 
 
-    Map<String,String> directPool = jsonPath.getMap("find {it.name == 'BufferPool_used_memory_direct'}");
-    assert directPool.get("displayName").equals("BufferPool_used_memory_direct");
-    assert directPool.get("description").equals("The memory used by the pool: direct");
   }
 
   @Test
@@ -199,17 +231,14 @@ public class MpMetricsIT  {
 
   @Test
   public void testApplicationMetadata() {
-    Map body = RestAssured.options("/metrics/application")
+    Map<String,Map> body = RestAssured.options("/metrics/application")
         .as(Map.class);
 
-    assert body.size()==1 : body.size();
-    assert body.keySet().contains("application");
-    Map<String,Map> application = (Map<String, Map>) body.get("application");
-    assert application.size()==2;
-    assert application.keySet().contains("ola");
-    assert application.keySet().contains("hello");
+    assert body.size()==2;
+    assert body.keySet().contains("ola");
+    assert body.keySet().contains("hello");
 
-    for (Map.Entry<String, Map> mapEntry : application.entrySet()) {
+    for (Map.Entry<String, Map> mapEntry : body.entrySet()) {
       Map<String,Object> entry = mapEntry.getValue();
       String tags = (String) entry.get("tags");
       if (entry.get("name").equals("hello")) {
