@@ -21,12 +21,22 @@ import static org.hamcrest.CoreMatchers.containsString;
 import com.jayway.restassured.response.Header;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.path.json.JsonPath;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * Rest Test Kit
@@ -41,10 +51,6 @@ public class MpMetricsIT  {
   private static final Header wantPrometheusFormat = new Header("Accept",TEXT_PLAIN);
 
   private static final String DEFAULT_SERVER_URL = "http://localhost:8080";
-
-  String[] baseNames = {"usedHeapMemory","committedHeapMemory","maxHeapMemory","jvmUptime","threadCount",
-      "daemonThreadCount","peakThreadCount","currentLoadedClassCount","totalLoadedClassCount",
-      "totalUnloadedClassCount","availableProcessors","systemLoadAverage"};
 
 
   @BeforeClass
@@ -132,7 +138,7 @@ public class MpMetricsIT  {
   }
 
   @Test
-  public void testBaseSingluarItemsPresent() {
+  public void testBaseSingluarMetricsPresent() {
 
     JsonPath jsonPath =
     given()
@@ -143,7 +149,11 @@ public class MpMetricsIT  {
     Map<String, Object> elements = jsonPath.getMap(".");
     List<String> missing = new ArrayList<>();
 
-    for (String item: baseNames) {
+    Map<String,MiniMeta> baseNames = getBaseMetrics();
+    for (String item: baseNames.keySet()) {
+      if (item.startsWith("gc.")) {
+        continue;
+      }
       if (!elements.containsKey(item)) {
         missing.add(item);
       }
@@ -180,21 +190,114 @@ public class MpMetricsIT  {
   public void testBaseMetadataSingluarItems() {
 
     JsonPath jsonPath =
-    given()
-        .header(wantJson)
-        .options("/metrics/base")
-        .jsonPath();
+        given()
+            .header(wantJson)
+            .options("/metrics/base")
+            .jsonPath();
 
     Map<String, Object> elements = jsonPath.getMap(".");
     List<String> missing = new ArrayList<>();
 
-    for (String item: baseNames) {
+    Map<String,MiniMeta> baseNames = getBaseMetrics();
+    for (String item: baseNames.keySet()) {
+      if (item.startsWith("gc.")) {
+        continue;
+      }
       if (!elements.containsKey(item)) {
         missing.add(item);
       }
     }
 
     assert missing.isEmpty() : "Following base items are missing: " + Arrays.toString(missing.toArray());
+  }
+
+  @Test
+  public void testBaseMetadataTypeAndUnit() {
+    JsonPath jsonPath =
+    given()
+        .header(wantJson)
+        .options("/metrics/base")
+        .jsonPath();
+
+    Map<String, Object> elements = jsonPath.getMap(".");
+
+    Map<String,MiniMeta> expectedMetadata = getBaseMetrics();
+    for (Map.Entry<String, MiniMeta> entry : expectedMetadata.entrySet()) {
+      MiniMeta item = entry.getValue();
+      if (item.name.startsWith("gc.")) {
+        continue; // We don't deal with them here
+      }
+      Map<String,Object> fromServer = (Map<String, Object>) elements.get(item.name);
+      assert item.type.equals(fromServer.get("type")) : "expected " + item.type + " but got " +
+          fromServer.get("type") + " for " + item.name ;
+      assert item.unit.equals(fromServer.get("unit")) : "expected " + item.unit + " but got " +
+                fromServer.get("unit") + " for " + item.name ;
+    }
+
+  }
+
+  @Test
+  public void testPrometheusFormatNoBadChars() throws Exception {
+
+    String data =
+    given()
+        .header(wantPrometheusFormat)
+        .get("/metrics/base")
+        .asString();
+
+    String[] lines = data.split("\n");
+    for (String line: lines) {
+      if (line.startsWith("#")) {
+        continue;
+      }
+      String[] tmp = line.split(" ");
+      assert tmp.length==2;
+      assert !tmp[0].matches("[-.]") : "Line has illegal chars " + line;
+      assert !tmp[0].matches("__") : "Found __ in " + line;
+    }
+  }
+
+  /*
+     * Technically Prometheus has no metadata call and this is
+     * included inline in the response.
+     */
+  @Test
+  public void testBaseMetadataSingluarItemsPrometheus() {
+
+    String data =
+    given()
+        .header(wantPrometheusFormat)
+        .get("/metrics/base")
+        .asString();
+
+    String[] lines = data.split("\n");
+
+    Map<String,MiniMeta> expectedMetadata = getBaseMetrics();
+    for (String line : lines) {
+      if (!line.startsWith("# TYPE base:")) {
+        continue;
+      }
+      String fullLine = line;
+      int c = line.indexOf(":");
+      line = line.substring(c+1);
+      if (line.startsWith("gc_")) {
+        continue;
+      }
+      boolean found = false;
+      for (MiniMeta mm : expectedMetadata.values()) {
+        String promName = mm.toPromString();
+        String[] tmp = line.split(" ");
+        assert tmp.length==2;
+        if (tmp[0].startsWith(promName)) {
+          found = true;
+          assert tmp[1].equals(mm.type) : "Expected " + mm.toString() + " got " + fullLine;
+        }
+      }
+      assert found : "Not found " + fullLine;
+
+    }
+
+
   }
 
   @Test
@@ -356,4 +459,77 @@ public class MpMetricsIT  {
   }
 
 
+  private Map<String,MiniMeta> getBaseMetrics()  {
+    File f = new File("src/test/resources/base_metrics.xml");
+    DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
+    DocumentBuilder builder = null;
+    try {
+      builder = fac.newDocumentBuilder();
+    } catch (ParserConfigurationException e) {
+      e.printStackTrace();  // TODO: Customise this generated block
+    }
+    Document document = null;
+    try {
+      document = builder.parse(f);
+    } catch (SAXException|IOException e) {
+      throw new RuntimeException(e);
+    }
+
+    Element root = (Element) document.getElementsByTagName("config").item(0);
+    NodeList metrics = root.getElementsByTagName("metric");
+    Map<String,MiniMeta> metaMap = new HashMap<>(metrics.getLength());
+    for (int i = 0 ; i <  metrics.getLength(); i++) {
+      Element metric = (Element) metrics.item(i);
+      MiniMeta mm = new MiniMeta();
+      mm.multi= Boolean.parseBoolean(metric.getAttribute("multi"));
+      mm.name=metric.getAttribute("name");
+      mm.type=metric.getAttribute("type");
+      mm.unit=metric.getAttribute("unit");
+      metaMap.put(mm.name,mm);
+    }
+    return metaMap;
+
+  }
+
+  private static class MiniMeta {
+    String name;
+    String type;
+    String unit;
+    boolean multi;
+
+    String toPromString() {
+      String out = name.replace('-', '_').replace('.', '_').replace(' ','_');
+      out = out.replaceAll("(.)(\\p{Upper})", "$1_$2").toLowerCase();
+      if (!unit.equals("none")) {
+        out = out + "_" + getBaseUnitAsPrometheusString(unit);
+      }
+      out = out.replace("__","_");
+      out = out.replace(":_",":");
+
+      return out;
+    }
+
+    private String getBaseUnitAsPrometheusString(String unit) {
+      String out;
+      switch(unit) {
+        case "ms" : out = "seconds"; break;
+        case "byte" : out = "bytes"; break;
+
+        default: out = "none";
+      }
+
+      return out;
+    }
+
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder("MiniMeta{");
+      sb.append("name='").append(name).append('\'');
+      sb.append(", type='").append(type).append('\'');
+      sb.append(", unit='").append(unit).append('\'');
+      sb.append(", multi=").append(multi);
+      sb.append('}');
+      return sb.toString();
+    }
+  }
 }
