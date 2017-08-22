@@ -60,14 +60,14 @@ public class Metadata {
      * Exposed over REST
      * </p>
      */
-    private MpMType type = MpMType.INVALID;
+    private MetricType type = MetricType.INVALID;
     /**
      * Unit of the metric.
      * <p>
      * Exposed over REST
      * </p>
      */
-    private MpMUnit unit = MpMUnit.NONE;
+    private MetricUnit unit = MetricUnit.NONE;
     /**
      * Tags of the metric. Augmented by global tags.
      * <p>
@@ -98,7 +98,7 @@ public class Metadata {
      * @param name The name of the metric
      * @param type The type of the metric
      */
-    public Metadata(String name, MpMType type) {
+    public Metadata(String name, MetricType type) {
         // MP-Metrics, set default value for other fileds
         this();
         this.name = name;
@@ -108,13 +108,13 @@ public class Metadata {
         switch (type) {
         case TIMER:
         case METERED:
-            this.unit = MpMUnit.NANOSECOND;
+            this.unit = MetricUnit.NANOSECOND;
             break;
         case HISTOGRAM:
         case GAUGE:
         case COUNTER:
         default:
-            this.unit = MpMUnit.NONE;
+            this.unit = MetricUnit.NONE;
             break;
         }
     }
@@ -126,7 +126,7 @@ public class Metadata {
      * @param type The type of the metric
      * @param unit The units of the metric
      */
-    public Metadata(String name, MpMType type, MpMUnit unit) {
+    public Metadata(String name, MetricType type, MetricUnit unit) {
         this();
         this.name = name;
         this.type = type;
@@ -142,7 +142,7 @@ public class Metadata {
      * @param type The type of the metric
      * @param unit The units of the metric
      */
-    public Metadata(String name, String displayName, String description, MpMType type, MpMUnit unit) {
+    public Metadata(String name, String displayName, String description, MetricType type, MetricUnit unit) {
         this();
         this.name = name;
         this.displayName = displayName;
@@ -161,7 +161,7 @@ public class Metadata {
      * @param unit The units of the metric
      * @param tags The tags of the metric
      */
-    public Metadata(String name, String displayName, String description, MpMType type, MpMUnit unit, String tags) {
+    public Metadata(String name, String displayName, String description, MetricType type, MetricUnit unit, String tags) {
         this();
         this.name = name;
         this.displayName = displayName;
@@ -225,18 +225,18 @@ public class Metadata {
     }
 
     public String getType() {
-        return type == null ? MpMType.INVALID.toString() : type.toString();
+        return type == null ? MetricType.INVALID.toString() : type.toString();
     }
 
-    public MpMType getTypeRaw() {
+    public MetricType getTypeRaw() {
         return type;
     }
 
     public void setType(String type) {
-        this.type = MpMType.from(type);
+        this.type = MetricType.from(type);
     }
 
-    public void setType(MpMType type) {
+    public void setType(MetricType type) {
         this.type = type;
     }
 
@@ -244,15 +244,15 @@ public class Metadata {
         return unit.toString();
     }
 
-    public MpMUnit getUnitRaw() {
+    public MetricUnit getUnitRaw() {
         return unit;
     }
 
     public void setUnit(String unit) {
-        this.unit = MpMUnit.from(unit);
+        this.unit = MetricUnit.from(unit);
     }
 
-    public void setUnit(MpMUnit unit) {
+    public void setUnit(MetricUnit unit) {
         this.unit = unit;
     }
 

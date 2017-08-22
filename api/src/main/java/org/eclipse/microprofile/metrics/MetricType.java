@@ -22,7 +22,7 @@ import java.util.EnumSet;
  * The kind of a metric
  * @author hrupp, Raymond Lam, Ouyang Zhou
  */
-public enum MpMType {
+public enum MetricType {
   /**
    * A Counter monotonically in-/decreases its values.
    * An example could be the number of Transactions committed.
@@ -49,7 +49,7 @@ public enum MpMType {
   private String type;
   private Class<?> classtype;
 
-  MpMType(String type, Class<?> classtype) {
+  MetricType(String type, Class<?> classtype) {
     this.type = type;
     this.classtype = classtype;
   }
@@ -64,9 +64,9 @@ public enum MpMType {
    * @return the matching Enum
    * @throws IllegalArgumentException if in is not a valid enum value
    */
-  public static MpMType from(String in) {
-    EnumSet<MpMType> enumSet = EnumSet.allOf(MpMType.class);
-    for (MpMType u : enumSet) {
+  public static MetricType from(String in) {
+    EnumSet<MetricType> enumSet = EnumSet.allOf(MetricType.class);
+    for (MetricType u : enumSet) {
       if (u.type.equals(in)) {
         return u;
       }
@@ -80,13 +80,13 @@ public enum MpMType {
    * @return the matching Enum
    * @throws IllegalArgumentException if in is not a valid enum value
    */
-  public static MpMType from(Class<?> in) {
-    EnumSet<MpMType> enumSet = EnumSet.allOf(MpMType.class);
-    for (MpMType u : enumSet) {
+  public static MetricType from(Class<?> in) {
+    EnumSet<MetricType> enumSet = EnumSet.allOf(MetricType.class);
+    for (MetricType u : enumSet) {
       if (u.classtype != null && u.classtype.equals(in)) {
         return u;
       }
     }
-    return MpMType.INVALID;
+    return MetricType.INVALID;
   }
 }

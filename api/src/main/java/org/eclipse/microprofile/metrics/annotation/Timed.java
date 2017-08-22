@@ -28,8 +28,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.eclipse.microprofile.metrics.MpMType;
-import org.eclipse.microprofile.metrics.MpMUnit;
+import org.eclipse.microprofile.metrics.MetricType;
+import org.eclipse.microprofile.metrics.MetricUnit;
 
 /**
  * An annotation for marking a method of an annotated object as timed.
@@ -88,14 +88,14 @@ public @interface Timed {
      * 
      * @return type of the metrics from Metadata, which is a timer for timed
      */
-    MpMType type() default MpMType.TIMER;
+    MetricType type() default MetricType.TIMER;
     
     
    /**
     * @return unit of the metrics from Metadata
     *
     */
-    MpMUnit unit() default MpMUnit.NANOSECOND;
+    MetricUnit unit() default MetricUnit.NANOSECOND;
     
     /**
      * 

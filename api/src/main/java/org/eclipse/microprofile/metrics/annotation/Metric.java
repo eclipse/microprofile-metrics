@@ -26,8 +26,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.eclipse.microprofile.metrics.MpMType;
-import org.eclipse.microprofile.metrics.MpMUnit;
+import org.eclipse.microprofile.metrics.MetricType;
+import org.eclipse.microprofile.metrics.MetricUnit;
 
 /**
  * An annotation requesting that a metric be injected or registered.
@@ -92,14 +92,14 @@ public @interface Metric {
      * 
      * @return type of the metrics from Metadata, which is a timer for timed
      */
-    MpMType type() default MpMType.INVALID;
+    MetricType type() default MetricType.INVALID;
     
     
    /**
     * @return unit of the metrics from Metadata
     *
     */
-    MpMUnit unit() default MpMUnit.NONE;
+    MetricUnit unit() default MetricUnit.NONE;
     
     /**
      * 

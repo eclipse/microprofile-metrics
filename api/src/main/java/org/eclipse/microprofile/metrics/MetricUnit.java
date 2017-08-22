@@ -24,7 +24,7 @@ import java.util.EnumSet;
  *
  * @author hrupp
  */
-public enum MpMUnit {
+public enum MetricUnit {
   /** Dummy to say that this has no unit */
   NONE ("none", Family.NONE, 1),
 
@@ -69,7 +69,7 @@ public enum MpMUnit {
   private final Family family;
   private final double factor;
 
-  MpMUnit(String name, Family family, double factor) {
+  MetricUnit(String name, Family family, double factor) {
     this.name = name;
     this.family = family;
     this.factor = factor;
@@ -80,9 +80,9 @@ public enum MpMUnit {
     return name;
   }
 
-  public static MpMUnit from(String in) {
-    EnumSet<MpMUnit> enumSet = EnumSet.allOf(MpMUnit.class);
-    for (MpMUnit u : enumSet) {
+  public static MetricUnit from(String in) {
+    EnumSet<MetricUnit> enumSet = EnumSet.allOf(MetricUnit.class);
+    for (MetricUnit u : enumSet) {
       if (u.name.equals(in)) {
         return u;
       }
@@ -98,7 +98,7 @@ public enum MpMUnit {
    * @param unitIn The input unit
    * @return Double value of the scaled input
    */
-  public static double scaleToBase(Number value, MpMUnit unitIn) {
+  public static double scaleToBase(Number value, MetricUnit unitIn) {
     if (value instanceof Integer) {
       return (Integer)value * unitIn.factor;
     } 
@@ -119,9 +119,9 @@ public enum MpMUnit {
    * @param unitIn Unit to investigate
    * @return Base unit
    */
-  public static MpMUnit getBaseUnit(MpMUnit unitIn) {
-    EnumSet<MpMUnit> enumSet = EnumSet.allOf(MpMUnit.class);
-    for (MpMUnit u : enumSet) {
+  public static MetricUnit getBaseUnit(MetricUnit unitIn) {
+    EnumSet<MetricUnit> enumSet = EnumSet.allOf(MetricUnit.class);
+    for (MetricUnit u : enumSet) {
       if (u.family.equals(unitIn.family) && u.factor == 1) {
         return u;
       }
@@ -136,8 +136,8 @@ public enum MpMUnit {
    * @param in Unit
    * @return String representation for the base unit of in
    */
-  public static String getBaseUnitAsPrometheusString(MpMUnit in) {
-    MpMUnit base = getBaseUnit(in);
+  public static String getBaseUnitAsPrometheusString(MetricUnit in) {
+    MetricUnit base = getBaseUnit(in);
     String out;
     switch (base.family) {
       case BIT:  out = "bits"; break;
