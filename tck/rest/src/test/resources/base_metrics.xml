@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<config>
+  <metric multi="false" name="threadCount" type="gauge" unit="none"/>
+  <metric multi="false" name="peakThreadCount" type="counter" unit="none"/>
+  <metric multi="false" name="totalStartedThreadCount" type="counter" unit="none"/>
+  <metric multi="false" name="maxHeapMemory" type="counter" unit="byte"/>
+  <metric multi="false" name="usedHeapMemory" type="gauge" unit="byte"/>
+  <metric multi="false" name="committedHeapMemory" type="gauge" unit="byte"/>
+  <metric multi="false" name="daemonThreadCount" type="gauge" unit="none"/>
+  <metric multi="false" name="peakThreadCount" type="counter" unit="none"/>
+  <metric multi="false" name="currentLoadedClassCount" type="gauge" unit="none"/>
+  <metric multi="false" name="totalLoadedClassCount" type="counter" unit="none"/>
+  <metric multi="false" name="totalUnloadedClassCount" type="counter" unit="none"/>
+  <metric multi="false" name="availableProcessors" type="gauge" unit="none"/>
+  <metric multi="false" name="systemLoadAverage" type="gauge" unit="none"/>
+  <metric multi="false" name="jvmUptime" type="counter" unit="ms"/>
+  <metric multi="true" name="gc.%s.count" type="counter" unit="none"/>
+  <metric multi="true" name="gc.%s.time" type="counter" unit="ms"/>
+</config>
