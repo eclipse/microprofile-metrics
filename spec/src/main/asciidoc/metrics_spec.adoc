@@ -33,12 +33,13 @@ endif::[]
 :revremark: Proposal
 :toc: left
 :toclevels: 4
+:sectnums:
 
 = Metrics for Eclipse Microprofile
 
 include::license-alv2.asciidoc[]
 
-== 1. Introduction
+== Introduction
 
 To ensure reliable operation of the software it is necessary to monitor essential
 system parameters. This enhancement proposes the addition of well-known monitoring
@@ -47,7 +48,7 @@ endpoints and metrics for each process adhering to the Eclipse Microprofile stan
 This proposal does not talk about health checks. There is a separate specification for
 https://github.com/eclipse/microprofile-health[Health Checks].
 
-=== 1.1 Motivation
+=== Motivation
 
 Reliable service of a platform needs monitoring. There is already JMX as
 standard to expose metrics, but remote-JMX is not easy to deal with and
@@ -57,7 +58,7 @@ To enable monitoring in an easy fashion it is necessary that all Microprofile
 implementations follow a certain standard with respect to (base) API path,
 data types involved, always available metrics and return codes used.
 
-=== 1.2 Difference to health checks
+=== Difference to health checks
 
 Health checks are primarily targeted at a quick yes/no response to the
 question "Is my application still running ok?". Modern systems that
@@ -71,20 +72,20 @@ Metrics can also help those scheduling systems to make decisions when to scale t
 to run on more or less machines depending on the metrical values.
 
 
-== 2. Architecture
+== Architecture
 
 
 This chapter describes the architectural overview of how metrics are setup, stored and exposed for consumption.
 This chapter also lists the various scopes of metrics.
 
-See section <<ch3>> for more information regarding metrics that are required for each vendor.
+See section <<required-metrics>> for more information regarding metrics that are required for each vendor.
 
 See section <<app-metrics-api>> for more information regarding the application metrics programming model.
 
 [[metrics-setup]]
-=== 2.1 Metrics Setup
+=== Metrics Setup
 
-Metrics that are exposed need to be configured in the server.
+Metrics that are exposed need to be configured in the server. On top of the pure metrics, metadata needs to be provided.
 
 The following three sets of sub-resource (scopes) are exposed.
 
@@ -95,17 +96,21 @@ The following three sets of sub-resource (scopes) are exposed.
 NOTE: It is expected that a future version of this specification will also have a sub-resource for integrations
 with other specifications of Microprofile.
 
-There are two different approaches depending on the scope of the data, which are described next.
+==== Scopes
 
-==== 2.1.1 Required Base and Vendor specific metrics
+===== Required Base metrics
 
-Each vendor of a Microprofile-compliant server can implement setting up the metrics in _base_ and _vendor_ scopes in a
-vendor-specific way. The metrics can be hard coded into the server or read from a configuration file or supplied via the Java-API described in <<app-metrics-api>>.
+Each vendor of a Microprofile-compliant server can implement setting up the metrics in the _base_ scope in a
+vendor-specific way.
+The metrics can be hard coded into the server or read from a configuration file or supplied via the Java-API described in <<app-metrics-api>>.
 The Appendix shows a possible data format for such a configuration.
-The configuration and set up of  _base_ and _vendor_ scopes  are an implementation detail and are not expected to be portable across vendors.
+The configuration and set up of the _base_ scope is an implementation detail and is not expected to be portable across vendors.
 
+Section <<required-metrics>> lists the required metrics. This list also includes a few items marked as optional.
+These are listed here as they are dependent on the underlying JVM and not the server and thus fit better in _base_ scope
+than the _vendor_ one.
 
-==== 2.1.2 Application metrics
+===== Application metrics
 
 Application specific metrics can not be backed into the server as they are supposed to be provided by the
 application at runtime. Therefore a Java API is provided. Application specific metrics are supposed to be
@@ -118,9 +123,9 @@ Details of this Java API are described in <<app-metrics-api>>.
 Application specific metrics are exposed under `/metrics/application`.
 
 
-==== 2.1.3 Optional Vendor Metrics
+===== Vendor specific Metrics
 
-It is possible for microprofile server implementors to supply their specific metrics data on top
+It is possible for Microprofile server implementors to supply their specific metrics data on top
 of the basic set of required metrics.
 Vendor specific metrics are exposed under `/metrics/vendor`.
 
@@ -133,7 +138,7 @@ Vendor specific metrics are not supposed to be portable between different implem
 of Microprofile servers, even if they are compliant with the same version of this specification.
 
 
-==== 2.2 Supplying of Tags
+==== Supplying of Tags
 
 Tags (or labels) play an important role in modern microservices and microservice scheduling systems (like e.g. Kubernetes).
 Application code can run on any node and can be re-scheduled to a different node at any time. Each container in such
@@ -158,7 +163,7 @@ export MP_METRICS_TAGS=app=shop,tier=integration
 Global tags will be appended to the per-metric tags.
 
 [[meta-data-def]]
-==== 2.3 Metadata
+==== Metadata
 
 For all exposed metrics, matching metadata is exposed and needs to be provided by the setup. This is true for all scopes.
 
@@ -172,7 +177,7 @@ For all exposed metrics, matching metadata is exposed and needs to be provided b
 * description (optional): A human readable description of the metric
 * displayName (optional): A human readable name of the metric for display purposes if the metric name is not
 human readable. This could e.g. be the case when the metric name is a uuid.
-* tags (optional): A list of `key=value` pairs, which are separated by comma.
+* tags (optional): A list of `key=value` pairs, which are separated by comma. See also <<_supplying_of_tags>>.
 
 Metadata must not change over the lifetime of a process (i.e. it is not allowed
 to return the units as seconds in one retrieval and as hours in a subsequent one).
@@ -185,10 +190,10 @@ whole container image or an application, as all containers spawned from it
 will be "the same" and form part of an app, where it would be confusing in
 an overall view if the same metric has different metadata.
 
-=== 2.4 Metric Registry
+=== Metric Registry
 <TO DO>
 
-=== 2.5 Exposing metrics through External API
+=== Exposing metrics via REST API
 
 Data is exposed via REST over http under the `/metrics` base path in two default data formats for `GET` requests:
 
@@ -211,7 +216,7 @@ Accessing `/metrics` will return all registered metrics.
 Accessing `/metrics/<scope>` will only return metrics registered for the respective scope. Scopes are listed in <<metrics-setup>>.
 
 
-==== 2.5.1 JSON format
+==== JSON format
 
 * Metrics will respond to GET requests and are exposed in a tree like fashion with sub-trees for the sub-resources mentioned in the previous section.
 A sub-tree that does not contain data can be omitted.
@@ -319,7 +324,7 @@ then `OPTIONS /metrics/base` exposes:
 ----
 
 
-==== 2.5.2 Prometheus format
+==== Prometheus format
 
 Data is exposed in text format as described in
 https://prometheus.io/docs/instrumenting/exposition_formats/#text-format-details[Prometheus text format] when
@@ -345,7 +350,7 @@ base:bar_val_bytes{component="backend", app="webshop"} 42000 <3>
 <2> The description goes into the HELP line
 <3> Metric names gets the base unit of the family appended with `_` and defined labels. Values are scaled accordingly
 
-===== 2.5.2.1 Translation rules for metric names
+===== Translation rules for metric names
 
 Prometheus text format does not allow for all characters and adds the base unit of a family to the name.
 
@@ -358,12 +363,12 @@ Prometheus text format does not allow for all characters and adds the base unit 
 * The unit is appended to the name, separated by underscore. See also below.
 
 
-===== 2.5.2.2 Handling of tags
+===== Handling of tags
 
 Metric tags are appended to the metric name in curly braces `{` and `}` and are separated by comma.
 Each tag is a key-value-pair in the format of `<key>="<value>"`.
 
-===== 2.5.2.2 Handling of units
+===== Handling of units
 
 Units are appended as the base unit of the respective family. Metric values are scaled accordingly.
 
@@ -380,7 +385,7 @@ Families and Prometheus base units are:
 | Percent | ratio (normally ratio is A_per_B, but there are exceptions like `disk_usage_ratio`)
 |===
 
-==== 2.6 Security
+==== Security
 
 It must be possible to secure the endpoints via the usual means. The definition of 'usual means' is in
 this version of the specification implementation specific.
@@ -392,8 +397,8 @@ A server SHOULD implement TLS encryption by default.
 It is allowed to ignore security for trusted origins (e.g. localhost)
 
 
-[[ch3]]
-== 3. Required Metrics
+[[required-metrics]]
+== Required Metrics
 
 Base metrics is a list of metrics that all vendors need to implement. Optional base metrics are recommended to be implemented but are not required.
 These metrics are exposed under `/metrics/base`.
@@ -407,7 +412,7 @@ For MBeans attributes that are of type `CompositeData`, the `#field` will return
 data.
 
 
-=== 3.1 General JVM Stats
+=== General JVM Stats
 
 *UsedHeapMemory*
 [cols="1,4"]
@@ -481,7 +486,7 @@ data.
 |Notes| Also from JSR 77
 |===
 
-=== 3.2 Thread JVM Stats
+=== Thread JVM Stats
 
 *ThreadCount*
 [cols="1,4"]
@@ -516,7 +521,7 @@ data.
 |MBean| java.lang:type=Threading/PeakThreadCount
 |===
 
-=== 3.3 Thread Pool Stats
+=== Thread Pool Stats
 
 *(Optional) ActiveThreads*
 [cols="1,4"]
@@ -542,7 +547,7 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 Note: The %s should be substituted with the name of the thread pool. This is a vendor specific attribute/operation that is not defined in java.lang.
 |===
 
-=== 3.4 ClassLoading JVM Stats
+=== ClassLoading JVM Stats
 
 *LoadedClassCount*
 [cols="1,4"]
@@ -577,7 +582,7 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 |MBean|java.lang:type=ClassLoading/UnloadedClassCount
 |===
 
-=== 3.5 Operating System
+=== Operating System
 
 *AvailableProcessors*
 [cols="1,4"]
@@ -616,19 +621,19 @@ Note: This is a vendor specific attribute/operation that is not defined in java.
 
 
 [[app-metrics-api]]
-== 4. Application Metrics Programming Model
+== Application Metrics Programming Model
 
 <paragarph describing what this chapter is about>
 
-=== 4.# Annotations
+=== Annotations
 <TO DO>
 
-=== 4.# Metric Registry
+=== Metric Registry
 <TO DO>
 
-=== 4.# Java API Classes
+=== Java API Classes
 
-==== 4.#.# Metadata
+==== Metadata
 
 [source]
 ----
@@ -688,7 +693,7 @@ public class MetadataEntry {
 }
 ----
 
-==== 4.#.# Metric type
+==== Metric type
 
 [source]
 ----
@@ -717,7 +722,7 @@ public enum MpMType {
 }
 ----
 
-==== 4.#.# Units
+==== Units
 
 [source]
 ----
@@ -773,7 +778,7 @@ public enum MpMUnit {
 }
 ----
 
-==== 4.#.# Application Metrics access
+==== Application Metrics access
 
 [source]
 ----
@@ -823,7 +828,7 @@ public class ApplicationMetrics implements Serializable {
 There exists Jolokia as JMX-HTTP bridge. Using this for application specific metrics requires that those metrics
 are exposed to JMX first, which are many users not familiar with.
 
-### References
+=== References
 
 https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html[http return codes]
 
