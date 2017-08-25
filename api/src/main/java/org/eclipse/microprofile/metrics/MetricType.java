@@ -33,11 +33,15 @@ public enum MetricType {
    * sampling. An example could be CPU load
    */
   GAUGE("gauge", Gauge.class),
-  
+
+  /**
+   * Counter of invocations that produces a rate of invocations
+   */
   METERED("meter", Meter.class),
-  
-  HISTOGRAM("histgram", Histogram.class),
-  
+
+
+  HISTOGRAM("histogram", Histogram.class),
+
   TIMER("timer", Timer.class),
   /**
    * Invalid - just a placeholder
@@ -73,7 +77,7 @@ public enum MetricType {
     }
     throw new IllegalArgumentException(in + " is not a valid MpType");
   }
-  
+
   /**
    * Convert the metric class type into an enum
    * @param in The metric class type
