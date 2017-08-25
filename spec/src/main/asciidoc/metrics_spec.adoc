@@ -34,6 +34,7 @@ endif::[]
 :toc: left
 :toclevels: 4
 :sectnums:
+:icons: font
 
 = Metrics for Eclipse Microprofile
 
@@ -167,14 +168,19 @@ Global tags will be appended to the per-metric tags.
 
 For all exposed metrics, matching metadata is exposed and needs to be provided by the setup. This is true for all scopes.
 
+TIP: While technically it is possible to expose metrics without (some) of the metadata, it helps tooling and also
+operators when correct metadata is provided, as this helps getting a context and an explanation of the metric.
+
+The Metadata:
+
 * unit: a fixed set of string units
 * type:
-** counter: a monotonically increasing or decreasing numeric value (e.g. total number of requests received)
-** gauge: a numeric value that can arbitrarily go up and down (e.g. cpu or disk usage)
-** meter: a metric which measures mean throughput and one-, five-, and fifteen-minute exponentially-weighted moving average throughputs
-** histogram: a metric which calculates the distribution of a value
-** timer: A timer metric which aggregates timing durations and provides duration statistics, plus  throughput statistics via
-* description (optional): A human readable description of the metric
+** counter: a monotonically increasing or decreasing numeric value (e.g. total number of requests received).
+** gauge: a numeric value that can arbitrarily go up and down (e.g. cpu or disk usage).
+** meter: a metric which measures mean throughput and one-, five-, and fifteen-minute exponentially-weighted moving average throughput.
+** histogram: a metric which calculates the distribution of a value.
+** timer: A timer metric which aggregates timing durations and provides duration statistics, plus throughput statistics.
+* description (optional): A human readable description of the metric.
 * displayName (optional): A human readable name of the metric for display purposes if the metric name is not
 human readable. This could e.g. be the case when the metric name is a uuid.
 * tags (optional): A list of `key=value` pairs, which are separated by comma. See also <<_supplying_of_tags>>.
@@ -185,7 +191,7 @@ The reason behind it is that e.g. a monitoring agent on Kubernetes may read the
 metadata once it sees the new container and store it. It may not periodically
 re-query the process for the metadata.
 
-NOTE:: In fact, metadata should not change during the life-time of the
+IMPORTANT: In fact, metadata should not change during the life-time of the
 whole container image or an application, as all containers spawned from it
 will be "the same" and form part of an app, where it would be confusing in
 an overall view if the same metric has different metadata.
@@ -630,7 +636,7 @@ the _application_ scope (see <<_scopes>> for the description of scopes).
 Metrics and their metadata are added to a _Metric Registry_ upon definition and can afterwards have their values set
 and retrieved via the Java-API and also be exposed via the REST-Api (see <<rest-api>>).
 
-NOTE:: Implementors of this specification can use the Java API to also expose metrics for _base_ and _vendor_ scope by
+TIP: Implementors of this specification can use the Java API to also expose metrics for _base_ and _vendor_ scope by
 using the respective Metric Registry.
 
 In order to make setting the values easier, Annotations are made available.
@@ -649,7 +655,7 @@ public int getQueueSize() {
 <1> The metric is of type Gauge and the values are in Megabytes
 <2> No unit is given, to `MetricUnit.NONE` is used, an explicit name is provided
 
-INFO:: The programming API follows Dropwizard Metrics 3.2.3 API, but with local changes.
+NOTE: The programming API follows Dropwizard Metrics 3.2.3 API, but with local changes.
 It is expected that many existing DropWizard Metrics based applications can easily be
 ported over by exchanging the package names.
 
@@ -679,22 +685,27 @@ All Annotations are in the `org.eclipse.microprofile.metrics.annotation` package
 
 The following Annotations exist, see below for common fields:
 
-@Counted::
-    An annotation for marking a method, constructor, or type as a counter.
-@Gauge::
-    An annotation for marking a method of field as a gauge.
-@Metered::
-    An annotation for marking a constructor or method as metered. The meter counts the invocations
-    of the constructor or method.
-@Timed::
-    An annotation for marking a constructor or method of an annotated object as timed.
-    The metric of type Timer records the time it took to invoke the annotated object.
+[cols="1,1,3,2"]
+|===
+|Annotation | Applies to |  Description | Default Unit
 
-@Metric::
-    An annotation requesting that a metric should be injected. This annotation can be used on the fields of type `Meter`, `Timer`, `Counter`, and `Histogram`.
+|@Counted | M, C, T | Denotes a counter | MetricUnit.NONE
+|@Gauge   | M, F | Denotes a gauge.  | _none_ Must be supplied by the user
+|@Metered | M, C, T  | Denotes a meter which counts the invocations of the annotated object. | MetricUnit.NANOSECOND
+|@Metric  | M, F, P | An annotation requesting that a metric should be injected. This annotation can be used on the fields
+    of type `Meter`, `Timer`, `Counter`, and `Histogram`. | MetricUnit.NONE
+|@Timed   | M, C, T | An annotation for marking a constructor or method of an annotated object as timed.
+    The metric of type Timer records the time it took to invoke the annotated object. | MetricUnit.NONE
+|===
+(C=Constructor, F=Field, M=Method, P=Parameter, T=Type)
 
-@RegistryType::
-    Qualifies the type of Metric Registry to inject. Default is _application_ (scope).
+
+[cols="1,3,2"]
+|===
+|Annotation | Description | Default
+
+|@RegistryType| Qualifies the type of Metric Registry to inject.|  _application_ (scope)
+|===
 
 ==== Fields
 
@@ -707,11 +718,11 @@ fully qualified name of the surrounding class, unless `absolute` is true.
 the annotated class. Default value is `false`.
 `String displayName`:: Optional. A human readable display name for metadata.
 `String description`:: Optional. A description of the metric.
-`MetricUnit unit`:: Unit of the metric
+`MetricUnit unit`:: Unit of the metric. For `@Gauge` no default is provided.
 `String[] tags`:: Optional. Array of Strings in the `<key>=<value>` format to supply special tags to a metric.
 
-NOTE:: Implementors are encouraged to issue warnings in the server log if metadata is missing. While this is
-less important for description and displayName, it is very important for Units.
+NOTE: Implementors are encouraged to issue warnings in the server log if metadata is missing. Implementors
+MAY stop the deployment of an application if Metadata is missing.
 
 [[annotated-naming-convention]]
 ==== Annotated Naming Convention
@@ -961,7 +972,9 @@ The following lists the behavior for each annotation target.
 
 ===== FIELD
 
-When a field of type Meter, Timer, Counter or Histogram is annotated, the implementation must provide the registered metric to the application. The implementation must register the metric for the field using the <<annotated-naming-convention>> if it does not already exist, otherwise it will retrieve the metric from the registry and produce it to the application.
+When a field of type Meter, Timer, Counter or Histogram is annotated, the implementation must provide the registered metric to the application.
+The implementation must register the metric for the field using the <<annotated-naming-convention>> if it does not already exist, otherwise it
+will retrieve the metric from the registry and produce it to the application.
 
 .Example of an annotated field
 [source, java]
@@ -1112,11 +1125,16 @@ public enum MetricType {
    * A Gauge has values that 'arbitrarily' go up/down at each
    * sampling. An example could be CPU load
    */
-  GAUGE("gauge")
-  ;
+  GAUGE("gauge"),
+  /**
+   * Counter of invocations that produces a rate of invocations
+   */
   METERED("meter"),
-
-  HISTOGRAM("histgram"),
+  /**
+   * A histogram samples observations like request durations
+   * and usually exposes them in buckets.
+   */
+  HISTOGRAM("histogram"),
 
   TIMER("timer"),
   /**
