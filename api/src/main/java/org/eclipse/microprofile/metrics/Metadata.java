@@ -26,55 +26,35 @@ import java.util.Map.Entry;
  * @author hrupp, Raymond Lam
  */
 public class Metadata {
+    
     /**
      * Name of the metric.
-     * <p>
-     * Exposed over REST
-     * </p>
      */
     private String name;
+    
     /**
      * Display name of the metric. If not set, the name is taken.
-     * <p>
-     * Exposed over REST
-     * </p>
      */
     private String displayName;
-    /**
-     * The mbean info to retrieve the data from. Format is
-     * objectname/attribute[#field], with field being one field in a composite
-     * attribute. E.g. java.lang:type=Memory/HeapMemoryUsage#max
-     */
 
-    private String mbean;
     /**
      * A human readable description.
-     * <p>
-     * Exposed over REST
-     * </p>
      */
     private String description;
+    
     /**
      * Type of the metric.
-     * <p>
-     * Exposed over REST
-     * </p>
      */
     private MetricType type = MetricType.INVALID;
+    
     /**
      * Unit of the metric.
-     * <p>
-     * Exposed over REST
-     * </p>
      */
     private MetricUnit unit = MetricUnit.NONE;
+    
     /**
      * Tags of the metric. Augmented by global tags.
-     * <p>
-     * Exposed over REST
-     * </p>
      */
-
     private HashMap<String, String> tags = new HashMap<String, String>();
 
     /**
@@ -82,8 +62,7 @@ public class Metadata {
      * treatment or if it is a singleton.
      * <p/>
      */
-    private boolean multi = false;
-
+    
     Metadata() {
         String globalTagsFromEnv = System.getenv("MP_METRICS_TAGS");
 
@@ -178,8 +157,6 @@ public class Metadata {
         this.displayName = (String) in.get("displayName");
         this.setType((String) in.get("type"));
         this.setUnit((String) in.get("unit"));
-        this.setMbean((String) in.get("mbean"));
-        this.setMulti(in.get("multi").equals("true"));
         if (in.keySet().contains("tags")) {
             String tagString = (String) in.get("tags");
             String[] tagList = tagString.split(",");
@@ -206,14 +183,6 @@ public class Metadata {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
-    }
-
-    public String getMbean() {
-        return mbean;
-    }
-
-    public void setMbean(String mbean) {
-        this.mbean = mbean;
     }
 
     public String getDescription() {
@@ -254,14 +223,6 @@ public class Metadata {
 
     public void setUnit(MetricUnit unit) {
         this.unit = unit;
-    }
-
-    public boolean isMulti() {
-        return multi;
-    }
-
-    public void setMulti(boolean multi) {
-        this.multi = multi;
     }
 
     public String getTagsAsString() {
@@ -328,7 +289,6 @@ public class Metadata {
     @Override
     public int hashCode() {
         int result = name.hashCode();
-        result = 31 * result + (mbean != null ? mbean.hashCode() : 0);
         result = 31 * result + type.hashCode();
         result = 31 * result + unit.hashCode();
         return result;
@@ -339,7 +299,6 @@ public class Metadata {
         final StringBuilder sb = new StringBuilder("MetadataEntry{");
         sb.append("name='").append(name).append('\'');
         sb.append(", description='").append(description).append('\'');
-        sb.append(", mbean='").append(mbean).append('\'');
         sb.append(", type='").append(type).append('\'');
         sb.append(", unit='").append(unit).append('\'');
         sb.append(", tags='").append(tags).append('\'');

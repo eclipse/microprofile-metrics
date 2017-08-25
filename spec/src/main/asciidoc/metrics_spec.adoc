@@ -1058,50 +1058,48 @@ MetricRegistry vendorRegistry;
 /**
  * Bean holding the metadata of one single metric
  */
-@SuppressWarnings("unused")
 public class Metadata {
 
   /**
    * Name of the metric.
-   * <p>Exposed over REST</p>
    */
   private String name;
+
   /**
    * Display name of the metric. If not set, the name is taken.
-   * <p>Exposed over REST</p>
    */
   private String displayName;
-  /**
-   * The mbean info to retrieve the data from.
-   * Format is objectname/attribute[#field], with field
-   * being one field in a composite attribute.
-   * E.g. java.lang:type=Memory/HeapMemoryUsage#max
-   */
-  @JsonIgnore
-  private String mbean;
+
   /**
    * A human readable description.
-   * <p>Exposed over REST</p>
    */
   private String description;
+
   /**
    * Type of the metric.
-   * <p>Exposed over REST</p>
    */
-  private MpMType type;
+  private MetricType type = MetricType.INVALID;
+
   /**
    * Unit of the metric.
-   * <p>Exposed over REST</p>
    */
-  private MpMUnit unit;
+  private MetricUnit unit = MetricUnit.NONE;
+
   /**
    * Tags of the metric. Augmented by global tags.
-   * <p>Exposed over REST</p>
    */
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  private String tags;
+  private HashMap<String, String> tags = new HashMap<String, String>();
 
-  public Metadata(String name, MpMType type, MpMUnit unit) {
+
+  /**
+  * Constructs a Metadata object
+  *
+  * @param name The name of the metric
+  * @param type The type of the metric
+  * @param unit The units of the metric
+  */
+  public Metadata(String name, MetricType type, MetricUnit unit) {
+    this();
     this.name = name;
     this.type = type;
     this.unit = unit;
