@@ -418,7 +418,7 @@ data.
 *UsedHeapMemory*
 [cols="1,4"]
 |===
-|Name| usedHeapMemory
+|Name| memory.usedHeap
 |DisplayName| Used Heap Memory
 |Type| Gauge
 |Unit| Bytes
@@ -429,7 +429,7 @@ data.
 *CommittedHeapMemory*
 [cols="1,4"]
 |===
-|Name| committedHeapMemory
+|Name| memory.committedHeap
 |DisplayName| Committed Heap Memory
 |Type| Gauge
 |Unit| Bytes
@@ -441,7 +441,7 @@ data.
 *MaxHeapMemory*
 [cols="1,4"]
 |===
-|Name| maxHeapMemory
+|Name| memory.maxHeap
 |DisplayName| Max Heap Memory
 |Type| Gauge
 |Unit| Bytes
@@ -478,7 +478,7 @@ data.
 *JVM Uptime - Up time of the Java Virtual machine*
 [cols="1,4"]
 |===
-|Name| jvmUptime
+|Name| jvm.uptime
 |DisplayName| JVM Uptime
 |Type| Counter
 |Unit| Milliseconds
@@ -492,7 +492,7 @@ data.
 *ThreadCount*
 [cols="1,4"]
 |===
-|Name| threadCount
+|Name| thread.count
 |DisplayName| Thread Count
 |Type| Gauge
 |Unit| None
@@ -503,7 +503,7 @@ data.
 *DaemonThreadCount*
 [cols="1,4"]
 |===
-|Name| daemonThreadCount
+|Name| thread.daemon.count
 |DisplayName| Daemon Thread Count
 |Type| Gauge
 |Unit| None
@@ -514,7 +514,7 @@ data.
 *PeakThreadCount*
 [cols="1,4"]
 |===
-|Name| peakThreadCount
+|Name| thread.max.count
 |DisplayName| Peak Thread Count
 |Type| Counter
 |Unit| None
@@ -553,7 +553,7 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 *LoadedClassCount*
 [cols="1,4"]
 |===
-|Name| currentLoadedClassCount
+|Name| classloader.currentLoadedClass.count
 |DisplayName| Current Loaded Class Count
 |Type| Gauge
 |Unit| None
@@ -564,7 +564,7 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 *TotalLoadedClassLoaded*
 [cols="1,4"]
 |===
-|Name| totalLoadedClassCount
+|Name| classloader:totalLoadedClass.count
 |DisplayName| Total Loaded Class Count
 |Type| Counter
 |Unit| None
@@ -575,7 +575,7 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 *UnloadedClassCount*
 [cols="1,4"]
 |===
-|Name| totalUnloadedClassCount
+|Name| classloader:totalUnloadedClass.count
 |DisplayName| Total Unloaded Class Count
 |Type| Counter
 |Unit| None
@@ -588,7 +588,7 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 *AvailableProcessors*
 [cols="1,4"]
 |===
-|Name| availableProcessors
+|Name| cpu.availableProcessors
 |DisplayName| Available Processors
 |Type| Gauge
 |Unit| None
@@ -599,7 +599,7 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 *SystemLoadAverage*
 [cols="1,4"]
 |===
-|Name| systemLoadAverage
+|Name| cpu.systemLoadAverage
 |DisplayName| System Load Average
 |Type| Gauge
 |Unit| None
@@ -610,7 +610,7 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 *(Optional) ProcessCpuLoad*
 [cols="1,4"]
 |===
-|Name| processCpuLoad
+|Name| cpu.processCpuLoad
 |DisplayName| Process CPU Load
 |Type| Gauge
 |Unit| Percent
