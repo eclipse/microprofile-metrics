@@ -721,6 +721,11 @@ Annotated metrics are registered into the _application_ `MetricRegistry` with th
 [source, java]
 ----
 package com.example;
+
+import javax.inject.Inject;
+import org.eclipse.microprofile.metrics.Counter;
+import org.eclipse.microprofile.metrics.annotation.Metric;
+
 public class Colors {
 
   @Inject
