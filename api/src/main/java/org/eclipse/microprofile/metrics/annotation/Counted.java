@@ -33,8 +33,6 @@ import java.lang.annotation.Target;
 import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InterceptorBinding;
 
-import org.eclipse.microprofile.metrics.MetricUnit;
-
 /**
  * An annotation for marking a method of an annotated object as counted.
  *
@@ -106,6 +104,6 @@ public @interface Counted {
     *
     */
     @Nonbinding
-    MetricUnit unit() default MetricUnit.NONE;
+    String unit() default "none";
 
 }

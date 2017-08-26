@@ -14,12 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.eclipse.microprofile.metrics.impl;
+package org.eclipse.microprofile.metrics;
 
 
 import java.util.EnumSet;
-
-import org.eclipse.microprofile.metrics.MetricUnit;
 
 /**
  * Units for the metrics.
@@ -27,8 +25,10 @@ import org.eclipse.microprofile.metrics.MetricUnit;
  * @author hrupp
  * @author wkeil
  */
-public enum MetricUnitImpl implements MetricUnit {
- 
+public enum DefaultMetricUnit implements MetricUnit {
+    /** Dummy to say that this has no unit */
+  NONE("none", Family.NONE),
+    
   /** A single Bit. Not defined by SI, but by IEC 60027 */
   BIT("bit", Family.BIT),
   /** 1000 {@link #BIT} */
@@ -69,7 +69,7 @@ public enum MetricUnitImpl implements MetricUnit {
   private final String name;
   private final Family family;
 
-  MetricUnitImpl(String name, Family family) {
+  DefaultMetricUnit(String name, Family family) {
     this.name = name;
     this.family = family;
   }
@@ -84,9 +84,9 @@ public enum MetricUnitImpl implements MetricUnit {
     return name;
   }
 
-  public static MetricUnitImpl from(String in) {
-    EnumSet<MetricUnitImpl> enumSet = EnumSet.allOf(MetricUnitImpl.class);
-    for (MetricUnitImpl u : enumSet) {
+  public static DefaultMetricUnit from(String in) {
+    EnumSet<DefaultMetricUnit> enumSet = EnumSet.allOf(DefaultMetricUnit.class);
+    for (DefaultMetricUnit u : enumSet) {
       if (u.name.equals(in)) {
         return u;
       }

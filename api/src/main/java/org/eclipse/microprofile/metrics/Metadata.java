@@ -50,7 +50,7 @@ public class Metadata {
     /**
      * Unit of the metric.
      */
-    private MetricUnit unit = MetricUnit.NONE;
+    private MetricUnit unit = DefaultMetricUnit.NONE;
     
     /**
      * Tags of the metric. Augmented by global tags.
@@ -87,13 +87,13 @@ public class Metadata {
         switch (type) {
         case TIMER:
         case METERED:
-            this.unit = MetricUnit.NANOSECOND;
+            this.unit = DefaultMetricUnit.NANOSECOND;
             break;
         case HISTOGRAM:
         case GAUGE:
         case COUNTER:
         default:
-            this.unit = MetricUnit.NONE;
+            this.unit = DefaultMetricUnit.NONE;
             break;
         }
     }
@@ -218,7 +218,7 @@ public class Metadata {
     }
 
     public void setUnit(String unit) {
-        this.unit = MetricUnit.from(unit);
+        this.unit = DefaultMetricUnit.from(unit);
     }
 
     public void setUnit(MetricUnit unit) {
