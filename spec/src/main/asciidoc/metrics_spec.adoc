@@ -34,6 +34,7 @@ endif::[]
 :toc: left
 :toclevels: 4
 :sectnums:
+:icons: font
 
 = Metrics for Eclipse Microprofile
 
@@ -167,14 +168,19 @@ Global tags will be appended to the per-metric tags.
 
 For all exposed metrics, matching metadata is exposed and needs to be provided by the setup. This is true for all scopes.
 
+TIP: While technically it is possible to expose metrics without (some) of the metadata, it helps tooling and also
+operators when correct metadata is provided, as this helps getting a context and an explanation of the metric.
+
+The Metadata:
+
 * unit: a fixed set of string units
 * type:
-** counter: a monotonically increasing or decreasing numeric value (e.g. total number of requests received)
-** gauge: a numeric value that can arbitrarily go up and down (e.g. cpu or disk usage)
-** meter: a metric which measures mean throughput and one-, five-, and fifteen-minute exponentially-weighted moving average throughputs
-** histogram: a metric which calculates the distribution of a value
-** timer: A timer metric which aggregates timing durations and provides duration statistics, plus  throughput statistics via
-* description (optional): A human readable description of the metric
+** counter: a monotonically increasing or decreasing numeric value (e.g. total number of requests received).
+** gauge: a numeric value that can arbitrarily go up and down (e.g. cpu or disk usage).
+** meter: a metric which measures mean throughput and one-, five-, and fifteen-minute exponentially-weighted moving average throughput.
+** histogram: a metric which calculates the distribution of a value.
+** timer: A timer metric which aggregates timing durations and provides duration statistics, plus throughput statistics.
+* description (optional): A human readable description of the metric.
 * displayName (optional): A human readable name of the metric for display purposes if the metric name is not
 human readable. This could e.g. be the case when the metric name is a uuid.
 * tags (optional): A list of `key=value` pairs, which are separated by comma. See also <<_supplying_of_tags>>.
@@ -185,7 +191,7 @@ The reason behind it is that e.g. a monitoring agent on Kubernetes may read the
 metadata once it sees the new container and store it. It may not periodically
 re-query the process for the metadata.
 
-NOTE:: In fact, metadata should not change during the life-time of the
+IMPORTANT: In fact, metadata should not change during the life-time of the
 whole container image or an application, as all containers spawned from it
 will be "the same" and form part of an app, where it would be confusing in
 an overall view if the same metric has different metadata.
@@ -418,7 +424,7 @@ data.
 *UsedHeapMemory*
 [cols="1,4"]
 |===
-|Name| usedHeapMemory
+|Name| memory.usedHeap
 |DisplayName| Used Heap Memory
 |Type| Gauge
 |Unit| Bytes
@@ -429,7 +435,7 @@ data.
 *CommittedHeapMemory*
 [cols="1,4"]
 |===
-|Name| committedHeapMemory
+|Name| memory.committedHeap
 |DisplayName| Committed Heap Memory
 |Type| Gauge
 |Unit| Bytes
@@ -441,7 +447,7 @@ data.
 *MaxHeapMemory*
 [cols="1,4"]
 |===
-|Name| maxHeapMemory
+|Name| memory.maxHeap
 |DisplayName| Max Heap Memory
 |Type| Gauge
 |Unit| Bytes
@@ -478,7 +484,7 @@ data.
 *JVM Uptime - Up time of the Java Virtual machine*
 [cols="1,4"]
 |===
-|Name| jvmUptime
+|Name| jvm.uptime
 |DisplayName| JVM Uptime
 |Type| Counter
 |Unit| Milliseconds
@@ -492,7 +498,7 @@ data.
 *ThreadCount*
 [cols="1,4"]
 |===
-|Name| threadCount
+|Name| thread.count
 |DisplayName| Thread Count
 |Type| Gauge
 |Unit| None
@@ -503,7 +509,7 @@ data.
 *DaemonThreadCount*
 [cols="1,4"]
 |===
-|Name| daemonThreadCount
+|Name| thread.daemon.count
 |DisplayName| Daemon Thread Count
 |Type| Gauge
 |Unit| None
@@ -514,7 +520,7 @@ data.
 *PeakThreadCount*
 [cols="1,4"]
 |===
-|Name| peakThreadCount
+|Name| thread.max.count
 |DisplayName| Peak Thread Count
 |Type| Counter
 |Unit| None
@@ -553,7 +559,7 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 *LoadedClassCount*
 [cols="1,4"]
 |===
-|Name| currentLoadedClassCount
+|Name| classloader.currentLoadedClass.count
 |DisplayName| Current Loaded Class Count
 |Type| Gauge
 |Unit| None
@@ -564,7 +570,7 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 *TotalLoadedClassLoaded*
 [cols="1,4"]
 |===
-|Name| totalLoadedClassCount
+|Name| classloader:totalLoadedClass.count
 |DisplayName| Total Loaded Class Count
 |Type| Counter
 |Unit| None
@@ -575,7 +581,7 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 *UnloadedClassCount*
 [cols="1,4"]
 |===
-|Name| totalUnloadedClassCount
+|Name| classloader:totalUnloadedClass.count
 |DisplayName| Total Unloaded Class Count
 |Type| Counter
 |Unit| None
@@ -588,7 +594,7 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 *AvailableProcessors*
 [cols="1,4"]
 |===
-|Name| availableProcessors
+|Name| cpu.availableProcessors
 |DisplayName| Available Processors
 |Type| Gauge
 |Unit| None
@@ -599,7 +605,7 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 *SystemLoadAverage*
 [cols="1,4"]
 |===
-|Name| systemLoadAverage
+|Name| cpu.systemLoadAverage
 |DisplayName| System Load Average
 |Type| Gauge
 |Unit| None
@@ -610,7 +616,7 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 *(Optional) ProcessCpuLoad*
 [cols="1,4"]
 |===
-|Name| processCpuLoad
+|Name| cpu.processCpuLoad
 |DisplayName| Process CPU Load
 |Type| Gauge
 |Unit| Percent
@@ -624,13 +630,13 @@ Note: This is a vendor specific attribute/operation that is not defined in java.
 [[app-metrics-api]]
 == Application Metrics Programming Model
 
-Microprofile Health provides a way to register Application-specific metrics to allow applications to expose metrics in
+Microprofile Metrics provides a way to register Application-specific metrics to allow applications to expose metrics in
 the _application_ scope (see <<_scopes>> for the description of scopes).
 
 Metrics and their metadata are added to a _Metric Registry_ upon definition and can afterwards have their values set
 and retrieved via the Java-API and also be exposed via the REST-Api (see <<rest-api>>).
 
-NOTE:: Implementors of this specification can use the Java API to also expose metrics for _base_ and _vendor_ scope by
+TIP: Implementors of this specification can use the Java API to also expose metrics for _base_ and _vendor_ scope by
 using the respective Metric Registry.
 
 In order to make setting the values easier, Annotations are made available.
@@ -649,7 +655,7 @@ public int getQueueSize() {
 <1> The metric is of type Gauge and the values are in Megabytes
 <2> No unit is given, to `MetricUnit.NONE` is used, an explicit name is provided
 
-INFO:: The programming API follows Dropwizard Metrics 3.2.3 API, but with local changes.
+NOTE: The programming API follows Dropwizard Metrics 3.2.3 API, but with local changes.
 It is expected that many existing DropWizard Metrics based applications can easily be
 ported over by exchanging the package names.
 
@@ -658,7 +664,7 @@ It will be possible to use the non-annotations API, but using the annotations is
 === Responsibility of the Microprofile Metrics implementation
 
 * The implementation must scan the application at deploy time for <<api-annotations>> and register the
-Metrics along with their metadata in the MetricsRegistry.
+Metrics along with their metadata in the _application_ MetricsRegistry.
 * The implementation must watch the annotated objects and update its internal data structures when the values of the
 annotated objects change.
 * The implementation must expose the values of the objects registered in the MetricsRegistry via REST-API as described
@@ -679,44 +685,368 @@ All Annotations are in the `org.eclipse.microprofile.metrics.annotation` package
 
 The following Annotations exist, see below for common fields:
 
-@Counted::
-    An annotation for marking a method or field of as a counter.
-@Gauge::
-    An annotation for marking a method of field as a gauge.
-@Metered::
-    An annotation for marking a constructor or method as metered. The meter counts the invocations
-    of the constructor or method.
-@Metric::
+[cols="1,1,3,2"]
+|===
+|Annotation | Applies to |  Description | Default Unit
 
-TODO
+|@Counted | M, C, T | Denotes a counter | MetricUnit.NONE
+|@Gauge   | M, F | Denotes a gauge.  | _none_ Must be supplied by the user
+|@Metered | M, C, T  | Denotes a meter which counts the invocations of the annotated object. | MetricUnit.NANOSECOND
+|@Metric  | M, F, P | An annotation requesting that a metric should be injected. This annotation can be used on the fields
+    of type `Meter`, `Timer`, `Counter`, and `Histogram`. | MetricUnit.NONE
+|@Timed   | M, C, T | An annotation for marking a constructor or method of an annotated object as timed.
+    The metric of type Timer records the time it took to invoke the annotated object. | MetricUnit.NONE
+|===
+(C=Constructor, F=Field, M=Method, P=Parameter, T=Type)
 
 
-@Timed::
-    An annotation for marking a constructor or method of an annotated object as timed.
-    The metric of type Timer records the time it took to invoke the annotated object.
+[cols="1,3,2"]
+|===
+|Annotation | Description | Default
 
-@RegistryType::
-    Qualifies the type of Metric Registry to inject. Default is _application_ (scope).
+|@RegistryType| Qualifies the type of Metric Registry to inject.|  _application_ (scope)
+|===
 
 ==== Fields
 
 All annotations (Except `RegistryType`) have the following fields that correspond to the metadata fields described
 in <<meta-data-def>>.
 
-`String name`::  the name of the metric. If not explicitly given it is determined from the annotated object and the
+`String name`:: Optional. Sets the name of the metric. If not explicitly given it is determined from the annotated object and the
 fully qualified name of the surrounding class, unless `absolute` is true.
-`boolean absolute`:: If `true` use the given name as an absolute name. If `false`, use the given name relative to
-the annotated class
-`String displayName`:: Optionally provide a human readable display name for metadata.
-`String description`:: Optionally provide a description of the metric.
-`MetricUnit unit:: Unit of the metric
-`String[] tags`:: Array of Strings in the `<key>=<value>` format to supply special tags to a metric.
+`boolean absolute`:: If `true` use the given name as an absolute name of the metric. If `false`, use the given name relative to
+the annotated class. Default value is `false`.
+`String displayName`:: Optional. A human readable display name for metadata.
+`String description`:: Optional. A description of the metric.
+`MetricUnit unit`:: Unit of the metric. For `@Gauge` no default is provided.
+`String[] tags`:: Optional. Array of Strings in the `<key>=<value>` format to supply special tags to a metric.
 
-NOTE:: Implementors are encouraged to issue warnings in the server log if metadata is missing. While this is
-less important for description and displayName, it is very important for Units.
+NOTE: Implementors are encouraged to issue warnings in the server log if metadata is missing. Implementors
+MAY stop the deployment of an application if Metadata is missing.
+
+[[annotated-naming-convention]]
+==== Annotated Naming Convention
+Annotated metrics are registered into the _application_ `MetricRegistry` with the name based on the annotation's `name` and `absolute` fields.
+
+.Example of annotated metric names
+[source, java]
+----
+package com.example;
+
+import javax.inject.Inject;
+import org.eclipse.microprofile.metrics.Counter;
+import org.eclipse.microprofile.metrics.annotation.Metric;
+
+public class Colors {
+
+  @Inject
+  @Metric
+  Counter redCount;
+
+  @Inject
+  @Metric(name="blue")
+  Counter blueCount;
+
+  @Inject
+  @Metric(absolute=true)
+  Counter greenCount;
+
+  @Inject
+  @Metric(name="purple", absolute=true)
+  Counter purpleCount;
+}
+----
+The above bean would produce the following entries in the `MetricRegistry`
+----
+com.example.redCount
+com.example.blue
+greenCount
+purple
+----
 
 
+==== @Counted
+An annotation for marking a method, constructor, or type as a counter.
+
+The implementation must support the following annotation targets:
+
+  * `CONSTRUCTOR`
+  * `METHOD`
+  * `TYPE`
+
+In addition to the metadata fields, `@Counted` has the following field:
+
+`monotonic`:: If `false` (default), the counter is decremented when the annotated method returns, counting current invocations of the annotated method.
+If `true`, the counter increases monotonically, counting total invocations of the annotated method.
+
+
+The following lists the behavior for each annotation target.
+
+===== CONSTRUCTOR
+
+When a constructor is annotated, the implementation must register a counter for the constructor using the <<annotated-naming-convention>>. The counter is incremented and/or decremented according to the `monotonic` field when the constructor is invoked.
+
+.Example of an annotated constructor
+[source, java]
+----
+@Counted
+public CounterBean() {
+}
+----
+
+===== METHOD
+
+When a method is annotated, the implementation must register a counter for the method using the <<annotated-naming-convention>>. The counter is incremented and/or decremented according to the `monotonic` field when the method is invoked.
+
+.Example of an annotated method
+[source, java]
+----
+@Counted
+public void run() {
+}
+----
+
+===== TYPE
+When a type/class is annotated, the implementation must register a counter for each of the constructor and methods using the <<annotated-naming-convention>>. The counters are incremented and/or decremented according to the `monotonic` field when the corresponding constructor/method is invoked.
+
+.Example of an annotated type/class
+[source, java]
+----
+@Counted
+public class CounterBean {
+
+  public void countMethod1() {}
+  public void countMethod2() {}
+
+}
+----
+
+==== @Gauge
+An annotation for marking a method of field as a gauge.
+
+The implementation must support the following annotation targets:
+
+  * `FIELD`
+  * `METHOD`
+
+
+The following lists the behavior for each annotation target.
+
+===== FIELD
+
+When a field is annotated, the implementation must register a gauge for the field using the <<annotated-naming-convention>>. The gauge value and type is equal to the annotated field value and type.
+
+.Example of an annotated field
+[source, java]
+----
+@Gauge
+long value;
+----
+
+===== METHOD
+
+When a method is annotated, the implementation must register a gauge for the method using the <<annotated-naming-convention>>. The gauge value and type is equal to the annotated method return value and type.
+
+.Example of an annotated method
+[source, java]
+----
+@Gauge
+public long getValue() {
+  return value;
+}
+----
+
+
+==== @Metered
+An annotation for marking a constructor or method as metered. The meter counts the invocations
+of the constructor or method.
+
+The implementation must support the following annotation targets:
+
+  * `CONSTRUCTOR`
+  * `METHOD`
+  * `TYPE`
+
+The following lists the behavior for each annotation target.
+
+===== CONSTRUCTOR
+
+When a constructor is annotated, the implementation must register a meter for the constructor using the <<annotated-naming-convention>>. The meter is marked each time the constructor is invoked.
+
+.Example of an annotated constructor
+[source, java]
+----
+@Metered
+public MeteredBean() {
+}
+----
+
+===== METHOD
+
+When a method is annotated, the implementation must register a meter for the method using the <<annotated-naming-convention>>. The meter is marked each time the method is invoked.
+
+.Example of an annotated method
+[source, java]
+----
+@Metered
+public void run() {
+}
+----
+
+===== TYPE
+When a type/class is annotated, the implementation must register a meter for each of the constructor and methods using the <<annotated-naming-convention>>. The meters are marked each time the corresponding constructor/method is invoked.
+
+.Example of an annotated type/class
+[source, java]
+----
+@Metered
+public class MeteredBean {
+
+  public void meteredMethod1() {}
+  public void meteredMethod2() {}
+
+}
+----
+
+==== @Timed
+An annotation for marking a constructor or method of an annotated object as timed.
+The metric of type Timer records the time it took to invoke the annotated object.
+
+The implementation must support the following annotation targets:
+
+  * `CONSTRUCTOR`
+  * `METHOD`
+  * `TYPE`
+
+The following lists the behavior for each annotation target.
+
+===== CONSTRUCTOR
+
+When a constructor is annotated, the implementation must register a timer for the constructor using the <<annotated-naming-convention>>. Each time the constructor is invoked, the execution will be timed.
+
+.Example of an annotated constructor
+[source, java]
+----
+@Timed
+public TimedBean() {
+}
+----
+
+===== METHOD
+
+When a method is annotated, the implementation must register a timer for the method using the <<annotated-naming-convention>>. Each time the method is invoked, the execution will be timed.
+
+.Example of an annotated method
+[source, java]
+----
+@Timed
+public void run() {
+}
+----
+
+===== TYPE
+When a type/class is annotated, the implementation must register a timer for each of the constructor and methods using the <<annotated-naming-convention>>. Each time a constructor/method is invoked, the execution will be timed with the corresponding timer.
+
+.Example of an annotated type/class
+[source, java]
+----
+@Timed
+public class TimedBean {
+
+  public void timedMethod1() {}
+  public void timedMethod2() {}
+
+}
+----
+
+==== @Metric
+An annotation requesting that a metric should be injected. This annotation can be used on the fields of type `Meter`, `Timer`, `Counter`, and `Histogram`.
+
+The implementation must support the following annotation targets:
+
+  * `FIELD`
+  * `METHOD`
+  * `PARAMETER`
+
+The following lists the behavior for each annotation target.
+
+===== FIELD
+
+When a field of type Meter, Timer, Counter or Histogram is annotated, the implementation must provide the registered metric to the application.
+The implementation must register the metric for the field using the <<annotated-naming-convention>> if it does not already exist, otherwise it
+will retrieve the metric from the registry and produce it to the application.
+
+.Example of an annotated field
+[source, java]
+----
+@Inject
+@Metric("applicationCount")
+Counter count;
+----
+
+===== METHOD
+
+<TO DO>
+
+===== PARAMETER
+<TO DO>
+
+
+[[metric-registry]]
 === Metric Registry
+
+The `MetricRegistry` is used to maintain a collection of metrics along with their metadata.
+There is one shared singleton of the `MetricRegistry` per scope (_application_, _base_, and _vendor_).
+When metrics are registered using annotations, the metrics must be registered to the _application_ `MetricRegistry`.
+
+When injected, the `@RegistryType` is used as a qualifier to selectively inject either the `APPLICATION`, `BASE`, or `VENDOR` registry.
+If no qualifier is used, the default `MetricRegistry` returned is the `APPLICATION` registry.
+
+==== @RegistryType
+The `@RegistryType` can be used to retrieve the `MetricRegistry` for a specific scope.
+The implementation must produce the corresponding `MetricRegistry` specified by the `RegistryType`.
+
+NOTE:: The implementor can optionally provide a _read_only_ copy of the `MetricRegistry` for _base_ and _vendor_ scopes.
+
+==== Application Metric Registry
+The implementation must produce the _application_ `MetricRegistry` when no `RegistryType` is provided (`@Default`) or when the `RegistryType` is `APPLICATION`.
+
+.Example of the application injecting the application registry
+[source, java]
+----
+@Inject
+MetricRegistry metricRegistry;
+----
+
+.is equivalent to
+[source, java]
+----
+@Inject
+@RegistryType(type=MetricRegistry.Type.APPLICATION)
+MetricRegistry metricRegistry;
+----
+
+==== Base Metric Registry
+The implementation must produce the _base_ `MetricRegistry` when the `RegistryType` is `BASE`. The _base_ `MetricRegistry` must contain the required metrics specified in <<required-metrics>>.
+
+.Example of the application injecting the base registry
+[source, java]
+----
+@Inject
+@RegistryType(type=MetricRegistry.Type.BASE)
+MetricRegistry baseRegistry;
+----
+
+==== Vendor Metric Registry
+The implementation must produce the _vendor_ `MetricRegistry` when the `RegistryType` is `VENDOR`. The _vendor_ `MetricRegistry` must contain any vendor specific metrics.
+
+.Example of the application injecting the vendor registry
+[source, java]
+----
+@Inject
+@RegistryType(type=MetricRegistry.Type.VENDOR)
+MetricRegistry vendorRegistry;
+----
 
 
 === Java API Classes
@@ -728,50 +1058,48 @@ less important for description and displayName, it is very important for Units.
 /**
  * Bean holding the metadata of one single metric
  */
-@SuppressWarnings("unused")
 public class Metadata {
 
   /**
    * Name of the metric.
-   * <p>Exposed over REST</p>
    */
   private String name;
+
   /**
    * Display name of the metric. If not set, the name is taken.
-   * <p>Exposed over REST</p>
    */
   private String displayName;
-  /**
-   * The mbean info to retrieve the data from.
-   * Format is objectname/attribute[#field], with field
-   * being one field in a composite attribute.
-   * E.g. java.lang:type=Memory/HeapMemoryUsage#max
-   */
-  @JsonIgnore
-  private String mbean;
+
   /**
    * A human readable description.
-   * <p>Exposed over REST</p>
    */
   private String description;
+
   /**
    * Type of the metric.
-   * <p>Exposed over REST</p>
    */
-  private MpMType type;
+  private MetricType type = MetricType.INVALID;
+
   /**
    * Unit of the metric.
-   * <p>Exposed over REST</p>
    */
-  private MpMUnit unit;
+  private MetricUnit unit = MetricUnit.NONE;
+
   /**
    * Tags of the metric. Augmented by global tags.
-   * <p>Exposed over REST</p>
    */
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  private String tags;
+  private HashMap<String, String> tags = new HashMap<String, String>();
 
-  public Metadata(String name, MpMType type, MpMUnit unit) {
+
+  /**
+  * Constructs a Metadata object
+  *
+  * @param name The name of the metric
+  * @param type The type of the metric
+  * @param unit The units of the metric
+  */
+  public Metadata(String name, MetricType type, MetricUnit unit) {
+    this();
     this.name = name;
     this.type = type;
     this.unit = unit;
@@ -795,11 +1123,16 @@ public enum MetricType {
    * A Gauge has values that 'arbitrarily' go up/down at each
    * sampling. An example could be CPU load
    */
-  GAUGE("gauge")
-  ;
+  GAUGE("gauge"),
+  /**
+   * Counter of invocations that produces a rate of invocations
+   */
   METERED("meter"),
-
-  HISTOGRAM("histgram"),
+  /**
+   * A histogram samples observations like request durations
+   * and usually exposes them in buckets.
+   */
+  HISTOGRAM("histogram"),
 
   TIMER("timer"),
   /**

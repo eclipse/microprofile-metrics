@@ -18,6 +18,8 @@
  *      Initially authored in dropwizard/metrics SHA:651f47e07dde0021f5d4
  *   2017-08-17 - Raymond Lam / Ouyang Zhou / IBM Corp
  *      Added Metadata fields
+ *   2017-08-24 - Raymond Lam / IBM Corp
+ *      Removed unneeded metadata fields, changed to @InterceptorBinding
  */
 package org.eclipse.microprofile.metrics.annotation;
 
@@ -26,7 +28,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.eclipse.microprofile.metrics.MetricType;
+import javax.enterprise.util.Nonbinding;
+import javax.interceptor.InterceptorBinding;
+
 import org.eclipse.microprofile.metrics.MetricUnit;
 
 /**
@@ -50,6 +54,7 @@ import org.eclipse.microprofile.metrics.MetricUnit;
  *
  * 
  */
+@InterceptorBinding
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
 public @interface Metric {
@@ -57,53 +62,41 @@ public @interface Metric {
     /**
      * @return The metric's name.
      */
+    @Nonbinding
     String name() default "";
 
     /**
      * @return The metric's tags.
      */
+    @Nonbinding
     String[] tags() default {};
 
     /**
      * @return If {@code true}, use the given name as an absolute name. If {@code false},
      * use the given name relative to the annotated class.
      */
+    @Nonbinding
     boolean absolute() default false;
 
-    
     /**
      * 
      * @return display name of the timer from Metadata
      */
+    @Nonbinding
     String displayName() default "";
-    
-    /**
-     * @return mbean of the timer from Metadata
-     */
-    String mbean() default "";
     
     /**
      * 
      * @return description of the timer from Metadata
      */
+    @Nonbinding
     String description() default "";
-    
-    /**
-     * 
-     * @return type of the metrics from Metadata, which is a timer for timed
-     */
-    MetricType type() default MetricType.INVALID;
-    
     
    /**
     * @return unit of the metrics from Metadata
     *
     */
+    @Nonbinding
     MetricUnit unit() default MetricUnit.NONE;
-    
-    /**
-     * 
-     * @return specified in Metadata for whether the metric can have multiple objects and need special treatment
-     */
-    boolean multi() default false;
+
 }
