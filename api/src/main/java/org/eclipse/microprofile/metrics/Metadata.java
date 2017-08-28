@@ -26,43 +26,68 @@ import java.util.Map.Entry;
  * @author hrupp, Raymond Lam
  */
 public class Metadata {
-    
     /**
      * Name of the metric.
+     * <p>
+     * A required field which holds the name of the metric object. Can be retrieved from
+     * other reporters such as REST Handler, HTTP Reporter.
+     * </p>
      */
     private String name;
-    
     /**
      * Display name of the metric. If not set, the name is taken.
+     * <p>
+     * An optional field which holds the display (Friendly) name of the metric object.
+     * By default it is set to the name of the metric object.
+     * </p>
      */
     private String displayName;
+    /**
+     * The mbean info to retrieve the data from. Format is
+     * objectname/attribute[#field], with field being one field in a composite
+     * attribute. E.g. java.lang:type=Memory/HeapMemoryUsage#max
+     */
 
+    private String mbean;
     /**
      * A human readable description.
+     * <p>
+     * An optional field which holds the description of the metric object.
+     * </p>
      */
     private String description;
-    
     /**
      * Type of the metric.
+     * <p>
+     * A required field which holds the type of the metric object.
+     * </p>
      */
     private MetricType type = MetricType.INVALID;
-    
     /**
      * Unit of the metric.
+     * <p>
+     * An optional field which holds the Unit of the metric object.
+     * </p>
      */
     private MetricUnit unit = MetricUnit.NONE;
-    
     /**
      * Tags of the metric. Augmented by global tags.
+     * <p>
+     * An optional field which holds the tags of the metric object which can be
+     * augmented by global tags.
+     * </p>
      */
+
     private HashMap<String, String> tags = new HashMap<String, String>();
 
     /**
+     * <p>
      * Defines if the metric can have multiple objects and needs special
      * treatment or if it is a singleton.
-     * <p/>
+     * </p>
      */
-    
+    private boolean multi = false;
+
     Metadata() {
         String globalTagsFromEnv = System.getenv("MP_METRICS_TAGS");
 
@@ -73,7 +98,7 @@ public class Metadata {
 
     /**
      * Constructs a Metadata object with default Units
-     * 
+     *
      * @param name The name of the metric
      * @param type The type of the metric
      */
@@ -87,7 +112,7 @@ public class Metadata {
         switch (type) {
         case TIMER:
         case METERED:
-            this.unit = MetricUnit.NANOSECOND;
+            this.unit = MetricUnit.SECOND;
             break;
         case HISTOGRAM:
         case GAUGE:
@@ -100,7 +125,7 @@ public class Metadata {
 
     /**
      * Constructs a Metadata object
-     * 
+     *
      * @param name The name of the metric
      * @param type The type of the metric
      * @param unit The units of the metric
@@ -114,7 +139,7 @@ public class Metadata {
 
     /**
      * Constructs a Metadata object
-     * 
+     *
      * @param name The name of the metric
      * @param displayName The display (friendly) name of the metric
      * @param description The description of the metric
@@ -132,7 +157,7 @@ public class Metadata {
 
     /**
      * Constructs a Metadata object
-     * 
+     *
      * @param name The name of the metric
      * @param displayName The display (friendly) name of the metric
      * @param description The description of the metric
@@ -157,6 +182,8 @@ public class Metadata {
         this.displayName = (String) in.get("displayName");
         this.setType((String) in.get("type"));
         this.setUnit((String) in.get("unit"));
+        this.setMbean((String) in.get("mbean"));
+        this.setMulti(in.get("multi").equals("true"));
         if (in.keySet().contains("tags")) {
             String tagString = (String) in.get("tags");
             String[] tagList = tagString.split(",");
@@ -183,6 +210,14 @@ public class Metadata {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public String getMbean() {
+        return mbean;
+    }
+
+    public void setMbean(String mbean) {
+        this.mbean = mbean;
     }
 
     public String getDescription() {
@@ -225,6 +260,14 @@ public class Metadata {
         this.unit = unit;
     }
 
+    public boolean isMulti() {
+        return multi;
+    }
+
+    public void setMulti(boolean multi) {
+        this.multi = multi;
+    }
+
     public String getTagsAsString() {
         StringBuilder result = new StringBuilder();
 
@@ -249,7 +292,7 @@ public class Metadata {
     /**
      * Add one single tag. Format is 'key=value'. If the input is empty or does
      * not contain a '=' sign, the entry is ignored.
-     * 
+     *
      * @param kvString
      *            Input string
      */
@@ -278,9 +321,9 @@ public class Metadata {
     /**
      * public boolean equals(Object o) { //if (this == o) return true; //if (o
      * == null || getClass() != o.getClass()) return false;
-     * 
+     *
      * Metadata that = (Metadata) o;
-     * 
+     *
      * if (!name.equals(that.name)) return false; if (mbean != null ?
      * !mbean.equals(that.mbean) : that.mbean != null) return false; if
      * (!type.equals(that.type)) return false; return unit.equals(that.unit); }
@@ -289,6 +332,7 @@ public class Metadata {
     @Override
     public int hashCode() {
         int result = name.hashCode();
+        result = 31 * result + (mbean != null ? mbean.hashCode() : 0);
         result = 31 * result + type.hashCode();
         result = 31 * result + unit.hashCode();
         return result;
@@ -299,6 +343,7 @@ public class Metadata {
         final StringBuilder sb = new StringBuilder("MetadataEntry{");
         sb.append("name='").append(name).append('\'');
         sb.append(", description='").append(description).append('\'');
+        sb.append(", mbean='").append(mbean).append('\'');
         sb.append(", type='").append(type).append('\'');
         sb.append(", unit='").append(unit).append('\'');
         sb.append(", tags='").append(tags).append('\'');
