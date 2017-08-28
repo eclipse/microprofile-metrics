@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
+ * 
  * Contributors:
  *   2013-04-20 - Coda Hale
  *      Initially authored in dropwizard/metrics SHA:afcf7fd6a12a0f133641
@@ -56,7 +56,7 @@ public @interface Timed {
 
     /**
      * @return The timer's tags.
-     *
+     * 
      * Will be used as metadata tags
      */
     String[] tags() default {};
@@ -66,39 +66,39 @@ public @interface Timed {
      * relative to the annotated class. When annotating a class, this must be {@code false}.
      */
     boolean absolute() default false;
-
+    
     /**
-     *
+     * 
      * @return display name of the timer from Metadata
      */
     String displayName() default "";
-
+    
     /**
      * @return mbean of the timer from Metadata
      */
     String mbean() default "";
-
+    
     /**
-     *
+     * 
      * @return description of the timer from Metadata
      */
     String description() default "";
-
+    
     /**
-     *
+     * 
      * @return type of the metrics from Metadata, which is a timer for timed
      */
     MetricType type() default MetricType.TIMER;
-
-
+    
+    
+   /**
+    * @return unit of the metrics from Metadata
+    *
+    */
+    MetricUnit unit() default MetricUnit.NANOSECOND;
+    
     /**
-     * @return unit of the metrics from Metadata
-     *
-     */
-    MetricUnit unit() default MetricUnit.SECOND;
-
-    /**
-     *
+     * 
      * @return specified in Metadata for whether the metric can have multiple objects and need special treatment
      */
     boolean multi() default false;
