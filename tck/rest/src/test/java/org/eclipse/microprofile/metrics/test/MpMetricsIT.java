@@ -109,7 +109,7 @@ public class MpMetricsIT  {
         .statusCode(200)
         .and().contentType(MpMetricsIT.APPLICATION_JSON)
         .and()
-        .body(containsString("totalStartedThreadCount"));
+        .body(containsString("thread.max.count"));
   }
 
   @Test
@@ -121,24 +121,24 @@ public class MpMetricsIT  {
         .statusCode(200)
         .and().contentType("text/plain")
         .and()
-        .body(containsString("# TYPE base:total_started_thread_count"),
-              containsString("base:total_started_thread_count{tier=\"integration\"}"));
+        .body(containsString("# TYPE base:thread_max_count"),
+              containsString("base:thread_max_count{tier=\"integration\"}"));
   }
 
   @Test
   public void testBaseAttributeJson() {
     given()
         .header(wantJson)
-        .when().get("/metrics/base/totalStartedThreadCount")
+        .when().get("/metrics/base/thread.max.count")
         .then()
         .statusCode(200)
         .and().contentType(MpMetricsIT.APPLICATION_JSON)
         .and()
-        .body(containsString("totalStartedThreadCount"));
+        .body(containsString("thread.max.count"));
   }
 
   @Test
-  public void testBaseSingluarMetricsPresent() {
+  public void testBaseSingularMetricsPresent() {
 
     JsonPath jsonPath =
     given()
@@ -167,13 +167,13 @@ public class MpMetricsIT  {
   public void testBaseAttributePrometheus() {
     given()
         .header("Accept","text/plain")
-        .when().get("/metrics/base/totalStartedThreadCount")
+        .when().get("/metrics/base/thread.max.count")
         .then()
         .statusCode(200)
         .and().contentType("text/plain")
         .and()
-        .body(containsString("# TYPE base:total_started_thread_count"),
-              containsString("base:total_started_thread_count{tier=\"integration\"}"));
+        .body(containsString("# TYPE base:thread_max_count"),
+              containsString("base:thread_max_count{tier=\"integration\"}"));
   }
 
 
