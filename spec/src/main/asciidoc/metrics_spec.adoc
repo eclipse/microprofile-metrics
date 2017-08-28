@@ -180,9 +180,9 @@ The Metadata:
 * type:
 ** counter: an incrementally increasing or decreasing numeric value (e.g. total number of requests received or total number of concurrently active HTTP sessions).
 ** gauge: a numeric metric that is sampled to obtain its value (e.g. cpu temperature or disk usage).
-** meter: a metric which counts occurrences of something, measures mean throughput and one-, five-, and fifteen-minute exponentially-weighted moving average throughput.
+** meter: a metric which tracks mean throughput and one-, five-, and fifteen-minute exponentially-weighted moving average throughput.
 ** histogram: a metric which calculates the distribution of a value.
-** timer: A timer metric which aggregates timing durations and provides duration statistics, plus throughput statistics.
+** timer: a metric which aggregates timing durations and provides duration statistics, plus throughput statistics.
 * description (optional): A human readable description of the metric.
 * displayName (optional): A human readable name of the metric for display purposes if the metric name is not
 human readable. This could e.g. be the case when the metric name is a uuid.
@@ -365,7 +365,7 @@ base:bar_val_bytes{component="backend", app="webshop"} 42000 <3>
 Prometheus text format does not allow for all characters and adds the base unit of a family to the name.
 
 * Dot (`.`), Space ( ), Dash (`-`) are translated to underscore (`_`).
-* Scope always starts the metric name.
+* Scope is always specified at the start of the metric name.
 * Scope and name are separated by colon (`:`).
 * camelCase is translated to camel_case
 * Double underscore is translated to single underscore
@@ -662,7 +662,7 @@ NOTE: The programming API follows Dropwizard Metrics 3.2.3 API, but with local c
 It is expected that many existing DropWizard Metrics based applications can easily be
 ported over by exchanging the package names.
 
-It will be possible to use the non-annotations API, but using the annotations will generally be easier and preferred by developers.
+It will be possible to use the non-annotations API, but using the annotations will generally be easier for developers.
 
 === Responsibility of the Microprofile Metrics implementation
 
@@ -697,8 +697,7 @@ The following Annotations exist, see below for common fields:
 |@Metered | M, C, T  | Denotes a meter, which tracks the frequency of invocations of the annotated object. | MetricUnit.NANOSECOND
 |@Metric  | M, F, P | An annotation requesting that a metric should be injected. This annotation can be used on the fields
     of type `Meter`, `Timer`, `Counter`, and `Histogram`. | MetricUnit.NONE
-|@Timed   | M, C, T | An annotation for marking a constructor or method of an annotated object as timed.
-    The metric of type Timer records the time it took to invoke the annotated object. | MetricUnit.NONE
+|@Timed   | M, C, T | Denotes a timer, which tracks duration of the annotated object. | MetricUnit.NONE
 |===
 (C=Constructor, F=Field, M=Method, P=Parameter, T=Type)
 
