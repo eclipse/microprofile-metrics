@@ -29,14 +29,16 @@ public class Metadata {
     /**
      * Name of the metric.
      * <p>
-     * Exposed over REST
+     * A required field which holds the name of the metric object. Can be retrieved from
+     * other reporters such as REST Handler, HTTP Reporter.
      * </p>
      */
     private String name;
     /**
      * Display name of the metric. If not set, the name is taken.
      * <p>
-     * Exposed over REST
+     * An optional field which holds the display (Friendly) name of the metric object.
+     * By default it is set to the name of the metric object.
      * </p>
      */
     private String displayName;
@@ -50,37 +52,39 @@ public class Metadata {
     /**
      * A human readable description.
      * <p>
-     * Exposed over REST
+     * An optional field which holds the description of the metric object.
      * </p>
      */
     private String description;
     /**
      * Type of the metric.
      * <p>
-     * Exposed over REST
+     * A required field which holds the type of the metric object.
      * </p>
      */
     private MetricType type = MetricType.INVALID;
     /**
      * Unit of the metric.
      * <p>
-     * Exposed over REST
+     * An optional field which holds the Unit of the metric object.
      * </p>
      */
     private MetricUnit unit = MetricUnit.NONE;
     /**
      * Tags of the metric. Augmented by global tags.
      * <p>
-     * Exposed over REST
+     * An optional field which holds the tags of the metric object which can be
+     * augmented by global tags.
      * </p>
      */
 
     private HashMap<String, String> tags = new HashMap<String, String>();
 
     /**
+     * <p>
      * Defines if the metric can have multiple objects and needs special
      * treatment or if it is a singleton.
-     * <p/>
+     * </p>
      */
     private boolean multi = false;
 
@@ -94,7 +98,7 @@ public class Metadata {
 
     /**
      * Constructs a Metadata object with default Units
-     * 
+     *
      * @param name The name of the metric
      * @param type The type of the metric
      */
@@ -108,7 +112,7 @@ public class Metadata {
         switch (type) {
         case TIMER:
         case METERED:
-            this.unit = MetricUnit.NANOSECOND;
+            this.unit = MetricUnit.SECOND;
             break;
         case HISTOGRAM:
         case GAUGE:
@@ -121,7 +125,7 @@ public class Metadata {
 
     /**
      * Constructs a Metadata object
-     * 
+     *
      * @param name The name of the metric
      * @param type The type of the metric
      * @param unit The units of the metric
@@ -135,7 +139,7 @@ public class Metadata {
 
     /**
      * Constructs a Metadata object
-     * 
+     *
      * @param name The name of the metric
      * @param displayName The display (friendly) name of the metric
      * @param description The description of the metric
@@ -153,7 +157,7 @@ public class Metadata {
 
     /**
      * Constructs a Metadata object
-     * 
+     *
      * @param name The name of the metric
      * @param displayName The display (friendly) name of the metric
      * @param description The description of the metric
@@ -288,7 +292,7 @@ public class Metadata {
     /**
      * Add one single tag. Format is 'key=value'. If the input is empty or does
      * not contain a '=' sign, the entry is ignored.
-     * 
+     *
      * @param kvString
      *            Input string
      */
@@ -317,9 +321,9 @@ public class Metadata {
     /**
      * public boolean equals(Object o) { //if (this == o) return true; //if (o
      * == null || getClass() != o.getClass()) return false;
-     * 
+     *
      * Metadata that = (Metadata) o;
-     * 
+     *
      * if (!name.equals(that.name)) return false; if (mbean != null ?
      * !mbean.equals(that.mbean) : that.mbean != null) return false; if
      * (!type.equals(that.type)) return false; return unit.equals(that.unit); }

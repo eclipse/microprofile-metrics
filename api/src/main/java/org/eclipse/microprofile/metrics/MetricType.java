@@ -23,70 +23,70 @@ import java.util.EnumSet;
  * @author hrupp, Raymond Lam, Ouyang Zhou
  */
 public enum MetricType {
-  /**
-   * A Counter monotonically in-/decreases its values.
-   * An example could be the number of Transactions committed.
-    */
-  COUNTER("counter", Counter.class),
-  /**
-   * A Gauge has values that 'arbitrarily' go up/down at each
-   * sampling. An example could be CPU load
-   */
-  GAUGE("gauge", Gauge.class),
-  
-  METERED("meter", Meter.class),
-  
-  HISTOGRAM("histgram", Histogram.class),
-  
-  TIMER("timer", Timer.class),
-  /**
-   * Invalid - just a placeholder
-   */
-  INVALID("invalid", null)
-  ;
+    /**
+     * A Counter monotonically in-/decreases its values.
+     * An example could be the number of Transactions committed.
+     */
+    COUNTER("counter", Counter.class),
+    /**
+     * A Gauge has values that 'arbitrarily' go up/down at each
+     * sampling. An example could be CPU load
+     */
+    GAUGE("gauge", Gauge.class),
+
+    METERED("meter", Meter.class),
+
+    HISTOGRAM("histgram", Histogram.class),
+
+    TIMER("timer", Timer.class),
+    /**
+     * Invalid - just a placeholder
+     */
+    INVALID("invalid", null)
+    ;
 
 
-  private String type;
-  private Class<?> classtype;
+    private String type;
+    private Class<?> classtype;
 
-  MetricType(String type, Class<?> classtype) {
-    this.type = type;
-    this.classtype = classtype;
-  }
-
-  public String toString() {
-    return type;
-  }
-
-  /**
-   * Convert the string representation into an enum
-   * @param in the String representation
-   * @return the matching Enum
-   * @throws IllegalArgumentException if in is not a valid enum value
-   */
-  public static MetricType from(String in) {
-    EnumSet<MetricType> enumSet = EnumSet.allOf(MetricType.class);
-    for (MetricType u : enumSet) {
-      if (u.type.equals(in)) {
-        return u;
-      }
+    MetricType(String type, Class<?> classtype) {
+        this.type = type;
+        this.classtype = classtype;
     }
-    throw new IllegalArgumentException(in + " is not a valid MpType");
-  }
-  
-  /**
-   * Convert the metric class type into an enum
-   * @param in The metric class type
-   * @return the matching Enum
-   * @throws IllegalArgumentException if in is not a valid enum value
-   */
-  public static MetricType from(Class<?> in) {
-    EnumSet<MetricType> enumSet = EnumSet.allOf(MetricType.class);
-    for (MetricType u : enumSet) {
-      if (u.classtype != null && u.classtype.equals(in)) {
-        return u;
-      }
+
+    public String toString() {
+        return type;
     }
-    return MetricType.INVALID;
-  }
+
+    /**
+     * Convert the string representation into an enum
+     * @param in the String representation
+     * @return the matching Enum
+     * @throws IllegalArgumentException if in is not a valid enum value
+     */
+    public static MetricType from(String in) {
+        EnumSet<MetricType> enumSet = EnumSet.allOf(MetricType.class);
+        for (MetricType u : enumSet) {
+            if (u.type.equals(in)) {
+                return u;
+            }
+        }
+        throw new IllegalArgumentException(in + " is not a valid MpType");
+    }
+
+    /**
+     * Convert the metric class type into an enum
+     * @param in The metric class type
+     * @return the matching Enum
+     * @throws IllegalArgumentException if in is not a valid enum value
+     */
+    public static MetricType from(Class<?> in) {
+        EnumSet<MetricType> enumSet = EnumSet.allOf(MetricType.class);
+        for (MetricType u : enumSet) {
+            if (u.classtype != null && u.classtype.equals(in)) {
+                return u;
+            }
+        }
+        return MetricType.INVALID;
+    }
 }
