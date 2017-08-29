@@ -97,6 +97,7 @@ The following three sets of sub-resource (scopes) are exposed.
 NOTE: It is expected that a future version of this specification will also have a sub-resource for integrations
 with other specifications of Microprofile.
 
+[[scopes]]
 ==== Scopes
 
 ===== Required Base metrics
@@ -110,6 +111,8 @@ The configuration and set up of the _base_ scope is an implementation detail and
 Section <<required-metrics>> lists the required metrics. This list also includes a few items marked as optional.
 These are listed here as they are dependent on the underlying JVM and not the server and thus fit better in _base_ scope
 than the _vendor_ one.
+
+Required base metrics are exposed under `/metrics/base`.
 
 ===== Application metrics
 
@@ -138,7 +141,7 @@ Examples for vendor specific data could be metrics like:
 Vendor specific metrics are not supposed to be portable between different implementations
 of Microprofile servers, even if they are compliant with the same version of this specification.
 
-
+[[supplying_of_tags]]
 ==== Supplying of Tags
 
 Tags (or labels) play an important role in modern microservices and microservice scheduling systems (like e.g. Kubernetes).
@@ -146,7 +149,7 @@ Application code can run on any node and can be re-scheduled to a different node
 an environment gets its own ID; when the container is stopped and a new one started for the same image, it will get a
 different id. The classical mapping of host/node and application runtime on it, therefore no longer works.
 
-Tags have taken over the role to for example identify an application (`app=myShop`), the tier inside the application
+Tags have taken over the role to, for example, identify an application (`app=myShop`), the tier inside the application
 (`tier=database` or `tier=app_server`) and also the node/container id. Aggregation of metrics can then work over label
 queries (Give me the API hit count for `app=myShop && tier=app_server`).
 
@@ -161,7 +164,7 @@ Tags can be supplied in two ways:
 export MP_METRICS_TAGS=app=shop,tier=integration
 ----
 
-Global tags will be appended to the per-metric tags.
+Global tags and per-metric tags are included in the output returned from the REST API.
 
 [[meta-data-def]]
 ==== Metadata
@@ -175,15 +178,15 @@ The Metadata:
 
 * unit: a fixed set of string units
 * type:
-** counter: a monotonically increasing or decreasing numeric value (e.g. total number of requests received).
-** gauge: a numeric value that can arbitrarily go up and down (e.g. cpu or disk usage).
-** meter: a metric which measures mean throughput and one-, five-, and fifteen-minute exponentially-weighted moving average throughput.
+** counter: an incrementally increasing or decreasing numeric value (e.g. total number of requests received or total number of concurrently active HTTP sessions).
+** gauge: a numeric metric that is sampled to obtain its value (e.g. cpu temperature or disk usage).
+** meter: a metric which tracks mean throughput and one-, five-, and fifteen-minute exponentially-weighted moving average throughput.
 ** histogram: a metric which calculates the distribution of a value.
-** timer: A timer metric which aggregates timing durations and provides duration statistics, plus throughput statistics.
+** timer: a metric which aggregates timing durations and provides duration statistics, plus throughput statistics.
 * description (optional): A human readable description of the metric.
 * displayName (optional): A human readable name of the metric for display purposes if the metric name is not
 human readable. This could e.g. be the case when the metric name is a uuid.
-* tags (optional): A list of `key=value` pairs, which are separated by comma. See also <<_supplying_of_tags>>.
+* tags (optional): A list of `key=value` pairs, which are separated by comma. See also <<supplying_of_tags>>.
 
 Metadata must not change over the lifetime of a process (i.e. it is not allowed
 to return the units as seconds in one retrieval and as hours in a subsequent one).
@@ -202,21 +205,21 @@ an overall view if the same metric has different metadata.
 [[rest-api]]
 === Exposing metrics via REST API
 
-Data is exposed via REST over http under the `/metrics` base path in two default data formats for `GET` requests:
+Data is exposed via REST over HTTP under the `/metrics` base path in two default data formats for `GET` requests:
 
-* Json format.
+* JSON format.
 * Prometheus text format.
 
 Formats are detailed below.
 
-Data access must honour the http response codes, especially
+Data access must honour the HTTP response codes, especially
 
 * 200 for successful retrieval of an object
 * 204 when retrieving a subtree that would exist, but has no content. E.g. when the application-specific subtree has no application specific metrics defined.
-* 404 if an directly-addressed item does not exist. This may be a non-existing sub-tree or non-existing object
+* 404 if a directly-addressed item does not exist. This may be a non-existing sub-tree or non-existing object
 * 500 to indicate that a request failed due to "bad health". The body SHOULD contain details if possible { "details": <text> }
 
-The Api MUST NOT return a 500 Internal Server Error code to represent a non-existing resource.
+The API MUST NOT return a 500 Internal Server Error code to represent a non-existing resource.
 
 Accessing `/metrics` will return all registered metrics.
 
@@ -225,13 +228,13 @@ Accessing `/metrics/<scope>` will only return metrics registered for the respect
 
 ==== JSON format
 
-* Metrics will respond to GET requests and are exposed in a tree like fashion with sub-trees for the sub-resources mentioned in the previous section.
+* When using JSON format, the REST API will respond to GET requests with data formatted in a tree like fashion with sub-trees for the sub-resources mentioned in the previous section.
 A sub-tree that does not contain data can be omitted.
 * A 'shadow tree' that responds to OPTIONS will provide the metadata.
 
-*REST-Api Objects*
+*REST-API Objects*
 
-Api-objects MAY include one or more metrics as in
+API-objects MAY include one or more metrics as in
 
 [source,json]
 ----
@@ -249,7 +252,7 @@ or
 [source]
 ----
 {
-  "count": 45
+  "hit_count": 45
 }
 ----
 
@@ -311,14 +314,14 @@ If `GET /metrics/base` exposes multiple values like this:
 
 then `OPTIONS /metrics/base` exposes:
 
-.Example of Json output of Metadata
+.Example of JSON output of Metadata
 [source]
 ----
 {
   "fooVal": {
     "unit": "ms",
     "type": "gauge",
-    "description": "The duration of foo after each request",
+    "description": "The average duration of foo requests during last 5 minutes",
     "displayName": "Duration of foo",
     "tags": "app=webshop"
   },
@@ -361,8 +364,8 @@ base:bar_val_bytes{component="backend", app="webshop"} 42000 <3>
 
 Prometheus text format does not allow for all characters and adds the base unit of a family to the name.
 
-* Dot (`.`), Space (` `), Dash (`-`) are translated to underscore (`_`).
-* Scope is always starts the metric name.
+* Dot (`.`), Space ( ), Dash (`-`) are translated to underscore (`_`).
+* Scope is always specified at the start of the metric name.
 * Scope and name are separated by colon (`:`).
 * camelCase is translated to camel_case
 * Double underscore is translated to single underscore
@@ -570,7 +573,7 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 *TotalLoadedClassLoaded*
 [cols="1,4"]
 |===
-|Name| classloader:totalLoadedClass.count
+|Name| classloader.totalLoadedClass.count
 |DisplayName| Total Loaded Class Count
 |Type| Counter
 |Unit| None
@@ -581,7 +584,7 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 *UnloadedClassCount*
 [cols="1,4"]
 |===
-|Name| classloader:totalUnloadedClass.count
+|Name| classloader.totalUnloadedClass.count
 |DisplayName| Total Unloaded Class Count
 |Type| Counter
 |Unit| None
@@ -602,14 +605,14 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 |MBean| java.lang:type=OperatingSystem/AvailableProcessors
 |===
 
-*SystemLoadAverage*
+*(Optional) SystemLoadAverage*
 [cols="1,4"]
 |===
 |Name| cpu.systemLoadAverage
 |DisplayName| System Load Average
 |Type| Gauge
 |Unit| None
-|Description| Displays the system load average for the last minute. The system load average is the sum of the number of runnable entities queued to the available processors and the number of runnable entities running on the available processors averaged over a period of time. The way in which the load average is calculated is operating system specific but is typically a damped time-dependent average. If the load average is not available, a negative value is displayed. This attribute is designed to provide a hint about the system load and may be queried frequently. The load average may be unavailable on some platform where it is expensive to implement this method.
+|Description| Displays the system load average for the last minute. The system load average is the sum of the number of runnable entities queued to the available processors and the number of runnable entities running on the available processors averaged over a period of time. The way in which the load average is calculated is operating system specific but is typically a damped time-dependent average. If the load average is not available, a negative value is displayed. This attribute is designed to provide a hint about the system load and may be queried frequently. The load average may be unavailable on some platforms where it is expensive to implement this method.
 |MBean| java.lang:type=OperatingSystem/SystemLoadAverage
 |===
 
@@ -631,10 +634,10 @@ Note: This is a vendor specific attribute/operation that is not defined in java.
 == Application Metrics Programming Model
 
 Microprofile Metrics provides a way to register Application-specific metrics to allow applications to expose metrics in
-the _application_ scope (see <<_scopes>> for the description of scopes).
+the _application_ scope (see <<scopes>> for the description of scopes).
 
 Metrics and their metadata are added to a _Metric Registry_ upon definition and can afterwards have their values set
-and retrieved via the Java-API and also be exposed via the REST-Api (see <<rest-api>>).
+and retrieved via the Java-API and also be exposed via the REST-API (see <<rest-api>>).
 
 TIP: Implementors of this specification can use the Java API to also expose metrics for _base_ and _vendor_ scope by
 using the respective Metric Registry.
@@ -653,19 +656,19 @@ public int getQueueSize() {
 }
 ----
 <1> The metric is of type Gauge and the values are in Megabytes
-<2> No unit is given, to `MetricUnit.NONE` is used, an explicit name is provided
+<2> No unit is given, so `MetricUnit.NONE` is used, an explicit name is provided
 
 NOTE: The programming API follows Dropwizard Metrics 3.2.3 API, but with local changes.
 It is expected that many existing DropWizard Metrics based applications can easily be
 ported over by exchanging the package names.
 
-It will be possible to use the non-annotations API, but using the annotations is preferred.
+It will be possible to use the non-annotations API, but using the annotations will generally be easier for developers.
 
 === Responsibility of the Microprofile Metrics implementation
 
 * The implementation must scan the application at deploy time for <<api-annotations>> and register the
 Metrics along with their metadata in the _application_ MetricsRegistry.
-* The implementation must watch the annotated objects and update its internal data structures when the values of the
+* The implementation must watch the annotated objects and update internal data structures when the values of the
 annotated objects change.
 * The implementation must expose the values of the objects registered in the MetricsRegistry via REST-API as described
 in <<rest-api>>.
@@ -689,13 +692,12 @@ The following Annotations exist, see below for common fields:
 |===
 |Annotation | Applies to |  Description | Default Unit
 
-|@Counted | M, C, T | Denotes a counter | MetricUnit.NONE
-|@Gauge   | M, F | Denotes a gauge.  | _none_ Must be supplied by the user
-|@Metered | M, C, T  | Denotes a meter which counts the invocations of the annotated object. | MetricUnit.NANOSECOND
+|@Counted | M, C, T | Denotes a counter, which counts the invocations of the annotated object. | MetricUnit.NONE
+|@Gauge   | M, F | Denotes a gauge, which samples the value of the annotated object.  | _none_ Must be supplied by the user
+|@Metered | M, C, T  | Denotes a meter, which tracks the frequency of invocations of the annotated object. | MetricUnit.NANOSECOND
 |@Metric  | M, F, P | An annotation requesting that a metric should be injected. This annotation can be used on the fields
     of type `Meter`, `Timer`, `Counter`, and `Histogram`. | MetricUnit.NONE
-|@Timed   | M, C, T | An annotation for marking a constructor or method of an annotated object as timed.
-    The metric of type Timer records the time it took to invoke the annotated object. | MetricUnit.NONE
+|@Timed   | M, C, T | Denotes a timer, which tracks duration of the annotated object. | MetricUnit.NONE
 |===
 (C=Constructor, F=Field, M=Method, P=Parameter, T=Type)
 
@@ -704,7 +706,7 @@ The following Annotations exist, see below for common fields:
 |===
 |Annotation | Description | Default
 
-|@RegistryType| Qualifies the type of Metric Registry to inject.|  _application_ (scope)
+|@RegistryType| Qualifies the scope of Metric Registry to inject when injecting a MetricRegistry. |  _application_ (scope)
 |===
 
 ==== Fields
@@ -712,10 +714,8 @@ The following Annotations exist, see below for common fields:
 All annotations (Except `RegistryType`) have the following fields that correspond to the metadata fields described
 in <<meta-data-def>>.
 
-`String name`:: Optional. Sets the name of the metric. If not explicitly given it is determined from the annotated object and the
-fully qualified name of the surrounding class, unless `absolute` is true.
-`boolean absolute`:: If `true` use the given name as an absolute name of the metric. If `false`, use the given name relative to
-the annotated class. Default value is `false`.
+`String name`:: Optional. Sets the name of the metric. If not explicitly given the name of the annotated object is used.
+`boolean absolute`:: If `true`, uses the given name as an absolute name of the metric. If `false`, prepends the package name and class name before the given name. Default value is `false`.
 `String displayName`:: Optional. A human readable display name for metadata.
 `String description`:: Optional. A description of the metric.
 `MetricUnit unit`:: Unit of the metric. For `@Gauge` no default is provided.
@@ -758,12 +758,11 @@ public class Colors {
 ----
 The above bean would produce the following entries in the `MetricRegistry`
 ----
-com.example.redCount
-com.example.blue
+com.example.Colors.redCount
+com.example.Colors.blue
 greenCount
 purple
 ----
-
 
 ==== @Counted
 An annotation for marking a method, constructor, or type as a counter.
@@ -807,7 +806,7 @@ public void run() {
 ----
 
 ===== TYPE
-When a type/class is annotated, the implementation must register a counter for each of the constructor and methods using the <<annotated-naming-convention>>. The counters are incremented and/or decremented according to the `monotonic` field when the corresponding constructor/method is invoked.
+When a type/class is annotated, the implementation must register a counter for each of the constructors and methods using the <<annotated-naming-convention>>. The counters are incremented and/or decremented according to the `monotonic` field when the corresponding constructor/method is invoked.
 
 .Example of an annotated type/class
 [source, java]
@@ -822,7 +821,7 @@ public class CounterBean {
 ----
 
 ==== @Gauge
-An annotation for marking a method of field as a gauge.
+An annotation for marking a method or field as a gauge.
 
 The implementation must support the following annotation targets:
 
@@ -859,7 +858,7 @@ public long getValue() {
 
 ==== @Metered
 An annotation for marking a constructor or method as metered. The meter counts the invocations
-of the constructor or method.
+of the constructor or method and tracks how frequently they are called.
 
 The implementation must support the following annotation targets:
 
@@ -894,7 +893,7 @@ public void run() {
 ----
 
 ===== TYPE
-When a type/class is annotated, the implementation must register a meter for each of the constructor and methods using the <<annotated-naming-convention>>. The meters are marked each time the corresponding constructor/method is invoked.
+When a type/class is annotated, the implementation must register a meter for each of the constructors and methods using the <<annotated-naming-convention>>. The meters are marked each time the corresponding constructor/method is invoked.
 
 .Example of an annotated type/class
 [source, java]
@@ -910,7 +909,7 @@ public class MeteredBean {
 
 ==== @Timed
 An annotation for marking a constructor or method of an annotated object as timed.
-The metric of type Timer records the time it took to invoke the annotated object.
+The metric of type Timer tracks how frequently the annotated object is invoked, and tracks how long it took the invocations to complete.
 
 The implementation must support the following annotation targets:
 
@@ -945,7 +944,7 @@ public void run() {
 ----
 
 ===== TYPE
-When a type/class is annotated, the implementation must register a timer for each of the constructor and methods using the <<annotated-naming-convention>>. Each time a constructor/method is invoked, the execution will be timed with the corresponding timer.
+When a type/class is annotated, the implementation must register a timer for each of the constructors and methods using the <<annotated-naming-convention>>. Each time a constructor/method is invoked, the execution will be timed with the corresponding timer.
 
 .Example of an annotated type/class
 [source, java]
@@ -1214,12 +1213,12 @@ public enum MetricUnit {
 
 === Alternatives considered
 
-There exists Jolokia as JMX-HTTP bridge. Using this for application specific metrics requires that those metrics
-are exposed to JMX first, which are many users not familiar with.
+Jolokia JMX-HTTP bridge. Using this for application specific metrics would require those metrics
+to be exposed to JMX first, which many users are not familiar with.
 
 === References
 
-https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html[http return codes]
+https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html[HTTP return codes]
 
 https://github.com/pilhuhn/rhq/blob/78eb557ae8f799b628769d76ccece61b6cb452a4/modules/core/domain/src/main/java/org/rhq/core/domain/measurement/MeasurementUnits.java#L43-79[1, RHQ Measurement Units]
 
