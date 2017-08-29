@@ -416,11 +416,6 @@ These metrics are exposed under `/metrics/base`.
 The following is a list of required and optional base metrics. All metrics have Multi: false unless otherwise stated.
 Visit <<meta-data-def>> for the meaning of each key
 
-Values from the MBean server are encoded with `MBean-Name/attribute[#field]` name to retrieve a single attribute.
-E.g. `GET /metrics/base/java.lang:type=Memory/ObjectPendingFinalizationCount` to only get that count.
-For MBeans attributes that are of type `CompositeData`, the `#field` will return a single item of this composite
-data.
-
 
 === General JVM Stats
 
