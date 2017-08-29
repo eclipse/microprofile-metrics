@@ -33,6 +33,8 @@
 
         <checkstyle.version>2.17</checkstyle.version>
         <checkstyle.methodNameFormat>^_?[a-z][a-zA-Z0-9]*$</checkstyle.methodNameFormat>
+        <cdi-version>1.2</cdi-version>
+        <autorelease>false</autorelease>
     </properties>
 
     <licenses>
@@ -44,6 +46,31 @@
         </license>
     </licenses>
 
+    <scm>
+        <url>https://github.com/eclipse/microprofile-metrics</url>
+        <connection>scm:git:https://github.com/eclipse/microprofile-metrics.git</connection>
+        <developerConnection>scm:git:https://github.com/eclipse/microprofile-metrics.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/eclipse/microprofile-metrics/issues</url>
+    </issueManagement>
+
+    <distributionManagement>
+        <repository>
+            <id>repo.eclipse.org</id>
+            <name>Eclipse MicroProfile Repository - Releases</name>
+            <url>https://repo.eclipse.org/content/repositories/microprofile-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>repo.eclipse.org</id>
+            <name>Eclipse MicroProfile Repository - Snapshots</name>
+            <url>https://repo.eclipse.org/content/repositories/microprofile-snapshots/</url>
+            <uniqueVersion>true</uniqueVersion>  <!-- for keeping multipe snapshot versions - maybe for staging a final version besides nightly versions -->
+        </snapshotRepository>
+    </distributionManagement>
 
     <modules>
         <module>api</module>
@@ -56,7 +83,7 @@
             <dependency>
                 <groupId>javax.enterprise</groupId>
                 <artifactId>cdi-api</artifactId>
-                <version>1.2</version>
+                <version>${cdi-version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.arquillian</groupId>
@@ -202,4 +229,40 @@
 
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.3</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <serverId>ossrh</serverId>
+                            <autoReleaseAfterClose>${autorelease}</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>
