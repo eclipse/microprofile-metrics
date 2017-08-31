@@ -27,33 +27,52 @@ import java.util.Map.Entry;
  */
 public class Metadata {
     
-    /**
+     /**
      * Name of the metric.
+     * <p>
+     * A required field which holds the name of the metric object. Can be retrieved from
+     * other reporters such as REST Handler, HTTP Reporter.
+     * </p>
      */
     private String name;
-    
     /**
      * Display name of the metric. If not set, the name is taken.
+     * <p>
+     * An optional field which holds the display (Friendly) name of the metric object.
+     * By default it is set to the name of the metric object.
+     * </p>
      */
     private String displayName;
 
     /**
      * A human readable description.
+     * <p>
+     * An optional field which holds the description of the metric object.
+     * </p>
      */
     private String description;
     
     /**
      * Type of the metric.
+     * <p>
+     * A required field which holds the type of the metric object.
+     * </p>
      */
     private MetricType type = MetricType.INVALID;
-    
     /**
      * Unit of the metric.
+     * <p>
+     * An optional field which holds the Unit of the metric object.
+     * </p>
      */
     private MetricUnit unit = MetricUnit.NONE;
     
     /**
      * Tags of the metric. Augmented by global tags.
+     * <p>
+     * An optional field which holds the tags of the metric object which can be
+     * augmented by global tags.
+     * </p>
      */
     private HashMap<String, String> tags = new HashMap<String, String>();
 
