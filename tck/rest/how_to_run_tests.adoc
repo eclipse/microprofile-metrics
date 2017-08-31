@@ -1,23 +1,5 @@
 = How to run the tests
 
-== Server under test
-Start your Eclipse Microprofile Server with Metrics enabled
+== Tests 
+TCK is currently under development
 
-
-== Tests
-
-If the server is responding on localhost port 8080 you can just run the tests
-via
-
-[source, bash]
-----
-$ mvn install
-----
-
-If the server is responding on a different url/port, you can explicitly pass in the url like this:
-
-
-[source, bash]
-----
-$ mvn install -Dtest.url=http://myServer:myPort
-----
