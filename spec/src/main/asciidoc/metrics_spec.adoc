@@ -681,6 +681,17 @@ All Java-Classes are in the top-level package `org.eclipse.microprofile.metrics`
 
 All Annotations are in the `org.eclipse.microprofile.metrics.annotation` package
 
+[NOTE]
+====
+These annotations are interceptor bindings as defined by the Java Interceptors specification.
+
+CDI leverages on the Java Interceptors specification to provide the ability to associate interceptors to beans via typesafe interceptor bindings, as a mean to separate cross-cutting concerns, like Metrics annotations instrumentation, from the application business logic.
+
+Both the Java Interceptors and CDI specifications set restrictions about the type of bean to which an interceptor can be bound.
+
+That implies only _managed beans_ whose bean types are _proxyable_ can be instrumented using the Metrics annotations.
+====
+
 The following Annotations exist, see below for common fields:
 
 [cols="1,1,3,2"]
