@@ -200,15 +200,18 @@ will be "the same" and form part of an app, where it would be confusing in
 an overall view if the same metric has different metadata.
 
 === Metric Registry
-<TO DO>
+The `MetricRegistry` stores the metrics and metadata information.
+There is one `MetricRegistry` instance for each of the scopes listed in <<scopes>>.
+
+Metrics can be added to or retrieved from the registry either using the <<annotations, Metrics Annotations>> or using the `MetricRegistry` object directly.
 
 [[rest-api]]
 === Exposing metrics via REST API
 
-Data is exposed via REST over HTTP under the `/metrics` base path in two default data formats for `GET` requests:
+Data is exposed via REST over HTTP under the `/metrics` base path in two different data formats for `GET` requests:
 
-* JSON format.
-* Prometheus text format.
+* JSON format - used when the HTTP Accept header matches `application/json`
+* Prometheus text format - default response format when the HTTP Accept header does not match `application/json`
 
 Formats are detailed below.
 
@@ -225,25 +228,27 @@ Accessing `/metrics` will return all registered metrics.
 
 Accessing `/metrics/<scope>` will only return metrics registered for the respective scope. Scopes are listed in <<metrics-setup>>.
 
+== REST endpoints
 
-==== JSON format
+
+=== JSON format
 
 * When using JSON format, the REST API will respond to GET requests with data formatted in a tree like fashion with sub-trees for the sub-resources mentioned in the previous section.
-A sub-tree that does not contain data can be omitted.
+A sub-tree that does not contain data must be omitted.
 * A 'shadow tree' that responds to OPTIONS will provide the metadata.
 
 *REST-API Objects*
 
 API-objects MAY include one or more metrics as in
 
-[source,json]
+[source]
 ----
 {
-  "thread-count" : 33,
-  "peak-thread-count" : 47,
-  "total-started-thread-count" : 49,
-  "current-thread-cpu-time" : 66855000,
-  "current-thread-user-time" : 64003000
+  "thread.count" : 33,
+  "thread.max.count" : 47,
+  "memory.maxHeap" : 3817863211,
+  "memory.usedHeap" : 16859081,
+  "memory.committedHeap" : 64703546
 }
 ----
 
@@ -252,24 +257,175 @@ or
 [source]
 ----
 {
-  "hit_count": 45
+  "hitCount": 45
 }
 ----
 
 In case `/metrics` is requested, then the data for the scopes are wrapped in the scope name:
 
-[source,javascript]
+[source]
 ----
 {
-  "base": {
-     "thread-count" : 33,
-     "peak-thread-count" : 47,
+  "application": {
+    "hitCount": 45
   },
-  "vendor": [...]
+  "base": {
+     "thread.count" : 33,
+     "thread.max.count" : 47
+  },
+  "vendor": {...}
 }
 ----
 
-*Metadata*
+==== Gauge JSON Format
+
+The value of the gauge must be equivalent to a call to the instance Gauge's `getValue()`.
+
+.Example Gauge JSON GET Response
+[source, json]
+----
+{
+  "responsePercentage": 48.45632
+}
+----
+
+==== Counter JSON Format
+
+The value of the counter must be equivalent to a call to the instance Counter's  `getCount()`.
+
+.Example Counter JSON GET Response
+[source, json]
+----
+{
+  "hitCount": 45
+}
+----
+
+==== Meter JSON Format
+
+`Meter` is a complex metric type comprised of multiple key/values. The format is specified by the table below.
+
+.JSON mapping for a Meter metric
+[cols="1,4"]
+|===
+| JSON Key | Value (Equivalent Meter method)
+
+| `count` | `getCount()`
+| `meanRate` | `getMeanRate()`
+| `oneMinRate` | `getOneMinuteRate()`
+| `fiveMinRate` | `getFiveMinuteRate()`
+| `fifteenMinRate` | `getFifteenMinuteRate()`
+|===
+
+.Example Meter JSON GET Response
+[source, json]
+----
+{
+  "requests": {
+    "count": 29382,
+    "meanRate": 12.223,
+    "oneMinRate": 12.563,
+    "fiveMinRate": 12.364,
+    "fifteenMinRate": 12.126,
+  }
+}
+----
+
+
+==== Histogram JSON Format
+
+`Histogram` is a complex metric type comprised of multiple key/values. The format is specified by the table below.
+
+.JSON mapping for a Histogram metric
+[cols="1,4"]
+|===
+| JSON Key | Value (Equivalent Histogram method)
+
+| `count` | `getCount()`
+| `min` | `getSnapshot().getMin()`
+| `max` | `getSnapshot().getMax()`
+| `mean` | `getSnapshot().getMean()`
+| `stddev` | `getSnapshot().getStdDev()`
+| `p50` | `getSnapshot().getMedian()`
+| `p75` | `getSnapshot().get75thPercentile()`
+| `p95` | `getSnapshot().get95thPercentile()`
+| `p98` | `getSnapshot().get98thPercentile()`
+| `p99` | `getSnapshot().get99thPercentile()`
+| `p999` | `getSnapshot().get999thPercentile()`
+|===
+
+.Example Histogram JSON GET Response
+[source, json]
+----
+{
+  "file_sizes": {
+    "count":2,
+    "min":-1624,
+    "max":26,
+    "mean":-799.0,
+    "stddev":825.0,
+    "p50":26.0,
+    "p75":26.0,
+    "p95":26.0,
+    "p98":26.0,
+    "p99":26.0,
+    "p999":26.0
+  }
+}
+----
+
+
+==== Timer JSON Format
+
+`Timer` is a complex metric type comprised of multiple key/values. The format is specified by the table below.
+
+.JSON mapping for a Timer metric
+[cols="1,4"]
+|===
+| JSON Key | Value (Equivalent Timer method)
+
+| `count` | `getCount()`
+| `meanRate` | `getMeanRate()`
+| `oneMinRate` | `getOneMinuteRate()`
+| `fiveMinRate` | `getFiveMinuteRate()`
+| `fifteenMinRate` | `getFifteenMinuteRate()`
+| `min` | `getSnapshot().getMin()`
+| `max` | `getSnapshot().getMax()`
+| `mean` | `getSnapshot().getMean()`
+| `stddev` | `getSnapshot().getStdDev()`
+| `p50` | `getSnapshot().getMedian()`
+| `p75` | `getSnapshot().get75thPercentile()`
+| `p95` | `getSnapshot().get95thPercentile()`
+| `p98` | `getSnapshot().get98thPercentile()`
+| `p99` | `getSnapshot().get99thPercentile()`
+| `p999` | `getSnapshot().get999thPercentile()`
+|===
+
+.Example Timer JSON GET Response
+[source, json]
+----
+{
+  "responseTime": {
+    "count": 29382,
+    "meanRate":12.185627192860734,
+    "oneMinRate": 12.563,
+    "fiveMinRate": 12.364,
+    "fifteenMinRate": 12.126,
+    "min":169916,
+    "max":5608694,
+    "mean":415041.00024926325,
+    "stddev":652907.9633011606,
+    "p50":293324.0,
+    "p75":344914.0,
+    "p95":543647.0,
+    "p98":2706543.0,
+    "p99":5608694.0,
+    "p999":5608694.0
+  }
+}
+----
+
+==== Metadata
 
 
 Metadata is exposed in a tree-like fashion with sub-trees for the sub-resources mentioned previously.
@@ -334,16 +490,15 @@ then `OPTIONS /metrics/base` exposes:
 ----
 
 
-==== Prometheus format
+=== Prometheus format
 
-Data is exposed in text format as described in
-https://prometheus.io/docs/instrumenting/exposition_formats/#text-format-details[Prometheus text format] when
-the GET request asks for `text/plain` encoding.
+Data is exposed in the exposition format version 0.0.4 text format as described in
+https://prometheus.io/docs/instrumenting/exposition_formats/#text-format-details[Prometheus text format].
 
-The metadata will be included inline in the Prometheus text format, specified by it.
+The metadata will be included inline in the Prometheus text format, specified by it. Unlike the JSON format, the text format does not support OPTIONS requests.
 
 TIP: Users that want to write tools to transform the metadata can still request the metadata via OPTIONS
-request and json media type.
+request and `application/json` media type.
 
 The above json example would look like this in Prometheus format
 
@@ -358,9 +513,9 @@ base:bar_val_bytes{component="backend", app="webshop"} 42000 <3>
 ----
 <1> Metric names are turned from camel case into snake_case.
 <2> The description goes into the HELP line
-<3> Metric names gets the base unit of the family appended with `_` and defined labels. Values are scaled accordingly
+<3> Metric names gets the base unit of the family appended with `_` and defined labels. Values are scaled accordingly. See <<prometheus_units>>
 
-===== Translation rules for metric names
+==== Translation rules for metric names
 
 Prometheus text format does not allow for all characters and adds the base unit of a family to the name.
 
@@ -370,17 +525,25 @@ Prometheus text format does not allow for all characters and adds the base unit 
 * camelCase is translated to camel_case
 * Double underscore is translated to single underscore
 * Colon-underscore (`:_`) is translated to single colon
-* The unit is appended to the name, separated by underscore. See also below.
+* The unit is appended to the name, separated by underscore. See <<prometheus_units>>
 
 
-===== Handling of tags
+==== Handling of tags
 
 Metric tags are appended to the metric name in curly braces `{` and `}` and are separated by comma.
 Each tag is a key-value-pair in the format of `<key>="<value>"`.
 
-===== Handling of units
+[[prometheus_units]]
+==== Handling of units
 
-Units are appended as the base unit of the respective family. Metric values are scaled accordingly.
+*Gauges and Histograms*
+
+The metric name and values for `Gauge` and `Histogram` are set according to the `unit` value in the Metadata.
+
+- If the Metadata is empty, `NONE`, or null. The metric name is used as is without appending the unit name and no scaling is applied.
+- If the metric's metadata contains a known unit defined in <<metric_units>>, the Prometheus value should be scaled to the _base unit_ of the respective family. The name of the base unit is appended to the metric name delimited by underscores (`_`).
+- If the `unit` is specified and is not defined in <<metric_units>>, the value is not scaled but the `unit` is still appended to the metric name delimited by underscores (`_`).
+
 
 Unit families and their base units are described under https://prometheus.io/docs/practices/naming/#base-units[Prometheus metric names, Base units].
 
@@ -395,12 +558,197 @@ Families and Prometheus base units are:
 | Percent | ratio (normally ratio is A_per_B, but there are exceptions like `disk_usage_ratio`)
 |===
 
-==== Security
+*Counters*
+
+`Counter` metrics are considered dimensionless. The implementation must not append the unit name to the metric name and must not scale the value.
+
+
+*Meters and Timers*
+
+`Meter` and `Timer` have fixed units as described below regardless of the `unit` value in the Metadata.
+
+==== Gauge Prometheus Text Format
+
+The value of the gauge must be the value of `getValue()` with appropriate naming/scaling based on  <<prometheus_units>>
+
+.Example Prometheus text format for a Gauge in dollars.
+[source, ruby]
+----
+# TYPE application:cost_dollars gauge
+# HELP application:cost_dollars The running cost of the server in dollars.
+application:cost_dollars 80
+----
+
+==== Counter Prometheus Text Format
+
+The value of the counter must be the value of `getCount()`.
+
+*Note:* Implementors must not convert the unit of Counters or append the unit suffix to the metric.
+
+.Example Prometheus text format for a Counter.
+[source, ruby]
+----
+# TYPE application:visitors counter
+# HELP application:visitors The number of unique visitors
+application:visitors 80
+----
+
+==== Meter Prometheus Text Format
+
+`Meter` is a complex metric type comprised of multiple key/values. Each key will require a suffix to be appended to the metric name. The format is specified by the table below.
+
+The `# HELP` description line is only required for the `count` value as shown below.
+
+.Prometheus text mapping for a Meter metric
+[cols="2,1,2,1"]
+|===
+| Suffix{label}                   | TYPE    | Value (Meter method)                | Units
+
+| `count`                         | Counter | `getCount()`                        | N/A
+| `rate_per_second`               | Gauge   | `getMeanRate()`                     | PER_SECOND
+| `one_min_rate_per_second`       | Gauge   | `getOneMinuteRate()`                | PER_SECOND
+| `five_min_rate_per_second`      | Gauge   | `getFiveMinuteRate()`               | PER_SECOND
+| `fifteen_min_rate_per_second`   | Gauge   | `getFifteenMinuteRate()`            | PER_SECOND
+|===
+
+.Example Prometheus text format for a Meter
+[source, ruby]
+----
+# TYPE application:requests_count counter
+# HELP application:requests_count Tracks the number of requests to the server
+application:requests_count 29382
+# TYPE application:requests_rate_per_second gauge
+application:requests_rate_per_second 12.223
+# TYPE application:requests_one_min_rate_per_second gauge
+application:requests_one_min_rate_per_second 12.563
+# TYPE application:requests_five_min_rate_per_second gauge
+application:requests_five_min_rate_per_second 12.364
+# TYPE application:requests_fifteen_min_rate_per_second gauge
+application:requests_fifteen_min_rate_per_second 12.126
+----
+
+
+==== Histogram Prometheus Text Format
+
+`Histogram` is a complex metric type comprised of multiple key/values. Each key will require a suffix to be appended to the metric name with appropriate naming/scaling based on <<prometheus_units>>.  The format is specified by the table below.
+
+The `# HELP` description line is only required for the `count` value as shown below.
+
+.Prometheus text mapping for a Histogram metric
+[cols="2,1,2,1"]
+|===
+| Suffix{label}                   | TYPE    | Value (Histogram method)            | Units
+
+| `count`                         | Counter | `getCount()`                        | N/A
+| `min_<units>`                   | Gauge   | `getSnapshot().getMin()`            | <units>^1^
+| `max_<units>`                   | Gauge   | `getSnapshot().getMax()`            | <units>^1^
+| `mean_<units>`                  | Gauge   | `getSnapshot().getMean()`           | <units>^1^
+| `stddev_<units>`                | Gauge   | `getSnapshot().getStdDev()`         | <units>^1^
+| `<units>{quantile="0.5"}`^2^    | Summary | `getSnapshot().getMedian()`         | <units>^1^
+| `<units>{quantile="0.75"}`^2^   | Summary | `getSnapshot().get75thPercentile()` | <units>^1^
+| `<units>{quantile="0.95"}`^2^   | Summary | `getSnapshot().get95thPercentile()` | <units>^1^
+| `<units>{quantile="0.98"}`^2^   | Summary | `getSnapshot().get98thPercentile()` | <units>^1^
+| `<units>{quantile="0.99"}`^2^   | Summary | `getSnapshot().get99thPercentile()` | <units>^1^
+| `<units>{quantile="0.999"}`^2^  | Summary | `getSnapshot().get999thPercentile()`| <units>^1^
+|===
+
+^1^ The implementation is expected to convert the result returned by the `Histogram` into the base unit (if known). The `<unit>` represents the base metric unit and is named according to  <<prometheus_units>>.
+
+^2^ The `summary` type is a complex metric type for Prometheus which consists of multiple quantile values.
+
+.Example Prometheus text format for a Histogram with unit bytes.
+[source, ruby]
+----
+# TYPE application:file_sizes_count counter
+# HELP application:file_sizes_count Users file size
+application:file_sizes_count 2037
+# TYPE application:file_sizes_mean_bytes gauge
+application:file_sizes_mean_bytes 4738.231
+# TYPE application:file_sizes_max_bytes gauge
+application:file_sizes_max_bytes 31716
+# TYPE application:file_sizes_min_bytes gauge
+application:file_sizes_min_bytes 180
+# TYPE application:file_sizes_stddev_bytes gauge
+application:file_sizes_stddev_bytes 1054.7343037063602
+# TYPE application:file_sizes_bytes summary
+application:file_sizes_bytes{quantile="0.5"} 4201
+application:file_sizes_bytes{quantile="0.75"} 6175
+application:file_sizes_bytes{quantile="0.95"} 13560
+application:file_sizes_bytes{quantile="0.98"} 29643
+application:file_sizes_bytes{quantile="0.99"} 31716
+application:file_sizes_bytes{quantile="0.999"} 31716
+----
+
+
+==== Timer Prometheus Text Format
+
+`Timer` is a complex metric type comprised of multiple key/values. Each key will require a suffix to be appended to the metric name. The format is specified by the table below.
+
+The `# HELP` description line is only required for the `count` value as shown below.
+
+.Prometheus text mapping for a Timer metric
+[cols="2,1,2,1"]
+|===
+| Suffix{label}                   | TYPE    | Value (Timer method)                | Units
+
+| `count`                         | Counter | `getCount()`                        | N/A
+| `rate_per_second`               | Gauge   | `getMeanRate()`                     | PER_SECOND
+| `one_min_rate_per_second`       | Gauge   | `getOneMinuteRate()`                | PER_SECOND
+| `five_min_rate_per_second`      | Gauge   | `getFiveMinuteRate()`               | PER_SECOND
+| `fifteen_min_rate_per_second`   | Gauge   | `getFifteenMinuteRate()`            | PER_SECOND
+| `min_seconds`                   | Gauge   | `getSnapshot().getMin()`            | SECONDS^1^
+| `max_seconds`                   | Gauge   | `getSnapshot().getMax()`            | SECONDS^1^
+| `mean_seconds`                  | Gauge   | `getSnapshot().getMean()`           | SECONDS^1^
+| `stddev_seconds`                | Gauge   | `getSnapshot().getStdDev()`         | SECONDS^1^
+| `seconds{quantile="0.5"}`^2^    | Summary | `getSnapshot().getMedian()`         | SECONDS^1^
+| `seconds{quantile="0.75"}`^2^   | Summary | `getSnapshot().get75thPercentile()` | SECONDS^1^
+| `seconds{quantile="0.95"}`^2^   | Summary | `getSnapshot().get95thPercentile()` | SECONDS^1^
+| `seconds{quantile="0.98"}`^2^   | Summary | `getSnapshot().get98thPercentile()` | SECONDS^1^
+| `seconds{quantile="0.99"}`^2^   | Summary | `getSnapshot().get99thPercentile()` | SECONDS^1^
+| `seconds{quantile="0.999"}`^2^  | Summary | `getSnapshot().get999thPercentile()`| SECONDS^1^
+|===
+
+^1^ The implementation is expected to convert the result returned by the `Timer` into seconds
+
+^2^ The `summary` type is a complex metric type for Prometheus which consists of multiple quantile values.
+
+.Example Prometheus text format for a Timer
+[source, ruby]
+----
+# TYPE application:response_time_count counter
+# HELP application:response_time_count Server response time for /index.html
+application:response_time_count 80
+# TYPE application:response_time_rate_per_second gauge
+application:response_time_rate_per_second  0.004292520715985437
+# TYPE application:response_time_one_min_rate_per_second gauge
+application:response_time_one_min_rate_per_second  2.794076465421066E-14
+# TYPE application:response_time_five_min_rate_per_second  gauge
+application:response_time_five_min_rate_per_second  4.800392614619373E-4
+# TYPE application:response_time_fifteen_min_rate_per_second  gauge
+application:response_time_fifteen_min_rate_per_second  0.01063191047532505
+# TYPE application:response_time_mean_seconds gauge
+application:response_time_mean_seconds 0.000415041
+# TYPE application:response_time_max_seconds gauge
+application:response_time_max_seconds 0.0005608694
+# TYPE application:response_time_min_seconds gauge
+application:response_time_min_seconds 0.000169916
+# TYPE application:response_time_stddev_seconds gauge
+application:response_time_stddev_seconds 0.000652907
+# TYPE application:response_time_seconds summary
+application:response_time_seconds{quantile="0.5"} 0.0002933240
+application:response_time_seconds{quantile="0.75"} 0.000344914
+application:response_time_seconds{quantile="0.95"} 0.000543647
+application:response_time_seconds{quantile="0.98"} 0.002706543
+application:response_time_seconds{quantile="0.99"} 0.005608694
+application:response_time_seconds{quantile="0.999"} 0.005608694
+----
+
+=== Security
 
 It must be possible to secure the endpoints via the usual means. The definition of 'usual means' is in
 this version of the specification implementation specific.
 
-In case of a secured endpoint, accessing `/metrics` without valid credentials must return a `401 Unauthorised` header.
+In case of a secured endpoint, accessing `/metrics` without valid credentials must return a `401 Unauthorized` header.
 
 A server SHOULD implement TLS encryption by default.
 
@@ -743,7 +1091,7 @@ import javax.inject.Inject;
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 
-public class Colors {
+public class Colours {
 
   @Inject
   @Metric
@@ -764,8 +1112,8 @@ public class Colors {
 ----
 The above bean would produce the following entries in the `MetricRegistry`
 ----
-com.example.Colors.redCount
-com.example.Colors.blue
+com.example.Colours.redCount
+com.example.Colours.blue
 greenCount
 purple
 ----
@@ -1158,6 +1506,7 @@ public enum MetricType {
 }
 ----
 
+[[metric_units]]
 ==== Units
 
 [source]
