@@ -33,8 +33,6 @@ import java.lang.annotation.Target;
 import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InterceptorBinding;
 
-import org.eclipse.microprofile.metrics.MetricUnit;
-
 /**
  * An annotation for marking a method of an annotated object as timed.
  * Given a method like this:
@@ -94,6 +92,6 @@ public @interface Timed {
     *
     */
     @Nonbinding
-    MetricUnit unit() default MetricUnit.NANOSECOND;
+    String unit() default "ns";
 
 }

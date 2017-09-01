@@ -31,8 +31,6 @@ import java.lang.annotation.Target;
 import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InterceptorBinding;
 
-import org.eclipse.microprofile.metrics.MetricUnit;
-
 /**
  * An annotation requesting that a metric be injected or registered.
  *
@@ -97,6 +95,6 @@ public @interface Metric {
     *
     */
     @Nonbinding
-    MetricUnit unit() default MetricUnit.NONE;
+    String unit() default "none";
 
 }

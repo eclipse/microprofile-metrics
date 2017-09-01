@@ -3,3 +3,5 @@
 **/.iml
 **/.iws
 **/.DS_Store
+/.settings/
+/.project
