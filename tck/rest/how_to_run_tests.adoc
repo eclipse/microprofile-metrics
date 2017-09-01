@@ -6,6 +6,8 @@ Start your Eclipse Microprofile Server with Metrics enabled
 
 == Tests
 
+*Note:* TCK is currently still under development
+
 If the server is responding on localhost port 8080 you can just run the tests
 via
 
