@@ -65,7 +65,7 @@ public class Metadata {
      * An optional field which holds the Unit of the metric object.
      * </p>
      */
-    private MetricUnit unit = MetricUnit.NONE;
+    private String unit = MetricUnit.NONE;
     
     /**
      * Tags of the metric. Augmented by global tags.
@@ -105,8 +105,10 @@ public class Metadata {
         // Assign default units
         switch (type) {
         case TIMER:
+            this.unit = MetricUnit.NANOSECONDS;
+            break;
         case METERED:
-            this.unit = MetricUnit.NANOSECOND;
+            this.unit = MetricUnit.PER_SECOND;
             break;
         case HISTOGRAM:
         case GAUGE:
@@ -124,7 +126,7 @@ public class Metadata {
      * @param type The type of the metric
      * @param unit The units of the metric
      */
-    public Metadata(String name, MetricType type, MetricUnit unit) {
+    public Metadata(String name, MetricType type, String unit) {
         this();
         this.name = name;
         this.type = type;
@@ -140,7 +142,7 @@ public class Metadata {
      * @param type The type of the metric
      * @param unit The units of the metric
      */
-    public Metadata(String name, String displayName, String description, MetricType type, MetricUnit unit) {
+    public Metadata(String name, String displayName, String description, MetricType type, String unit) {
         this();
         this.name = name;
         this.displayName = displayName;
@@ -159,7 +161,7 @@ public class Metadata {
      * @param unit The units of the metric
      * @param tags The tags of the metric
      */
-    public Metadata(String name, String displayName, String description, MetricType type, MetricUnit unit, String tags) {
+    public Metadata(String name, String displayName, String description, MetricType type, String unit, String tags) {
         this();
         this.name = name;
         this.displayName = displayName;
@@ -229,18 +231,10 @@ public class Metadata {
     }
 
     public String getUnit() {
-        return unit.toString();
-    }
-
-    public MetricUnit getUnitRaw() {
         return unit;
     }
 
     public void setUnit(String unit) {
-        this.unit = MetricUnit.from(unit);
-    }
-
-    public void setUnit(MetricUnit unit) {
         this.unit = unit;
     }
 

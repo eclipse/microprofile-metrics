@@ -16,85 +16,50 @@
  */
 package org.eclipse.microprofile.metrics;
 
-
-import java.util.EnumSet;
-
 /**
  * Units for the metrics.
  *
  * @author hrupp
  */
-public enum MetricUnit {
+public final class MetricUnit {
   /** Dummy to say that this has no unit */
-  NONE ("none", Family.NONE),
+  public static final String NONE = "none";
 
   /** A single Bit. Not defined by SI, but by IEC 60027 */
-  BIT("bit", Family.BIT),
-  /** 1000 {@link #BIT} */
-  KILOBIT("kilobit", Family.BIT),
-  /** 1000 {@link #KIBIBIT} */
-  MEGABIT("megabit", Family.BIT),
-  /** 1000 {@link #MEGABIT} */
-  GIGABIT("gigabit", Family.BIT),
-  /** 1024 {@link #BIT} */
-  KIBIBIT("kibibit", Family.BIT),
-  /** 1024 {@link #KIBIBIT}  */
-  MEBIBIT("mebibit", Family.BIT),
-  /** 1024 {@link #MEBIBIT} */
-  GIBIBIT("gibibit", Family.BIT), /* 1024 mebibit */
+  public static final String BITS = "bits";
+  /** 1000 {@link #BITS} */
+  public static final String KILOBITS = "kilobits";
+  /** 1000 {@link #KIBIBITS} */
+  public static final String MEGABITS = "megabits";
+  /** 1000 {@link #MEGABITS} */
+  public static final String GIGABITS = "gigabits";
+  /** 1024 {@link #BITS} */
+  public static final String KIBIBITS = "kibibits";
+  /** 1024 {@link #KIBIBITS}  */
+  public static final String MEBIBITS = "mebibits";
+  /** 1024 {@link #MEBIBITS} */
+  public static final String GIBIBITS = "gibibits";
 
-  /** 8 {@link #BIT} */
-  BYTE ("byte", Family.BYTE),
-  /** 1024 {@link #BYTE} */
-  KILOBYTE("kbyte", Family.BYTE), // 1024 bytes
-  /** 1024 {@link #KILOBYTE} */
-  MEGABYTE("mbyte", Family.BYTE), // 1024 kilo bytes
-  /** 1024 {@link #MEGABYTE} */
-  GIGABYTE("gbyte", Family.BYTE),
+  /** 8 {@link #BITS} */
+  public static final String BYTES = "bytes";
+  /** 1024 {@link #BYTES} */
+  public static final String KILOBYTES = "kilobytes";
+  /** 1024 {@link #KILOBYTES} */
+  public static final String MEGABYTES = "megabytes";
+  /** 1024 {@link #MEGABYTES} */
+  public static final String GIGABYTES = "gigabytes";
 
-  NANOSECOND("ns", Family.TIME),
-  MICROSECOND("us", Family.TIME),
-  MILLISECOND("ms", Family.TIME),
-  SECOND("s", Family.TIME),
-  MINUTE("m", Family.TIME),
-  HOUR("h", Family.TIME),
-  DAY("d", Family.TIME),
+  public static final String NANOSECONDS = "nanoseconds";
+  public static final String MICROSECONDS = "microseconds";
+  public static final String MILLISECONDS = "milliseconds";
+  public static final String SECONDS = "seconds";
+  public static final String MINUTES = "minutes";
+  public static final String HOURS = "hours";
+  public static final String DAYS = "days";
 
-  PERCENT("%", Family.RATE)
-
-  ;
-
-
-  private final String name;
-  private final Family family;
-
-  MetricUnit(String name, Family family) {
-    this.name = name;
-    this.family = family;
-  }
-
-  @Override
-  public String toString() {
-    return name;
-  }
-
-  public static MetricUnit from(String in) {
-    EnumSet<MetricUnit> enumSet = EnumSet.allOf(MetricUnit.class);
-    for (MetricUnit u : enumSet) {
-      if (u.name.equals(in)) {
-        return u;
-      }
-    }
-    throw new IllegalArgumentException(in + " is not a valid MetricUnit");
-  }
-
-
-  private enum Family {
-    BIT,
-    BYTE,
-    TIME,
-    RATE,
-    NONE
-  }
-
+  public static final String PERCENT = "%";
+  public static final String PER_SECOND = "per_second";
+  
+  
+  private MetricUnit() {}
 }

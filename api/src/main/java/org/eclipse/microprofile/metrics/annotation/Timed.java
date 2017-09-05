@@ -94,6 +94,6 @@ public @interface Timed {
     *
     */
     @Nonbinding
-    MetricUnit unit() default MetricUnit.NANOSECOND;
+    String unit() default MetricUnit.NANOSECONDS;
 
 }

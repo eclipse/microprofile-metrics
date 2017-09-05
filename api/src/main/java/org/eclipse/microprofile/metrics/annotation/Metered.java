@@ -92,6 +92,6 @@ public @interface Metered {
     *
     */
     @Nonbinding
-    MetricUnit unit() default MetricUnit.NANOSECOND;
+    String unit() default MetricUnit.PER_SECOND;
 
 }
