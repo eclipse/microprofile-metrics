@@ -1345,8 +1345,8 @@ Counter count;
 <TO DO>
 
 
-[[metric-registry]]
-=== Metric Registry
+[[metric-registries]]
+=== Metric Registries
 
 The `MetricRegistry` is used to maintain a collection of metrics along with their metadata.
 There is one shared singleton of the `MetricRegistry` per scope (_application_, _base_, and _vendor_).
@@ -1354,6 +1354,8 @@ When metrics are registered using annotations, the metrics must be registered to
 
 When injected, the `@RegistryType` is used as a qualifier to selectively inject either the `APPLICATION`, `BASE`, or `VENDOR` registry.
 If no qualifier is used, the default `MetricRegistry` returned is the `APPLICATION` registry.
+
+Implementations may choose to use a Factory class to produce the injectable `MetricRegistry` bean via CDI. See <<metric-registry-factory>>. Note: The factory would be an internal class and not exposed to the application.
 
 ==== @RegistryType
 The `@RegistryType` can be used to retrieve the `MetricRegistry` for a specific scope.
@@ -1621,3 +1623,42 @@ vendor:
 ----
 
 This configuration can be backed into the runtime or be provided via an external configuration file.
+
+[[metric-registry-factory]]
+=== Example Metric Registry Factory
+
+.Sample skeleton factory class to produce MetricRegistry via CDI
+[source, java]
+----
+@ApplicationScoped
+public class MetricRegistryFactory {
+
+    @Produces
+    public static MetricRegistry getDefaultRegistry() {
+        return getApplicationRegistry();
+    }
+
+    @Produces
+    @RegistryType(type = Type.APPLICATION)
+    public static MetricRegistry getApplicationRegistry() {
+        // Returns the static instance of the Application MetricRegistry
+        [...]
+    }
+
+    @Produces
+    @RegistryType(type = Type.BASE)
+    public static MetricRegistry getBaseRegistry() {
+        // Returns the static instance of the Base MetricRegistry
+        [...]
+    }
+
+    @Produces
+    @RegistryType(type = Type.VENDOR)
+    public static MetricRegistry getVendorRegistry() {
+        // Returns the static instance of the Vendor MetricRegistry
+        [...]
+    }
+
+}
+
+----
