@@ -220,20 +220,30 @@ Data access must honour the HTTP response codes, especially
 * 200 for successful retrieval of an object
 * 204 when retrieving a subtree that would exist, but has no content. E.g. when the application-specific subtree has no application specific metrics defined.
 * 404 if a directly-addressed item does not exist. This may be a non-existing sub-tree or non-existing object
+* 406 if the HTTP Accept Header in the request header cannot be handled by the server.
 * 500 to indicate that a request failed due to "bad health". The body SHOULD contain details if possible { "details": <text> }
 
 The API MUST NOT return a 500 Internal Server Error code to represent a non-existing resource.
 
-Accessing `/metrics` will return all registered metrics.
+.Supported REST endpoints
+[cols="2,1,1,3"]
+|===
+| Endpoint | Request Type | Supported Formats | Description
 
-Accessing `/metrics/<scope>` will only return metrics registered for the respective scope. Scopes are listed in <<metrics-setup>>.
+| `/metrics` | GET | JSON, Prometheus | Returns all registered metrics
+| `/metrics/<scope>` | GET | JSON, Prometheus | Returns metrics registered for the respective scope. Scopes are listed in <<metrics-setup>>
+| `/metrics/<scope>/<metric_name>` | GET | JSON, Prometheus | Returns the metric that matches the metric name for the respective scope
+| `/metrics` | OPTIONS | JSON | Returns all registered metrics' metadata
+| `/metrics/<scope>` | OPTIONS | JSON | Returns metrics' metadata registered for the respective scope. Scopes are listed in <<metrics-setup>>
+| `/metrics/<scope>/<metric_name>` | OPTIONS | JSON | Returns the metric's metadata that matches the metric name for the respective scope
+|===
 
 == REST endpoints
 
 
 === JSON format
 
-* When using JSON format, the REST API will respond to GET requests with data formatted in a tree like fashion with sub-trees for the sub-resources mentioned in the previous section.
+* When using JSON format, the REST API will respond to GET requests with data formatted in a tree like fashion with sub-trees for the sub-resources.
 A sub-tree that does not contain data must be omitted.
 * A 'shadow tree' that responds to OPTIONS will provide the metadata.
 
@@ -429,7 +439,8 @@ The value of the counter must be equivalent to a call to the instance Counter's 
 
 
 Metadata is exposed in a tree-like fashion with sub-trees for the sub-resources mentioned previously.
-The same wrapping of scopes applies as for metrics.
+
+*Note:* The implementation should return a 406 response code if the request's HTTP Accept header does not match `application/json`.
 
 Example:
 
