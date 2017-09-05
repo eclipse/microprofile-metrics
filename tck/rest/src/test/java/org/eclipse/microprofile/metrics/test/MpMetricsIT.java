@@ -23,6 +23,8 @@ import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.path.json.JsonPath;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -41,6 +43,7 @@ import org.xml.sax.SAXException;
 /**
  * Rest Test Kit
  * @author Heiko W. Rupp <hrupp@redhat.com>
+ * @author Don Bourne <dbourne@ca.ibm.com>
  */
 public class MpMetricsIT  {
 
@@ -50,15 +53,32 @@ public class MpMetricsIT  {
   private static final Header wantJson = new Header("Accept", APPLICATION_JSON);
   private static final Header wantPrometheusFormat = new Header("Accept",TEXT_PLAIN);
 
-  private static final String DEFAULT_SERVER_URL = "http://localhost:8080";
-
-
+  private static final String DEFAULT_HOST = "localhost";
+  private static final int DEFAULT_PORT=8080;
+  
   @BeforeClass
   static public void setup() {
-    String serverUrl = System.getProperty("test.url",DEFAULT_SERVER_URL);
-    RestAssured.baseURI = serverUrl;
-  }
+    String serverUrl = System.getProperty("test.url");
 
+    String host = DEFAULT_HOST;
+    int port = DEFAULT_PORT;
+
+    if (serverUrl != null) {
+      try {
+        URL url = new URL(serverUrl);
+        host = url.getHost();
+        port = (url.getPort() == -1) ? DEFAULT_PORT : url.getPort();
+      } catch (MalformedURLException e) {
+        System.err.println("test.url property value " + serverUrl + " is not a valid URL -- default host and port will be used instead");
+      }
+    }
+
+    RestAssured.baseURI = "http://" + host;
+    RestAssured.port = port;
+
+    System.out.println("Using server " + RestAssured.baseURI + ":" + RestAssured.port);
+  }
+  
   @Test
   public void testBadSubTreeWillReturn404() {
     when().get("/metrics/bad-tree")
