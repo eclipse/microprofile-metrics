@@ -97,6 +97,6 @@ public @interface Metric {
     *
     */
     @Nonbinding
-    MetricUnit unit() default MetricUnit.NONE;
+    String unit() default MetricUnit.NONE;
 
 }

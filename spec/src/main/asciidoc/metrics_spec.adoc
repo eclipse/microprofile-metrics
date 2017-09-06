@@ -458,7 +458,7 @@ then `OPTIONS /metrics/base/fooVal` will expose:
 
 {
   "fooVal": {
-    "unit": "ms",
+    "unit": "milliseconds",
     "type": "gauge",
     "description": "The size of foo after each request",
     "displayName": "Size of foo",
@@ -486,14 +486,14 @@ then `OPTIONS /metrics/base` exposes:
 ----
 {
   "fooVal": {
-    "unit": "ms",
+    "unit": "milliseconds",
     "type": "gauge",
     "description": "The average duration of foo requests during last 5 minutes",
     "displayName": "Duration of foo",
     "tags": "app=webshop"
   },
   "barVal": {
-    "unit": "mbytes",
+    "unit": "megabytes",
     "type": "gauge",
     "tags": "component=backend,app=webshop"
   }
@@ -563,8 +563,8 @@ Families and Prometheus base units are:
 |===
 | Family | Base unit
 
-| Bit    | bytes
-| Byte   | bytes
+| Bits    | bytes
+| Bytes   | bytes
 | Time   | seconds
 | Percent | ratio (normally ratio is A_per_B, but there are exceptions like `disk_usage_ratio`)
 |===
@@ -1001,7 +1001,7 @@ In order to make setting the values easier, Annotations are made available.
 .Example set-up of two Gauge metrics
 [source,java]
 ----
-@Gauge(unit = MetricUnit.MEGABYTE) <1>
+@Gauge(unit = MetricUnit.MEGABYTES) <1>
 int diskUsage;
 
 @Gauge(name = "queueSize")         <2>
@@ -1059,7 +1059,7 @@ The following Annotations exist, see below for common fields:
 
 |@Counted | M, C, T | Denotes a counter, which counts the invocations of the annotated object. | MetricUnit.NONE
 |@Gauge   | M, F | Denotes a gauge, which samples the value of the annotated object.  | _none_ Must be supplied by the user
-|@Metered | M, C, T  | Denotes a meter, which tracks the frequency of invocations of the annotated object. | MetricUnit.NANOSECOND
+|@Metered | M, C, T  | Denotes a meter, which tracks the frequency of invocations of the annotated object. | MetricUnit.NANOSECONDS
 |@Metric  | M, F, P | An annotation requesting that a metric should be injected. This annotation can be used on the fields
     of type `Meter`, `Timer`, `Counter`, and `Histogram`. | MetricUnit.NONE
 |@Timed   | M, C, T | Denotes a timer, which tracks duration of the annotated object. | MetricUnit.NONE
@@ -1417,7 +1417,7 @@ MetricRegistry vendorRegistry;
 
 ==== Metadata
 
-[source]
+[source, java]
 ----
 /**
  * Bean holding the metadata of one single metric
@@ -1447,7 +1447,7 @@ public class Metadata {
   /**
    * Unit of the metric.
    */
-  private MetricUnit unit = MetricUnit.NONE;
+  private String unit = MetricUnit.NONE;
 
   /**
    * Tags of the metric. Augmented by global tags.
@@ -1462,7 +1462,7 @@ public class Metadata {
   * @param type The type of the metric
   * @param unit The units of the metric
   */
-  public Metadata(String name, MetricType type, MetricUnit unit) {
+  public Metadata(String name, MetricType type, String unit) {
     this();
     this.name = name;
     this.type = type;
@@ -1475,7 +1475,7 @@ public class Metadata {
 
 ==== Metric type
 
-[source]
+[source, java]
 ----
 public enum MetricType {
   /**
@@ -1497,7 +1497,10 @@ public enum MetricType {
    * and usually exposes them in buckets.
    */
   HISTOGRAM("histogram"),
-
+  /**
+   * A timer aggregates timing durations and provides duration
+   * statistics, plus throughput statistics
+   */
   TIMER("timer"),
   /**
    * Invalid - just a placeholder
@@ -1520,55 +1523,47 @@ public enum MetricType {
 [[metric_units]]
 ==== Units
 
-[source]
+[source, java]
 ----
-public enum MetricUnit {
+public final class MetricUnit {
   /** Dummy to say that this has no unit */
-  NONE ("none"),
+  public static final String NONE = "none";
 
   /** A single Bit. Not defined by SI, but by IEC 60027 */
-  BIT("bit"),
-  /** 1000 {@link #BIT} */
-  KILOBIT("kilobit"),
-  /** 1000 {@link #KIBIBIT} */
-  MEGABIT("megabit"),
-  /** 1000 {@link #MEGABIT} */
-  GIGABIT("gigabit"),
-  /** 1024 {@link #BIT} */
-  KIBIBIT("kibibit"),
-  /** 1024 {@link #KIBIBIT}  */
-  MEBIBIT("mebibit"),
-  /** 1024 {@link #MEBIBIT} */
-  GIBIBIT("gibibit"), /* 1024 mebibit */
+  public static final String BITS = "bits";
+  /** 1000 {@link #BITS} */
+  public static final String KILOBITS = "kilobits";
+  /** 1000 {@link #KIBIBITS} */
+  public static final String MEGABITS = "megabits";
+  /** 1000 {@link #MEGABITS} */
+  public static final String GIGABITS = "gigabits";
+  /** 1024 {@link #BITS} */
+  public static final String KIBIBITS = "kibibits";
+  /** 1024 {@link #KIBIBITS}  */
+  public static final String MEBIBITS = "mebibits";
+  /** 1024 {@link #MEBIBITS} */
+  public static final String GIBIBITS = "gibibits";
 
-  /** 8 {@link #BIT} */
-  BYTE ("byte"),
-  /** 1024 {@link #BYTE} */
-  KILOBYTE ("kbyte"),
-  /** 1024 {@link #KILO_BYTE} */
-  MEGABYTE ("mbyte"),
-  /** 1024 {@link #MEGA_BYTE} */
-  GIGABYTE("gbyte"),
+  /** 8 {@link #BITS} */
+  public static final String BYTES = "bytes";
+  /** 1024 {@link #BYTES} */
+  public static final String KILOBYTES = "kilobytes";
+  /** 1024 {@link #KILOBYTES} */
+  public static final String MEGABYTES = "megabytes";
+  /** 1024 {@link #MEGABYTES} */
+  public static final String GIGABYTES = "gigabytes";
 
-  NANOSECOND("ns"),
-  MICROSECOND("us"),
-  MILLISECOND("ms"),
-  SECOND("s"),
-  MINUTE("m"),
-  HOUR("h"),
-  DAY("d"),
+  public static final String NANOSECOND = "nanoseconds";
+  public static final String MICROSECOND = "microseconds";
+  public static final String MILLISECOND = "milliseconds";
+  public static final String SECONDS = "seconds";
+  public static final String MINUTES = "minutes";
+  public static final String HOURS = "hours";
+  public static final String DAYS = "days";
 
-  PERCENT("%")
+  public static final String PERCENT = "%";
+  public static final String PER_SECOND = "per_second";
 
-  ;
-
-  /**
-   * Convert the string representation in to an enum
-   * @param in the String representation
-   * @return the matching Enum
-   * @throws IllegalArgumentException if in is not a valid enum value
-   */
-  public static MetricUnit from(String in) { [..] }
 
   [...]
 }
