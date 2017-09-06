@@ -10,3 +10,6 @@ target
 /spec/.DS_Store
 /api/.DS_Store
 bumpVersion.sh
+
+# Ignore a release.conf for perform_release/* script usage
+release.conf
