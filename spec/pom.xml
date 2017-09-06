@@ -20,7 +20,7 @@
     <artifactId>microprofile-metrics-spec</artifactId>
     <packaging>pom</packaging>
     <name>MicroProfile Metrics Specification</name>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-RC2</version>
 
     <properties>
         <asciidoctor-maven.version>1.5.5</asciidoctor-maven.version>
