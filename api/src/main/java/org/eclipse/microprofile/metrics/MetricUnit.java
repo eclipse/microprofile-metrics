@@ -23,15 +23,18 @@
 package org.eclipse.microprofile.metrics;
 
 /**
- * Units for the metrics.
+ * Standard units constants for metric's {@link Metadata}.
+ * This class provides a list of common metric units and is not meant to be a complete list of possible units.
+ *
+ * @see Metadata
  *
  * @author hrupp
  */
 public final class MetricUnit {
-  /** Dummy to say that this has no unit */
+  /** No unit */
   public static final String NONE = "none";
 
-  /** A single Bit. Not defined by SI, but by IEC 60027 */
+  /** Represents bits. Not defined by SI, but by IEC 60027 */
   public static final String BITS = "bits";
   /** 1000 {@link #BITS} */
   public static final String KILOBITS = "kilobits";
@@ -55,15 +58,25 @@ public final class MetricUnit {
   /** 1024 {@link #MEGABYTES} */
   public static final String GIGABYTES = "gigabytes";
 
+  /** 1/1000 {@link #MICROSECONDS} */
   public static final String NANOSECONDS = "nanoseconds";
+  /** 1/1000 {@link #MILLISECONDS} */
   public static final String MICROSECONDS = "microseconds";
+  /** 1/1000 {@link #SECONDS} */
   public static final String MILLISECONDS = "milliseconds";
+  /** Represents seconds */
   public static final String SECONDS = "seconds";
+  /** 60 {@link #SECONDS} */
   public static final String MINUTES = "minutes";
+  /** 60 {@link #MINUTES} */
   public static final String HOURS = "hours";
+  /** 24 {@link #HOURS} */
   public static final String DAYS = "days";
 
-  public static final String PERCENT = "%";
+  /** Represents percentage */
+  public static final String PERCENT = "percent";
+  
+  /** Represent per second  */
   public static final String PER_SECOND = "per_second";
   
   

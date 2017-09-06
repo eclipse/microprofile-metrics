@@ -32,8 +32,18 @@ import org.eclipse.microprofile.metrics.MetricRegistry;
 
 /**
  * Qualifies the type of Metric Registry to inject.
+ * <p>
+ * This can be used to obtain the respective scoped {@link MetricRegistry}:
+ * </p>
+ * <pre><code>
+ *      {@literal @}Inject
+ *      {@literal @}RegistryType(type=MetricRegistry.Type.BASE)
+ *      MetricRegistry baseRegistry;
+ * </code></pre>
  * 
- * @author ray
+ * @see org.eclipse.microprofile.metrics.MetricRegistry.Type
+ * 
+ * @author Raymond Lam
  *
  */
 @Qualifier

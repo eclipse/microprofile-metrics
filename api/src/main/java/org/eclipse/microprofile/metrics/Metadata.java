@@ -28,7 +28,37 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Bean holding the metadata of one single metric
+ * Bean holding the metadata of one single metric.
+ * 
+ * The metadata contains:
+ * <ul>
+ * <li>
+ * {@code Name}: (Required) The name of the metric.
+ * </li>
+ * <li>
+ * {@code Display name}: (Optional) The display (friendly) name of the metric.
+ * By default, it is set to the {@code Name}.
+ * </li>
+ * <li>
+ * {@code Description}: (Optional) A human readable description of the metric.
+ * </li>
+ * <li>
+ * {@code Type}: (Required) The type of the metric. See {@link MetricType}.
+ * </li>
+ * <li>
+ * {@code Unit}: (Optional) The unit of the metric.
+ * The unit may be any unit specified as a String or one specified in {@link MetricUnit}.
+ * </li>
+ * <li>
+ * {@code Tags}: (Optional) The tags (represented by key/value pairs) of the metric which is augmented by global tags (if available).
+ * Global tags can be set by passing the list of tags in an environment variable {@code MP_METRICS_TAGS}.
+ * For example, the following can be used to set the global tags:
+ * <pre><code>
+ *      export MP_METRICS_TAGS=app=shop,tier=integration
+ * </code></pre>
+ * </li>
+ * </ul> 
+ * 
  * @author hrupp, Raymond Lam
  */
 public class Metadata {
@@ -36,11 +66,11 @@ public class Metadata {
      /**
      * Name of the metric.
      * <p>
-     * A required field which holds the name of the metric object. Can be retrieved from
-     * other reporters such as REST Handler, HTTP Reporter.
+     * A required field which holds the name of the metric object.
      * </p>
      */
     private String name;
+    
     /**
      * Display name of the metric. If not set, the name is taken.
      * <p>
@@ -83,27 +113,28 @@ public class Metadata {
     private HashMap<String, String> tags = new HashMap<String, String>();
 
     /**
+     * The environment variable used to pass in global tags.
+     */
+    public static final String GLOBAL_TAGS_VARIABLE = "MP_METRICS_TAGS";
+    
+    /**
      * Defines if the metric can have multiple objects and needs special
      * treatment or if it is a singleton.
      * <p/>
      */
-    
     Metadata() {
-        String globalTagsFromEnv = System.getenv("MP_METRICS_TAGS");
+        String globalTagsFromEnv = System.getenv(GLOBAL_TAGS_VARIABLE);
 
-        // We use the parsing logic, but need to save them away, as the yaml
-        // Config will overwrite them otherwise.
         addTags(globalTagsFromEnv);
     }
 
     /**
-     * Constructs a Metadata object with default Units
+     * Constructs a Metadata object with default units
      * 
      * @param name The name of the metric
      * @param type The type of the metric
      */
     public Metadata(String name, MetricType type) {
-        // MP-Metrics, set default value for other fileds
         this();
         this.name = name;
         this.type = type;
@@ -177,6 +208,19 @@ public class Metadata {
         addTags(tags);
     }
 
+    /**
+     * Constructs a Metadata object from a map with the following keys
+     * <ul>
+     * <li>{@code name} - The name of the metric</li>
+     * <li>{@code displayName} - The display (friendly) name of the metric</li>
+     * <li>{@code description} - The description of the metric</li>
+     * <li>{@code type} - The type of the metric</li>
+     * <li>{@code unit} - The units of the metric</li>
+     * <li>{@code tags} - The tags of the metric  - cannot be null</li>
+     * </ul>
+     * 
+     * @param in a map of key/value pairs representing Metadata
+     */
     public Metadata(Map<String, String> in) {
         this();
         this.name = (String) in.get("name");
@@ -186,21 +230,32 @@ public class Metadata {
         this.setUnit((String) in.get("unit"));
         if (in.keySet().contains("tags")) {
             String tagString = (String) in.get("tags");
-            String[] tagList = tagString.split(",");
-            for (String tag : tagList) {
-                this.tags.put(tag.substring(0, tag.indexOf("=")), tag.substring(tag.indexOf("=")));
-            }
+            addTags(tagString);
         }
     }
 
+    /**
+     * Returns the metric name.
+     * 
+     * @return the metric name.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Sets the metric name.
+     * 
+     * @param name the new metric name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Returns the display name if set, otherwise this method returns the metric name.
+     * @return the display name
+     */
     public String getDisplayName() {
         if (displayName == null) {
             return name;
@@ -208,42 +263,87 @@ public class Metadata {
         return displayName;
     }
 
+    /**
+     * Sets the display name.
+     * 
+     * @param displayName the new display name
+     */
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
 
+    /**
+     * Returns the description of the metric.
+     * @return the description
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Sets the description of the metric.
+     * @param description the new description
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /**
+     * Returns the String representation of the {@link MetricType}.
+     * 
+     * @return the MetricType as a String
+     * 
+     * @see MetricType
+     */
     public String getType() {
         return type == null ? MetricType.INVALID.toString() : type.toString();
     }
 
+    /**
+     * Returns the {@link MetricType} of the metric
+     * @return the {@link MetricType}
+     */
     public MetricType getTypeRaw() {
         return type;
     }
 
-    public void setType(String type) {
+    /**
+     * Sets the metric type using a String representation of {@link MetricType}.
+     * @param type the new metric type
+     * @throws IllegalArgumentException if the String is not a valid {@link MetricType}
+     */
+    public void setType(String type) throws IllegalArgumentException {
         this.type = MetricType.from(type);
     }
 
+    /**
+     * Sets the type of the metric
+     * @param type the new metric type
+     */
     public void setType(MetricType type) {
         this.type = type;
     }
 
+    /**
+     * Returns the unit of the metric.
+     * @return the unit
+     */
     public String getUnit() {
         return unit;
     }
 
+    /**
+     * Sets the unit of the metric.
+     * @param unit the new unit
+     */
     public void setUnit(String unit) {
         this.unit = unit;
     }
 
+    /**
+     * Gets the list of tags as a single String in the format 'key="value",key2="value2",...'
+     * @return a String containing the tags
+     */
     public String getTagsAsString() {
         StringBuilder result = new StringBuilder();
 
@@ -260,13 +360,16 @@ public class Metadata {
         return result.toString();
     }
 
+    /**
+     * Returns the underlying HashMap containing the tags.
+     * @return a hashmap of tags
+     */
     public HashMap<String, String> getTags() {
-
         return this.tags;
     }
 
     /**
-     * Add one single tag. Format is 'key=value'. If the input is empty or does
+     * Add one single tag with the format: 'key=value'. If the input is empty or does
      * not contain a '=' sign, the entry is ignored.
      * 
      * @param kvString
@@ -279,6 +382,13 @@ public class Metadata {
         tags.put(kvString.substring(0, kvString.indexOf("=")), kvString.substring(kvString.indexOf("=") + 1));
     }
 
+    /**
+     * Add multiple tags delimited by commas.
+     * The format must be in the form 'key1=value1, key2=value2'.
+     * This method will call {@link #addTag(String)} on each tag.
+     * 
+     * @param tagsString a string containing multiple tags
+     */
     public void addTags(String tagsString) {
         if (tagsString == null || tagsString.isEmpty()) {
             return;
@@ -290,20 +400,14 @@ public class Metadata {
         }
     }
 
+    /**
+     * Sets the tags hashmap.
+     * 
+     * @param tags a hashmap containing tags.
+     */
     public void setTags(HashMap<String, String> tags) {
         this.tags = tags;
     }
-
-    /**
-     * public boolean equals(Object o) { //if (this == o) return true; //if (o
-     * == null || getClass() != o.getClass()) return false;
-     * 
-     * Metadata that = (Metadata) o;
-     * 
-     * if (!name.equals(that.name)) return false; if (mbean != null ?
-     * !mbean.equals(that.mbean) : that.mbean != null) return false; if
-     * (!type.equals(that.type)) return false; return unit.equals(that.unit); }
-     **/
 
     @Override
     public int hashCode() {

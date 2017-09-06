@@ -1487,31 +1487,36 @@ public enum MetricType {
   /**
    * A Counter monotonically in-/decreases its values.
    * An example could be the number of Transactions committed.
-    */
-  COUNTER("counter"),
+   */
+  COUNTER("counter", Counter.class),
+
   /**
-   * A Gauge has values that 'arbitrarily' go up/down at each
+   * A Gauge has values that 'arbitrarily' goes up/down at each
    * sampling. An example could be CPU load
    */
-  GAUGE("gauge"),
+  GAUGE("gauge", Gauge.class),
+
   /**
-   * Counter of invocations that produces a rate of invocations
+   * A Meter measures the rate at which a set of events occur.
+   * An example could be amount of Transactions per Hour.
    */
-  METERED("meter"),
+  METERED("meter", Meter.class),
+
   /**
-   * A histogram samples observations like request durations
-   * and usually exposes them in buckets.
+   * A Histogram calculates the distribution of a value.
    */
-  HISTOGRAM("histogram"),
+  HISTOGRAM("histogram", Histogram.class),
+
   /**
    * A timer aggregates timing durations and provides duration
    * statistics, plus throughput statistics
    */
-  TIMER("timer"),
+  TIMER("timer", Timer.class),
+
   /**
-   * Invalid - just a placeholder
+   * Invalid - Placeholder
    */
-  INVALID("invalid")
+  INVALID("invalid", null)
   ;
 
   /**
@@ -1532,10 +1537,10 @@ public enum MetricType {
 [source, java]
 ----
 public final class MetricUnit {
-  /** Dummy to say that this has no unit */
+  /** No unit */
   public static final String NONE = "none";
 
-  /** A single Bit. Not defined by SI, but by IEC 60027 */
+  /** Represents bits. Not defined by SI, but by IEC 60027 */
   public static final String BITS = "bits";
   /** 1000 {@link #BITS} */
   public static final String KILOBITS = "kilobits";
@@ -1559,17 +1564,26 @@ public final class MetricUnit {
   /** 1024 {@link #MEGABYTES} */
   public static final String GIGABYTES = "gigabytes";
 
-  public static final String NANOSECOND = "nanoseconds";
-  public static final String MICROSECOND = "microseconds";
-  public static final String MILLISECOND = "milliseconds";
+  /** 1/1000 {@link #MICROSECONDS} */
+  public static final String NANOSECONDS = "nanoseconds";
+  /** 1/1000 {@link #MILLISECONDS} */
+  public static final String MICROSECONDS = "microseconds";
+  /** 1/1000 {@link #SECONDS} */
+  public static final String MILLISECONDS = "milliseconds";
+  /** Represents seconds */
   public static final String SECONDS = "seconds";
+  /** 60 {@link #SECONDS} */
   public static final String MINUTES = "minutes";
+  /** 60 {@link #MINUTES} */
   public static final String HOURS = "hours";
+  /** 24 {@link #HOURS} */
   public static final String DAYS = "days";
 
-  public static final String PERCENT = "%";
-  public static final String PER_SECOND = "per_second";
+  /** Represents percentage */
+  public static final String PERCENT = "percent";
 
+  /** Represent per second  */
+  public static final String PER_SECOND = "per_second";
 
   [...]
 }

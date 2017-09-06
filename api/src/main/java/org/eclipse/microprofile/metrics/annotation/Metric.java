@@ -33,24 +33,32 @@ import org.eclipse.microprofile.metrics.MetricUnit;
 
 /**
  * An annotation requesting that a metric be injected or registered.
+ * The metric will be registered in the application MetricRegistry.
  *
- * Given a field like this:
+ * Given an injected field annotated with {@literal @}Metric like this:
  * <pre><code>
- *     {@literal @}Metric
+ *     {@literal @}Inject
+ *     {@literal @}Metric(name="histogram")
  *     public Histogram histogram;
  * </code></pre>
  * A meter of the field's type will be created and injected into managed objects.
  * It will be up to the user to interact with the metric. This annotation
  * can be used on fields of type Meter, Timer, Counter, and Histogram.
- *
- * This may also be used to register a metric, which is useful for creating a histogram with
- * a custom Reservoir.
+ * <p>
+ * This may also be used to register a metric.
+ * </p>
  * <pre><code>
- *     {@literal @}Metric
- *     public Histogram uniformHistogram = new Histogram(new UniformReservoir());
- * </code></pre>
- *
+ *     {@literal @}Produces
+ *     {@literal @}Metric(name="hitPercentage")
+ *     {@literal @}ApplicationScoped
+ *     Gauge&lt;Double&gt; hitPercentage = new Gauge&lt;Double&gt;() {
  * 
+ *       {@literal @}Override
+ *       public Double getValue() {
+ *           return hits / total;
+ *       }
+ *     };
+ * </code></pre>
  */
 @InterceptorBinding
 @Retention(RetentionPolicy.RUNTIME)
@@ -58,42 +66,49 @@ import org.eclipse.microprofile.metrics.MetricUnit;
 public @interface Metric {
 
     /**
-     * @return The metric's name.
+     * @return The name of the metric.
      */
     @Nonbinding
     String name() default "";
 
     /**
-     * @return The metric's tags.
+     * @return The tags of the metric. Each {@code String} tag must be in the form of 'key=value'. If the input is empty or does
+     * not contain a '=' sign, the entry is ignored.
+     * 
+     * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String[] tags() default {};
 
     /**
-     * @return If {@code true}, use the given name as an absolute name. If {@code false},
+     * @return If {@code true}, use the given name as an absolute name. If {@code false} (default),
      * use the given name relative to the annotated class.
      */
     @Nonbinding
     boolean absolute() default false;
 
     /**
+     * @return The display name of the metric.
      * 
-     * @return display name of the timer from Metadata
+     * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String displayName() default "";
     
     /**
+     * @return The description of the metric.
      * 
-     * @return description of the timer from Metadata
+     * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String description() default "";
     
-   /**
-    * @return unit of the metrics from Metadata
-    *
-    */
+    /**
+     * @return The unit of the metric. By default, the value is {@link MetricUnit#NONE}.
+     * 
+     * @see org.eclipse.microprofile.metrics.Metadata
+     * @see org.eclipse.microprofile.metrics.MetricUnit
+     */
     @Nonbinding
     String unit() default MetricUnit.NONE;
 

@@ -25,10 +25,36 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.SortedSet;
 
+/**
+ * The registry that stores metrics and their metadata.
+ * The MetricRegistry provides methods to register, create and retrieve metrics and their respective metadata.
+ * 
+ * 
+ * @see MetricFilter
+ */
 public abstract class MetricRegistry {
     
+    /**
+     * An enumeration representing the scopes of the MetricRegistry
+     */
     public enum Type {
-        APPLICATION("application"), BASE("base"), VENDOR("vendor");
+        /**
+         * The Application (default) scoped MetricRegistry.
+         * Any metric registered/accessed via CDI will use this MetricRegistry.
+         */
+        APPLICATION("application"), 
+        
+        /**
+         * The Base scoped MetricRegistry.
+         * This MetricRegistry will contain required metrics specified in the MicroProfile Metrics specification.
+         */
+        BASE("base"),
+        
+        /**
+         * The Vendor scoped MetricRegistry.
+         * This MetricRegistry will contain vendor provided metrics which may vary between different vendors.
+         */
+        VENDOR("vendor");
     
         private String name;
         
@@ -36,6 +62,10 @@ public abstract class MetricRegistry {
             this.name = name;
         }
         
+        /**
+         * Returns the name of the MetricRegistry scope.
+         * @return the scope
+         */
         public String getName() {
             return name;
         }
@@ -81,7 +111,8 @@ public abstract class MetricRegistry {
     }
 
     /**
-     * Given a {@link Metric}, registers it under the given name.
+     * Given a {@link Metric}, registers it under the given name. 
+     * A {@link Metadata} object will be registered with the name and type.
      *
      * @param name   the name of the metric
      * @param metric the metric
@@ -91,18 +122,40 @@ public abstract class MetricRegistry {
      */
     public abstract <T extends Metric> T register(String name, T metric) throws IllegalArgumentException;
     
-    public abstract <T extends Metric> T register(String name, T metric, Metadata metadataEntry) throws IllegalArgumentException;
+    /**
+     * Given a {@link Metric}, registers it under the given name along with the provided {@link Metadata}.
+     *
+     * @param name      the name of the metric
+     * @param metric    the metric
+     * @param metadata  the metadata
+     * @param <T>       the type of the metric
+     * @return {@code metric}
+     * @throws IllegalArgumentException if the name is already registered
+     */
+    public abstract <T extends Metric> T register(String name, T metric, Metadata metadata) throws IllegalArgumentException;
 
 
     /**
      * Return the {@link Counter} registered under this name; or create and register 
      * a new {@link Counter} if none is registered.
+     * If a {@link Counter} was created, a {@link Metadata} object will be registered with the name and type.
      *
      * @param name the name of the metric
      * @return a new or pre-existing {@link Counter}
      */
     public abstract Counter counter(String name);
     
+    /**
+     * Return the {@link Counter} registered under the {@link Metadata}'s name; or create and register 
+     * a new {@link Counter} if none is registered.
+     * If a {@link Counter} was created, the provided {@link Metadata} object will be registered.
+     * <p>
+     * Note: The {@link Metadata} will not be updated if the metric is already registered.
+     * </p>
+     * 
+     * @param metadata the name of the metric
+     * @return a new or pre-existing {@link Counter}
+     */
     public abstract Counter counter(Metadata metadata);
 
 
@@ -110,33 +163,72 @@ public abstract class MetricRegistry {
     /**
      * Return the {@link Histogram} registered under this name; or create and register 
      * a new {@link Histogram} if none is registered.
+     * If a {@link Histogram} was created, a {@link Metadata}  object will be registered with the name and type.
      *
      * @param name the name of the metric
      * @return a new or pre-existing {@link Histogram}
      */
     public abstract Histogram histogram(String name);
+    
+    /**
+     * Return the {@link Histogram} registered under the {@link Metadata}'s name; or create and register 
+     * a new {@link Histogram} if none is registered.
+     * If a {@link Histogram} was created, the provided {@link Metadata} object will be registered.
+     * <p>
+     * Note: The {@link Metadata} will not be updated if the metric is already registered.
+     * </p>
+     * 
+     * @param metadata the name of the metric
+     * @return a new or pre-existing {@link Histogram}
+     */
     public abstract Histogram histogram(Metadata metadata);
 
 
     /**
      * Return the {@link Meter} registered under this name; or create and register
      * a new {@link Meter} if none is registered.
+     * If a {@link Meter} was created, a {@link Metadata}  object will be registered with the name and type.
      *
      * @param name the name of the metric
      * @return a new or pre-existing {@link Meter}
      */
     public abstract Meter meter(String name);
+    
+    /**
+     * Return the {@link Meter} registered under the {@link Metadata}'s name; or create and register 
+     * a new {@link Meter} if none is registered.
+     * If a {@link Meter} was created, the provided {@link Metadata} object will be registered.
+     * <p>
+     * Note: The {@link Metadata} will not be updated if the metric is already registered.
+     * </p>
+     * 
+     * @param metadata the name of the metric
+     * @return a new or pre-existing {@link Meter}
+     */
     public abstract Meter meter(Metadata metadata);
 
 
     /**
      * Return the {@link Timer} registered under this name; or create and register
      * a new {@link Timer} if none is registered.
+     * If a {@link Timer} was created, a {@link Metadata}  object will be registered with the name and type.
      *
      * @param name the name of the metric
      * @return a new or pre-existing {@link Timer}
      */
     public abstract Timer timer(String name);
+    
+    /**
+     * Return the {@link Timer} registered under the {@link Metadata}'s name; or create and register 
+     * a new {@link Timer} if none is registered.
+     * If a {@link Timer} was created, the provided {@link Metadata} object will be registered.
+     * <p>
+     * Note: The {@link Metadata} will not be updated if the metric is already registered.
+     * </p>
+     * 
+     * @param metadata the name of the metric
+     * @return a new or pre-existing {@link Timer}
+     */
     public abstract Timer timer(Metadata metadata);
  
 
@@ -241,12 +333,18 @@ public abstract class MetricRegistry {
      */
     public abstract SortedMap<String, Timer> getTimers(MetricFilter filter);
 
-
+    /**
+     * Returns a map of all the metrics in the registry and their names.
+     *
+     * @return all the metrics in the registry
+     */
     public abstract Map<String, Metric> getMetrics();
 
-    // MP_METADATA
+    /**
+     * Returns a map of all the metadata in the registry and their names.
+     *
+     * @return all the metadata in the registry
+     */
     public abstract Map<String, Metadata> getMetadata();
     
-    public abstract Metadata getMetadata(String name);
-
 }

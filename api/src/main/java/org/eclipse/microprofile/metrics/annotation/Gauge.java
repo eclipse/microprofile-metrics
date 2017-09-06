@@ -30,16 +30,30 @@ import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InterceptorBinding;
 
 /**
- * An annotation for marking a method of an annotated object as a gauge.
- * Given a method like this:
+ * An annotation for marking a method or field as a gauge.
+ * The metric will be registered in the application MetricRegistry.
+ * 
+ * <p>
+ * Given a method annotated with {@literal @}Gauge like this:
+ * </p>
  * <pre><code>
  *     {@literal @}Gauge(name = "queueSize")
  *     public int getQueueSize() {
  *         return queue.size;
  *     }
  * </code></pre>
- * A gauge for the defining class with the name {@code queueSize} will be created which uses the
+ * A gauge with the fully qualified class name + {@code queueSize} will be created which uses the
  * annotated method's return value as its value.
+ * 
+ * <p>
+ * Given a field annotated with {@literal @}Gauge like this:
+ * </p>
+ * <pre><code>
+ *     {@literal @}Gauge
+ *     long value;
+ * </code></pre>
+ * A gauge with the fully qualified class name + {@code value} will be created which uses the
+ * annotated field value as its value.
  */
 @InterceptorBinding
 @Retention(RetentionPolicy.RUNTIME)
@@ -47,19 +61,22 @@ import javax.interceptor.InterceptorBinding;
 public @interface Gauge {
 
     /**
-     * @return The gauge's name.
+     * @return The name of the gauge.
      */
     @Nonbinding
     String name() default "";
 
     /**
-     * @return The gauge's tags.
+     * @return The tags of the gauge. Each {@code String} tag must be in the form of 'key=value'. If the input is empty or does
+     * not contain a '=' sign, the entry is ignored.
+     * 
+     * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String[] tags() default {};
 
     /**
-     * @return If {@code true}, use the given name as an absolute name. If {@code false}, use the given name
+     * @return If {@code true}, use the given name as an absolute name. If {@code false} (default), use the given name
      * relative to the annotated class.
      */
     @Nonbinding
@@ -67,24 +84,28 @@ public @interface Gauge {
     
     
     /**
+     * @return The display name of the gauge.
      * 
-     * @return display name of the timer from Metadata
+     * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String displayName() default "";
     
     /**
+     * @return The description of the gauge.
      * 
-     * @return description of the timer from Metadata
+     * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String description() default "";
     
     
-   /**
-    * @return unit of the metrics from Metadata
-    *
-    */
+    /**
+     * @return (Required) The unit of the gauge.
+     * 
+     * @see org.eclipse.microprofile.metrics.Metadata
+     * @see org.eclipse.microprofile.metrics.MetricUnit
+     */
     @Nonbinding
     String unit();
 

@@ -25,18 +25,19 @@ package org.eclipse.microprofile.metrics;
 import java.util.EnumSet;
 
 /**
- * The kind of a metric
+ * An enumeration representing the different types of metrics.
+ * 
  * @author hrupp, Raymond Lam, Ouyang Zhou
  */
 public enum MetricType {
-  /**
+    /**
      * A Counter monotonically in-/decreases its values.
      * An example could be the number of Transactions committed.
      */
     COUNTER("counter", Counter.class),
 
     /**
-     * A Gauge has values that 'arbitrarily' go up/down at each
+     * A Gauge has values that 'arbitrarily' goes up/down at each
      * sampling. An example could be CPU load
      */
     GAUGE("gauge", Gauge.class),
@@ -48,7 +49,7 @@ public enum MetricType {
     METERED("meter", Meter.class),
 
     /**
-     * A Histogram calculates the distribution of a value
+     * A Histogram calculates the distribution of a value.
      */
     HISTOGRAM("histogram", Histogram.class),
 
@@ -59,7 +60,7 @@ public enum MetricType {
     TIMER("timer", Timer.class),
     
     /**
-     * Invalid - just a placeholder
+     * Invalid - Placeholder
      */
     INVALID("invalid", null)
     ;
@@ -90,7 +91,7 @@ public enum MetricType {
         return u;
       }
     }
-    throw new IllegalArgumentException(in + " is not a valid MpType");
+    throw new IllegalArgumentException(in + " is not a valid MetricType");
   }
 
   /**

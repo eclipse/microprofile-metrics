@@ -29,6 +29,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * A timer metric which aggregates timing durations and provides duration statistics, plus
  * throughput statistics via {@link Meter}.
+ * 
+ * The timer measures duration in nanoseconds.
  */
 public interface Timer extends Metered, Sampling {
     /**
