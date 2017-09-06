@@ -1,8 +1,7 @@
-/*
- *******************************************************************************
- * Copyright (c) 2016-2017 Contributors to the Eclipse Foundation
+/**********************************************************************
+ * Copyright (c) 2017 Contributors to the Eclipse Foundation
  *
- * See the NOTICE file(s) distributed with this work for additional
+ * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +15,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *******************************************************************************/
-
-
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ **********************************************************************/
 @org.osgi.annotation.versioning.Version("1.0")
 package org.eclipse.microprofile.metrics.annotation;
 
