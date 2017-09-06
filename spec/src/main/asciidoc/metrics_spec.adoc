@@ -547,9 +547,13 @@ Each tag is a key-value-pair in the format of `<key>="<value>"`.
 [[prometheus_units]]
 ==== Handling of units
 
+The Prometheus text format adheres to using "base units" when creating the HTTP response. Due to the different context of each metric type, certain metrics' values must be converted to the respective "base unit" when responding to Prometheus requests.
+
+The following sections outline how each metric type is handled:
+
 *Gauges and Histograms*
 
-The metric name and values for `Gauge` and `Histogram` are set according to the `unit` value in the Metadata.
+The metric name and values for `Gauge` and `Histogram` are converted to the "base unit" in respect to the `unit` value in the Metadata.
 
 - If the Metadata is empty, `NONE`, or null. The metric name is used as is without appending the unit name and no scaling is applied.
 - If the metric's metadata contains a known unit defined in <<metric_units>>, the Prometheus value should be scaled to the _base unit_ of the respective family. The name of the base unit is appended to the metric name delimited by underscores (`_`).
