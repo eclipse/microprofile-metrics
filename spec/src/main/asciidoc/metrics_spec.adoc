@@ -861,7 +861,7 @@ Visit <<meta-data-def>> for the meaning of each key
 |===
 |Name| thread.count
 |DisplayName| Thread Count
-|Type| Gauge
+|Type| Counter
 |Unit| None
 |Description| Displays the current number of live threads including both daemon and non-daemon threads
 |MBean| java.lang:type=Threading/ThreadCount
@@ -872,7 +872,7 @@ Visit <<meta-data-def>> for the meaning of each key
 |===
 |Name| thread.daemon.count
 |DisplayName| Daemon Thread Count
-|Type| Gauge
+|Type| Counter
 |Unit| None
 |Description| Displays the current number of live daemon threads.
 |MBean| java.lang:type=Threading/DaemonThreadCount
@@ -922,7 +922,7 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 |===
 |Name| classloader.currentLoadedClass.count
 |DisplayName| Current Loaded Class Count
-|Type| Gauge
+|Type| Counter
 |Unit| None
 |Description| Displays the number of classes that are currently loaded in the Java virtual machine.
 |MBean| java.lang:type=ClassLoading/LoadedClassCount
