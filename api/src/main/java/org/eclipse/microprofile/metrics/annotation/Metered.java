@@ -34,16 +34,33 @@ import javax.interceptor.InterceptorBinding;
 import org.eclipse.microprofile.metrics.MetricUnit;
 
 /**
- * An annotation for marking a method of an annotated object as metered.
- * Given a method like this:
+ * An annotation for marking a method, constructor, or class as metered.
+ * The metric will be registered in the application MetricRegistry.
+ * <p>
+ * Given a method annotated with {@literal @}Metered like this:
+ * </p>
  * <pre><code>
  *     {@literal @}Metered(name = "fancyName")
  *     public String fancyName(String name) {
  *         return "Sir Captain " + name;
  *     }
  * </code></pre>
- * A meter for the defining class with the name {@code fancyName} will be created and each time the
+ * A meter with the fully qualified class name + {@code fancyName} will be created and each time the
  * {@code #fancyName(String)} method is invoked, the meter will be marked.
+ * Similarly, the same applies for a constructor annotated with metered.
+ * 
+ * <p>
+ * Given a class annotated with {@literal @}Metered like this:
+ * </p>
+ * <pre><code>
+ *     {@literal @}Metered
+ *     public class MeteredBean {
+ *         public void meteredMethod1() {}
+ *         public void meteredMethod2() {}
+ *     }
+ * </code></pre>
+ * A meter for the defining class will be created for each of the constructors/methods.
+ * Each time a constructor/method is invoked, the respective meter will be marked.
  */
 @Inherited
 @Documented
@@ -53,42 +70,49 @@ import org.eclipse.microprofile.metrics.MetricUnit;
 public @interface Metered {
 
     /**
-     * @return The meter's name.
+     * @return The name of the meter.
      */
     @Nonbinding
     String name() default "";
 
     /**
-     * @return The meter's tags.
+     * @return The tags of the meter. Each {@code String} tag must be in the form of 'key=value'. If the input is empty or does
+     * not contain a '=' sign, the entry is ignored.
+     * 
+     * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String[] tags() default {};
 
     /**
-     * @return If {@code true}, use the given name as an absolute name. If {@code false}, use the given name
+     * @return If {@code true}, use the given name as an absolute name. If {@code false} (default), use the given name
      * relative to the annotated class. When annotating a class, this must be {@code false}.
      */
     @Nonbinding
     boolean absolute() default false;
     
     /**
+     * @return The display name of the meter.
      * 
-     * @return display name of the timer from Metadata
+     * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String displayName() default "";
     
     /**
+     * @return The description of the meter.
      * 
-     * @return description of the timer from Metadata
+     * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String description() default "";
     
-   /**
-    * @return unit of the metrics from Metadata
-    *
-    */
+    /**
+     * @return The unit of the meter. By default, the value is {@link MetricUnit#PER_SECOND}.
+     * 
+     * @see org.eclipse.microprofile.metrics.Metadata
+     * @see org.eclipse.microprofile.metrics.MetricUnit
+     */
     @Nonbinding
     String unit() default MetricUnit.PER_SECOND;
 
