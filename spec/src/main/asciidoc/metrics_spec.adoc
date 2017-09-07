@@ -126,6 +126,7 @@ Details of this Java API are described in <<app-metrics-api>>.
 
 Application specific metrics are exposed under `/metrics/application`.
 
+The application context root must be prepended to all application metrics to prevent collisions where multiple applications are deployed to the same server. Where the implementation does not support multiple applications on the same server, or an application is deployed to the root context (`/`), it is not necessary to prepend anything to the metric name.
 
 ===== Vendor specific Metrics
 
