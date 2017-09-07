@@ -1080,10 +1080,10 @@ The following Annotations exist, see below for common fields:
 
 |@Counted | M, C, T | Denotes a counter, which counts the invocations of the annotated object. | MetricUnit.NONE
 |@Gauge   | M, F | Denotes a gauge, which samples the value of the annotated object.  | _none_ Must be supplied by the user
-|@Metered | M, C, T  | Denotes a meter, which tracks the frequency of invocations of the annotated object. | MetricUnit.NANOSECONDS
+|@Metered | M, C, T  | Denotes a meter, which tracks the frequency of invocations of the annotated object. | MetricUnit.PER_SECOND
 |@Metric  | M, F, P | An annotation requesting that a metric should be injected. This annotation can be used on the fields
     of type `Meter`, `Timer`, `Counter`, and `Histogram`. | MetricUnit.NONE
-|@Timed   | M, C, T | Denotes a timer, which tracks duration of the annotated object. | MetricUnit.NONE
+|@Timed   | M, C, T | Denotes a timer, which tracks duration of the annotated object. | MetricUnit.NANOSECONDS
 |===
 (C=Constructor, F=Field, M=Method, P=Parameter, T=Type)
 
@@ -1345,7 +1345,8 @@ public class TimedBean {
 ----
 
 ==== @Metric
-An annotation requesting that a metric should be injected. This annotation can be used on the fields of type `Meter`, `Timer`, `Counter`, and `Histogram`.
+
+An annotation requesting that a metric should be injected or registered. This annotation can be used on the fields of type `Meter`, `Timer`, `Counter`, and `Histogram`.
 
 The implementation must support the following annotation targets:
 
@@ -1356,12 +1357,26 @@ The implementation must support the following annotation targets:
 The following lists the behavior for each annotation target.
 
 ===== FIELD
+When a metric producer field is annotated, the implementation must register the metric to the application `MetricRegistry` (using the <<annotated-naming-convention>>). If a metric with the given name already exist (created by another @Produces for example), an `java.lang.IllegalArgumentException` must be thrown.
 
-When a field of type Meter, Timer, Counter or Histogram is annotated, the implementation must provide the registered metric to the application.
-The implementation must register the metric for the field using the <<annotated-naming-convention>> if it does not already exist, otherwise it
-will retrieve the metric from the registry and produce it to the application.
+.Example of a producer field
+[source, java]
+----
+@Produces
+@Metric(name="hitPercentage")
+@ApplicationScoped
+Gauge<Double> hitPercentage = new Gauge<Double>() {
 
-.Example of an annotated field
+  @Override
+  public Double getValue() {
+      return hits / total;
+  }
+};
+----
+
+When a metric injected field is annotated, the implementation must provide the registered metric with the given name (using the <<annotated-naming-convention>>) if the metric already exist. If no metric exists with the given name then the implementation must produce and register the requested metric.
+
+.Example of an injected field
 [source, java]
 ----
 @Inject
@@ -1369,13 +1384,39 @@ will retrieve the metric from the registry and produce it to the application.
 Counter count;
 ----
 
+
 ===== METHOD
 
-<TO DO>
+When a metric producer method is annotated, the implementation must register the metric produced by the method using the <<annotated-naming-convention>>.
+
+.Example of a producer method
+[source, java]
+----
+@Produces
+@Metric(name = "hitPercentage")
+@ApplicationScoped
+protected Gauge<Double> createHitPercentage() {
+    return new Gauge<Double>() {
+
+      @Override
+      public Double getValue() {
+          return hits / total;
+      }
+    };
+}
+----
 
 ===== PARAMETER
-<TO DO>
+When a metric parameter is annotated, the implementation must provide the registered metric with the given name (using the <<annotated-naming-convention>>) if the metric already exist. If no metric exists with the given name then the implementation must produce and register the requested metric.
 
+.Example of an annotated parameter
+[source, java]
+----
+@Inject
+public void init(@Metric(name="instances") Counter instances) {
+    instances.inc();
+}
+----
 
 [[metric-registries]]
 === Metric Registries
