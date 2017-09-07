@@ -1,4 +1,5 @@
-/**********************************************************************
+/*
+ **********************************************************************
  * Copyright (c) 2017 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
