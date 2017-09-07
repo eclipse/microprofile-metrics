@@ -203,7 +203,7 @@ an overall view if the same metric has different metadata.
 The `MetricRegistry` stores the metrics and metadata information.
 There is one `MetricRegistry` instance for each of the scopes listed in <<scopes>>.
 
-Metrics can be added to or retrieved from the registry either using the <<annotations, Metrics Annotations>> or using the `MetricRegistry` object directly.
+Metrics can be added to or retrieved from the registry either using the <<api-annotations, Metrics Annotations>> or using the `MetricRegistry` object directly.
 
 [[rest-api]]
 === Exposing metrics via REST API
@@ -1039,6 +1039,15 @@ A duplicate metric is a metric that has the same scope and name as an existing o
 
 All Java-Classes are in the top-level package `org.eclipse.microprofile.metrics` or one of its sub-packages.
 
+[TIP]
+====
+The `org.eclipse.microprofile.metrics` package was influenced by the Drop Wizard Metrics project release 3.2.3.
+
+Implementors can consult this project for implementation ideas.
+
+See <<references>> for more information.
+====
+
 [[api-annotations]]
 === Annotations
 
@@ -1055,6 +1064,14 @@ Both the Java Interceptors and CDI specifications set restrictions about the typ
 That implies only _managed beans_ whose bean types are _proxyable_ can be instrumented using the Metrics annotations.
 ====
 
+[TIP]
+====
+The `org.eclipse.microprofile.metrics.annotation` package was influenced by the CDI extension for Dropwizard Metric project release 1.4.0.
+
+Implementors can consult this project for implementation ideas.
+
+See <<references>> for more information.
+====
 The following Annotations exist, see below for common fields:
 
 [cols="1,1,3,2"]
@@ -1597,7 +1614,12 @@ public final class MetricUnit {
 Jolokia JMX-HTTP bridge. Using this for application specific metrics would require those metrics
 to be exposed to JMX first, which many users are not familiar with.
 
+[[references]]
 === References
+
+https://github.com/dropwizard/metrics/tree/v3.2.3[Drop Wizard Metrics 3.2.3]
+
+https://github.com/astefanutti/metrics-cdi/tree/1.4.0[CDI extension for Dropwizard Metrics 1.4.0]
 
 https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html[HTTP return codes]
 
