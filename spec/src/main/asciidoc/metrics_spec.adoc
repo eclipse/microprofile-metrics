@@ -834,7 +834,7 @@ Visit <<meta-data-def>> for the meaning of each key
 |===
 |Name| gc.%s.time
 |DisplayName| Garbage Collection Time
-|Type| Counter
+|Type| Gauge
 |Unit| Milliseconds
 |Multi| true
 |Description| Displays the approximate accumulated collection elapsed time in milliseconds. This attribute displays -1 if the collection elapsed time is undefined for this collector. The Java virtual machine implementation may use a high resolution timer to measure the elapsed time. This attribute may display the same value even if the collection count has been incremented if the collection elapsed time is very short.
@@ -847,7 +847,7 @@ Visit <<meta-data-def>> for the meaning of each key
 |===
 |Name| jvm.uptime
 |DisplayName| JVM Uptime
-|Type| Counter
+|Type| Gauge
 |Unit| Milliseconds
 |Description| Displays the start time of the Java virtual machine in milliseconds. This attribute displays the approximate time when the Java virtual machine started.
 |MBean| java.lang:type=Runtime/Uptime
@@ -861,7 +861,7 @@ Visit <<meta-data-def>> for the meaning of each key
 |===
 |Name| thread.count
 |DisplayName| Thread Count
-|Type| Gauge
+|Type| Counter
 |Unit| None
 |Description| Displays the current number of live threads including both daemon and non-daemon threads
 |MBean| java.lang:type=Threading/ThreadCount
@@ -872,7 +872,7 @@ Visit <<meta-data-def>> for the meaning of each key
 |===
 |Name| thread.daemon.count
 |DisplayName| Daemon Thread Count
-|Type| Gauge
+|Type| Counter
 |Unit| None
 |Description| Displays the current number of live daemon threads.
 |MBean| java.lang:type=Threading/DaemonThreadCount
@@ -922,7 +922,7 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 |===
 |Name| classloader.currentLoadedClass.count
 |DisplayName| Current Loaded Class Count
-|Type| Gauge
+|Type| Counter
 |Unit| None
 |Description| Displays the number of classes that are currently loaded in the Java virtual machine.
 |MBean| java.lang:type=ClassLoading/LoadedClassCount
