@@ -48,7 +48,7 @@ import java.util.Map.Entry;
  * </li>
  * <li>
  * {@code Unit}: (Optional) The unit of the metric.
- * The unit may be any unit specified as a String or one specified in {@link MetricUnit}.
+ * The unit may be any unit specified as a String or one specified in {@link MetricUnits}.
  * </li>
  * <li>
  * {@code Tags}: (Optional) The tags (represented by key/value pairs) of the metric which is augmented by global tags (if available).
@@ -102,7 +102,7 @@ public class Metadata {
      * An optional field which holds the Unit of the metric object.
      * </p>
      */
-    private String unit = MetricUnit.NONE;
+    private String unit = MetricUnits.NONE;
     
     /**
      * Tags of the metric. Augmented by global tags.
@@ -143,16 +143,16 @@ public class Metadata {
         // Assign default units
         switch (type) {
         case TIMER:
-            this.unit = MetricUnit.NANOSECONDS;
+            this.unit = MetricUnits.NANOSECONDS;
             break;
         case METERED:
-            this.unit = MetricUnit.PER_SECOND;
+            this.unit = MetricUnits.PER_SECOND;
             break;
         case HISTOGRAM:
         case GAUGE:
         case COUNTER:
         default:
-            this.unit = MetricUnit.NONE;
+            this.unit = MetricUnits.NONE;
             break;
         }
     }

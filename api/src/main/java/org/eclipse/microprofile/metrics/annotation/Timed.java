@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
 import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InterceptorBinding;
 
-import org.eclipse.microprofile.metrics.MetricUnit;
+import org.eclipse.microprofile.metrics.MetricUnits;
 
 /**
  * An annotation for marking a method, constructor, or class as timed.
@@ -108,12 +108,12 @@ public @interface Timed {
     String description() default "";   
     
    /**
-    * @return The unit of the timer. By default, the value is {@link MetricUnit#NANOSECONDS}.
+    * @return The unit of the timer. By default, the value is {@link MetricUnits#NANOSECONDS}.
     * 
      * @see org.eclipse.microprofile.metrics.Metadata
-     * @see org.eclipse.microprofile.metrics.MetricUnit
+     * @see org.eclipse.microprofile.metrics.MetricUnits
     */
     @Nonbinding
-    String unit() default MetricUnit.NANOSECONDS;
+    String unit() default MetricUnits.NANOSECONDS;
 
 }

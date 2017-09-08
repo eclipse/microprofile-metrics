@@ -31,7 +31,7 @@ package org.eclipse.microprofile.metrics;
  *
  * @author hrupp
  */
-public final class MetricUnit {
+public final class MetricUnits {
   /** No unit */
   public static final String NONE = "none";
 
@@ -81,5 +81,5 @@ public final class MetricUnit {
   public static final String PER_SECOND = "per_second";
   
   
-  private MetricUnit() {}
+  private MetricUnits() {}
 }

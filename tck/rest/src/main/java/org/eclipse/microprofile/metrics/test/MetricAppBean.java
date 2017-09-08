@@ -31,7 +31,7 @@ import org.eclipse.microprofile.metrics.Gauge;
 import org.eclipse.microprofile.metrics.Histogram;
 import org.eclipse.microprofile.metrics.Meter;
 import org.eclipse.microprofile.metrics.MetricRegistry;
-import org.eclipse.microprofile.metrics.MetricUnit;
+import org.eclipse.microprofile.metrics.MetricUnits;
 import org.eclipse.microprofile.metrics.Timer;
 import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.Metered;
@@ -82,7 +82,7 @@ public class MetricAppBean {
 	
 	}
 
-	@org.eclipse.microprofile.metrics.annotation.Gauge(unit=MetricUnit.KIBIBITS)
+	@org.eclipse.microprofile.metrics.annotation.Gauge(unit=MetricUnits.KIBIBITS)
 	public long gaugeMeA() {
 		return 1000L;	
 	}

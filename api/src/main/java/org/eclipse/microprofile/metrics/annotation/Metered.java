@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
 import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InterceptorBinding;
 
-import org.eclipse.microprofile.metrics.MetricUnit;
+import org.eclipse.microprofile.metrics.MetricUnits;
 
 /**
  * An annotation for marking a method, constructor, or class as metered.
@@ -109,12 +109,12 @@ public @interface Metered {
     String description() default "";
     
     /**
-     * @return The unit of the meter. By default, the value is {@link MetricUnit#PER_SECOND}.
+     * @return The unit of the meter. By default, the value is {@link MetricUnits#PER_SECOND}.
      * 
      * @see org.eclipse.microprofile.metrics.Metadata
-     * @see org.eclipse.microprofile.metrics.MetricUnit
+     * @see org.eclipse.microprofile.metrics.MetricUnits
      */
     @Nonbinding
-    String unit() default MetricUnit.PER_SECOND;
+    String unit() default MetricUnits.PER_SECOND;
 
 }

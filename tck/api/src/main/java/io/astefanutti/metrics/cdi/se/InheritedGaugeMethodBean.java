@@ -15,7 +15,7 @@
  */
 package io.astefanutti.metrics.cdi.se;
 
-import org.eclipse.microprofile.metrics.MetricUnit;
+import org.eclipse.microprofile.metrics.MetricUnits;
 import org.eclipse.microprofile.metrics.annotation.Gauge;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -26,7 +26,7 @@ public class InheritedGaugeMethodBean extends GaugeMethodBean {
 
     private long childGauge;
 
-    @Gauge(name = "childGaugeMethod", unit=MetricUnit.NONE)
+    @Gauge(name = "childGaugeMethod", unit=MetricUnits.NONE)
     public long getChildGauge() {
         return childGauge;
     }
