@@ -25,6 +25,7 @@ import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.path.json.JsonPath;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -179,11 +180,11 @@ public class MpMetricsIT  {
 	@InSequence(6)
 	public void testBasePrometheus() {
 	    given()
-	        .header("Accept","text/plain")
+	        .header("Accept",TEXT_PLAIN)
 	        .when().get("/metrics/base")
 	        .then()
 	        .statusCode(200)
-	        .and().contentType("text/plain")
+	        .and().contentType(TEXT_PLAIN)
 	        .and()
 	        .body(containsString("# TYPE base:thread_max_count"),
 	              containsString("base:thread_max_count{tier=\"integration\"}"));
@@ -238,11 +239,11 @@ public class MpMetricsIT  {
 	@InSequence(9)
 	public void testBaseAttributePrometheus() {
 	    given()
-	        .header("Accept","text/plain")
+	        .header("Accept",TEXT_PLAIN)
 	        .when().get("/metrics/base/thread.max.count")
 	        .then()
 	        .statusCode(200)
-	        .and().contentType("text/plain")
+	        .and().contentType(TEXT_PLAIN)
 	        .and()
 	        .body(containsString("# TYPE base:thread_max_count"),
 	              containsString("base:thread_max_count{tier=\"integration\"}"));
@@ -445,7 +446,7 @@ public class MpMetricsIT  {
 	@Test
 	@RunAsClient
 	@InSequence(18)
-	public void testApplicationMetrics() {
+	public void testApplicationMetricsJSON() {
 		Header wantJson = new Header("Accept", APPLICATION_JSON);
 
 		given()
@@ -527,9 +528,11 @@ public class MpMetricsIT  {
 			.body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("stddev") )
 			;
 	}
-  
+
 	private Map<String, MiniMeta> getBaseMetrics() {
-		File f = new File("src/test/resources/base_metrics.xml");
+		ClassLoader cl = this.getClass().getClassLoader();
+		InputStream is = cl.getResourceAsStream("base_metrics.xml");
+
 		DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = null;
 		try {
@@ -539,7 +542,7 @@ public class MpMetricsIT  {
 		}
 		Document document = null;
 		try {
-			document = builder.parse(f);
+			document = builder.parse(is);
 		} catch (SAXException | IOException e) {
 			throw new RuntimeException(e);
 		}
