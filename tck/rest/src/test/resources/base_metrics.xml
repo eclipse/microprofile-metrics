@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <config>
-  <metric multi="false" name="thread.count" type="gauge" unit="none"/>
+  <metric multi="false" name="thread.count" type="counter" unit="none"/>
   <metric multi="false" name="thread.max.count" type="counter" unit="none"/>
-  <metric multi="false" name="thread.daemon.count" type="gauge" unit="none"/>
-  <metric multi="false" name="memory.maxHeap" type="counter" unit="byte"/>
-  <metric multi="false" name="memory.usedHeap" type="gauge" unit="byte"/>
-  <metric multi="false" name="memory.committedHeap" type="gauge" unit="byte"/>
-  <metric multi="false" name="classloader.currentLoadedClass.count" type="gauge" unit="none"/>
+  <metric multi="false" name="thread.daemon.count" type="counter" unit="none"/>
+  <metric multi="false" name="memory.maxHeap" type="gauge" unit="bytes"/>
+  <metric multi="false" name="memory.usedHeap" type="gauge" unit="bytes"/>
+  <metric multi="false" name="memory.committedHeap" type="gauge" unit="bytes"/>
+  <metric multi="false" name="classloader.currentLoadedClass.count" type="counter" unit="none"/>
   <metric multi="false" name="classloader.totalLoadedClass.count" type="counter" unit="none"/>
   <metric multi="false" name="classloader.totalUnloadedClass.count" type="counter" unit="none"/>
+  <metric multi="false" name="cpu.processCpuLoad" type="gauge" unit="percent"/>
   <metric multi="false" name="cpu.availableProcessors" type="gauge" unit="none"/>
   <metric multi="false" name="cpu.systemLoadAverage" type="gauge" unit="none"/>
-  <metric multi="false" name="jvm.uptime" type="counter" unit="ms"/>
+  <metric multi="false" name="jvm.uptime" type="gauge" unit="milliseconds"/>
   <metric multi="true" name="gc.%s.count" type="counter" unit="none"/>
-  <metric multi="true" name="gc.%s.time" type="counter" unit="ms"/>
+  <metric multi="true" name="gc.%s.time" type="gauge" unit="milliseconds"/>
 </config>
