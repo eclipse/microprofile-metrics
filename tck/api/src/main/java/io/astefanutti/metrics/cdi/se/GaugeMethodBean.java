@@ -15,7 +15,7 @@
  */
 package io.astefanutti.metrics.cdi.se;
 
-import org.eclipse.microprofile.metrics.MetricUnit;
+import org.eclipse.microprofile.metrics.MetricUnits;
 import org.eclipse.microprofile.metrics.annotation.Gauge;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -25,7 +25,7 @@ public class GaugeMethodBean {
 
     private long gauge;
 
-    @Gauge(name = "gaugeMethod", unit=MetricUnit.NONE)
+    @Gauge(name = "gaugeMethod", unit=MetricUnits.NONE)
     public long getGauge() {
         return gauge;
     }

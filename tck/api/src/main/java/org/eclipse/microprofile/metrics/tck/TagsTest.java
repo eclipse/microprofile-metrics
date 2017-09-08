@@ -27,7 +27,7 @@ import javax.inject.Inject;
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.Metadata;
 import org.eclipse.microprofile.metrics.MetricType;
-import org.eclipse.microprofile.metrics.MetricUnit;
+import org.eclipse.microprofile.metrics.MetricUnits;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -43,7 +43,7 @@ public class TagsTest {
 	@Inject
 	Counter count;
 	
-	Metadata metadata = new Metadata("count", "countMe", "countMe tags test", MetricType.COUNTER, MetricUnit.PERCENT, "colour=blue");
+	Metadata metadata = new Metadata("count", "countMe", "countMe tags test", MetricType.COUNTER, MetricUnits.PERCENT, "colour=blue");
 	    
     @Deployment
     public static JavaArchive createDeployment() {

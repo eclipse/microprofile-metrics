@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
 import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InterceptorBinding;
 
-import org.eclipse.microprofile.metrics.MetricUnit;
+import org.eclipse.microprofile.metrics.MetricUnits;
 
 /**
  * An annotation requesting that a metric be injected or registered.
@@ -105,12 +105,12 @@ public @interface Metric {
     String description() default "";
     
     /**
-     * @return The unit of the metric. By default, the value is {@link MetricUnit#NONE}.
+     * @return The unit of the metric. By default, the value is {@link MetricUnits#NONE}.
      * 
      * @see org.eclipse.microprofile.metrics.Metadata
-     * @see org.eclipse.microprofile.metrics.MetricUnit
+     * @see org.eclipse.microprofile.metrics.MetricUnits
      */
     @Nonbinding
-    String unit() default MetricUnit.NONE;
+    String unit() default MetricUnits.NONE;
 
 }
