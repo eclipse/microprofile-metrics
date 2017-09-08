@@ -35,6 +35,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
     <dependencyManagement>
         <dependencies>
+ 
             <dependency>
                 <groupId>org.jboss.shrinkwrap.resolver</groupId>
                 <artifactId>shrinkwrap-resolver-bom</artifactId>
@@ -60,76 +61,70 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     </dependencyManagement>
 
     <dependencies>
+
         <dependency>
             <groupId>com.jayway.restassured</groupId>
             <artifactId>rest-assured</artifactId>
             <version>${version.rest-assured}</version>
-            <scope>test</scope>
+            <scope>compile</scope>
         </dependency>
+
+<!-- 
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
             <version>${version.rest-assured}</version>
             <scope>test</scope>
         </dependency>
+--> 
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${version.junit}</version>
-            <scope>test</scope>
+            <scope>compile</scope>
         </dependency>
+
+<!-- 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${version.jackson}</version>
             <scope>test</scope>
         </dependency>
+ -->
         <dependency>
             <groupId>org.jboss.shrinkwrap.resolver</groupId>
             <artifactId>shrinkwrap-resolver-api-maven</artifactId>
             <scope>test</scope>
             <type>jar</type>
         </dependency>
+
         <dependency>
             <groupId>org.jboss.shrinkwrap.resolver</groupId>
             <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
-            <scope>test</scope>
+            <scope>compile</scope>
         </dependency>
+ 
         <dependency>
             <groupId>org.jboss.arquillian.junit</groupId>
             <artifactId>arquillian-junit-container</artifactId>
-            <scope>test</scope>
+            <scope>compile</scope>
         </dependency>
-
-        <!-- Container adapters: -->
-        <dependency>
-            <groupId>org.jboss.arquillian.container</groupId>
-            <artifactId>arquillian-wlp-managed-8.5</artifactId>
-            <version>1.0.0.Final-SNAPSHOT</version>
-        </dependency>
-
-        <!-- XXX need remove this --> 
-        <dependency>
-            <groupId>org.eclipse.microprofile.metrics</groupId>
-            <artifactId>microprofile-metrics-api</artifactId>
-            <version>1.0-DEV</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- XXX need to put this back in.  for dev i am using liberty/dev version of this dep instead 
+ 
         <dependency>
             <groupId>org.eclipse.microprofile.metrics</groupId>
             <artifactId>microprofile-metrics-api</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        -->
+ 
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
             <version>1.2</version>
             <scope>provided</scope>
-        </dependency> 
+        </dependency>
+          
     </dependencies>
 
     <build>
@@ -137,6 +132,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <additionalparam>-Xdoclint:none</additionalparam>
+                </configuration>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -159,49 +157,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.19.1</version>
-                <configuration>
-                    <systemPropertyVariables>
-                        <org.apache.maven.user-settings>${session.request.userSettingsFile.path}</org.apache.maven.user-settings>
-                    </systemPropertyVariables>
-                    <includes>
-                        <include>**/*IT.java</include>
-                        <include>**/*Test.java</include>
-                    </includes>
-                    <environmentVariables>
-                        <MP_METRICS_TAGS>tier=integration</MP_METRICS_TAGS>
-                    </environmentVariables>
-                </configuration>
-            </plugin>
-            <!-- 
-            <plugin>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <configuration>
-                    <includes>
-                        <include>**/*IT.java</include>
-                        <include>**/*Test.java</include>
-                    </includes>
-                    <systemPropertyVariables>
-                        <org.apache.maven.user-settings>${session.request.userSettingsFile.path}</org.apache.maven.user-settings>
-                    </systemPropertyVariables>
-                    <environmentVariables>
-                        <MP_METRICS_TAGS>tier=integration</MP_METRICS_TAGS>
-                    </environmentVariables>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            -->
-
         </plugins>
     </build>
 </project>

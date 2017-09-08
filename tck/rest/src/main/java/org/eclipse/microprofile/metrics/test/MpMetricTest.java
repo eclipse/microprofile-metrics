@@ -60,7 +60,7 @@ import org.xml.sax.SAXException;
  * @author Don Bourne <dbourne@ca.ibm.com>
  */
 @RunWith(Arquillian.class)
-public class MpMetricsIT  {
+public class MpMetricTest  {
 
 	private static final String APPLICATION_JSON = "application/json";
 	private static final String TEXT_PLAIN = "text/plain";
@@ -170,7 +170,7 @@ public class MpMetricsIT  {
 	        .when().get("/metrics/base")
 	        .then()
 	        .statusCode(200)
-	        .and().contentType(MpMetricsIT.APPLICATION_JSON)
+	        .and().contentType(MpMetricTest.APPLICATION_JSON)
 	        .and()
 	        .body(containsString("thread.max.count"));
 	}
@@ -201,7 +201,7 @@ public class MpMetricsIT  {
 	        .when().get("/metrics/base/thread.max.count")
 	        .then()
 	        .statusCode(200)
-	        .and().contentType(MpMetricsIT.APPLICATION_JSON)
+	        .and().contentType(MpMetricTest.APPLICATION_JSON)
 	        .and()
 	        .body(containsString("thread.max.count"));
 	}
@@ -259,7 +259,7 @@ public class MpMetricsIT  {
 	        .header(wantJson)
 	        .options("/metrics/base")
 	        .then().statusCode(200)
-	        .and().contentType(MpMetricsIT.APPLICATION_JSON);
+	        .and().contentType(MpMetricTest.APPLICATION_JSON);
 
 	}
   
