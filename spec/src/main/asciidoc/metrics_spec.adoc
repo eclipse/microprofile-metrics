@@ -1005,7 +1005,7 @@ In order to make setting the values easier, Annotations are made available.
 .Example set-up of two Gauge metrics
 [source,java]
 ----
-@Gauge(unit = MetricUnit.MEGABYTES) <1>
+@Gauge(unit = MetricUnits.MEGABYTES) <1>
 int diskUsage;
 
 @Gauge(name = "queueSize")         <2>
@@ -1014,7 +1014,7 @@ public int getQueueSize() {
 }
 ----
 <1> The metric is of type Gauge and the values are in Megabytes
-<2> No unit is given, so `MetricUnit.NONE` is used, an explicit name is provided
+<2> No unit is given, so `MetricUnits.NONE` is used, an explicit name is provided
 
 NOTE: The programming API follows Dropwizard Metrics 3.2.3 API, but with local changes.
 It is expected that many existing DropWizard Metrics based applications can easily be
@@ -1078,12 +1078,12 @@ The following Annotations exist, see below for common fields:
 |===
 |Annotation | Applies to |  Description | Default Unit
 
-|@Counted | M, C, T | Denotes a counter, which counts the invocations of the annotated object. | MetricUnit.NONE
+|@Counted | M, C, T | Denotes a counter, which counts the invocations of the annotated object. | MetricUnits.NONE
 |@Gauge   | M, F | Denotes a gauge, which samples the value of the annotated object.  | _none_ Must be supplied by the user
-|@Metered | M, C, T  | Denotes a meter, which tracks the frequency of invocations of the annotated object. | MetricUnit.PER_SECOND
+|@Metered | M, C, T  | Denotes a meter, which tracks the frequency of invocations of the annotated object. | MetricUnits.PER_SECOND
 |@Metric  | M, F, P | An annotation requesting that a metric should be injected. This annotation can be used on the fields
-    of type `Meter`, `Timer`, `Counter`, and `Histogram`. | MetricUnit.NONE
-|@Timed   | M, C, T | Denotes a timer, which tracks duration of the annotated object. | MetricUnit.NANOSECONDS
+    of type `Meter`, `Timer`, `Counter`, and `Histogram`. | MetricUnits.NONE
+|@Timed   | M, C, T | Denotes a timer, which tracks duration of the annotated object. | MetricUnits.NANOSECONDS
 |===
 (C=Constructor, F=Field, M=Method, P=Parameter, T=Type)
 
@@ -1104,7 +1104,7 @@ in <<meta-data-def>>.
 `boolean absolute`:: If `true`, uses the given name as an absolute name of the metric. If `false`, prepends the package name and class name before the given name. Default value is `false`.
 `String displayName`:: Optional. A human readable display name for metadata.
 `String description`:: Optional. A description of the metric.
-`MetricUnit unit`:: Unit of the metric. For `@Gauge` no default is provided.
+`MetricUnits unit`:: Unit of the metric. For `@Gauge` no default is provided.
 `String[] tags`:: Optional. Array of Strings in the `<key>=<value>` format to supply special tags to a metric.
 
 NOTE: Implementors are encouraged to issue warnings in the server log if metadata is missing. Implementors
@@ -1511,7 +1511,7 @@ public class Metadata {
   /**
    * Unit of the metric.
    */
-  private String unit = MetricUnit.NONE;
+  private String unit = MetricUnits.NONE;
 
   /**
    * Tags of the metric. Augmented by global tags.
@@ -1594,7 +1594,7 @@ public enum MetricType {
 
 [source, java]
 ----
-public final class MetricUnit {
+public final class MetricUnits {
   /** No unit */
   public static final String NONE = "none";
 

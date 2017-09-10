@@ -105,7 +105,7 @@ public @interface Gauge {
      * @return (Required) The unit of the gauge.
      * 
      * @see org.eclipse.microprofile.metrics.Metadata
-     * @see org.eclipse.microprofile.metrics.MetricUnit
+     * @see org.eclipse.microprofile.metrics.MetricUnits
      */
     @Nonbinding
     String unit();
