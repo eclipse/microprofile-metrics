@@ -52,11 +52,11 @@ public final class MetricUnits {
 
   /** 8 {@link #BITS} */
   public static final String BYTES = "bytes";
-  /** 1024 {@link #BYTES} */
+  /** 1000 {@link #BYTES} */
   public static final String KILOBYTES = "kilobytes";
-  /** 1024 {@link #KILOBYTES} */
+  /** 1000 {@link #KILOBYTES} */
   public static final String MEGABYTES = "megabytes";
-  /** 1024 {@link #MEGABYTES} */
+  /** 1000 {@link #MEGABYTES} */
   public static final String GIGABYTES = "gigabytes";
 
   /** 1/1000 {@link #MICROSECONDS} */
