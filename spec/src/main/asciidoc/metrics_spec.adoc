@@ -1648,8 +1648,6 @@ https://github.com/astefanutti/metrics-cdi/tree/1.4.0[CDI extension for Dropwiza
 
 https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html[HTTP return codes]
 
-https://github.com/pilhuhn/rhq/blob/78eb557ae8f799b628769d76ccece61b6cb452a4/modules/core/domain/src/main/java/org/rhq/core/domain/measurement/MeasurementUnits.java#L43-79[1, RHQ Measurement Units]
-
 https://github.com/unitsofmeasurement[UoM,JSR 363]
 
 http://metrics20.org/spec/[Metrics2.0]
