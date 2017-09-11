@@ -1002,19 +1002,14 @@ using the respective Metric Registry.
 
 In order to make setting the values easier, Annotations are made available.
 
-.Example set-up of two Gauge metrics
+.Example set-up of a Gauge metric.  No unit is given, so `MetricUnits.NONE` is used, an explicit name is provided
 [source,java]
 ----
-@Gauge(unit = MetricUnits.MEGABYTES) <1>
-int diskUsage;
-
-@Gauge(name = "queueSize")         <2>
+@Gauge(name = "queueSize")
 public int getQueueSize() {
   return queue.size;
 }
 ----
-<1> The metric is of type Gauge and the values are in Megabytes
-<2> No unit is given, so `MetricUnits.NONE` is used, an explicit name is provided
 
 NOTE: The programming API follows Dropwizard Metrics 3.2.3 API, but with local changes.
 It is expected that many existing DropWizard Metrics based applications can easily be
