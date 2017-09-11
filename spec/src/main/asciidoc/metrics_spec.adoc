@@ -36,7 +36,7 @@ endif::[]
 :sectnums:
 :icons: font
 
-= Metrics for Eclipse Microprofile
+= Metrics for Eclipse MicroProfile
 
 include::license-alv2.asciidoc[]
 
@@ -44,7 +44,7 @@ include::license-alv2.asciidoc[]
 
 To ensure reliable operation of the software it is necessary to monitor essential
 system parameters. This enhancement proposes the addition of well-known monitoring
-endpoints and metrics for each process adhering to the Eclipse Microprofile standard.
+endpoints and metrics for each process adhering to the Eclipse MicroProfile standard.
 
 This proposal does not talk about health checks. There is a separate specification for
 https://github.com/eclipse/microprofile-health[Health Checks].
@@ -55,7 +55,7 @@ Reliable service of a platform needs monitoring. There is already JMX as
 standard to expose metrics, but remote-JMX is not easy to deal with and
 especially does not fit well in a polyglot environment where other services
 are not running on the JVM.
-To enable monitoring in an easy fashion it is necessary that all Microprofile
+To enable monitoring in an easy fashion it is necessary that all MicroProfile
 implementations follow a certain standard with respect to (base) API path,
 data types involved, always available metrics and return codes used.
 
@@ -69,8 +69,8 @@ information to restart the application if the answer is 'no'.
 Metrics on the other hand can help to determine the health. Beyond this
 they serve to pinpoint issues, provide long term trend data for capacity
 planning and pro-active discovery of issues (e.g. disk usage growing without bounds).
-Metrics can also help those scheduling systems to make decisions when to scale the application
-to run on more or less machines depending on the metrical values.
+Metrics can also help those scheduling systems decide when to scale the application
+to run on more or fewer machines.
 
 
 == Architecture
@@ -90,19 +90,19 @@ Metrics that are exposed need to be configured in the server. On top of the pure
 
 The following three sets of sub-resource (scopes) are exposed.
 
-* base: metrics that all Microprofile vendors have to provide
+* base: metrics that all MicroProfile vendors have to provide
 * vendor: vendor specific metrics (optional)
 * application: application-specific metrics (optional)
 
 NOTE: It is expected that a future version of this specification will also have a sub-resource for integrations
-with other specifications of Microprofile.
+with other specifications of MicroProfile.
 
 [[scopes]]
 ==== Scopes
 
 ===== Required Base metrics
 
-Each vendor of a Microprofile-compliant server can implement setting up the metrics in the _base_ scope in a
+Each vendor of a MicroProfile-compliant server can implement setting up the metrics in the _base_ scope in a
 vendor-specific way.
 The metrics can be hard coded into the server or read from a configuration file or supplied via the Java-API described in <<app-metrics-api>>.
 The Appendix shows a possible data format for such a configuration.
@@ -118,7 +118,7 @@ Required base metrics are exposed under `/metrics/base`.
 
 Application specific metrics can not be backed into the server as they are supposed to be provided by the
 application at runtime. Therefore a Java API is provided. Application specific metrics are supposed to be
-portable to other implementations of the Microprofile. That means that an application written to this
+portable to other implementations of the MicroProfile. That means that an application written to this
 specification which exposes metrics, can expose the same metrics on a different compliant server
 without change.
 
@@ -129,17 +129,17 @@ Application specific metrics are exposed under `/metrics/application`.
 
 ===== Vendor specific Metrics
 
-It is possible for Microprofile server implementors to supply their specific metrics data on top
+It is possible for MicroProfile server implementors to supply their specific metrics data on top
 of the basic set of required metrics.
 Vendor specific metrics are exposed under `/metrics/vendor`.
 
 Examples for vendor specific data could be metrics like:
 
-* OSGi statistics if the Microprofile-enabled container internally runs on top of OSGi.
+* OSGi statistics if the MicroProfile-enabled container internally runs on top of OSGi.
 * Statistics of some internal caching modules
 
 Vendor specific metrics are not supposed to be portable between different implementations
-of Microprofile servers, even if they are compliant with the same version of this specification.
+of MicroProfile servers, even if they are compliant with the same version of this specification.
 
 [[supplying_of_tags]]
 ==== Supplying of Tags
@@ -164,12 +164,12 @@ Tags can be supplied in two ways:
 export MP_METRICS_TAGS=app=shop,tier=integration
 ----
 
-Global tags and per-metric tags are included in the output returned from the REST API.
+Global tags and tags set in metric metadata are included in the output returned from the REST API.
 
 [[meta-data-def]]
 ==== Metadata
 
-For all exposed metrics, matching metadata is exposed and needs to be provided by the setup. This is true for all scopes.
+Metadata can be specified for metrics in any scope. For base metrics, metadata must be provided by the implementation. Metadata is exposed by the REST handler.
 
 TIP: While technically it is possible to expose metrics without (some) of the metadata, it helps tooling and also
 operators when correct metadata is provided, as this helps getting a context and an explanation of the metric.
@@ -179,7 +179,7 @@ The Metadata:
 * unit: a fixed set of string units
 * type:
 ** counter: an incrementally increasing or decreasing numeric value (e.g. total number of requests received or total number of concurrently active HTTP sessions).
-** gauge: a numeric metric that is sampled to obtain its value (e.g. cpu temperature or disk usage).
+** gauge: a metric that is sampled to obtain its value (e.g. cpu temperature or disk usage).
 ** meter: a metric which tracks mean throughput and one-, five-, and fifteen-minute exponentially-weighted moving average throughput.
 ** histogram: a metric which calculates the distribution of a value.
 ** timer: a metric which aggregates timing durations and provides duration statistics, plus throughput statistics.
@@ -220,7 +220,7 @@ Data access must honour the HTTP response codes, especially
 * 200 for successful retrieval of an object
 * 204 when retrieving a subtree that would exist, but has no content. E.g. when the application-specific subtree has no application specific metrics defined.
 * 404 if a directly-addressed item does not exist. This may be a non-existing sub-tree or non-existing object
-* 406 if the HTTP Accept Header in the request header cannot be handled by the server.
+* 406 if the HTTP Accept Header in the request cannot be handled by the server.
 * 500 to indicate that a request failed due to "bad health". The body SHOULD contain details if possible { "details": <text> }
 
 The API MUST NOT return a 500 Internal Server Error code to represent a non-existing resource.
@@ -368,7 +368,7 @@ The value of the counter must be equivalent to a call to the instance Counter's 
 [source, json]
 ----
 {
-  "file_sizes": {
+  "daily_value_changes": {
     "count":2,
     "min":-1624,
     "max":26,
@@ -506,7 +506,7 @@ then `OPTIONS /metrics/base` exposes:
 Data is exposed in the exposition format version 0.0.4 text format as described in
 https://prometheus.io/docs/instrumenting/exposition_formats/#text-format-details[Prometheus text format].
 
-The metadata will be included inline in the Prometheus text format, specified by it. Unlike the JSON format, the text format does not support OPTIONS requests.
+The metadata will be included as part of the normal Prometheus text format. Unlike the JSON format, the text format does not support OPTIONS requests.
 
 TIP: Users that want to write tools to transform the metadata can still request the metadata via OPTIONS
 request and `application/json` media type.
@@ -517,7 +517,7 @@ The above json example would look like this in Prometheus format
 [source]
 ----
 # TYPE base:foo_val_seconds gauge   <1>
-# HELP base:foo_val_seconds The duration of foo after each request <2>
+# HELP base:foo_val_seconds The average duration of foo requests during last 5 minutes <2>
 base:foo_val_seconds{app="webshop"} 12.345  <3>
 # TYPE base:bar_val_bytes gauge <1>
 base:bar_val_bytes{component="backend", app="webshop"} 42000 <3>
@@ -547,7 +547,7 @@ Each tag is a key-value-pair in the format of `<key>="<value>"`.
 [[prometheus_units]]
 ==== Handling of units
 
-The Prometheus text format adheres to using "base units" when creating the HTTP response. Due to the different context of each metric type, certain metrics' values must be converted to the respective "base unit" when responding to Prometheus requests.
+The Prometheus text format adheres to using "base units" when creating the HTTP response. Due to the different context of each metric type, certain metrics' values must be converted to the respective "base unit" when responding to Prometheus requests. For example, times in milliseconds must be divided by 1000 and displayed in the base unit (seconds).
 
 The following sections outline how each metric type is handled:
 
@@ -991,7 +991,7 @@ Note: This is a vendor specific attribute/operation that is not defined in java.
 [[app-metrics-api]]
 == Application Metrics Programming Model
 
-Microprofile Metrics provides a way to register Application-specific metrics to allow applications to expose metrics in
+MicroProfile Metrics provides a way to register Application-specific metrics to allow applications to expose metrics in
 the _application_ scope (see <<scopes>> for the description of scopes).
 
 Metrics and their metadata are added to a _Metric Registry_ upon definition and can afterwards have their values set
@@ -1017,7 +1017,7 @@ ported over by exchanging the package names.
 
 It will be possible to use the non-annotations API, but using the annotations will generally be easier for developers.
 
-=== Responsibility of the Microprofile Metrics implementation
+=== Responsibility of the MicroProfile Metrics implementation
 
 * The implementation must scan the application at deploy time for <<api-annotations>> and register the
 Metrics along with their metadata in the _application_ MetricsRegistry.
@@ -1050,7 +1050,7 @@ All Annotations are in the `org.eclipse.microprofile.metrics.annotation` package
 
 [NOTE]
 ====
-These annotations are interceptor bindings as defined by the Java Interceptors specification.
+These annotations include interceptor bindings as defined by the Java Interceptors specification.
 
 CDI leverages on the Java Interceptors specification to provide the ability to associate interceptors to beans via typesafe interceptor bindings, as a mean to separate cross-cutting concerns, like Metrics annotations instrumentation, from the application business logic.
 
