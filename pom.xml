@@ -234,11 +234,15 @@
                 <configuration>
                     <excludes>
                         <exclude>.travis.yml.*</exclude>
-                        <exclude>bnd.bnd</exclude>
+                        <exclude>**/bnd.bnd</exclude>
                         <exclude>*.log</exclude>
                         <exclude>.checkstyle</exclude>
                         <exclude>.factorypath</exclude>
                         <exclude>.editorconfig</exclude>
+                        <exclude>**/target/</exclude>
+                        <exclude>**/*.iml</exclude>
+                        <exclude>**/*.idea</exclude>
+                        <exclude>**/*.ipr</exclude>
                     </excludes>
                 </configuration>
             </plugin>
