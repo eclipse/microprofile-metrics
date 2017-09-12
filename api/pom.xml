@@ -25,7 +25,6 @@
     </parent>
 
     <artifactId>microprofile-metrics-api</artifactId>
-    <version>1.0-SNAPSHOT</version>
     <name>MicroProfile Metrics API</name>
 
 

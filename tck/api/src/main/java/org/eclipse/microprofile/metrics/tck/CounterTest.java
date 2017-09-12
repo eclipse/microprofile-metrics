@@ -37,47 +37,46 @@ import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
 public class CounterTest {
-    
-	@Deployment
+
+    @Deployment
     public static JavaArchive createDeployment() {
-        return ShrinkWrap.create(JavaArchive.class)
-            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+        return ShrinkWrap.create(JavaArchive.class).addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
-    
+
     @Inject
-    Counter count;
-    
+    private Counter count;
+
     @Test
     @InSequence(1)
     public void getCountTest() {
-    	Assert.assertEquals(0, count.getCount());      
+        Assert.assertEquals(0, count.getCount());
     }
-    
+
     @Test
     @InSequence(2)
     public void incrementTest() {
-    	count.inc();
-    	Assert.assertEquals(1, count.getCount());
+        count.inc();
+        Assert.assertEquals(1, count.getCount());
     }
-    
+
     @Test
     @InSequence(3)
     public void incrementLongTest() {
-    	count.inc(4);
-    	Assert.assertEquals(5, count.getCount());
+        count.inc(4);
+        Assert.assertEquals(5, count.getCount());
     }
-    
+
     @Test
     @InSequence(4)
     public void decrementTest() {
-    	count.dec();
-    	Assert.assertEquals(4, count.getCount());
+        count.dec();
+        Assert.assertEquals(4, count.getCount());
     }
-    
+
     @Test
     @InSequence(5)
     public void decrementLongTest() {
-    	count.dec(4);
-    	Assert.assertEquals(0, count.getCount());
+        count.dec(4);
+        Assert.assertEquals(0, count.getCount());
     }
 }

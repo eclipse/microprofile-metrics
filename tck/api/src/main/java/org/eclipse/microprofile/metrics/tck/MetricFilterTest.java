@@ -35,16 +35,15 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class MetricFilterTest {
-	
-	@Deployment
+
+    @Deployment
     public static JavaArchive createDeployment() {
-        return ShrinkWrap.create(JavaArchive.class)
-            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+        return ShrinkWrap.create(JavaArchive.class).addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
-	
+
     @Inject
-    Metric metric;
-    
+    private Metric metric;
+
     @Test
     public void theAllFilterMatchesAllMetrics() throws Exception {
         Assert.assertTrue(MetricFilter.ALL.matches("", metric));
