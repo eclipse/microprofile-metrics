@@ -42,7 +42,7 @@ include::license-alv2.asciidoc[]
 
 == Introduction
 
-To ensure reliable operation of the software it is necessary to monitor essential
+To ensure reliable operation of software it is necessary to monitor essential
 system parameters. This enhancement proposes the addition of well-known monitoring
 endpoints and metrics for each process adhering to the Eclipse MicroProfile standard.
 
@@ -102,11 +102,11 @@ with other specifications of MicroProfile.
 
 ===== Required Base metrics
 
-Each vendor of a MicroProfile-compliant server can implement setting up the metrics in the _base_ scope in a
-vendor-specific way.
+Required base metrics describe a set of metrics that all MicroProfile-compliant servers have to provide.
+Each vendor can implement the set-up of the metrics in the _base_ scope in a vendor-specific way.
 The metrics can be hard coded into the server or read from a configuration file or supplied via the Java-API described in <<app-metrics-api>>.
 The Appendix shows a possible data format for such a configuration.
-The configuration and set up of the _base_ scope is an implementation detail and is not expected to be portable across vendors.
+The configuration and set up of the _base_ scope is thus an implementation detail and is not expected to be portable across vendors.
 
 Section <<required-metrics>> lists the required metrics. This list also includes a few items marked as optional.
 These are listed here as they are dependent on the underlying JVM and not the server and thus fit better in _base_ scope
@@ -116,7 +116,7 @@ Required base metrics are exposed under `/metrics/base`.
 
 ===== Application metrics
 
-Application specific metrics can not be backed into the server as they are supposed to be provided by the
+Application specific metrics can not be baked into the server as they are supposed to be provided by the
 application at runtime. Therefore a Java API is provided. Application specific metrics are supposed to be
 portable to other implementations of the MicroProfile. That means that an application written to this
 specification which exposes metrics, can expose the same metrics on a different compliant server
@@ -203,15 +203,20 @@ an overall view if the same metric has different metadata.
 The `MetricRegistry` stores the metrics and metadata information.
 There is one `MetricRegistry` instance for each of the scopes listed in <<scopes>>.
 
-Metrics can be added to or retrieved from the registry either using the <<api-annotations, Metrics Annotations>> or using the `MetricRegistry` object directly.
+Metrics can be added to or retrieved from the registry either using the `@Metric` annotation
+(see <<api-annotations, Metrics Annotations>>) or using the `MetricRegistry` object directly.
 
 [[rest-api]]
 === Exposing metrics via REST API
 
 Data is exposed via REST over HTTP under the `/metrics` base path in two different data formats for `GET` requests:
 
-* JSON format - used when the HTTP Accept header matches `application/json`
-* Prometheus text format - default response format when the HTTP Accept header does not match `application/json`
+* JSON format - used when the HTTP Accept header matches `application/json`.
+* Prometheus text format - default response format when the HTTP Accept header does not match any more specific
+media type like `application/json`.
++
+NOTE: Future versions may allow for more export formats that are triggered by their specific media type. The Prometheus
+text format will stay as fall-back.
 
 Formats are detailed below.
 
@@ -240,6 +245,8 @@ The API MUST NOT return a 500 Internal Server Error code to represent a non-exis
 
 == REST endpoints
 
+This section describes the REST-api, that monitoring agents would use to retrieve the collected metrics.
+(Java-) methods mentioned refer to the respective Objects in the Java API. See also <<app-metrics-api>>
 
 === JSON format
 
@@ -440,7 +447,7 @@ The value of the counter must be equivalent to a call to the instance Counter's 
 
 Metadata is exposed in a tree-like fashion with sub-trees for the sub-resources mentioned previously.
 
-*Note:* The implementation should return a 406 response code if the request's HTTP Accept header does not match `application/json`.
+NOTE: The implementation should return a 406 response code if the request's HTTP Accept header does not match `application/json`.
 
 Example:
 
@@ -503,7 +510,7 @@ then `OPTIONS /metrics/base` exposes:
 
 === Prometheus format
 
-Data is exposed in the exposition format version 0.0.4 text format as described in
+Data is exposed in the Prometheus text format, version 0.0.4 as described in
 https://prometheus.io/docs/instrumenting/exposition_formats/#text-format-details[Prometheus text format].
 
 The metadata will be included as part of the normal Prometheus text format. Unlike the JSON format, the text format does not support OPTIONS requests.
@@ -542,7 +549,7 @@ Prometheus text format does not allow for all characters and adds the base unit 
 ==== Handling of tags
 
 Metric tags are appended to the metric name in curly braces `{` and `}` and are separated by comma.
-Each tag is a key-value-pair in the format of `<key>="<value>"`.
+Each tag is a key-value-pair in the format of `<key>="<value>"` (the quotes around the value are required).
 
 [[prometheus_units]]
 ==== Handling of units
@@ -555,7 +562,7 @@ The following sections outline how each metric type is handled:
 
 The metric name and values for `Gauge` and `Histogram` are converted to the "base unit" in respect to the `unit` value in the Metadata.
 
-- If the Metadata is empty, `NONE`, or null. The metric name is used as is without appending the unit name and no scaling is applied.
+- If the Metadata is empty, `NONE`, or null, the metric name is used as is without appending the unit name and no scaling is applied.
 - If the metric's metadata contains a known unit defined in <<metric_units>>, the Prometheus value should be scaled to the _base unit_ of the respective family. The name of the base unit is appended to the metric name delimited by underscores (`_`).
 - If the `unit` is specified and is not defined in <<metric_units>>, the value is not scaled but the `unit` is still appended to the metric name delimited by underscores (`_`).
 
@@ -598,7 +605,7 @@ application:cost_dollars 80
 
 The value of the counter must be the value of `getCount()`.
 
-*Note:* Implementors must not convert the unit of Counters or append the unit suffix to the metric.
+NOTE: Implementors must not convert the unit of Counters or append the unit suffix to the metric.
 
 .Example Prometheus text format for a Counter.
 [source, ruby]
@@ -776,7 +783,7 @@ It is allowed to ignore security for trusted origins (e.g. localhost)
 Base metrics is a list of metrics that all vendors need to implement. Optional base metrics are recommended to be implemented but are not required.
 These metrics are exposed under `/metrics/base`.
 
-The following is a list of required and optional base metrics. All metrics have Multi: false unless otherwise stated.
+The following is a list of required and optional base metrics. All metrics are singletons and have `Multi:` set to `false` unless otherwise stated.
 Visit <<meta-data-def>> for the meaning of each key
 
 
@@ -1099,7 +1106,7 @@ in <<meta-data-def>>.
 `boolean absolute`:: If `true`, uses the given name as an absolute name of the metric. If `false`, prepends the package name and class name before the given name. Default value is `false`.
 `String displayName`:: Optional. A human readable display name for metadata.
 `String description`:: Optional. A description of the metric.
-`MetricUnits unit`:: Unit of the metric. For `@Gauge` no default is provided.
+`String unit`:: Unit of the metric. For `@Gauge` no default is provided. Check the `MetricUnits` class for a set of pre-defined units.
 `String[] tags`:: Optional. Array of Strings in the `<key>=<value>` format to supply special tags to a metric.
 
 NOTE: Implementors are encouraged to issue warnings in the server log if metadata is missing. Implementors
@@ -1407,7 +1414,7 @@ public void init(@Metric(name="instances") Counter instances) {
 
 The `MetricRegistry` is used to maintain a collection of metrics along with their metadata.
 There is one shared singleton of the `MetricRegistry` per scope (_application_, _base_, and _vendor_).
-When metrics are registered using annotations, the metrics must be registered to the _application_ `MetricRegistry`.
+When metrics are registered using annotations, the metrics are registered in the _application_ `MetricRegistry` (and thus the _application_ scope).
 
 When injected, the `@RegistryType` is used as a qualifier to selectively inject either the `APPLICATION`, `BASE`, or `VENDOR` registry.
 If no qualifier is used, the default `MetricRegistry` returned is the `APPLICATION` registry.
@@ -1418,7 +1425,7 @@ Implementations may choose to use a Factory class to produce the injectable `Met
 The `@RegistryType` can be used to retrieve the `MetricRegistry` for a specific scope.
 The implementation must produce the corresponding `MetricRegistry` specified by the `RegistryType`.
 
-NOTE:: The implementor can optionally provide a _read_only_ copy of the `MetricRegistry` for _base_ and _vendor_ scopes.
+NOTE: The implementor can optionally provide a _read_only_ copy of the `MetricRegistry` for _base_ and _vendor_ scopes.
 
 ==== Application Metric Registry
 The implementation must produce the _application_ `MetricRegistry` when no `RegistryType` is provided (`@Default`) or when the `RegistryType` is `APPLICATION`.
@@ -1642,15 +1649,15 @@ to be exposed to JMX first, which many users are not familiar with.
 [[references]]
 === References
 
-https://github.com/dropwizard/metrics/tree/v3.2.3[Drop Wizard Metrics 3.2.3]
+https://github.com/dropwizard/metrics/tree/v3.2.3[Dropwizard Metrics 3.2.3]
 
 https://github.com/astefanutti/metrics-cdi/tree/1.4.0[CDI extension for Dropwizard Metrics 1.4.0]
 
 https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html[HTTP return codes]
 
-https://github.com/unitsofmeasurement[UoM,JSR 363]
+https://github.com/unitsofmeasurement[UoM, JSR 363]
 
-http://metrics20.org/spec/[Metrics2.0]
+http://metrics20.org/spec/[Metrics 2.0]
 
 === Example configuration format for base and vendor-specific data
 
