@@ -23,9 +23,9 @@ import javax.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class InheritedChildGaugeMethodBean {
 
-	private long childGauge;
+    private long childGauge;
 
-    @Gauge(name = "inheritedChildGaugeMethod", unit=MetricUnits.NONE)
+    @Gauge(name = "inheritedChildGaugeMethod", unit = MetricUnits.NONE)
     public long getChildGauge() {
         return childGauge;
     }

@@ -25,7 +25,8 @@ public class CountedMethodBean<T> {
     public T countedMethod(Callable<T> callable) {
         try {
             return callable.call();
-        } catch (Exception cause) {
+        } 
+        catch (Exception cause) {
             throw new RuntimeException(cause);
         }
     }

@@ -40,10 +40,10 @@ public class GaugeInjectionBeanTest {
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
-            // Test bean
-            .addClass(GaugeInjectionBean.class)
-            // Bean archive deployment descriptor
-            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClass(GaugeInjectionBean.class)
+                // Bean archive deployment descriptor
+                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -52,10 +52,11 @@ public class GaugeInjectionBeanTest {
     @Inject
     @Metric(absolute = true, name = "io.astefanutti.metrics.cdi.se.GaugeInjectionBean.gaugeInjection")
     private Gauge<Long> gauge;
-    
+
     @Before
     public void instantiateApplicationScopedBean() {
-        // Let's trigger the instantiation of the application scoped bean explicitly
+        // Let's trigger the instantiation of the application scoped bean
+        // explicitly
         // as only a proxy gets injected otherwise
         bean.getGauge();
     }
@@ -69,7 +70,8 @@ public class GaugeInjectionBeanTest {
 
     @Test
     @InSequence(2)
-    public void callGaugeAfterSetterCall(@Metric(absolute = true, name = "io.astefanutti.metrics.cdi.se.GaugeInjectionBean.gaugeInjection") Gauge<Long> gauge) {
+    public void callGaugeAfterSetterCall(
+            @Metric(absolute = true, name = "io.astefanutti.metrics.cdi.se.GaugeInjectionBean.gaugeInjection") Gauge<Long> gauge) {
         // Call the setter method and assert the gauge is up-to-date
         long value = 1L + Math.round(Math.random() * (Long.MAX_VALUE - 1L));
         bean.setGauge(value);

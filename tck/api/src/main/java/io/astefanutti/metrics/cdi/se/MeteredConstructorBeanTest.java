@@ -15,7 +15,6 @@
  */
 package io.astefanutti.metrics.cdi.se;
 
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
@@ -66,8 +65,9 @@ public class MeteredConstructorBeanTest {
     @InSequence(1)
     public void meteredConstructorCalled() {
         long count = 1L + Math.round(Math.random() * 10);
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < count; i++) {
             instance.get();
+        }
 
         assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(METER_NAME));
         Meter meter = registry.getMeters().get(METER_NAME);

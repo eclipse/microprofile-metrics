@@ -44,17 +44,18 @@ public class CountedClassBeanTest {
 
     private static final String CONSTRUCTOR_NAME = "CountedClassBean";
 
-    private static final String[] METHOD_NAMES = {"countedMethodOne", "countedMethodTwo", "countedMethodProtected", "countedMethodPackagedPrivate"};
+    private static final String[] METHOD_NAMES = { "countedMethodOne", "countedMethodTwo", "countedMethodProtected", "countedMethodPackagedPrivate" };
 
-    private static final Set<String> COUNTER_NAMES = MetricsUtil.absoluteMetricNames(CountedClassBean.class, "countedClass", METHOD_NAMES, CONSTRUCTOR_NAME);
+    private static final Set<String> COUNTER_NAMES = MetricsUtil.absoluteMetricNames(CountedClassBean.class, "countedClass", METHOD_NAMES,
+            CONSTRUCTOR_NAME);
 
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
-            // Test bean
-            .addClasses(CountedClassBean.class, MetricsUtil.class)
-            // Bean archive deployment descriptor
-            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClasses(CountedClassBean.class, MetricsUtil.class)
+                // Bean archive deployment descriptor
+                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -69,7 +70,7 @@ public class CountedClassBeanTest {
         Assert.assertTrue("Counters are not registered correctly", registry.getCounters().keySet().containsAll(COUNTER_NAMES));
 
         // Make sure that the counters haven't been incremented
-        assertThat("Counter counts are incorrect", registry.getCounters().values(), hasItem(Matchers.<Counter>hasProperty("count", equalTo(0L))));
+        assertThat("Counter counts are incorrect", registry.getCounters().values(), hasItem(Matchers.<Counter> hasProperty("count", equalTo(0L))));
     }
 
     @Test
@@ -85,6 +86,6 @@ public class CountedClassBeanTest {
         bean.countedMethodPackagedPrivate();
 
         // Make sure that the counters are back to zero
-        assertThat("Counter counts are incorrect", registry.getCounters().values(), hasItem(Matchers.<Counter>hasProperty("count", equalTo(0L))));
+        assertThat("Counter counts are incorrect", registry.getCounters().values(), hasItem(Matchers.<Counter> hasProperty("count", equalTo(0L))));
     }
 }

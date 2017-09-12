@@ -42,7 +42,7 @@ import io.astefanutti.metrics.cdi.se.util.MetricsUtil;
 @RunWith(Arquillian.class)
 public class MultipleMetricsMethodBeanTest {
 
-    private final static String[] METRIC_NAMES = {"counter", "gauge", "meter", "timer"};
+    private final static String[] METRIC_NAMES = { "counter", "gauge", "meter", "timer" };
 
     private Set<String> absoluteMetricNames() {
         return MetricsUtil.absoluteMetricNames(MultipleMetricsMethodBean.class, METRIC_NAMES);
@@ -55,10 +55,10 @@ public class MultipleMetricsMethodBeanTest {
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
-            // Test bean
-            .addClasses(MultipleMetricsMethodBean.class, MetricsUtil.class)
-            // Bean archive deployment descriptor
-            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClasses(MultipleMetricsMethodBean.class, MetricsUtil.class)
+                // Bean archive deployment descriptor
+                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -69,7 +69,8 @@ public class MultipleMetricsMethodBeanTest {
 
     @Before
     public void instantiateApplicationScopedBean() {
-        // Let's trigger the instantiation of the application scoped bean explicitly
+        // Let's trigger the instantiation of the application scoped bean
+        // explicitly
         // as only a proxy gets injected otherwise
         bean.toString();
     }
@@ -83,7 +84,7 @@ public class MultipleMetricsMethodBeanTest {
     @Test
     @InSequence(2)
     public void callMetricsMethodOnce() {
-    	Assert.assertTrue("Metrics are not registered correctly", registry.getMetrics().keySet().containsAll(absoluteMetricNames()));
+        Assert.assertTrue("Metrics are not registered correctly", registry.getMetrics().keySet().containsAll(absoluteMetricNames()));
 
         // Call the monitored method and assert it's been instrumented
         bean.metricsMethod();
@@ -92,7 +93,8 @@ public class MultipleMetricsMethodBeanTest {
         assertThat("Counter count is incorrect", registry.getCounters().get(absoluteMetricName("counter")).getCount(), is(equalTo(1L)));
         assertThat("Meter count is incorrect", registry.getMeters().get(absoluteMetricName("meter")).getCount(), is(equalTo(1L)));
         assertThat("Timer count is incorrect", registry.getTimers().get(absoluteMetricName("timer")).getCount(), is(equalTo(1L)));
-        // Let's call the gauge at the end as Weld is intercepting the gauge invocation while OWB not
+        // Let's call the gauge at the end as Weld is intercepting the gauge
+        // invocation while OWB not
         assertThat("Gauge value is incorrect", registry.getGauges().get(absoluteMetricName("gauge")).getValue(), hasToString((equalTo("value"))));
     }
 }

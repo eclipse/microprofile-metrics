@@ -17,7 +17,6 @@ package io.astefanutti.metrics.cdi.se;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.everyItem;
 import static org.junit.Assert.assertThat;
 
 import java.util.Set;

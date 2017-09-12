@@ -95,7 +95,8 @@ public class MeteredMethodBeanTest {
         try {
             // Call the metered method and assert an exception is thrown
             bean.meteredMethod();
-        } catch (RuntimeException cause) {
+        }
+        catch (RuntimeException cause) {
             assertThat(cause, is(instanceOf(IllegalStateException.class)));
             assertThat(cause.getMessage(), is(equalTo("No meter with name [" + METER_NAME + "] found in registry [" + registry + "]")));
             // Make sure that the meter hasn't been marked

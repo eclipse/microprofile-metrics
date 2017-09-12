@@ -47,10 +47,10 @@ public class InheritedGaugeMethodBeanTest {
     @Deployment
     public static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
-            // Test beans
-            .addClasses(GaugeMethodBean.class, InheritedParentGaugeMethodBean.class, InheritedChildGaugeMethodBean.class)
-            // Bean archive deployment descriptor
-            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test beans
+                .addClasses(GaugeMethodBean.class, InheritedParentGaugeMethodBean.class, InheritedChildGaugeMethodBean.class)
+                // Bean archive deployment descriptor
+                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -58,23 +58,24 @@ public class InheritedGaugeMethodBeanTest {
 
     @Inject
     private InheritedChildGaugeMethodBean bean;
-    
+
     @Inject
     private InheritedParentGaugeMethodBean pBean;
 
     @Before
     public void instantiateApplicationScopedBean() {
-        // Let's trigger the instantiation of the application scoped bean explicitly
+        // Let's trigger the instantiation of the application scoped bean
+        // explicitly
         // as only a proxy gets injected otherwise
         pBean.getGauge();
-    	bean.getChildGauge();
+        bean.getChildGauge();
     }
 
     @Test
     @InSequence(1)
     public void gaugesCalledWithDefaultValues() {
-    	assertThat("Gauges are not registered correctly", registry.getGauges(), allOf(hasKey(PARENT_GAUGE_NAME), hasKey(CHILD_GAUGE_NAME)));
-    	
+        assertThat("Gauges are not registered correctly", registry.getGauges(), allOf(hasKey(PARENT_GAUGE_NAME), hasKey(CHILD_GAUGE_NAME)));
+
         @SuppressWarnings("unchecked")
         Gauge<Long> parentGauge = registry.getGauges().get(PARENT_GAUGE_NAME);
         @SuppressWarnings("unchecked")

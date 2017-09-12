@@ -15,7 +15,6 @@
  */
 package io.astefanutti.metrics.cdi.se;
 
-
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.Gauge;
 import org.eclipse.microprofile.metrics.annotation.Metric;
@@ -29,30 +28,30 @@ public class MetricProducerFieldBean {
     @Produces
     @Metric(name = "counter1", absolute = true)
     private final Counter counter1 = new SimpleCounter() {
-        
+
     };
 
     @Produces
     @Metric(name = "counter2", absolute = true)
     private final Counter counter2 = new SimpleCounter();
-    
+
     @Produces
     @Metric(name = "ratioGauge", absolute = true)
-    private final Gauge<Double> gauge =  new Gauge<Double>() {
-    	public Double getValue() {
-    		return (double) counter1.getCount() /  (double) counter2.getCount();
-    	};
-	};
-	
+    private final Gauge<Double> gauge = new Gauge<Double>() {
+        public Double getValue() {
+            return (double) counter1.getCount() / (double) counter2.getCount();
+        };
+    };
+
     @Produces
     @FooQualifier
     @Metric(name = "not_registered_metric", absolute = true)
     private final Counter not_registered_metric = new SimpleCounter();
-    
+
     class SimpleCounter implements Counter {
 
-        long count;
-        
+        private long count;
+
         @Override
         public void inc() {
             count++;
