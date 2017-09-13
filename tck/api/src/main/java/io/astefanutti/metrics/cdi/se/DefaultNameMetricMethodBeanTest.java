@@ -36,9 +36,10 @@ import io.astefanutti.metrics.cdi.se.util.MetricsUtil;
 @RunWith(Arquillian.class)
 public class DefaultNameMetricMethodBeanTest {
 
-    private final static String[] METRIC_NAMES = {"defaultNameCountedMethod", "defaultNameMeteredMethod", "defaultNameTimedMethod"};
+    private final static String[] METRIC_NAMES = { "defaultNameCountedMethod", "defaultNameMeteredMethod", "defaultNameTimedMethod" };
 
-    private final static String[] ABSOLUTE_METRIC_NAMES = {"absoluteDefaultNameCountedMethod", "absoluteDefaultNameMeteredMethod", "absoluteDefaultNameTimedMethod"};
+    private final static String[] ABSOLUTE_METRIC_NAMES = { "absoluteDefaultNameCountedMethod", "absoluteDefaultNameMeteredMethod",
+            "absoluteDefaultNameTimedMethod" };
 
     private Set<String> metricNames() {
         Set<String> names = MetricsUtil.absoluteMetricNames(DefaultNameMetricMethodBean.class, METRIC_NAMES);
@@ -49,10 +50,10 @@ public class DefaultNameMetricMethodBeanTest {
     @Deployment
     public static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
-            // Test bean
-            .addClasses(DefaultNameMetricMethodBean.class, MetricsUtil.class)
-            // Bean archive deployment descriptor
-            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClasses(DefaultNameMetricMethodBean.class, MetricsUtil.class)
+                // Bean archive deployment descriptor
+                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject

@@ -15,7 +15,6 @@
  */
 package io.astefanutti.metrics.cdi.se;
 
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -46,10 +45,10 @@ public class MultipleMetricsConstructorBeanTest {
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
-            // Test bean
-            .addClasses(MultipleMetricsConstructorBean.class, MetricsUtil.class)
-            // Bean archive deployment descriptor
-            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClasses(MultipleMetricsConstructorBean.class, MetricsUtil.class)
+                // Bean archive deployment descriptor
+                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -58,18 +57,20 @@ public class MultipleMetricsConstructorBeanTest {
     @Inject
     private Instance<MultipleMetricsConstructorBean> instance;
 
-    //@Test
-    //@InSequence(1)
-    //public void metricsConstructorNotCalledYet() {
-    //    assertThat("Metrics are not registered correctly", registry.getMetrics().keySet(), is(empty()));
-    //}
+    // @Test
+    // @InSequence(1)
+    // public void metricsConstructorNotCalledYet() {
+    // assertThat("Metrics are not registered correctly",
+    // registry.getMetrics().keySet(), is(empty()));
+    // }
 
     @Test
     @InSequence(1)
     public void metricsConstructorCalled() {
         long count = 1L + Math.round(Math.random() * 10);
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < count; i++) {
             instance.get();
+        }
 
         // Make sure that the metrics have been called
         assertThat("Counter count is incorrect", registry.getCounters().get(absoluteMetricName("counter")).getCount(), is(equalTo(count)));

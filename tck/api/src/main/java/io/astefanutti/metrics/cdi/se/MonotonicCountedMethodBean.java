@@ -25,7 +25,8 @@ public class MonotonicCountedMethodBean<T> {
     public T monotonicCountedMethod(Callable<T> callable) {
         try {
             return callable.call();
-        } catch (Exception cause) {
+        }
+        catch (Exception cause) {
             throw new RuntimeException(cause);
         }
     }

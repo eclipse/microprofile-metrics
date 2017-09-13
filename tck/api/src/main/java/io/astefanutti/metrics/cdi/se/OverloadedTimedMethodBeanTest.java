@@ -43,7 +43,8 @@ import io.astefanutti.metrics.cdi.se.util.MetricsUtil;
 @RunWith(Arquillian.class)
 public class OverloadedTimedMethodBeanTest {
 
-    private final static String[] TIMER_NAMES = {"overloadedTimedMethodWithNoArguments", "overloadedTimedMethodWithStringArgument", "overloadedTimedMethodWithListOfStringArgument", "overloadedTimedMethodWithObjectArgument"};
+    private final static String[] TIMER_NAMES = { "overloadedTimedMethodWithNoArguments", "overloadedTimedMethodWithStringArgument",
+            "overloadedTimedMethodWithListOfStringArgument", "overloadedTimedMethodWithObjectArgument" };
 
     private Set<String> absoluteMetricNames() {
         return MetricsUtil.absoluteMetricNames(OverloadedTimedMethodBean.class, TIMER_NAMES);
@@ -52,10 +53,10 @@ public class OverloadedTimedMethodBeanTest {
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
-            // Test bean
-            .addClasses(OverloadedTimedMethodBean.class, MetricsUtil.class)
-            // Bean archive deployment descriptor
-            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClasses(OverloadedTimedMethodBean.class, MetricsUtil.class)
+                // Bean archive deployment descriptor
+                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -67,22 +68,22 @@ public class OverloadedTimedMethodBeanTest {
     @Test
     @InSequence(1)
     public void overloadedTimedMethodNotCalledYet() {
-    	Assert.assertTrue("Metrics are not registered correctly", registry.getMetrics().keySet().containsAll(absoluteMetricNames()));
-    	
+        Assert.assertTrue("Metrics are not registered correctly", registry.getMetrics().keySet().containsAll(absoluteMetricNames()));
+
         // Make sure that all the timers haven't been called yet
-        assertThat("Timer counts are incorrect", registry.getTimers().values(), hasItem(Matchers.<Timer>hasProperty("count", equalTo(0L))));
+        assertThat("Timer counts are incorrect", registry.getTimers().values(), hasItem(Matchers.<Timer> hasProperty("count", equalTo(0L))));
     }
 
     @Test
     @InSequence(2)
     public void callOverloadedTimedMethodOnce() {
-    	Assert.assertTrue("Metrics are not registered correctly", registry.getMetrics().keySet().containsAll(absoluteMetricNames()));
-    	
+        Assert.assertTrue("Metrics are not registered correctly", registry.getMetrics().keySet().containsAll(absoluteMetricNames()));
+
         // Call the timed methods and assert they've all been timed once
         bean.overloadedTimedMethod();
         bean.overloadedTimedMethod("string");
         bean.overloadedTimedMethod(new Object());
         bean.overloadedTimedMethod(Arrays.asList("string1", "string2"));
-        assertThat("Timer counts are incorrect", registry.getTimers().values(), hasItem(Matchers.<Timer>hasProperty("count", equalTo(1L))));
+        assertThat("Timer counts are incorrect", registry.getTimers().values(), hasItem(Matchers.<Timer> hasProperty("count", equalTo(1L))));
     }
 }

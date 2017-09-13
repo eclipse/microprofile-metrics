@@ -23,25 +23,25 @@ import javax.inject.Inject;
 public class TimerFieldBean {
 
     @Inject
-    Timer timerWithoutAnnotation;
+    private Timer timerWithoutAnnotation;
 
     @Inject
     @Metric(absolute = false)
-    Timer timerWithExplicitNonAbsoluteName;
+    private Timer timerWithExplicitNonAbsoluteName;
 
     @Inject
     @Metric
-    Timer timerWithNoName;
+    private Timer timerWithNoName;
 
     @Inject
     @Metric(name = "timerName")
-    Timer timerWithName;
+    private Timer timerWithName;
 
     @Inject
     @Metric(absolute = true)
-    Timer timerWithAbsoluteDefaultName;
+    private Timer timerWithAbsoluteDefaultName;
 
     @Inject
     @Metric(name = "timerAbsoluteName", absolute = true)
-    Timer timerWithAbsoluteName;
+    private Timer timerWithAbsoluteName;
 }

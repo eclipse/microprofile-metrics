@@ -51,7 +51,7 @@ public class TimedClassBeanTest {
 
     private static final String CONSTRUCTOR_TIMER_NAME = MetricsUtil.absoluteMetricName(TimedClassBean.class, "timedClass", CONSTRUCTOR_NAME);
 
-    private static final String[] METHOD_NAMES = {"timedMethodOne", "timedMethodTwo", "timedMethodProtected", "timedMethodPackagedPrivate"};
+    private static final String[] METHOD_NAMES = { "timedMethodOne", "timedMethodTwo", "timedMethodProtected", "timedMethodPackagedPrivate" };
 
     private static final Set<String> METHOD_TIMER_NAMES = MetricsUtil.absoluteMetricNames(TimedClassBean.class, "timedClass", METHOD_NAMES);
 
@@ -62,17 +62,18 @@ public class TimedClassBeanTest {
         }
     };
 
-    private static final Set<String> TIMER_NAMES = MetricsUtil.absoluteMetricNames(TimedClassBean.class, "timedClass", METHOD_NAMES, CONSTRUCTOR_NAME);
+    private static final Set<String> TIMER_NAMES = MetricsUtil.absoluteMetricNames(TimedClassBean.class, "timedClass", METHOD_NAMES,
+            CONSTRUCTOR_NAME);
 
     private static final AtomicLong METHOD_COUNT = new AtomicLong();
 
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
-            // Test bean
-            .addClasses(TimedClassBean.class, MetricsUtil.class)
-            // Bean archive deployment descriptor
-            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClasses(TimedClassBean.class, MetricsUtil.class)
+                // Bean archive deployment descriptor
+                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -83,7 +84,8 @@ public class TimedClassBeanTest {
 
     @Before
     public void instantiateApplicationScopedBean() {
-        // Let's trigger the instantiation of the application scoped bean explicitly
+        // Let's trigger the instantiation of the application scoped bean
+        // explicitly
         // as only a proxy gets injected otherwise
         bean.toString();
     }
@@ -96,7 +98,8 @@ public class TimedClassBeanTest {
         assertThat("Constructor timer count is incorrect", registry.getTimers().get(CONSTRUCTOR_TIMER_NAME).getCount(), is(equalTo(1L)));
 
         // Make sure that the method timers haven't been timed yet
-        assertThat("Method timer counts are incorrect", registry.getTimers(METHOD_TIMERS).values(), everyItem(Matchers.<Timer>hasProperty("count", equalTo(METHOD_COUNT.get()))));
+        assertThat("Method timer counts are incorrect", registry.getTimers(METHOD_TIMERS).values(),
+                everyItem(Matchers.<Timer> hasProperty("count", equalTo(METHOD_COUNT.get()))));
     }
 
     @Test
@@ -114,6 +117,7 @@ public class TimedClassBeanTest {
         bean.timedMethodPackagedPrivate();
 
         // Make sure that the method timers have been timed
-        assertThat("Method timer counts are incorrect", registry.getTimers(METHOD_TIMERS).values(), everyItem(Matchers.<Timer>hasProperty("count", equalTo(METHOD_COUNT.incrementAndGet()))));
+        assertThat("Method timer counts are incorrect", registry.getTimers(METHOD_TIMERS).values(),
+                everyItem(Matchers.<Timer> hasProperty("count", equalTo(METHOD_COUNT.incrementAndGet()))));
     }
 }

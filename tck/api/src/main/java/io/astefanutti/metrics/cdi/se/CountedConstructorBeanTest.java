@@ -15,7 +15,6 @@
  */
 package io.astefanutti.metrics.cdi.se;
 
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
@@ -69,8 +68,9 @@ public class CountedConstructorBeanTest {
     @InSequence(1)
     public void countedConstructorCalled() {
         long count = 1L + Math.round(Math.random() * 10);
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < count; i++) {
             instance.get();
+        }
 
         assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_NAME));
         Counter counter = registry.getCounters().get(COUNTER_NAME);

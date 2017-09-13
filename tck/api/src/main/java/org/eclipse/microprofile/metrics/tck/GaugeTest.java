@@ -40,35 +40,33 @@ import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
 public class GaugeTest {
-	
-	@Inject
-	MetricRegistry metrics;
-	
+
+    @Inject
+    private MetricRegistry metrics;
+
     private final AtomicInteger value = new AtomicInteger(0);
-    
+
     @Deployment
     public static JavaArchive createDeployment() {
-        return ShrinkWrap.create(JavaArchive.class)
-            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+        return ShrinkWrap.create(JavaArchive.class).addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Test
     public void testManualGauge() {
-    	Assert.assertNull(metrics.getGauges().get("tck.gaugetest.gaugemanual"));
-    	gaugeMe();
-    	
-    	Assert.assertEquals(0, (metrics.getGauges().get("tck.gaugetest.gaugemanual").getValue()));
-    	Assert.assertEquals(1, (metrics.getGauges().get("tck.gaugetest.gaugemanual").getValue()));
+        Assert.assertNull(metrics.getGauges().get("tck.gaugetest.gaugemanual"));
+        gaugeMe();
+
+        Assert.assertEquals(0, (metrics.getGauges().get("tck.gaugetest.gaugemanual").getValue()));
+        Assert.assertEquals(1, (metrics.getGauges().get("tck.gaugetest.gaugemanual").getValue()));
     }
-    
+
     public void gaugeMe() {
-    	@SuppressWarnings("unchecked")
-		Gauge<Integer> gaugeManual = metrics.getGauges().get("tck.gaugetest.gaugemanual");
-    	if (gaugeManual == null) {
-    		gaugeManual = value::getAndIncrement;
-    		metrics.register("tck.gaugetest.gaugemanual", gaugeManual);
-    	}
+        @SuppressWarnings("unchecked")
+        Gauge<Integer> gaugeManual = metrics.getGauges().get("tck.gaugetest.gaugemanual");
+        if (gaugeManual == null) {
+            gaugeManual = value::getAndIncrement;
+            metrics.register("tck.gaugetest.gaugemanual", gaugeManual);
+        }
     }
-    
 
 }

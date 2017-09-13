@@ -42,61 +42,59 @@ import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
 public class MetricRegistryTest {
-	
-	@Inject
-	@Metric(name="nameTest", absolute=true)
-	Counter nameTest;
-	
-	@Inject
-	Counter countTemp;
-	
-	@Inject
-	Histogram histoTemp;
-	
-	@Inject
-	Timer timerTemp;
-	
-	@Inject
-	Meter meterTemp;
-	
-	@Inject
-	MetricRegistry metrics;
-	
-	@Deployment
+
+    @Inject
+    @Metric(name = "nameTest", absolute = true)
+    private Counter nameTest;
+
+    @Inject
+    private Counter countTemp;
+
+    @Inject
+    private Histogram histoTemp;
+
+    @Inject
+    private Timer timerTemp;
+
+    @Inject
+    private Meter meterTemp;
+
+    @Inject
+    private MetricRegistry metrics;
+
+    @Deployment
     public static JavaArchive createDeployment() {
-        return ShrinkWrap.create(JavaArchive.class)
-            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+        return ShrinkWrap.create(JavaArchive.class).addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
-	@Test
-	@InSequence(1)
-	public void nameTest() {
-		Assert.assertNotNull(metrics);
-		Assert.assertTrue(metrics.getNames().contains("nameTest"));
-	}
-	
-	@Test
-	@InSequence(2)
-	public void registerTest() {
-		metrics.register("regCountTemp", countTemp);
-		Assert.assertTrue(metrics.getCounters().containsKey("regCountTemp"));
-		
-		metrics.register("regHistoTemp", histoTemp);
-		Assert.assertTrue(metrics.getHistograms().containsKey("regHistoTemp"));
-		
-		metrics.register("regTimerTemp", timerTemp);
-		Assert.assertTrue(metrics.getTimers().containsKey("regTimerTemp"));
-		
-		metrics.register("regMeterTemp", meterTemp);
-		Assert.assertTrue(metrics.getMeters().containsKey("regMeterTemp"));
-	}
-	
+    @Test
+    @InSequence(1)
+    public void nameTest() {
+        Assert.assertNotNull(metrics);
+        Assert.assertTrue(metrics.getNames().contains("nameTest"));
+    }
 
-	@Test
-	@InSequence(3)
-	public void removeTest() {
-		metrics.remove("nameTest");
-		Assert.assertFalse(metrics.getNames().contains("nameTest"));
-	}
+    @Test
+    @InSequence(2)
+    public void registerTest() {
+        metrics.register("regCountTemp", countTemp);
+        Assert.assertTrue(metrics.getCounters().containsKey("regCountTemp"));
+
+        metrics.register("regHistoTemp", histoTemp);
+        Assert.assertTrue(metrics.getHistograms().containsKey("regHistoTemp"));
+
+        metrics.register("regTimerTemp", timerTemp);
+        Assert.assertTrue(metrics.getTimers().containsKey("regTimerTemp"));
+
+        metrics.register("regMeterTemp", meterTemp);
+        Assert.assertTrue(metrics.getMeters().containsKey("regMeterTemp"));
+    }
+
+    @Test
+    @InSequence(3)
+    public void removeTest() {
+        metrics.remove("nameTest");
+        Assert.assertFalse(metrics.getNames().contains("nameTest"));
+    }
 
 }

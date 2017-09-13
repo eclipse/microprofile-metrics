@@ -19,14 +19,13 @@ import org.eclipse.microprofile.metrics.MetricUnits;
 import org.eclipse.microprofile.metrics.annotation.Gauge;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Typed;
 
 @ApplicationScoped
 public class InheritedGaugeMethodBean extends GaugeMethodBean {
 
     private long childGauge;
 
-    @Gauge(name = "childGaugeMethod", unit=MetricUnits.NONE)
+    @Gauge(name = "childGaugeMethod", unit = MetricUnits.NONE)
     public long getChildGauge() {
         return childGauge;
     }

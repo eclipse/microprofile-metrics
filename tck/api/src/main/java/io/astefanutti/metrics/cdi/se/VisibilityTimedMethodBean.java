@@ -31,8 +31,12 @@ public class VisibilityTimedMethodBean {
     protected void protectedTimedMethod() {
     }
 
-    //@Timed
-    // FIXME: It appears that OWB does not support interception of private method while Weld does (before version 2.2.7.Final). Neither the CDI nor Java Interceptors specifications make that point explicit though it may be induced for a method invocation to be considered a business method invocation that the method must be non-private and non-static.
+    // @Timed
+    // FIXME: It appears that OWB does not support interception of private
+    // method while Weld does (before version 2.2.7.Final). Neither the CDI nor
+    // Java Interceptors specifications make that point explicit though it may
+    // be induced for a method invocation to be considered a business method
+    // invocation that the method must be non-private and non-static.
     // http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#biz_method
     // http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#binding_interceptor_to_bean
     private void privateTimedMethod() {

@@ -22,9 +22,6 @@
 
 package org.eclipse.microprofile.metrics.tck;
 
-import javax.inject.Inject;
-
-import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.Metadata;
 import org.eclipse.microprofile.metrics.MetricType;
 import org.eclipse.microprofile.metrics.MetricUnits;
@@ -40,33 +37,30 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public class TagsTest {
 
-	@Inject
-	Counter count;
-	
-	Metadata metadata = new Metadata("count", "countMe", "countMe tags test", MetricType.COUNTER, MetricUnits.PERCENT, "colour=blue");
-	    
+    private Metadata metadata = new Metadata("count", "countMe", "countMe tags test", MetricType.COUNTER,
+            MetricUnits.PERCENT, "colour=blue");
+
     @Deployment
     public static JavaArchive createDeployment() {
-        return ShrinkWrap.create(JavaArchive.class)
-            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+        return ShrinkWrap.create(JavaArchive.class).addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
-    
-	@Test
-	public void tagsTest() {
-		Assert.assertNotNull(metadata);
-		Assert.assertTrue(metadata.getTags().containsValue("blue"));
-	}
-	
-	@Test
-	public void addTagsTest() {	
-		metadata.addTags("colour=green,size=medium");
-		metadata.addTag("number=5");
-		
-		Assert.assertNotNull(metadata);
-		Assert.assertTrue(metadata.getTags().containsKey("size"));
-		Assert.assertTrue(metadata.getTags().containsValue("green"));
-		Assert.assertFalse(metadata.getTags().containsValue("blue"));
-		Assert.assertTrue(metadata.getTags().containsKey("number"));
-	}
+
+    @Test
+    public void tagsTest() {
+        Assert.assertNotNull(metadata);
+        Assert.assertTrue(metadata.getTags().containsValue("blue"));
+    }
+
+    @Test
+    public void addTagsTest() {
+        metadata.addTags("colour=green,size=medium");
+        metadata.addTag("number=5");
+
+        Assert.assertNotNull(metadata);
+        Assert.assertTrue(metadata.getTags().containsKey("size"));
+        Assert.assertTrue(metadata.getTags().containsValue("green"));
+        Assert.assertFalse(metadata.getTags().containsValue("blue"));
+        Assert.assertTrue(metadata.getTags().containsKey("number"));
+    }
 
 }

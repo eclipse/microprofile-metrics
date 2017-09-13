@@ -15,8 +15,11 @@
  */
 package io.astefanutti.metrics.cdi.se;
 
-
-import org.eclipse.microprofile.metrics.*;
+import org.eclipse.microprofile.metrics.Counter;
+import org.eclipse.microprofile.metrics.Gauge;
+import org.eclipse.microprofile.metrics.Meter;
+import org.eclipse.microprofile.metrics.MetricRegistry;
+import org.eclipse.microprofile.metrics.Timer;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
@@ -33,27 +36,27 @@ public class MetricProducerMethodBean {
 
     @Timed(name = "calls")
     public void cachedMethod(boolean hit) {
-        if (hit) hits.mark();
+        if (hit) {
+            hits.mark();
+        }
     }
 
     @Produces
     @Metric(name = "cache-hits")
-    Gauge<Double> cacheHitRatioGauge(final @Metric(name = "hits") Meter hits,
-                                     final @Metric(name = "calls") Timer calls) {
+    Gauge<Double> cacheHitRatioGauge(final @Metric(name = "hits") Meter hits, final @Metric(name = "calls") Timer calls) {
         return new Gauge<Double>() {
-			
-			@Override
-			public Double getValue() {
-				return (double)hits.getCount() / (double)calls.getCount();
-			}
-		};
-        		
- 
+
+            @Override
+            public Double getValue() {
+                return (double) hits.getCount() / (double) calls.getCount();
+            }
+        };
+
     }
 
     @Produces
     @Metric(name = "not_registered_metric")
-    Counter not_registered_metric(MetricRegistry registry, InjectionPoint ip) {
+    Counter notRegisteredMetric(MetricRegistry registry, InjectionPoint ip) {
         return registry.counter("not_registered_metric");
     }
 }

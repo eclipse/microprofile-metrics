@@ -105,7 +105,8 @@ public class CountedMethodBeanTest {
                             return exchanger.exchange(0L);
                         }
                     }));
-                } catch (InterruptedException cause) {
+                }
+                catch (InterruptedException cause) {
                     throw new RuntimeException(cause);
                 }
             }
@@ -155,7 +156,8 @@ public class CountedMethodBeanTest {
                     return null;
                 }
             });
-        } catch (Exception cause) {
+        }
+        catch (Exception cause) {
             assertThat(cause, is(instanceOf(IllegalStateException.class)));
             assertThat(cause.getMessage(), is(equalTo("No counter with name [" + COUNTER_NAME + "] found in registry [" + registry + "]")));
             // Make sure that the counter hasn't been called

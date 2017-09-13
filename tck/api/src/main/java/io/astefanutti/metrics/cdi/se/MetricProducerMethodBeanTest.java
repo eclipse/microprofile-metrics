@@ -19,7 +19,6 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
@@ -96,8 +95,9 @@ public class MetricProducerMethodBeanTest {
         Gauge<Double> gauge = (Gauge<Double>) registry.getGauges().get(CACHE_HITS_METRIC);
 
         long count = 10 + Math.round(Math.random() * 10);
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < count; i++) {
             bean.cachedMethod((Math.random() < 0.5));
+        }
 
         assertThat("Gauge value is incorrect", gauge.getValue(), is(equalTo((double) hits.getCount() / (double) calls.getCount())));
     }

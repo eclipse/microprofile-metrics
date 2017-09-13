@@ -50,7 +50,7 @@ public class MeteredClassBeanTest {
 
     private static final String CONSTRUCTOR_METER_NAME = MetricsUtil.absoluteMetricName(MeteredClassBean.class, "meteredClass", CONSTRUCTOR_NAME);
 
-    private static final String[] METHOD_NAMES = {"meteredMethodOne", "meteredMethodTwo", "meteredMethodProtected", "meteredMethodPackagedPrivate"};
+    private static final String[] METHOD_NAMES = { "meteredMethodOne", "meteredMethodTwo", "meteredMethodProtected", "meteredMethodPackagedPrivate" };
 
     private static final Set<String> METHOD_METER_NAMES = MetricsUtil.absoluteMetricNames(MeteredClassBean.class, "meteredClass", METHOD_NAMES);
 
@@ -61,7 +61,8 @@ public class MeteredClassBeanTest {
         }
     };
 
-    private static final Set<String> METER_NAMES = MetricsUtil.absoluteMetricNames(MeteredClassBean.class, "meteredClass", METHOD_NAMES, CONSTRUCTOR_NAME);
+    private static final Set<String> METER_NAMES = MetricsUtil.absoluteMetricNames(MeteredClassBean.class, "meteredClass", METHOD_NAMES,
+            CONSTRUCTOR_NAME);
 
     private final static AtomicLong CONSTRUCTOR_COUNT = new AtomicLong();
 
@@ -70,10 +71,10 @@ public class MeteredClassBeanTest {
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
-            // Test bean
-            .addClasses(MeteredClassBean.class, MetricsUtil.class)
-            // Bean archive deployment descriptor
-            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClasses(MeteredClassBean.class, MetricsUtil.class)
+                // Bean archive deployment descriptor
+                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -87,10 +88,12 @@ public class MeteredClassBeanTest {
     public void meteredMethodsNotCalledYet() {
         Assert.assertTrue("Meters are not registered correctly", registry.getMeters().keySet().containsAll(METER_NAMES));
 
-        assertThat("Constructor meter count is incorrect", registry.getMeters().get(CONSTRUCTOR_METER_NAME).getCount(), is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
+        assertThat("Constructor meter count is incorrect", registry.getMeters().get(CONSTRUCTOR_METER_NAME).getCount(),
+                is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
 
         // Make sure that the method meters haven't been marked yet
-        assertThat("Method meter counts are incorrect", registry.getMeters(METHOD_METERS).values(), everyItem(Matchers.<Meter>hasProperty("count", equalTo(METHOD_COUNT.get()))));
+        assertThat("Method meter counts are incorrect", registry.getMeters(METHOD_METERS).values(),
+                everyItem(Matchers.<Meter> hasProperty("count", equalTo(METHOD_COUNT.get()))));
     }
 
     @Test
@@ -98,7 +101,8 @@ public class MeteredClassBeanTest {
     public void callMeteredMethodsOnce() {
         Assert.assertTrue("Meters are not registered correctly", registry.getMeters().keySet().containsAll(METER_NAMES));
 
-        assertThat("Constructor meter count is incorrect", registry.getMeters().get(CONSTRUCTOR_METER_NAME).getCount(), is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
+        assertThat("Constructor meter count is incorrect", registry.getMeters().get(CONSTRUCTOR_METER_NAME).getCount(),
+                is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
 
         // Call the metered methods and assert they've been marked
         bean.meteredMethodOne();
@@ -108,6 +112,7 @@ public class MeteredClassBeanTest {
         bean.meteredMethodPackagedPrivate();
 
         // Make sure that the method meters have been marked
-        assertThat("Method meter counts are incorrect", registry.getMeters(METHOD_METERS).values(), everyItem(Matchers.<Meter>hasProperty("count", equalTo(METHOD_COUNT.incrementAndGet()))));
+        assertThat("Method meter counts are incorrect", registry.getMeters(METHOD_METERS).values(),
+                everyItem(Matchers.<Meter> hasProperty("count", equalTo(METHOD_COUNT.incrementAndGet()))));
     }
 }
