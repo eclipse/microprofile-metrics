@@ -128,3 +128,10 @@ To run the TCK, ensure that the above dependencies are installed, and run the fo
 # Modify the test.url variable to point to your server under test
 mvn test -Dtest.url=http://localhost:9080
 ----
+
+If your server under test has basic authentication enabled, run the following command:
+----
+# Modify the test.url variable to point to your server under test.  Modify the test.user and test.pwd variables to appropriate values for your server under test.
+mvn test -Dtest.url=https://localhost:9443 -Dtest.user=someUser -Dtest.pwd=somePassword 
+----
+
