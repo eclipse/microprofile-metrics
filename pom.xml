@@ -250,6 +250,7 @@
                         <exclude>.factorypath</exclude>
                         <exclude>.editorconfig</exclude>
                         <exclude>**/target/</exclude>
+                        <exclude>**/bin/</exclude>
                         <exclude>**/*.iml</exclude>
                         <exclude>**/*.idea</exclude>
                         <exclude>**/*.ipr</exclude>
