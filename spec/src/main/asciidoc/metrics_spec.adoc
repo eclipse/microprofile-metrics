@@ -619,14 +619,14 @@ application:visitors 80
 
 `Meter` is a complex metric type comprised of multiple key/values. Each key will require a suffix to be appended to the metric name. The format is specified by the table below.
 
-The `# HELP` description line is only required for the `count` value as shown below.
+The `# HELP` description line is only required for the `total` value as shown below.
 
 .Prometheus text mapping for a Meter metric
 [cols="2,1,2,1"]
 |===
 | Suffix{label}                   | TYPE    | Value (Meter method)                | Units
 
-| `count`                         | Counter | `getCount()`                        | N/A
+| `total`                         | Counter | `getCount()`                        | N/A
 | `rate_per_second`               | Gauge   | `getMeanRate()`                     | PER_SECOND
 | `one_min_rate_per_second`       | Gauge   | `getOneMinuteRate()`                | PER_SECOND
 | `five_min_rate_per_second`      | Gauge   | `getFiveMinuteRate()`               | PER_SECOND
@@ -636,9 +636,9 @@ The `# HELP` description line is only required for the `count` value as shown be
 .Example Prometheus text format for a Meter
 [source, ruby]
 ----
-# TYPE application:requests_count counter
-# HELP application:requests_count Tracks the number of requests to the server
-application:requests_count 29382
+# TYPE application:requests_total counter
+# HELP application:requests_total Tracks the number of requests to the server
+application:requests_total 29382
 # TYPE application:requests_rate_per_second gauge
 application:requests_rate_per_second 12.223
 # TYPE application:requests_one_min_rate_per_second gauge
@@ -654,18 +654,18 @@ application:requests_fifteen_min_rate_per_second 12.126
 
 `Histogram` is a complex metric type comprised of multiple key/values. Each key will require a suffix to be appended to the metric name with appropriate naming/scaling based on <<prometheus_units>>.  The format is specified by the table below.
 
-The `# HELP` description line is only required for the `count` value as shown below.
+The `# HELP` description line is only required for the `summary` value as shown below.
 
 .Prometheus text mapping for a Histogram metric
 [cols="2,1,2,1"]
 |===
 | Suffix{label}                   | TYPE    | Value (Histogram method)            | Units
 
-| `count`                         | Counter | `getCount()`                        | N/A
 | `min_<units>`                   | Gauge   | `getSnapshot().getMin()`            | <units>^1^
 | `max_<units>`                   | Gauge   | `getSnapshot().getMax()`            | <units>^1^
 | `mean_<units>`                  | Gauge   | `getSnapshot().getMean()`           | <units>^1^
 | `stddev_<units>`                | Gauge   | `getSnapshot().getStdDev()`         | <units>^1^
+| `<units>_count`^2^              | Summary | `getCount()`                        | N/A
 | `<units>{quantile="0.5"}`^2^    | Summary | `getSnapshot().getMedian()`         | <units>^1^
 | `<units>{quantile="0.75"}`^2^   | Summary | `getSnapshot().get75thPercentile()` | <units>^1^
 | `<units>{quantile="0.95"}`^2^   | Summary | `getSnapshot().get95thPercentile()` | <units>^1^
@@ -676,14 +676,11 @@ The `# HELP` description line is only required for the `count` value as shown be
 
 ^1^ The implementation is expected to convert the result returned by the `Histogram` into the base unit (if known). The `<unit>` represents the base metric unit and is named according to  <<prometheus_units>>.
 
-^2^ The `summary` type is a complex metric type for Prometheus which consists of multiple quantile values.
+^2^ The `summary` type is a complex metric type for Prometheus which consists of the count and multiple quantile values.
 
 .Example Prometheus text format for a Histogram with unit bytes.
 [source, ruby]
 ----
-# TYPE application:file_sizes_count counter
-# HELP application:file_sizes_count Users file size
-application:file_sizes_count 2037
 # TYPE application:file_sizes_mean_bytes gauge
 application:file_sizes_mean_bytes 4738.231
 # TYPE application:file_sizes_max_bytes gauge
@@ -693,6 +690,8 @@ application:file_sizes_min_bytes 180
 # TYPE application:file_sizes_stddev_bytes gauge
 application:file_sizes_stddev_bytes 1054.7343037063602
 # TYPE application:file_sizes_bytes summary
+# HELP application:file_sizes_bytes Users file size
+application:file_sizes_bytes_count 2037
 application:file_sizes_bytes{quantile="0.5"} 4201
 application:file_sizes_bytes{quantile="0.75"} 6175
 application:file_sizes_bytes{quantile="0.95"} 13560
@@ -706,14 +705,13 @@ application:file_sizes_bytes{quantile="0.999"} 31716
 
 `Timer` is a complex metric type comprised of multiple key/values. Each key will require a suffix to be appended to the metric name. The format is specified by the table below.
 
-The `# HELP` description line is only required for the `count` value as shown below.
+The `# HELP` description line is only required for the `summary` value as shown below.
 
 .Prometheus text mapping for a Timer metric
 [cols="2,1,2,1"]
 |===
 | Suffix{label}                   | TYPE    | Value (Timer method)                | Units
 
-| `count`                         | Counter | `getCount()`                        | N/A
 | `rate_per_second`               | Gauge   | `getMeanRate()`                     | PER_SECOND
 | `one_min_rate_per_second`       | Gauge   | `getOneMinuteRate()`                | PER_SECOND
 | `five_min_rate_per_second`      | Gauge   | `getFiveMinuteRate()`               | PER_SECOND
@@ -722,6 +720,7 @@ The `# HELP` description line is only required for the `count` value as shown be
 | `max_seconds`                   | Gauge   | `getSnapshot().getMax()`            | SECONDS^1^
 | `mean_seconds`                  | Gauge   | `getSnapshot().getMean()`           | SECONDS^1^
 | `stddev_seconds`                | Gauge   | `getSnapshot().getStdDev()`         | SECONDS^1^
+| `seconds_count`^2^              | Summary | `getCount()`                        | N/A
 | `seconds{quantile="0.5"}`^2^    | Summary | `getSnapshot().getMedian()`         | SECONDS^1^
 | `seconds{quantile="0.75"}`^2^   | Summary | `getSnapshot().get75thPercentile()` | SECONDS^1^
 | `seconds{quantile="0.95"}`^2^   | Summary | `getSnapshot().get95thPercentile()` | SECONDS^1^
@@ -732,14 +731,11 @@ The `# HELP` description line is only required for the `count` value as shown be
 
 ^1^ The implementation is expected to convert the result returned by the `Timer` into seconds
 
-^2^ The `summary` type is a complex metric type for Prometheus which consists of multiple quantile values.
+^2^ The `summary` type is a complex metric type for Prometheus which consists of the count and multiple quantile values.
 
 .Example Prometheus text format for a Timer
 [source, ruby]
 ----
-# TYPE application:response_time_count counter
-# HELP application:response_time_count Server response time for /index.html
-application:response_time_count 80
 # TYPE application:response_time_rate_per_second gauge
 application:response_time_rate_per_second  0.004292520715985437
 # TYPE application:response_time_one_min_rate_per_second gauge
@@ -757,6 +753,8 @@ application:response_time_min_seconds 0.000169916
 # TYPE application:response_time_stddev_seconds gauge
 application:response_time_stddev_seconds 0.000652907
 # TYPE application:response_time_seconds summary
+# HELP application:response_time_seconds Server response time for /index.html
+application:response_time_seconds_count 80
 application:response_time_seconds{quantile="0.5"} 0.0002933240
 application:response_time_seconds{quantile="0.75"} 0.000344914
 application:response_time_seconds{quantile="0.95"} 0.000543647
