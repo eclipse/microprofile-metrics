@@ -24,6 +24,6 @@ export Monitoring data ("Telemetry") to management agents and also a unified
 Java API, that all (application) programmers can use to expose their telemetry
 data.
 
-For the specification see link:spec/src/main/asciidoc/metrics_spec.adoc[Metrics spec]
-
-For discussions visit the https://groups.google.com/forum/#!forum/microprofile[Microprofile Google group].
+* For the specification see link:spec/src/main/asciidoc/metrics_spec.adoc[Metrics spec]
+* To chat or ask questions about the spec, find this spec on Gitter image:https://badges.gitter.im/eclipse/microprofile-metrics.png[link=https://gitter.im/eclipse/microprofile-metrics]
+* For discussions visit the https://groups.google.com/forum/#!forum/microprofile[Microprofile Google group].
