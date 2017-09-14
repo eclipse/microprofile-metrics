@@ -63,7 +63,7 @@ import org.xml.sax.SAXException;
 
 /**
  * Rest Test Kit
- * 
+ *
  * @author Heiko W. Rupp <hrupp@redhat.com>
  * @author Don Bourne <dbourne@ca.ibm.com>
  */
@@ -144,8 +144,13 @@ public class MpMetricTest {
         assert response.containsKey("base");
 
         // these should not be in the response since they have no metrics yet
-        assert !response.containsKey("vendor");
         assert !response.containsKey("application");
+
+        // There may be vendor metrics, so check if the key exists and bail if it has no data
+        if (response.containsKey("vendor")) {
+          Map vendorData = (Map) response.get("vendor");
+          assert vendorData.size()>0;
+        }
     }
 
     @Test
