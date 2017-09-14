@@ -21,7 +21,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         <!-- This is just for now and will not work if the API has a separate release cycle than the rest. -->
         <groupId>org.eclipse.microprofile.metrics</groupId>
         <artifactId>microprofile-metrics-parent</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>microprofile-metrics-rest-tck</artifactId>
@@ -58,7 +58,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <version>${version.rest-assured}</version>
             <scope>compile</scope>
         </dependency>
- 
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -78,27 +78,27 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
             <scope>compile</scope>
         </dependency>
- 
+
         <dependency>
             <groupId>org.jboss.arquillian.junit</groupId>
             <artifactId>arquillian-junit-container</artifactId>
             <scope>compile</scope>
         </dependency>
- 
+
         <dependency>
             <groupId>org.eclipse.microprofile.metrics</groupId>
             <artifactId>microprofile-metrics-api</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
- 
+
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
             <version>1.2</version>
             <scope>provided</scope>
         </dependency>
-          
+
     </dependencies>
 
     <build>
