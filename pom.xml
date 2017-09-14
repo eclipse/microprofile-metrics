@@ -46,6 +46,15 @@
         </license>
     </licenses>
 
+    <developers>
+        <developer>
+            <name>Heiko Rupp</name>
+            <url>https://github.com/pilhuhn</url>
+            <organization>Red Hat</organization>
+            <organizationUrl>https://www.jboss.org</organizationUrl>
+        </developer>
+    </developers>
+
     <scm>
         <url>https://github.com/eclipse/microprofile-metrics</url>
         <connection>scm:git:https://github.com/eclipse/microprofile-metrics.git</connection>
