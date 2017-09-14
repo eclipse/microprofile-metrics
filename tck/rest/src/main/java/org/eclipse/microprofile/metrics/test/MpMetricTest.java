@@ -320,18 +320,20 @@ public class MpMetricTest {
         String[] lines = data.split("\n");
 
         Map<String, MiniMeta> expectedMetadata = getBaseMetrics();
-        for (String line : lines) {
-            if (!line.startsWith("# TYPE base:")) {
-                continue;
-            }
-            String fullLine = line;
-            int c = line.indexOf(":");
-            line = line.substring(c + 1);
-            if (line.startsWith("gc_")) {
-                continue;
-            }
+        for (MiniMeta mm : expectedMetadata.values()) {
+
             boolean found = false;
-            for (MiniMeta mm : expectedMetadata.values()) {
+            // Skip GC
+            if (mm.name.startsWith("gc.")) {
+                continue;
+            }
+            for (String line : lines) {
+                if (!line.startsWith("# TYPE base:")) {
+                    continue;
+                }
+                String fullLine = line;
+                int c = line.indexOf(":");
+                line = line.substring(c + 1);
                 String promName = mm.toPromString();
                 String[] tmp = line.split(" ");
                 assert tmp.length == 2;
@@ -340,7 +342,7 @@ public class MpMetricTest {
                     assert tmp[1].equals(mm.type) : "Expected [" + mm.toString() + "] got [" + fullLine + "]";
                 }
             }
-            assert found : "Not found [" + fullLine + "]";
+            assert found : "Not found [" + mm.toString() + "]";
 
         }
     }
