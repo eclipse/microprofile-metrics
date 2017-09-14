@@ -40,16 +40,16 @@ public class MeterInjectionBeanTest {
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
             // Test bean
-            .addClass(MeteredMethodBean.class)
+            .addClass(MeteredMethodBean2.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
-    private MeteredMethodBean bean;
+    private MeteredMethodBean2 bean;
 
     @Inject
-    @Metric(absolute = true, name = "io.astefanutti.metrics.cdi.se.MeteredMethodBean.meteredMethod")
+    @Metric(absolute = true, name = "io.astefanutti.metrics.cdi.se.MeteredMethodBean2.meteredMethod")
     private Meter meter;
 
     @Test

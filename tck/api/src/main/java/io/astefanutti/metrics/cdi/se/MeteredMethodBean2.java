@@ -17,7 +17,7 @@ package io.astefanutti.metrics.cdi.se;
 
 import org.eclipse.microprofile.metrics.annotation.Metered;
 
-public class MeteredMethodBean {
+public class MeteredMethodBean2 {
 
     @Metered(name = "meteredMethod")
     public void meteredMethod() {

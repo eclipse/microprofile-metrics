@@ -17,10 +17,11 @@ package io.astefanutti.metrics.cdi.se;
 
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
-public class TimedMethodBean {
+public class TimedMethodBean1 {
 
     @Timed(name = "timedMethod")
     public void timedMethod() {
+
     }
 
     public void selfInvocationTimedMethod() {
