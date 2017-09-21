@@ -46,6 +46,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -203,7 +204,7 @@ public class MpMetricTest {
         Map<String, Object> elements = jsonPath.getMap(".");
         List<String> missing = new ArrayList<>();
 
-        Map<String, MiniMeta> baseNames = getBaseMetrics();
+        Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
         for (String item : baseNames.keySet()) {
             if (item.startsWith("gc.")) {
                 continue;
@@ -247,7 +248,7 @@ public class MpMetricTest {
         Map<String, Object> elements = jsonPath.getMap(".");
         List<String> missing = new ArrayList<>();
 
-        Map<String, MiniMeta> baseNames = getBaseMetrics();
+        Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
         for (String item : baseNames.keySet()) {
             if (item.startsWith("gc.")) {
                 continue;
@@ -270,19 +271,23 @@ public class MpMetricTest {
 
         Map<String, Map<String, Object>> elements = jsonPath.getMap(".");
 
-        Map<String, MiniMeta> expectedMetadata = getBaseMetrics();
+        Map<String, MiniMeta> expectedMetadata = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
+              checkMetadataPresent(elements, expectedMetadata);
+
+    }
+
+    private void checkMetadataPresent(Map<String, Map<String, Object>> elements, Map<String, MiniMeta> expectedMetadata) {
         for (Map.Entry<String, MiniMeta> entry : expectedMetadata.entrySet()) {
             MiniMeta item = entry.getValue();
             if (item.name.startsWith("gc.")) {
                 continue; // We don't deal with them here
             }
-            Map<String, Object> fromServer = (Map<String, Object>) elements.get(item.name);
+            Map<String, Object> fromServer = elements.get(item.name);
             assert item.type.equals(fromServer.get("type")) : "expected " + item.type + " but got "
-                    + fromServer.get("type") + " for " + item.name;
+                + fromServer.get("type") + " for " + item.name;
             assert item.unit.equals(fromServer.get("unit")) : "expected " + item.unit + " but got "
-                    + fromServer.get("unit") + " for " + item.name;
+                + fromServer.get("unit") + " for " + item.name;
         }
-
     }
 
     @Test
@@ -319,7 +324,7 @@ public class MpMetricTest {
 
         String[] lines = data.split("\n");
 
-        Map<String, MiniMeta> expectedMetadata = getBaseMetrics();
+        Map<String, MiniMeta> expectedMetadata = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
         for (MiniMeta mm : expectedMetadata.values()) {
 
             boolean found = false;
@@ -469,41 +474,84 @@ public class MpMetricTest {
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("stddev"));
     }
 
-    private Map<String, MiniMeta> getBaseMetrics() {
-        ClassLoader cl = this.getClass().getClassLoader();
-        InputStream is = cl.getResourceAsStream("base_metrics.xml");
+    @Test
+    @RunAsClient
+    @InSequence(19)
+    public void testApplicationMetadataItems() {
+        Header wantJson = new Header("Accept", APPLICATION_JSON);
 
-        DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = null;
-        try {
-            builder = fac.newDocumentBuilder();
-        }
-        catch (ParserConfigurationException e) {
-            e.printStackTrace(); // TODO: Customise this generated block
-        }
-        Document document = null;
-        try {
-            document = builder.parse(is);
-        }
-        catch (SAXException | IOException e) {
-            throw new RuntimeException(e);
+        JsonPath jsonPath = given().header(wantJson).options("/metrics/application").jsonPath();
+
+        Map<String, Object> elements = jsonPath.getMap(".");
+        List<String> missing = new ArrayList<>();
+
+        Map<String, MiniMeta> names = getExpectedMetadataFromXmlFile(MetricRegistry.Type.APPLICATION);
+        for (String item : names.keySet()) {
+            if (!elements.containsKey(item)) {
+                missing.add(item);
+            }
         }
 
-        Element root = (Element) document.getElementsByTagName("config").item(0);
-        NodeList metrics = root.getElementsByTagName("metric");
-        Map<String, MiniMeta> metaMap = new HashMap<>(metrics.getLength());
-        for (int i = 0; i < metrics.getLength(); i++) {
-            Element metric = (Element) metrics.item(i);
-            MiniMeta mm = new MiniMeta();
-            mm.multi = Boolean.parseBoolean(metric.getAttribute("multi"));
-            mm.name = metric.getAttribute("name");
-            mm.type = metric.getAttribute("type");
-            mm.unit = metric.getAttribute("unit");
-            metaMap.put(mm.name, mm);
-        }
-        return metaMap;
+        assert missing.isEmpty() : "Following application items are missing: " + Arrays.toString(missing.toArray());
+    }
+
+    @Test
+    @RunAsClient
+    @InSequence(20)
+    public void testApplicationMetadataTypeAndUnit() {
+        Header wantJson = new Header("Accept", APPLICATION_JSON);
+
+        JsonPath jsonPath = given().header(wantJson).options("/metrics/application").jsonPath();
+
+        Map<String, Map<String, Object>> elements = jsonPath.getMap(".");
+
+        Map<String, MiniMeta> expectedMetadata = getExpectedMetadataFromXmlFile(MetricRegistry.Type.APPLICATION);
+        checkMetadataPresent(elements, expectedMetadata);
 
     }
+
+
+    private Map<String, MiniMeta> getExpectedMetadataFromXmlFile(MetricRegistry.Type scope) {
+      ClassLoader cl = this.getClass().getClassLoader();
+      String fileName;
+      switch (scope) {
+          case BASE:
+              fileName = "base_metrics.xml";
+              break;
+          case APPLICATION:
+              fileName = "application_metrics.xml";
+              break;
+          default:
+              throw new IllegalArgumentException("No definitions for " + scope.getName() + " supported");
+      }
+      InputStream is = cl.getResourceAsStream(fileName);
+
+      DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
+      DocumentBuilder builder;
+      Document document;
+      try {
+          builder = fac.newDocumentBuilder();
+          document = builder.parse(is);
+      }
+      catch (ParserConfigurationException | SAXException | IOException e) {
+          throw new RuntimeException(e);
+      }
+
+      Element root = (Element) document.getElementsByTagName("config").item(0);
+      NodeList metrics = root.getElementsByTagName("metric");
+      Map<String, MiniMeta> metaMap = new HashMap<>(metrics.getLength());
+      for (int i = 0; i < metrics.getLength(); i++) {
+          Element metric = (Element) metrics.item(i);
+          MiniMeta mm = new MiniMeta();
+          mm.multi = Boolean.parseBoolean(metric.getAttribute("multi"));
+          mm.name = metric.getAttribute("name");
+          mm.type = metric.getAttribute("type");
+          mm.unit = metric.getAttribute("unit");
+          metaMap.put(mm.name, mm);
+      }
+      return metaMap;
+
+  }
 
     private static class MiniMeta {
         private String name;
