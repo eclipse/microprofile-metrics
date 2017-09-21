@@ -155,8 +155,11 @@ public class MpMetricTest {
         // all servers should have some base metrics
         assert response.containsKey("base");
 
-        // these should not be in the response since they have no metrics yet
-        assert !response.containsKey("application");
+        // There may be application metrics, so check if the key exists and bail if it has no data
+        if (response.containsKey("application")) {
+          Map applicationData = (Map) response.get("application");
+          assert applicationData.size()>0;
+        }
 
         // There may be vendor metrics, so check if the key exists and bail if it has no data
         if (response.containsKey("vendor")) {
