@@ -99,7 +99,7 @@ public class HistogramTest {
         String histogramLongName = "test.longData.histogram";
         SortedMap<String, Histogram> histograms = metrics.getHistograms();
 
-        Assert.assertTrue(histograms.size() > 2);
+        Assert.assertTrue(histograms.size() == 2);
 
         Assert.assertTrue(histograms.containsKey(histogramIntName));
         Assert.assertTrue(histograms.containsKey(histogramLongName));
