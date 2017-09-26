@@ -1,26 +1,25 @@
 /*
- * Copyright (C) 2010-2013 Coda Hale, Yammer.com
+ **********************************************************************
+ * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ *               2010-2013 Coda Hale, Yammer.com
+ *
+ * See the NOTICES file(s) distributed with this work for additional
+ * information regarding copyright ownership.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
- * Contributors:
- *   2013-04-20 - Coda Hale
- *      Initially authored in dropwizard/metrics SHA:afcf7fd6a12a0f133641
- *   2017-08-17 - Raymond Lam / Ouyang Zhou / IBM Corp
- *      Added Metadata fields
- *   2017-08-24 - Raymond Lam / IBM Corp
- *      Removed unneeded metadata fields, changed to @InterceptorBinding
- */
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ **********************************************************************/
 package org.eclipse.microprofile.metrics.annotation;
 
 import java.lang.annotation.ElementType;
@@ -31,39 +30,54 @@ import java.lang.annotation.Target;
 import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InterceptorBinding;
 
-import org.eclipse.microprofile.metrics.MetricUnit;
-
 /**
- * An annotation for marking a method of an annotated object as a gauge.
- * Given a method like this:
+ * An annotation for marking a method or field as a gauge.
+ * The metric will be registered in the application MetricRegistry.
+ * 
+ * <p>
+ * Given a method annotated with {@literal @}Gauge like this:
+ * </p>
  * <pre><code>
  *     {@literal @}Gauge(name = "queueSize")
  *     public int getQueueSize() {
  *         return queue.size;
  *     }
  * </code></pre>
- * A gauge for the defining class with the name {@code queueSize} will be created which uses the
+ * A gauge with the fully qualified class name + {@code queueSize} will be created which uses the
  * annotated method's return value as its value.
+ * 
+ * <p>
+ * Given a field annotated with {@literal @}Gauge like this:
+ * </p>
+ * <pre><code>
+ *     {@literal @}Gauge
+ *     long value;
+ * </code></pre>
+ * A gauge with the fully qualified class name + {@code value} will be created which uses the
+ * annotated field value as its value.
  */
 @InterceptorBinding
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
+@Target({ ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 public @interface Gauge {
 
     /**
-     * @return The gauge's name.
+     * @return The name of the gauge.
      */
     @Nonbinding
     String name() default "";
 
     /**
-     * @return The gauge's tags.
+     * @return The tags of the gauge. Each {@code String} tag must be in the form of 'key=value'. If the input is empty or does
+     * not contain a '=' sign, the entry is ignored.
+     * 
+     * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String[] tags() default {};
 
     /**
-     * @return If {@code true}, use the given name as an absolute name. If {@code false}, use the given name
+     * @return If {@code true}, use the given name as an absolute name. If {@code false} (default), use the given name
      * relative to the annotated class.
      */
     @Nonbinding
@@ -71,25 +85,29 @@ public @interface Gauge {
     
     
     /**
+     * @return The display name of the gauge.
      * 
-     * @return display name of the timer from Metadata
+     * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String displayName() default "";
     
     /**
+     * @return The description of the gauge.
      * 
-     * @return description of the timer from Metadata
+     * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String description() default "";
     
     
-   /**
-    * @return unit of the metrics from Metadata
-    *
-    */
+    /**
+     * @return (Required) The unit of the gauge.
+     * 
+     * @see org.eclipse.microprofile.metrics.Metadata
+     * @see org.eclipse.microprofile.metrics.MetricUnits
+     */
     @Nonbinding
-    MetricUnit unit();
+    String unit();
 
 }

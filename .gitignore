@@ -1,5 +1,15 @@
-.idea/
-**/target/
-**/.iml
-**/.iws
-**/.DS_Store
+target
+*.iml
+*.ipr
+*.iws
+.idea
+
+/.settings/
+/.project
+/.DS_Store
+/spec/.DS_Store
+/api/.DS_Store
+bumpVersion.sh
+
+# Ignore a release.conf for perform_release/* script usage
+release.conf

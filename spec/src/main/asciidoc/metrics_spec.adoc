@@ -22,8 +22,8 @@
 :doctype: book
 :license: Apache License v2.0
 :source-highlighter: coderay
-:authors: Heiko W. Rupp, Raymond Lam, David Chan
-:email: hrupp@redhat.com, lamr@ca.ibm.com, chdavid@ca.ibm.com
+:authors: Heiko W. Rupp, Raymond Lam, David Chan, Don Bourne, Antonin Stefanutti, Brennan Nichyporuk, Mike Croft, Werner Keil
+:email: hrupp@redhat.com, lamr@ca.ibm.com, chdavid@ca.ibm.com, dbourne@ca.ibm.com, antonin@stefanutti.fr, brennan.nichyporuk@gmail.com, mike.croft@payara.fish, werner@catmedia.us
 ifdef::backend-pdf[]
 :pagenums:
 endif::[]
@@ -36,15 +36,15 @@ endif::[]
 :sectnums:
 :icons: font
 
-= Metrics for Eclipse Microprofile
+= Metrics for Eclipse MicroProfile
 
 include::license-alv2.asciidoc[]
 
 == Introduction
 
-To ensure reliable operation of the software it is necessary to monitor essential
+To ensure reliable operation of software it is necessary to monitor essential
 system parameters. This enhancement proposes the addition of well-known monitoring
-endpoints and metrics for each process adhering to the Eclipse Microprofile standard.
+endpoints and metrics for each process adhering to the Eclipse MicroProfile standard.
 
 This proposal does not talk about health checks. There is a separate specification for
 https://github.com/eclipse/microprofile-health[Health Checks].
@@ -55,7 +55,7 @@ Reliable service of a platform needs monitoring. There is already JMX as
 standard to expose metrics, but remote-JMX is not easy to deal with and
 especially does not fit well in a polyglot environment where other services
 are not running on the JVM.
-To enable monitoring in an easy fashion it is necessary that all Microprofile
+To enable monitoring in an easy fashion it is necessary that all MicroProfile
 implementations follow a certain standard with respect to (base) API path,
 data types involved, always available metrics and return codes used.
 
@@ -69,8 +69,8 @@ information to restart the application if the answer is 'no'.
 Metrics on the other hand can help to determine the health. Beyond this
 they serve to pinpoint issues, provide long term trend data for capacity
 planning and pro-active discovery of issues (e.g. disk usage growing without bounds).
-Metrics can also help those scheduling systems to make decisions when to scale the application
-to run on more or less machines depending on the metrical values.
+Metrics can also help those scheduling systems decide when to scale the application
+to run on more or fewer machines.
 
 
 == Architecture
@@ -90,32 +90,35 @@ Metrics that are exposed need to be configured in the server. On top of the pure
 
 The following three sets of sub-resource (scopes) are exposed.
 
-* base: metrics that all Microprofile vendors have to provide
+* base: metrics that all MicroProfile vendors have to provide
 * vendor: vendor specific metrics (optional)
 * application: application-specific metrics (optional)
 
 NOTE: It is expected that a future version of this specification will also have a sub-resource for integrations
-with other specifications of Microprofile.
+with other specifications of MicroProfile.
 
+[[scopes]]
 ==== Scopes
 
 ===== Required Base metrics
 
-Each vendor of a Microprofile-compliant server can implement setting up the metrics in the _base_ scope in a
-vendor-specific way.
+Required base metrics describe a set of metrics that all MicroProfile-compliant servers have to provide.
+Each vendor can implement the set-up of the metrics in the _base_ scope in a vendor-specific way.
 The metrics can be hard coded into the server or read from a configuration file or supplied via the Java-API described in <<app-metrics-api>>.
 The Appendix shows a possible data format for such a configuration.
-The configuration and set up of the _base_ scope is an implementation detail and is not expected to be portable across vendors.
+The configuration and set up of the _base_ scope is thus an implementation detail and is not expected to be portable across vendors.
 
 Section <<required-metrics>> lists the required metrics. This list also includes a few items marked as optional.
 These are listed here as they are dependent on the underlying JVM and not the server and thus fit better in _base_ scope
 than the _vendor_ one.
 
+Required base metrics are exposed under `/metrics/base`.
+
 ===== Application metrics
 
-Application specific metrics can not be backed into the server as they are supposed to be provided by the
+Application specific metrics can not be baked into the server as they are supposed to be provided by the
 application at runtime. Therefore a Java API is provided. Application specific metrics are supposed to be
-portable to other implementations of the Microprofile. That means that an application written to this
+portable to other implementations of the MicroProfile. That means that an application written to this
 specification which exposes metrics, can expose the same metrics on a different compliant server
 without change.
 
@@ -126,19 +129,19 @@ Application specific metrics are exposed under `/metrics/application`.
 
 ===== Vendor specific Metrics
 
-It is possible for Microprofile server implementors to supply their specific metrics data on top
+It is possible for MicroProfile server implementors to supply their specific metrics data on top
 of the basic set of required metrics.
 Vendor specific metrics are exposed under `/metrics/vendor`.
 
 Examples for vendor specific data could be metrics like:
 
-* OSGi statistics if the Microprofile-enabled container internally runs on top of OSGi.
+* OSGi statistics if the MicroProfile-enabled container internally runs on top of OSGi.
 * Statistics of some internal caching modules
 
 Vendor specific metrics are not supposed to be portable between different implementations
-of Microprofile servers, even if they are compliant with the same version of this specification.
+of MicroProfile servers, even if they are compliant with the same version of this specification.
 
-
+[[supplying_of_tags]]
 ==== Supplying of Tags
 
 Tags (or labels) play an important role in modern microservices and microservice scheduling systems (like e.g. Kubernetes).
@@ -146,7 +149,7 @@ Application code can run on any node and can be re-scheduled to a different node
 an environment gets its own ID; when the container is stopped and a new one started for the same image, it will get a
 different id. The classical mapping of host/node and application runtime on it, therefore no longer works.
 
-Tags have taken over the role to for example identify an application (`app=myShop`), the tier inside the application
+Tags have taken over the role to, for example, identify an application (`app=myShop`), the tier inside the application
 (`tier=database` or `tier=app_server`) and also the node/container id. Aggregation of metrics can then work over label
 queries (Give me the API hit count for `app=myShop && tier=app_server`).
 
@@ -161,12 +164,12 @@ Tags can be supplied in two ways:
 export MP_METRICS_TAGS=app=shop,tier=integration
 ----
 
-Global tags will be appended to the per-metric tags.
+Global tags and tags set in metric metadata are included in the output returned from the REST API.
 
 [[meta-data-def]]
 ==== Metadata
 
-For all exposed metrics, matching metadata is exposed and needs to be provided by the setup. This is true for all scopes.
+Metadata can be specified for metrics in any scope. For base metrics, metadata must be provided by the implementation. Metadata is exposed by the REST handler.
 
 TIP: While technically it is possible to expose metrics without (some) of the metadata, it helps tooling and also
 operators when correct metadata is provided, as this helps getting a context and an explanation of the metric.
@@ -175,15 +178,15 @@ The Metadata:
 
 * unit: a fixed set of string units
 * type:
-** counter: a monotonically increasing or decreasing numeric value (e.g. total number of requests received).
-** gauge: a numeric value that can arbitrarily go up and down (e.g. cpu or disk usage).
-** meter: a metric which measures mean throughput and one-, five-, and fifteen-minute exponentially-weighted moving average throughput.
+** counter: an incrementally increasing or decreasing numeric value (e.g. total number of requests received or total number of concurrently active HTTP sessions).
+** gauge: a metric that is sampled to obtain its value (e.g. cpu temperature or disk usage).
+** meter: a metric which tracks mean throughput and one-, five-, and fifteen-minute exponentially-weighted moving average throughput.
 ** histogram: a metric which calculates the distribution of a value.
-** timer: A timer metric which aggregates timing durations and provides duration statistics, plus throughput statistics.
+** timer: a metric which aggregates timing durations and provides duration statistics, plus throughput statistics.
 * description (optional): A human readable description of the metric.
 * displayName (optional): A human readable name of the metric for display purposes if the metric name is not
 human readable. This could e.g. be the case when the metric name is a uuid.
-* tags (optional): A list of `key=value` pairs, which are separated by comma. See also <<_supplying_of_tags>>.
+* tags (optional): A list of `key=value` pairs, which are separated by comma. See also <<supplying_of_tags>>.
 
 Metadata must not change over the lifetime of a process (i.e. it is not allowed
 to return the units as seconds in one retrieval and as hours in a subsequent one).
@@ -197,50 +200,72 @@ will be "the same" and form part of an app, where it would be confusing in
 an overall view if the same metric has different metadata.
 
 === Metric Registry
-<TO DO>
+The `MetricRegistry` stores the metrics and metadata information.
+There is one `MetricRegistry` instance for each of the scopes listed in <<scopes>>.
+
+Metrics can be added to or retrieved from the registry either using the `@Metric` annotation
+(see <<api-annotations, Metrics Annotations>>) or using the `MetricRegistry` object directly.
 
 [[rest-api]]
 === Exposing metrics via REST API
 
-Data is exposed via REST over http under the `/metrics` base path in two default data formats for `GET` requests:
+Data is exposed via REST over HTTP under the `/metrics` base path in two different data formats for `GET` requests:
 
-* Json format.
-* Prometheus text format.
+* JSON format - used when the HTTP Accept header matches `application/json`.
+* Prometheus text format - default response format when the HTTP Accept header does not match any more specific
+media type like `application/json`.
++
+NOTE: Future versions may allow for more export formats that are triggered by their specific media type. The Prometheus
+text format will stay as fall-back.
 
 Formats are detailed below.
 
-Data access must honour the http response codes, especially
+Data access must honour the HTTP response codes, especially
 
 * 200 for successful retrieval of an object
 * 204 when retrieving a subtree that would exist, but has no content. E.g. when the application-specific subtree has no application specific metrics defined.
-* 404 if an directly-addressed item does not exist. This may be a non-existing sub-tree or non-existing object
+* 404 if a directly-addressed item does not exist. This may be a non-existing sub-tree or non-existing object
+* 406 if the HTTP Accept Header in the request cannot be handled by the server.
 * 500 to indicate that a request failed due to "bad health". The body SHOULD contain details if possible { "details": <text> }
 
-The Api MUST NOT return a 500 Internal Server Error code to represent a non-existing resource.
+The API MUST NOT return a 500 Internal Server Error code to represent a non-existing resource.
 
-Accessing `/metrics` will return all registered metrics.
+.Supported REST endpoints
+[cols="2,1,1,3"]
+|===
+| Endpoint | Request Type | Supported Formats | Description
 
-Accessing `/metrics/<scope>` will only return metrics registered for the respective scope. Scopes are listed in <<metrics-setup>>.
+| `/metrics` | GET | JSON, Prometheus | Returns all registered metrics
+| `/metrics/<scope>` | GET | JSON, Prometheus | Returns metrics registered for the respective scope. Scopes are listed in <<metrics-setup>>
+| `/metrics/<scope>/<metric_name>` | GET | JSON, Prometheus | Returns the metric that matches the metric name for the respective scope
+| `/metrics` | OPTIONS | JSON | Returns all registered metrics' metadata
+| `/metrics/<scope>` | OPTIONS | JSON | Returns metrics' metadata registered for the respective scope. Scopes are listed in <<metrics-setup>>
+| `/metrics/<scope>/<metric_name>` | OPTIONS | JSON | Returns the metric's metadata that matches the metric name for the respective scope
+|===
 
+== REST endpoints
 
-==== JSON format
+This section describes the REST-api, that monitoring agents would use to retrieve the collected metrics.
+(Java-) methods mentioned refer to the respective Objects in the Java API. See also <<app-metrics-api>>
 
-* Metrics will respond to GET requests and are exposed in a tree like fashion with sub-trees for the sub-resources mentioned in the previous section.
-A sub-tree that does not contain data can be omitted.
+=== JSON format
+
+* When using JSON format, the REST API will respond to GET requests with data formatted in a tree like fashion with sub-trees for the sub-resources.
+A sub-tree that does not contain data must be omitted.
 * A 'shadow tree' that responds to OPTIONS will provide the metadata.
 
-*REST-Api Objects*
+*REST-API Objects*
 
-Api-objects MAY include one or more metrics as in
+API-objects MAY include one or more metrics as in
 
-[source,json]
+[source]
 ----
 {
-  "thread-count" : 33,
-  "peak-thread-count" : 47,
-  "total-started-thread-count" : 49,
-  "current-thread-cpu-time" : 66855000,
-  "current-thread-user-time" : 64003000
+  "thread.count" : 33,
+  "thread.max.count" : 47,
+  "memory.maxHeap" : 3817863211,
+  "memory.usedHeap" : 16859081,
+  "memory.committedHeap" : 64703546
 }
 ----
 
@@ -249,28 +274,180 @@ or
 [source]
 ----
 {
-  "count": 45
+  "hitCount": 45
 }
 ----
 
 In case `/metrics` is requested, then the data for the scopes are wrapped in the scope name:
 
-[source,javascript]
+[source]
 ----
 {
-  "base": {
-     "thread-count" : 33,
-     "peak-thread-count" : 47,
+  "application": {
+    "hitCount": 45
   },
-  "vendor": [...]
+  "base": {
+     "thread.count" : 33,
+     "thread.max.count" : 47
+  },
+  "vendor": {...}
 }
 ----
 
-*Metadata*
+==== Gauge JSON Format
+
+The value of the gauge must be equivalent to a call to the instance Gauge's `getValue()`.
+
+.Example Gauge JSON GET Response
+[source, json]
+----
+{
+  "responsePercentage": 48.45632
+}
+----
+
+==== Counter JSON Format
+
+The value of the counter must be equivalent to a call to the instance Counter's  `getCount()`.
+
+.Example Counter JSON GET Response
+[source, json]
+----
+{
+  "hitCount": 45
+}
+----
+
+==== Meter JSON Format
+
+`Meter` is a complex metric type comprised of multiple key/values. The format is specified by the table below.
+
+.JSON mapping for a Meter metric
+[cols="1,4"]
+|===
+| JSON Key | Value (Equivalent Meter method)
+
+| `count` | `getCount()`
+| `meanRate` | `getMeanRate()`
+| `oneMinRate` | `getOneMinuteRate()`
+| `fiveMinRate` | `getFiveMinuteRate()`
+| `fifteenMinRate` | `getFifteenMinuteRate()`
+|===
+
+.Example Meter JSON GET Response
+[source, json]
+----
+{
+  "requests": {
+    "count": 29382,
+    "meanRate": 12.223,
+    "oneMinRate": 12.563,
+    "fiveMinRate": 12.364,
+    "fifteenMinRate": 12.126,
+  }
+}
+----
+
+
+==== Histogram JSON Format
+
+`Histogram` is a complex metric type comprised of multiple key/values. The format is specified by the table below.
+
+.JSON mapping for a Histogram metric
+[cols="1,4"]
+|===
+| JSON Key | Value (Equivalent Histogram method)
+
+| `count` | `getCount()`
+| `min` | `getSnapshot().getMin()`
+| `max` | `getSnapshot().getMax()`
+| `mean` | `getSnapshot().getMean()`
+| `stddev` | `getSnapshot().getStdDev()`
+| `p50` | `getSnapshot().getMedian()`
+| `p75` | `getSnapshot().get75thPercentile()`
+| `p95` | `getSnapshot().get95thPercentile()`
+| `p98` | `getSnapshot().get98thPercentile()`
+| `p99` | `getSnapshot().get99thPercentile()`
+| `p999` | `getSnapshot().get999thPercentile()`
+|===
+
+.Example Histogram JSON GET Response
+[source, json]
+----
+{
+  "daily_value_changes": {
+    "count":2,
+    "min":-1624,
+    "max":26,
+    "mean":-799.0,
+    "stddev":825.0,
+    "p50":26.0,
+    "p75":26.0,
+    "p95":26.0,
+    "p98":26.0,
+    "p99":26.0,
+    "p999":26.0
+  }
+}
+----
+
+
+==== Timer JSON Format
+
+`Timer` is a complex metric type comprised of multiple key/values. The format is specified by the table below.
+
+.JSON mapping for a Timer metric
+[cols="1,4"]
+|===
+| JSON Key | Value (Equivalent Timer method)
+
+| `count` | `getCount()`
+| `meanRate` | `getMeanRate()`
+| `oneMinRate` | `getOneMinuteRate()`
+| `fiveMinRate` | `getFiveMinuteRate()`
+| `fifteenMinRate` | `getFifteenMinuteRate()`
+| `min` | `getSnapshot().getMin()`
+| `max` | `getSnapshot().getMax()`
+| `mean` | `getSnapshot().getMean()`
+| `stddev` | `getSnapshot().getStdDev()`
+| `p50` | `getSnapshot().getMedian()`
+| `p75` | `getSnapshot().get75thPercentile()`
+| `p95` | `getSnapshot().get95thPercentile()`
+| `p98` | `getSnapshot().get98thPercentile()`
+| `p99` | `getSnapshot().get99thPercentile()`
+| `p999` | `getSnapshot().get999thPercentile()`
+|===
+
+.Example Timer JSON GET Response
+[source, json]
+----
+{
+  "responseTime": {
+    "count": 29382,
+    "meanRate":12.185627192860734,
+    "oneMinRate": 12.563,
+    "fiveMinRate": 12.364,
+    "fifteenMinRate": 12.126,
+    "min":169916,
+    "max":5608694,
+    "mean":415041.00024926325,
+    "stddev":652907.9633011606,
+    "p50":293324.0,
+    "p75":344914.0,
+    "p95":543647.0,
+    "p98":2706543.0,
+    "p99":5608694.0,
+    "p999":5608694.0
+  }
+}
+----
+
+==== Metadata
 
 
 Metadata is exposed in a tree-like fashion with sub-trees for the sub-resources mentioned previously.
-The same wrapping of scopes applies as for metrics.
+
+NOTE: The implementation should return a 406 response code if the request's HTTP Accept header does not match `application/json`.
 
 Example:
 
@@ -288,7 +465,7 @@ then `OPTIONS /metrics/base/fooVal` will expose:
 
 {
   "fooVal": {
-    "unit": "ms",
+    "unit": "milliseconds",
     "type": "gauge",
     "description": "The size of foo after each request",
     "displayName": "Size of foo",
@@ -311,19 +488,19 @@ If `GET /metrics/base` exposes multiple values like this:
 
 then `OPTIONS /metrics/base` exposes:
 
-.Example of Json output of Metadata
+.Example of JSON output of Metadata
 [source]
 ----
 {
   "fooVal": {
-    "unit": "ms",
+    "unit": "milliseconds",
     "type": "gauge",
-    "description": "The duration of foo after each request",
+    "description": "The average duration of foo requests during last 5 minutes",
     "displayName": "Duration of foo",
     "tags": "app=webshop"
   },
   "barVal": {
-    "unit": "mbytes",
+    "unit": "megabytes",
     "type": "gauge",
     "tags": "component=backend,app=webshop"
   }
@@ -331,16 +508,15 @@ then `OPTIONS /metrics/base` exposes:
 ----
 
 
-==== Prometheus format
+=== Prometheus format
 
-Data is exposed in text format as described in
-https://prometheus.io/docs/instrumenting/exposition_formats/#text-format-details[Prometheus text format] when
-the GET request asks for `text/plain` encoding.
+Data is exposed in the Prometheus text format, version 0.0.4 as described in
+https://prometheus.io/docs/instrumenting/exposition_formats/#text-format-details[Prometheus text format].
 
-The metadata will be included inline in the Prometheus text format, specified by it.
+The metadata will be included as part of the normal Prometheus text format. Unlike the JSON format, the text format does not support OPTIONS requests.
 
 TIP: Users that want to write tools to transform the metadata can still request the metadata via OPTIONS
-request and json media type.
+request and `application/json` media type.
 
 The above json example would look like this in Prometheus format
 
@@ -348,36 +524,48 @@ The above json example would look like this in Prometheus format
 [source]
 ----
 # TYPE base:foo_val_seconds gauge   <1>
-# HELP base:foo_val_seconds The duration of foo after each request <2>
+# HELP base:foo_val_seconds The average duration of foo requests during last 5 minutes <2>
 base:foo_val_seconds{app="webshop"} 12.345  <3>
 # TYPE base:bar_val_bytes gauge <1>
 base:bar_val_bytes{component="backend", app="webshop"} 42000 <3>
 ----
 <1> Metric names are turned from camel case into snake_case.
 <2> The description goes into the HELP line
-<3> Metric names gets the base unit of the family appended with `_` and defined labels. Values are scaled accordingly
+<3> Metric names gets the base unit of the family appended with `_` and defined labels. Values are scaled accordingly. See <<prometheus_units>>
 
-===== Translation rules for metric names
+==== Translation rules for metric names
 
 Prometheus text format does not allow for all characters and adds the base unit of a family to the name.
 
-* Dot (`.`), Space (` `), Dash (`-`) are translated to underscore (`_`).
-* Scope is always starts the metric name.
+* Dot (`.`), Space ( ), Dash (`-`) are translated to underscore (`_`).
+* Scope is always specified at the start of the metric name.
 * Scope and name are separated by colon (`:`).
 * camelCase is translated to camel_case
 * Double underscore is translated to single underscore
 * Colon-underscore (`:_`) is translated to single colon
-* The unit is appended to the name, separated by underscore. See also below.
+* The unit is appended to the name, separated by underscore. See <<prometheus_units>>
 
 
-===== Handling of tags
+==== Handling of tags
 
 Metric tags are appended to the metric name in curly braces `{` and `}` and are separated by comma.
-Each tag is a key-value-pair in the format of `<key>="<value>"`.
+Each tag is a key-value-pair in the format of `<key>="<value>"` (the quotes around the value are required).
 
-===== Handling of units
+[[prometheus_units]]
+==== Handling of units
 
-Units are appended as the base unit of the respective family. Metric values are scaled accordingly.
+The Prometheus text format adheres to using "base units" when creating the HTTP response. Due to the different context of each metric type, certain metrics' values must be converted to the respective "base unit" when responding to Prometheus requests. For example, times in milliseconds must be divided by 1000 and displayed in the base unit (seconds).
+
+The following sections outline how each metric type is handled:
+
+*Gauges and Histograms*
+
+The metric name and values for `Gauge` and `Histogram` are converted to the "base unit" in respect to the `unit` value in the Metadata.
+
+- If the Metadata is empty, `NONE`, or null, the metric name is used as is without appending the unit name and no scaling is applied.
+- If the metric's metadata contains a known unit, as defined in the `MetricUnits` class, the Prometheus value should be scaled to the _base unit_ of the respective family. The name of the base unit is appended to the metric name delimited by underscores (`_`).
+- If the `unit` is specified and is not defined in the `MetricUnits` class, the value is not scaled but the `unit` is still appended to the metric name delimited by underscores (`_`).
+
 
 Unit families and their base units are described under https://prometheus.io/docs/practices/naming/#base-units[Prometheus metric names, Base units].
 
@@ -386,18 +574,201 @@ Families and Prometheus base units are:
 |===
 | Family | Base unit
 
-| Bit    | bytes
-| Byte   | bytes
+| Bits    | bytes
+| Bytes   | bytes
 | Time   | seconds
 | Percent | ratio (normally ratio is A_per_B, but there are exceptions like `disk_usage_ratio`)
 |===
 
-==== Security
+*Counters*
+
+`Counter` metrics are considered dimensionless. The implementation must not append the unit name to the metric name and must not scale the value.
+
+
+*Meters and Timers*
+
+`Meter` and `Timer` have fixed units as described below regardless of the `unit` value in the Metadata.
+
+==== Gauge Prometheus Text Format
+
+The value of the gauge must be the value of `getValue()` with appropriate naming/scaling based on  <<prometheus_units>>
+
+.Example Prometheus text format for a Gauge in dollars.
+[source, ruby]
+----
+# TYPE application:cost_dollars gauge
+# HELP application:cost_dollars The running cost of the server in dollars.
+application:cost_dollars 80
+----
+
+==== Counter Prometheus Text Format
+
+The value of the counter must be the value of `getCount()`.
+
+NOTE: Implementors must not convert the unit of Counters or append the unit suffix to the metric.
+
+.Example Prometheus text format for a Counter.
+[source, ruby]
+----
+# TYPE application:visitors counter
+# HELP application:visitors The number of unique visitors
+application:visitors 80
+----
+
+==== Meter Prometheus Text Format
+
+`Meter` is a complex metric type comprised of multiple key/values. Each key will require a suffix to be appended to the metric name. The format is specified by the table below.
+
+The `# HELP` description line is only required for the `total` value as shown below.
+
+.Prometheus text mapping for a Meter metric
+[cols="2,1,2,1"]
+|===
+| Suffix{label}                   | TYPE    | Value (Meter method)                | Units
+
+| `total`                         | Counter | `getCount()`                        | N/A
+| `rate_per_second`               | Gauge   | `getMeanRate()`                     | PER_SECOND
+| `one_min_rate_per_second`       | Gauge   | `getOneMinuteRate()`                | PER_SECOND
+| `five_min_rate_per_second`      | Gauge   | `getFiveMinuteRate()`               | PER_SECOND
+| `fifteen_min_rate_per_second`   | Gauge   | `getFifteenMinuteRate()`            | PER_SECOND
+|===
+
+.Example Prometheus text format for a Meter
+[source, ruby]
+----
+# TYPE application:requests_total counter
+# HELP application:requests_total Tracks the number of requests to the server
+application:requests_total 29382
+# TYPE application:requests_rate_per_second gauge
+application:requests_rate_per_second 12.223
+# TYPE application:requests_one_min_rate_per_second gauge
+application:requests_one_min_rate_per_second 12.563
+# TYPE application:requests_five_min_rate_per_second gauge
+application:requests_five_min_rate_per_second 12.364
+# TYPE application:requests_fifteen_min_rate_per_second gauge
+application:requests_fifteen_min_rate_per_second 12.126
+----
+
+
+==== Histogram Prometheus Text Format
+
+`Histogram` is a complex metric type comprised of multiple key/values. Each key will require a suffix to be appended to the metric name with appropriate naming/scaling based on <<prometheus_units>>.  The format is specified by the table below.
+
+The `# HELP` description line is only required for the `summary` value as shown below.
+
+.Prometheus text mapping for a Histogram metric
+[cols="2,1,2,1"]
+|===
+| Suffix{label}                   | TYPE    | Value (Histogram method)            | Units
+
+| `min_<units>`                   | Gauge   | `getSnapshot().getMin()`            | <units>^1^
+| `max_<units>`                   | Gauge   | `getSnapshot().getMax()`            | <units>^1^
+| `mean_<units>`                  | Gauge   | `getSnapshot().getMean()`           | <units>^1^
+| `stddev_<units>`                | Gauge   | `getSnapshot().getStdDev()`         | <units>^1^
+| `<units>_count`^2^              | Summary | `getCount()`                        | N/A
+| `<units>{quantile="0.5"}`^2^    | Summary | `getSnapshot().getMedian()`         | <units>^1^
+| `<units>{quantile="0.75"}`^2^   | Summary | `getSnapshot().get75thPercentile()` | <units>^1^
+| `<units>{quantile="0.95"}`^2^   | Summary | `getSnapshot().get95thPercentile()` | <units>^1^
+| `<units>{quantile="0.98"}`^2^   | Summary | `getSnapshot().get98thPercentile()` | <units>^1^
+| `<units>{quantile="0.99"}`^2^   | Summary | `getSnapshot().get99thPercentile()` | <units>^1^
+| `<units>{quantile="0.999"}`^2^  | Summary | `getSnapshot().get999thPercentile()`| <units>^1^
+|===
+
+^1^ The implementation is expected to convert the result returned by the `Histogram` into the base unit (if known). The `<unit>` represents the base metric unit and is named according to  <<prometheus_units>>.
+
+^2^ The `summary` type is a complex metric type for Prometheus which consists of the count and multiple quantile values.
+
+.Example Prometheus text format for a Histogram with unit bytes.
+[source, ruby]
+----
+# TYPE application:file_sizes_mean_bytes gauge
+application:file_sizes_mean_bytes 4738.231
+# TYPE application:file_sizes_max_bytes gauge
+application:file_sizes_max_bytes 31716
+# TYPE application:file_sizes_min_bytes gauge
+application:file_sizes_min_bytes 180
+# TYPE application:file_sizes_stddev_bytes gauge
+application:file_sizes_stddev_bytes 1054.7343037063602
+# TYPE application:file_sizes_bytes summary
+# HELP application:file_sizes_bytes Users file size
+application:file_sizes_bytes_count 2037
+application:file_sizes_bytes{quantile="0.5"} 4201
+application:file_sizes_bytes{quantile="0.75"} 6175
+application:file_sizes_bytes{quantile="0.95"} 13560
+application:file_sizes_bytes{quantile="0.98"} 29643
+application:file_sizes_bytes{quantile="0.99"} 31716
+application:file_sizes_bytes{quantile="0.999"} 31716
+----
+
+
+==== Timer Prometheus Text Format
+
+`Timer` is a complex metric type comprised of multiple key/values. Each key will require a suffix to be appended to the metric name. The format is specified by the table below.
+
+The `# HELP` description line is only required for the `summary` value as shown below.
+
+.Prometheus text mapping for a Timer metric
+[cols="2,1,2,1"]
+|===
+| Suffix{label}                   | TYPE    | Value (Timer method)                | Units
+
+| `rate_per_second`               | Gauge   | `getMeanRate()`                     | PER_SECOND
+| `one_min_rate_per_second`       | Gauge   | `getOneMinuteRate()`                | PER_SECOND
+| `five_min_rate_per_second`      | Gauge   | `getFiveMinuteRate()`               | PER_SECOND
+| `fifteen_min_rate_per_second`   | Gauge   | `getFifteenMinuteRate()`            | PER_SECOND
+| `min_seconds`                   | Gauge   | `getSnapshot().getMin()`            | SECONDS^1^
+| `max_seconds`                   | Gauge   | `getSnapshot().getMax()`            | SECONDS^1^
+| `mean_seconds`                  | Gauge   | `getSnapshot().getMean()`           | SECONDS^1^
+| `stddev_seconds`                | Gauge   | `getSnapshot().getStdDev()`         | SECONDS^1^
+| `seconds_count`^2^              | Summary | `getCount()`                        | N/A
+| `seconds{quantile="0.5"}`^2^    | Summary | `getSnapshot().getMedian()`         | SECONDS^1^
+| `seconds{quantile="0.75"}`^2^   | Summary | `getSnapshot().get75thPercentile()` | SECONDS^1^
+| `seconds{quantile="0.95"}`^2^   | Summary | `getSnapshot().get95thPercentile()` | SECONDS^1^
+| `seconds{quantile="0.98"}`^2^   | Summary | `getSnapshot().get98thPercentile()` | SECONDS^1^
+| `seconds{quantile="0.99"}`^2^   | Summary | `getSnapshot().get99thPercentile()` | SECONDS^1^
+| `seconds{quantile="0.999"}`^2^  | Summary | `getSnapshot().get999thPercentile()`| SECONDS^1^
+|===
+
+^1^ The implementation is expected to convert the result returned by the `Timer` into seconds
+
+^2^ The `summary` type is a complex metric type for Prometheus which consists of the count and multiple quantile values.
+
+.Example Prometheus text format for a Timer
+[source, ruby]
+----
+# TYPE application:response_time_rate_per_second gauge
+application:response_time_rate_per_second  0.004292520715985437
+# TYPE application:response_time_one_min_rate_per_second gauge
+application:response_time_one_min_rate_per_second  2.794076465421066E-14
+# TYPE application:response_time_five_min_rate_per_second  gauge
+application:response_time_five_min_rate_per_second  4.800392614619373E-4
+# TYPE application:response_time_fifteen_min_rate_per_second  gauge
+application:response_time_fifteen_min_rate_per_second  0.01063191047532505
+# TYPE application:response_time_mean_seconds gauge
+application:response_time_mean_seconds 0.000415041
+# TYPE application:response_time_max_seconds gauge
+application:response_time_max_seconds 0.0005608694
+# TYPE application:response_time_min_seconds gauge
+application:response_time_min_seconds 0.000169916
+# TYPE application:response_time_stddev_seconds gauge
+application:response_time_stddev_seconds 0.000652907
+# TYPE application:response_time_seconds summary
+# HELP application:response_time_seconds Server response time for /index.html
+application:response_time_seconds_count 80
+application:response_time_seconds{quantile="0.5"} 0.0002933240
+application:response_time_seconds{quantile="0.75"} 0.000344914
+application:response_time_seconds{quantile="0.95"} 0.000543647
+application:response_time_seconds{quantile="0.98"} 0.002706543
+application:response_time_seconds{quantile="0.99"} 0.005608694
+application:response_time_seconds{quantile="0.999"} 0.005608694
+----
+
+=== Security
 
 It must be possible to secure the endpoints via the usual means. The definition of 'usual means' is in
 this version of the specification implementation specific.
 
-In case of a secured endpoint, accessing `/metrics` without valid credentials must return a `401 Unauthorised` header.
+In case of a secured endpoint, accessing `/metrics` without valid credentials must return a `401 Unauthorized` header.
 
 A server SHOULD implement TLS encryption by default.
 
@@ -410,13 +781,8 @@ It is allowed to ignore security for trusted origins (e.g. localhost)
 Base metrics is a list of metrics that all vendors need to implement. Optional base metrics are recommended to be implemented but are not required.
 These metrics are exposed under `/metrics/base`.
 
-The following is a list of required and optional base metrics. All metrics have Multi: false unless otherwise stated.
+The following is a list of required and optional base metrics. All metrics are singletons and have `Multi:` set to `false` unless otherwise stated.
 Visit <<meta-data-def>> for the meaning of each key
-
-Values from the MBean server are encoded with `MBean-Name/attribute[#field]` name to retrieve a single attribute.
-E.g. `GET /metrics/base/java.lang:type=Memory/ObjectPendingFinalizationCount` to only get that count.
-For MBeans attributes that are of type `CompositeData`, the `#field` will return a single item of this composite
-data.
 
 
 === General JVM Stats
@@ -473,7 +839,7 @@ data.
 |===
 |Name| gc.%s.time
 |DisplayName| Garbage Collection Time
-|Type| Counter
+|Type| Gauge
 |Unit| Milliseconds
 |Multi| true
 |Description| Displays the approximate accumulated collection elapsed time in milliseconds. This attribute displays -1 if the collection elapsed time is undefined for this collector. The Java virtual machine implementation may use a high resolution timer to measure the elapsed time. This attribute may display the same value even if the collection count has been incremented if the collection elapsed time is very short.
@@ -486,7 +852,7 @@ data.
 |===
 |Name| jvm.uptime
 |DisplayName| JVM Uptime
-|Type| Counter
+|Type| Gauge
 |Unit| Milliseconds
 |Description| Displays the start time of the Java virtual machine in milliseconds. This attribute displays the approximate time when the Java virtual machine started.
 |MBean| java.lang:type=Runtime/Uptime
@@ -500,7 +866,7 @@ data.
 |===
 |Name| thread.count
 |DisplayName| Thread Count
-|Type| Gauge
+|Type| Counter
 |Unit| None
 |Description| Displays the current number of live threads including both daemon and non-daemon threads
 |MBean| java.lang:type=Threading/ThreadCount
@@ -511,7 +877,7 @@ data.
 |===
 |Name| thread.daemon.count
 |DisplayName| Daemon Thread Count
-|Type| Gauge
+|Type| Counter
 |Unit| None
 |Description| Displays the current number of live daemon threads.
 |MBean| java.lang:type=Threading/DaemonThreadCount
@@ -561,7 +927,7 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 |===
 |Name| classloader.currentLoadedClass.count
 |DisplayName| Current Loaded Class Count
-|Type| Gauge
+|Type| Counter
 |Unit| None
 |Description| Displays the number of classes that are currently loaded in the Java virtual machine.
 |MBean| java.lang:type=ClassLoading/LoadedClassCount
@@ -570,7 +936,7 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 *TotalLoadedClassLoaded*
 [cols="1,4"]
 |===
-|Name| classloader:totalLoadedClass.count
+|Name| classloader.totalLoadedClass.count
 |DisplayName| Total Loaded Class Count
 |Type| Counter
 |Unit| None
@@ -581,7 +947,7 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 *UnloadedClassCount*
 [cols="1,4"]
 |===
-|Name| classloader:totalUnloadedClass.count
+|Name| classloader.totalUnloadedClass.count
 |DisplayName| Total Unloaded Class Count
 |Type| Counter
 |Unit| None
@@ -602,14 +968,14 @@ Note: The %s should be substituted with the name of the thread pool. This is a v
 |MBean| java.lang:type=OperatingSystem/AvailableProcessors
 |===
 
-*SystemLoadAverage*
+*(Optional) SystemLoadAverage*
 [cols="1,4"]
 |===
 |Name| cpu.systemLoadAverage
 |DisplayName| System Load Average
 |Type| Gauge
 |Unit| None
-|Description| Displays the system load average for the last minute. The system load average is the sum of the number of runnable entities queued to the available processors and the number of runnable entities running on the available processors averaged over a period of time. The way in which the load average is calculated is operating system specific but is typically a damped time-dependent average. If the load average is not available, a negative value is displayed. This attribute is designed to provide a hint about the system load and may be queried frequently. The load average may be unavailable on some platform where it is expensive to implement this method.
+|Description| Displays the system load average for the last minute. The system load average is the sum of the number of runnable entities queued to the available processors and the number of runnable entities running on the available processors averaged over a period of time. The way in which the load average is calculated is operating system specific but is typically a damped time-dependent average. If the load average is not available, a negative value is displayed. This attribute is designed to provide a hint about the system load and may be queried frequently. The load average may be unavailable on some platforms where it is expensive to implement this method.
 |MBean| java.lang:type=OperatingSystem/SystemLoadAverage
 |===
 
@@ -630,42 +996,37 @@ Note: This is a vendor specific attribute/operation that is not defined in java.
 [[app-metrics-api]]
 == Application Metrics Programming Model
 
-Microprofile Metrics provides a way to register Application-specific metrics to allow applications to expose metrics in
-the _application_ scope (see <<_scopes>> for the description of scopes).
+MicroProfile Metrics provides a way to register Application-specific metrics to allow applications to expose metrics in
+the _application_ scope (see <<scopes>> for the description of scopes).
 
 Metrics and their metadata are added to a _Metric Registry_ upon definition and can afterwards have their values set
-and retrieved via the Java-API and also be exposed via the REST-Api (see <<rest-api>>).
+and retrieved via the Java-API and also be exposed via the REST-API (see <<rest-api>>).
 
 TIP: Implementors of this specification can use the Java API to also expose metrics for _base_ and _vendor_ scope by
 using the respective Metric Registry.
 
 In order to make setting the values easier, Annotations are made available.
 
-.Example set-up of two Gauge metrics
+.Example set-up of a Gauge metric.  No unit is given, so `MetricUnits.NONE` is used, an explicit name is provided
 [source,java]
 ----
-@Gauge(unit = MetricUnit.MEGABYTE) <1>
-int diskUsage;
-
-@Gauge(name = "queueSize")         <2>
+@Gauge(name = "queueSize")
 public int getQueueSize() {
   return queue.size;
 }
 ----
-<1> The metric is of type Gauge and the values are in Megabytes
-<2> No unit is given, to `MetricUnit.NONE` is used, an explicit name is provided
 
 NOTE: The programming API follows Dropwizard Metrics 3.2.3 API, but with local changes.
 It is expected that many existing DropWizard Metrics based applications can easily be
 ported over by exchanging the package names.
 
-It will be possible to use the non-annotations API, but using the annotations is preferred.
+It will be possible to use the non-annotations API, but using the annotations will generally be easier for developers.
 
-=== Responsibility of the Microprofile Metrics implementation
+=== Responsibility of the MicroProfile Metrics implementation
 
 * The implementation must scan the application at deploy time for <<api-annotations>> and register the
 Metrics along with their metadata in the _application_ MetricsRegistry.
-* The implementation must watch the annotated objects and update its internal data structures when the values of the
+* The implementation must watch the annotated objects and update internal data structures when the values of the
 annotated objects change.
 * The implementation must expose the values of the objects registered in the MetricsRegistry via REST-API as described
 in <<rest-api>>.
@@ -678,24 +1039,51 @@ A duplicate metric is a metric that has the same scope and name as an existing o
 
 All Java-Classes are in the top-level package `org.eclipse.microprofile.metrics` or one of its sub-packages.
 
+[TIP]
+====
+The `org.eclipse.microprofile.metrics` package was influenced by the Drop Wizard Metrics project release 3.2.3.
+
+Implementors can consult this project for implementation ideas.
+
+See <<references>> for more information.
+====
+
 [[api-annotations]]
 === Annotations
 
 All Annotations are in the `org.eclipse.microprofile.metrics.annotation` package
 
+[NOTE]
+====
+These annotations include interceptor bindings as defined by the Java Interceptors specification.
+
+CDI leverages on the Java Interceptors specification to provide the ability to associate interceptors to beans via typesafe interceptor bindings, as a mean to separate cross-cutting concerns, like Metrics annotations instrumentation, from the application business logic.
+
+Both the Java Interceptors and CDI specifications set restrictions about the type of bean to which an interceptor can be bound.
+
+That implies only _managed beans_ whose bean types are _proxyable_ can be instrumented using the Metrics annotations.
+====
+
+[TIP]
+====
+The `org.eclipse.microprofile.metrics.annotation` package was influenced by the CDI extension for Dropwizard Metric project release 1.4.0.
+
+Implementors can consult this project for implementation ideas.
+
+See <<references>> for more information.
+====
 The following Annotations exist, see below for common fields:
 
 [cols="1,1,3,2"]
 |===
 |Annotation | Applies to |  Description | Default Unit
 
-|@Counted | M, C, T | Denotes a counter | MetricUnit.NONE
-|@Gauge   | M, F | Denotes a gauge.  | _none_ Must be supplied by the user
-|@Metered | M, C, T  | Denotes a meter which counts the invocations of the annotated object. | MetricUnit.NANOSECOND
+|@Counted | M, C, T | Denotes a counter, which counts the invocations of the annotated object. | MetricUnits.NONE
+|@Gauge   | M | Denotes a gauge, which samples the value of the annotated object.  | _none_ Must be supplied by the user
+|@Metered | M, C, T  | Denotes a meter, which tracks the frequency of invocations of the annotated object. | MetricUnits.PER_SECOND
 |@Metric  | M, F, P | An annotation requesting that a metric should be injected. This annotation can be used on the fields
-    of type `Meter`, `Timer`, `Counter`, and `Histogram`. | MetricUnit.NONE
-|@Timed   | M, C, T | An annotation for marking a constructor or method of an annotated object as timed.
-    The metric of type Timer records the time it took to invoke the annotated object. | MetricUnit.NONE
+    of type `Meter`, `Timer`, `Counter`, and `Histogram`. | MetricUnits.NONE
+|@Timed   | M, C, T | Denotes a timer, which tracks duration of the annotated object. | MetricUnits.NANOSECONDS
 |===
 (C=Constructor, F=Field, M=Method, P=Parameter, T=Type)
 
@@ -704,7 +1092,7 @@ The following Annotations exist, see below for common fields:
 |===
 |Annotation | Description | Default
 
-|@RegistryType| Qualifies the type of Metric Registry to inject.|  _application_ (scope)
+|@RegistryType| Qualifies the scope of Metric Registry to inject when injecting a MetricRegistry. |  _application_ (scope)
 |===
 
 ==== Fields
@@ -712,13 +1100,11 @@ The following Annotations exist, see below for common fields:
 All annotations (Except `RegistryType`) have the following fields that correspond to the metadata fields described
 in <<meta-data-def>>.
 
-`String name`:: Optional. Sets the name of the metric. If not explicitly given it is determined from the annotated object and the
-fully qualified name of the surrounding class, unless `absolute` is true.
-`boolean absolute`:: If `true` use the given name as an absolute name of the metric. If `false`, use the given name relative to
-the annotated class. Default value is `false`.
+`String name`:: Optional. Sets the name of the metric. If not explicitly given the name of the annotated object is used.
+`boolean absolute`:: If `true`, uses the given name as an absolute name of the metric. If `false`, prepends the package name and class name before the given name. Default value is `false`.
 `String displayName`:: Optional. A human readable display name for metadata.
 `String description`:: Optional. A description of the metric.
-`MetricUnit unit`:: Unit of the metric. For `@Gauge` no default is provided.
+`String unit`:: Unit of the metric. For `@Gauge` no default is provided. Check the `MetricUnits` class for a set of pre-defined units.
 `String[] tags`:: Optional. Array of Strings in the `<key>=<value>` format to supply special tags to a metric.
 
 NOTE: Implementors are encouraged to issue warnings in the server log if metadata is missing. Implementors
@@ -737,7 +1123,7 @@ import javax.inject.Inject;
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 
-public class Colors {
+public class Colours {
 
   @Inject
   @Metric
@@ -758,12 +1144,11 @@ public class Colors {
 ----
 The above bean would produce the following entries in the `MetricRegistry`
 ----
-com.example.redCount
-com.example.blue
+com.example.Colours.redCount
+com.example.Colours.blue
 greenCount
 purple
 ----
-
 
 ==== @Counted
 An annotation for marking a method, constructor, or type as a counter.
@@ -807,7 +1192,7 @@ public void run() {
 ----
 
 ===== TYPE
-When a type/class is annotated, the implementation must register a counter for each of the constructor and methods using the <<annotated-naming-convention>>. The counters are incremented and/or decremented according to the `monotonic` field when the corresponding constructor/method is invoked.
+When a type/class is annotated, the implementation must register a counter for each of the constructors and methods using the <<annotated-naming-convention>>. The counters are incremented and/or decremented according to the `monotonic` field when the corresponding constructor/method is invoked.
 
 .Example of an annotated type/class
 [source, java]
@@ -822,26 +1207,14 @@ public class CounterBean {
 ----
 
 ==== @Gauge
-An annotation for marking a method of field as a gauge.
+An annotation for marking a method as a gauge.
 
-The implementation must support the following annotation targets:
+The implementation must support the following annotation target:
 
-  * `FIELD`
   * `METHOD`
 
 
 The following lists the behavior for each annotation target.
-
-===== FIELD
-
-When a field is annotated, the implementation must register a gauge for the field using the <<annotated-naming-convention>>. The gauge value and type is equal to the annotated field value and type.
-
-.Example of an annotated field
-[source, java]
-----
-@Gauge
-long value;
-----
 
 ===== METHOD
 
@@ -859,7 +1232,7 @@ public long getValue() {
 
 ==== @Metered
 An annotation for marking a constructor or method as metered. The meter counts the invocations
-of the constructor or method.
+of the constructor or method and tracks how frequently they are called.
 
 The implementation must support the following annotation targets:
 
@@ -894,7 +1267,7 @@ public void run() {
 ----
 
 ===== TYPE
-When a type/class is annotated, the implementation must register a meter for each of the constructor and methods using the <<annotated-naming-convention>>. The meters are marked each time the corresponding constructor/method is invoked.
+When a type/class is annotated, the implementation must register a meter for each of the constructors and methods using the <<annotated-naming-convention>>. The meters are marked each time the corresponding constructor/method is invoked.
 
 .Example of an annotated type/class
 [source, java]
@@ -910,7 +1283,7 @@ public class MeteredBean {
 
 ==== @Timed
 An annotation for marking a constructor or method of an annotated object as timed.
-The metric of type Timer records the time it took to invoke the annotated object.
+The metric of type Timer tracks how frequently the annotated object is invoked, and tracks how long it took the invocations to complete.
 
 The implementation must support the following annotation targets:
 
@@ -945,7 +1318,7 @@ public void run() {
 ----
 
 ===== TYPE
-When a type/class is annotated, the implementation must register a timer for each of the constructor and methods using the <<annotated-naming-convention>>. Each time a constructor/method is invoked, the execution will be timed with the corresponding timer.
+When a type/class is annotated, the implementation must register a timer for each of the constructors and methods using the <<annotated-naming-convention>>. Each time a constructor/method is invoked, the execution will be timed with the corresponding timer.
 
 .Example of an annotated type/class
 [source, java]
@@ -960,7 +1333,8 @@ public class TimedBean {
 ----
 
 ==== @Metric
-An annotation requesting that a metric should be injected. This annotation can be used on the fields of type `Meter`, `Timer`, `Counter`, and `Histogram`.
+
+An annotation requesting that a metric should be injected or registered.
 
 The implementation must support the following annotation targets:
 
@@ -971,12 +1345,27 @@ The implementation must support the following annotation targets:
 The following lists the behavior for each annotation target.
 
 ===== FIELD
+When a metric producer field is annotated, the implementation must register the metric to the application `MetricRegistry` (using the <<annotated-naming-convention>>). If a metric with the given name already exist (created by another @Produces for example), an `java.lang.IllegalArgumentException` must be thrown.
 
-When a field of type Meter, Timer, Counter or Histogram is annotated, the implementation must provide the registered metric to the application.
-The implementation must register the metric for the field using the <<annotated-naming-convention>> if it does not already exist, otherwise it
-will retrieve the metric from the registry and produce it to the application.
+.Example of a producer field
+[source, java]
+----
+@Produces
+@Metric(name="hitPercentage")
+@ApplicationScoped
+Gauge<Double> hitPercentage = new Gauge<Double>() {
 
-.Example of an annotated field
+  @Override
+  public Double getValue() {
+      return hits / total;
+  }
+};
+----
+
+When a metric injected field is annotated, the implementation must provide the registered metric with the given name (using the <<annotated-naming-convention>>) if the metric already exist. If no metric exists with the given name then the implementation must produce and register the requested metric.
+`@Metric` can only be used on injected fields of type `Meter`, `Timer`, `Counter`, and `Histogram`.
+
+.Example of an injected field
 [source, java]
 ----
 @Inject
@@ -984,29 +1373,57 @@ will retrieve the metric from the registry and produce it to the application.
 Counter count;
 ----
 
+
 ===== METHOD
 
-<TO DO>
+When a metric producer method is annotated, the implementation must register the metric produced by the method using the <<annotated-naming-convention>>.
+
+.Example of a producer method
+[source, java]
+----
+@Produces
+@Metric(name = "hitPercentage")
+@ApplicationScoped
+protected Gauge<Double> createHitPercentage() {
+    return new Gauge<Double>() {
+
+      @Override
+      public Double getValue() {
+          return hits / total;
+      }
+    };
+}
+----
 
 ===== PARAMETER
-<TO DO>
+When a metric parameter is annotated, the implementation must provide the registered metric with the given name (using the <<annotated-naming-convention>>) if the metric already exist. If no metric exists with the given name then the implementation must produce and register the requested metric.
 
+.Example of an annotated parameter
+[source, java]
+----
+@Inject
+public void init(@Metric(name="instances") Counter instances) {
+    instances.inc();
+}
+----
 
-[[metric-registry]]
-=== Metric Registry
+[[metric-registries]]
+=== Metric Registries
 
 The `MetricRegistry` is used to maintain a collection of metrics along with their metadata.
 There is one shared singleton of the `MetricRegistry` per scope (_application_, _base_, and _vendor_).
-When metrics are registered using annotations, the metrics must be registered to the _application_ `MetricRegistry`.
+When metrics are registered using annotations, the metrics are registered in the _application_ `MetricRegistry` (and thus the _application_ scope).
 
 When injected, the `@RegistryType` is used as a qualifier to selectively inject either the `APPLICATION`, `BASE`, or `VENDOR` registry.
 If no qualifier is used, the default `MetricRegistry` returned is the `APPLICATION` registry.
+
+Implementations may choose to use a Factory class to produce the injectable `MetricRegistry` bean via CDI. See <<metric-registry-factory>>. Note: The factory would be an internal class and not exposed to the application.
 
 ==== @RegistryType
 The `@RegistryType` can be used to retrieve the `MetricRegistry` for a specific scope.
 The implementation must produce the corresponding `MetricRegistry` specified by the `RegistryType`.
 
-NOTE:: The implementor can optionally provide a _read_only_ copy of the `MetricRegistry` for _base_ and _vendor_ scopes.
+NOTE: The implementor can optionally provide a _read_only_ copy of the `MetricRegistry` for _base_ and _vendor_ scopes.
 
 ==== Application Metric Registry
 The implementation must produce the _application_ `MetricRegistry` when no `RegistryType` is provided (`@Default`) or when the `RegistryType` is `APPLICATION`.
@@ -1048,184 +1465,25 @@ The implementation must produce the _vendor_ `MetricRegistry` when the `Registry
 MetricRegistry vendorRegistry;
 ----
 
-
-=== Java API Classes
-
-==== Metadata
-
-[source]
-----
-/**
- * Bean holding the metadata of one single metric
- */
-public class Metadata {
-
-  /**
-   * Name of the metric.
-   */
-  private String name;
-
-  /**
-   * Display name of the metric. If not set, the name is taken.
-   */
-  private String displayName;
-
-  /**
-   * A human readable description.
-   */
-  private String description;
-
-  /**
-   * Type of the metric.
-   */
-  private MetricType type = MetricType.INVALID;
-
-  /**
-   * Unit of the metric.
-   */
-  private MetricUnit unit = MetricUnit.NONE;
-
-  /**
-   * Tags of the metric. Augmented by global tags.
-   */
-  private HashMap<String, String> tags = new HashMap<String, String>();
-
-
-  /**
-  * Constructs a Metadata object
-  *
-  * @param name The name of the metric
-  * @param type The type of the metric
-  * @param unit The units of the metric
-  */
-  public Metadata(String name, MetricType type, MetricUnit unit) {
-    this();
-    this.name = name;
-    this.type = type;
-    this.unit = unit;
-  }
-
-[...]
-}
-----
-
-==== Metric type
-
-[source]
-----
-public enum MetricType {
-  /**
-   * A Counter monotonically in-/decreases its values.
-   * An example could be the number of Transactions committed.
-    */
-  COUNTER("counter"),
-  /**
-   * A Gauge has values that 'arbitrarily' go up/down at each
-   * sampling. An example could be CPU load
-   */
-  GAUGE("gauge"),
-  /**
-   * Counter of invocations that produces a rate of invocations
-   */
-  METERED("meter"),
-  /**
-   * A histogram samples observations like request durations
-   * and usually exposes them in buckets.
-   */
-  HISTOGRAM("histogram"),
-
-  TIMER("timer"),
-  /**
-   * Invalid - just a placeholder
-   */
-  INVALID("invalid")
-  ;
-
-  /**
-   * Convert the string representation in to an enum
-   * @param in the String representation
-   * @return the matching Enum
-   * @throws IllegalArgumentException if in is not a valid enum value
-   */
-  public static MetricType from(String in) { [..] }
-
-  [...]
-}
-----
-
-==== Units
-
-[source]
-----
-public enum MetricUnit {
-  /** Dummy to say that this has no unit */
-  NONE ("none"),
-
-  /** A single Bit. Not defined by SI, but by IEC 60027 */
-  BIT("bit"),
-  /** 1000 {@link #BIT} */
-  KILOBIT("kilobit"),
-  /** 1000 {@link #KIBIBIT} */
-  MEGABIT("megabit"),
-  /** 1000 {@link #MEGABIT} */
-  GIGABIT("gigabit"),
-  /** 1024 {@link #BIT} */
-  KIBIBIT("kibibit"),
-  /** 1024 {@link #KIBIBIT}  */
-  MEBIBIT("mebibit"),
-  /** 1024 {@link #MEBIBIT} */
-  GIBIBIT("gibibit"), /* 1024 mebibit */
-
-  /** 8 {@link #BIT} */
-  BYTE ("byte"),
-  /** 1024 {@link #BYTE} */
-  KILOBYTE ("kbyte"),
-  /** 1024 {@link #KILO_BYTE} */
-  MEGABYTE ("mbyte"),
-  /** 1024 {@link #MEGA_BYTE} */
-  GIGABYTE("gbyte"),
-
-  NANOSECOND("ns"),
-  MICROSECOND("us"),
-  MILLISECOND("ms"),
-  SECOND("s"),
-  MINUTE("m"),
-  HOUR("h"),
-  DAY("d"),
-
-  PERCENT("%")
-
-  ;
-
-  /**
-   * Convert the string representation in to an enum
-   * @param in the String representation
-   * @return the matching Enum
-   * @throws IllegalArgumentException if in is not a valid enum value
-   */
-  public static MetricUnit from(String in) { [..] }
-
-  [...]
-}
-----
-
-
 == Appendix
 
 === Alternatives considered
 
-There exists Jolokia as JMX-HTTP bridge. Using this for application specific metrics requires that those metrics
-are exposed to JMX first, which are many users not familiar with.
+Jolokia JMX-HTTP bridge. Using this for application specific metrics would require those metrics
+to be exposed to JMX first, which many users are not familiar with.
 
+[[references]]
 === References
 
-https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html[http return codes]
+https://github.com/dropwizard/metrics/tree/v3.2.3[Dropwizard Metrics 3.2.3]
 
-https://github.com/pilhuhn/rhq/blob/78eb557ae8f799b628769d76ccece61b6cb452a4/modules/core/domain/src/main/java/org/rhq/core/domain/measurement/MeasurementUnits.java#L43-79[1, RHQ Measurement Units]
+https://github.com/astefanutti/metrics-cdi/tree/1.4.0[CDI extension for Dropwizard Metrics 1.4.0]
 
-https://github.com/unitsofmeasurement[UoM,JSR 363]
+https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html[HTTP return codes]
 
-http://metrics20.org/spec/[Metrics2.0]
+https://github.com/unitsofmeasurement[UoM, JSR 363]
+
+http://metrics20.org/spec/[Metrics 2.0]
 
 === Example configuration format for base and vendor-specific data
 
@@ -1267,3 +1525,42 @@ vendor:
 ----
 
 This configuration can be backed into the runtime or be provided via an external configuration file.
+
+[[metric-registry-factory]]
+=== Example Metric Registry Factory
+
+.Sample skeleton factory class to produce MetricRegistry via CDI
+[source, java]
+----
+@ApplicationScoped
+public class MetricRegistryFactory {
+
+    @Produces
+    public static MetricRegistry getDefaultRegistry() {
+        return getApplicationRegistry();
+    }
+
+    @Produces
+    @RegistryType(type = Type.APPLICATION)
+    public static MetricRegistry getApplicationRegistry() {
+        // Returns the static instance of the Application MetricRegistry
+        [...]
+    }
+
+    @Produces
+    @RegistryType(type = Type.BASE)
+    public static MetricRegistry getBaseRegistry() {
+        // Returns the static instance of the Base MetricRegistry
+        [...]
+    }
+
+    @Produces
+    @RegistryType(type = Type.VENDOR)
+    public static MetricRegistry getVendorRegistry() {
+        // Returns the static instance of the Vendor MetricRegistry
+        [...]
+    }
+
+}
+
+----

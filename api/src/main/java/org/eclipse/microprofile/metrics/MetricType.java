@@ -1,36 +1,44 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates
- * and other contributors as indicated by the @author tags.
+ **********************************************************************
+ * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ *               2017 Red Hat, Inc. and/or its affiliates
+ *               and other contributors as indicated by the @author tags.
+ *
+ * See the NOTICES file(s) distributed with this work for additional
+ * information regarding copyright ownership.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ **********************************************************************/
 package org.eclipse.microprofile.metrics;
 
 import java.util.EnumSet;
 
 /**
- * The kind of a metric
+ * An enumeration representing the different types of metrics.
+ * 
  * @author hrupp, Raymond Lam, Ouyang Zhou
  */
 public enum MetricType {
-  /**
+    /**
      * A Counter monotonically in-/decreases its values.
      * An example could be the number of Transactions committed.
      */
     COUNTER("counter", Counter.class),
 
     /**
-     * A Gauge has values that 'arbitrarily' go up/down at each
+     * A Gauge has values that 'arbitrarily' goes up/down at each
      * sampling. An example could be CPU load
      */
     GAUGE("gauge", Gauge.class),
@@ -42,7 +50,7 @@ public enum MetricType {
     METERED("meter", Meter.class),
 
     /**
-     * A Histogram calculates the distribution of a value
+     * A Histogram calculates the distribution of a value.
      */
     HISTOGRAM("histogram", Histogram.class),
 
@@ -53,7 +61,7 @@ public enum MetricType {
     TIMER("timer", Timer.class),
     
     /**
-     * Invalid - just a placeholder
+     * Invalid - Placeholder
      */
     INVALID("invalid", null)
     ;
@@ -84,7 +92,7 @@ public enum MetricType {
         return u;
       }
     }
-    throw new IllegalArgumentException(in + " is not a valid MpType");
+    throw new IllegalArgumentException(in + " is not a valid MetricType");
   }
 
   /**
