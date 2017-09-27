@@ -31,6 +31,7 @@ import static org.hamcrest.Matchers.hasKey;
 import com.jayway.restassured.response.Header;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.path.json.JsonPath;
+import com.jayway.restassured.response.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -155,8 +156,11 @@ public class MpMetricTest {
         // all servers should have some base metrics
         assert response.containsKey("base");
 
-        // these should not be in the response since they have no metrics yet
-        assert !response.containsKey("application");
+        // There may be application metrics, so check if the key exists and bail if it has no data
+        if (response.containsKey("application")) {
+          Map applicationData = (Map) response.get("application");
+          assert applicationData.size()>0;
+        }
 
         // There may be vendor metrics, so check if the key exists and bail if it has no data
         if (response.containsKey("vendor")) {
@@ -372,7 +376,11 @@ public class MpMetricTest {
     public void testApplicationMetadataOkJson() {
         Header wantJson = new Header("Accept", APPLICATION_JSON);
 
-        given().header(wantJson).options("/metrics/application").then().statusCode(204);
+        Response response = given().header(wantJson).options("/metrics/application");
+        int code = response.getStatusCode();
+
+        assert code == 200 || code == 204;
+
     }
 
     @Test
