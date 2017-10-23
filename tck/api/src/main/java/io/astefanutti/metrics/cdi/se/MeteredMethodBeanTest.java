@@ -41,7 +41,7 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public class MeteredMethodBeanTest {
 
-    private final static String METER_NAME = MetricRegistry.name(MeteredMethodBean.class, "meteredMethod");
+    private final static String METER_NAME = MetricRegistry.name(MeteredMethodBean1.class, "meteredMethod");
 
     private final static AtomicLong METER_COUNT = new AtomicLong();
 
@@ -49,7 +49,7 @@ public class MeteredMethodBeanTest {
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
             // Test bean
-            .addClass(MeteredMethodBean.class)
+            .addClass(MeteredMethodBean1.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
@@ -58,7 +58,7 @@ public class MeteredMethodBeanTest {
     private MetricRegistry registry;
 
     @Inject
-    private MeteredMethodBean bean;
+    private MeteredMethodBean1 bean;
 
     @Test
     @InSequence(1)

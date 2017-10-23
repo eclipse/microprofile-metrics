@@ -16,7 +16,8 @@
 package io.astefanutti.metrics.cdi.se;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.everyItem;
 import static org.junit.Assert.assertThat;
 
 import java.util.Set;
@@ -33,7 +34,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -66,22 +66,22 @@ public class VisibilityTimedMethodBeanTest {
     @Test
     @InSequence(1)
     public void timedMethodsNotCalledYet() {
-        Assert.assertTrue("Timers are not registered correctly", registry.getTimers().keySet().containsAll(absoluteMetricNames()));
-
+        assertThat("Timers are not registered correctly", registry.getTimers().keySet(), is(equalTo(absoluteMetricNames())));
+        
         // Make sure that all the timers haven't been called yet
-        assertThat("Timer counts are incorrect", registry.getTimers().values(), hasItem(Matchers.<Timer>hasProperty("count", equalTo(0L))));
+        assertThat("Timer counts are incorrect", registry.getTimers().values(), everyItem(Matchers.<Timer>hasProperty("count", equalTo(0L))));
     }
 
     @Test
     @InSequence(2)
     public void callTimedMethodsOnce() {
-        Assert.assertTrue("Timers are not registered correctly", registry.getTimers().keySet().containsAll(absoluteMetricNames()));
-
+        assertThat("Timers are not registered correctly", registry.getTimers().keySet(), is(equalTo(absoluteMetricNames())));
+        
         // Call the timed methods and assert they've all been timed once
         bean.publicTimedMethod();
         bean.protectedTimedMethod();
         bean.packagePrivateTimedMethod();
 
-        assertThat("Timer counts are incorrect", registry.getTimers().values(), hasItem(Matchers.<Timer>hasProperty("count", equalTo(1L))));
+        assertThat("Timer counts are incorrect", registry.getTimers().values(), everyItem(Matchers.<Timer>hasProperty("count", equalTo(1L))));
     }
 }

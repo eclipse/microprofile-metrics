@@ -516,7 +516,6 @@ public class MpMetricTest {
         Map<String, MiniMeta> expectedMetadata = getExpectedMetadataFromXmlFile(MetricRegistry.Type.APPLICATION);
         checkMetadataPresent(elements, expectedMetadata);
 
-        assert missing.isEmpty() : "Following application items are missing: " + Arrays.toString(missing.toArray());
     }
     
     @Test
@@ -544,6 +543,7 @@ public class MpMetricTest {
             .body(containsString("tier=\"integration\""))
             .body(containsString("app=\"myShop\""));
     }
+
 
     @Test
     @RunAsClient
@@ -654,89 +654,6 @@ public class MpMetricTest {
           mm.type = metric.getAttribute("type");
           mm.unit = metric.getAttribute("unit");
           mm.optional = Boolean.parseBoolean(metric.getAttribute("optional"));
-          metaMap.put(mm.name, mm);
-      }
-      return metaMap;
-
-  }
-
-    @Test
-    @RunAsClient
-    @InSequence(20)
-    public void testApplicationMetadataTypeAndUnit() {
-        Header wantJson = new Header("Accept", APPLICATION_JSON);
-
-        JsonPath jsonPath = given().header(wantJson).options("/metrics/application").jsonPath();
-
-        Map<String, Map<String, Object>> elements = jsonPath.getMap(".");
-
-        Map<String, MiniMeta> expectedMetadata = getExpectedMetadataFromXmlFile(MetricRegistry.Type.APPLICATION);
-        checkMetadataPresent(elements, expectedMetadata);
-
-    }
-
-    @Test
-    @RunAsClient
-    @InSequence(21)
-    public void testApplicationTagJson() {
-
-        JsonPath jsonPath =  given().header("Accept", APPLICATION_JSON)
-            .when()
-            .options("/metrics/application/purple").jsonPath();
-        String tags = jsonPath.getString("purple.tags");
-        assert tags != null;
-        assert tags.contains("app=myShop");
-        assert tags.contains("tier=integration");
-    }
-
-    @Test
-    @RunAsClient
-    @InSequence(22)
-    public void testApplicationTagPrometheus() {
-
-        given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/purple")
-            .then().statusCode(200)
-            .and()
-            .body(containsString("tier=\"integration\""))
-            .body(containsString("app=\"myShop\""));
-    }
-
-    private Map<String, MiniMeta> getExpectedMetadataFromXmlFile(MetricRegistry.Type scope) {
-      ClassLoader cl = this.getClass().getClassLoader();
-      String fileName;
-      switch (scope) {
-          case BASE:
-              fileName = "base_metrics.xml";
-              break;
-          case APPLICATION:
-              fileName = "application_metrics.xml";
-              break;
-          default:
-              throw new IllegalArgumentException("No definitions for " + scope.getName() + " supported");
-      }
-      InputStream is = cl.getResourceAsStream(fileName);
-
-      DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
-      DocumentBuilder builder;
-      Document document;
-      try {
-          builder = fac.newDocumentBuilder();
-          document = builder.parse(is);
-      }
-      catch (ParserConfigurationException | SAXException | IOException e) {
-          throw new RuntimeException(e);
-      }
-
-      Element root = (Element) document.getElementsByTagName("config").item(0);
-      NodeList metrics = root.getElementsByTagName("metric");
-      Map<String, MiniMeta> metaMap = new HashMap<>(metrics.getLength());
-      for (int i = 0; i < metrics.getLength(); i++) {
-          Element metric = (Element) metrics.item(i);
-          MiniMeta mm = new MiniMeta();
-          mm.multi = Boolean.parseBoolean(metric.getAttribute("multi"));
-          mm.name = metric.getAttribute("name");
-          mm.type = metric.getAttribute("type");
-          mm.unit = metric.getAttribute("unit");
           metaMap.put(mm.name, mm);
       }
       return metaMap;

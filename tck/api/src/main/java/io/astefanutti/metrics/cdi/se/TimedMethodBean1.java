@@ -15,11 +15,16 @@
  */
 package io.astefanutti.metrics.cdi.se;
 
-import org.eclipse.microprofile.metrics.annotation.Metered;
+import org.eclipse.microprofile.metrics.annotation.Timed;
 
-public class MeteredMethodBean {
+public class TimedMethodBean1 {
 
-    @Metered(name = "meteredMethod")
-    public void meteredMethod() {
+    @Timed(name = "timedMethod")
+    public void timedMethod() {
+
+    }
+
+    public void selfInvocationTimedMethod() {
+        timedMethod();
     }
 }
