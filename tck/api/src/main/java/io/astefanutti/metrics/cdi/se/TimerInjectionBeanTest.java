@@ -40,16 +40,16 @@ public class TimerInjectionBeanTest {
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
             // Test bean
-            .addClass(TimedMethodBean3.class)
+            .addClass(TimedMethodBean.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
-    private TimedMethodBean3 bean;
+    private TimedMethodBean bean;
 
     @Inject
-    @Metric(absolute = true, name = "io.astefanutti.metrics.cdi.se.TimedMethodBean3.timedMethod")
+    @Metric(absolute = true, name = "io.astefanutti.metrics.cdi.se.TimedMethodBean.timedMethod")
     private Timer timer;
 
     @Test

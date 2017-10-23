@@ -42,7 +42,7 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public class TimedMethodBeanLookupTest {
 
-    private final static String TIMER_NAME = MetricRegistry.name(TimedMethodBean1.class, "timedMethod");
+    private final static String TIMER_NAME = MetricRegistry.name(TimedMethodBean.class, "timedMethod");
 
     private final static AtomicLong TIMER_COUNT = new AtomicLong();
 
@@ -50,7 +50,7 @@ public class TimedMethodBeanLookupTest {
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
             // Test bean
-            .addClass(TimedMethodBean1.class)
+            .addClass(TimedMethodBean.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
@@ -59,13 +59,13 @@ public class TimedMethodBeanLookupTest {
     private MetricRegistry registry;
 
     @Inject
-    private Instance<TimedMethodBean1> instance;
+    private Instance<TimedMethodBean> instance;
 
     @Test
     @InSequence(1)
     public void timedMethodNotCalledYet() {
         // Get a contextual instance of the bean
-        TimedMethodBean1 bean = instance.get();
+        TimedMethodBean bean = instance.get();
 
         assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
         Timer timer = registry.getTimers().get(TIMER_NAME);
@@ -78,7 +78,7 @@ public class TimedMethodBeanLookupTest {
     @InSequence(2)
     public void callTimedMethodOnce() {
         // Get a contextual instance of the bean
-        TimedMethodBean1 bean = instance.get();
+        TimedMethodBean bean = instance.get();
 
         assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
         Timer timer = registry.getTimers().get(TIMER_NAME);
@@ -94,7 +94,7 @@ public class TimedMethodBeanLookupTest {
     @InSequence(3)
     public void removeTimerFromRegistry() {
         // Get a contextual instance of the bean
-        TimedMethodBean1 bean = instance.get();
+        TimedMethodBean bean = instance.get();
 
         assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
         Timer timer = registry.getTimers().get(TIMER_NAME);

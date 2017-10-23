@@ -213,7 +213,7 @@ public class MpMetricTest {
             if (item.startsWith("gc.")) {
                 continue;
             }
-            if (!elements.containsKey(item)) {
+            if (!elements.containsKey(item) && !baseNames.get(item).optional) {
                 missing.add(item);
             }
         }
@@ -254,7 +254,7 @@ public class MpMetricTest {
 
         Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
         for (String item : baseNames.keySet()) {
-            if (item.startsWith("gc.")) {
+            if (item.startsWith("gc.") || baseNames.get(item).optional) {
                 continue;
             }
             if (!elements.containsKey(item)) {
@@ -283,7 +283,7 @@ public class MpMetricTest {
     private void checkMetadataPresent(Map<String, Map<String, Object>> elements, Map<String, MiniMeta> expectedMetadata) {
         for (Map.Entry<String, MiniMeta> entry : expectedMetadata.entrySet()) {
             MiniMeta item = entry.getValue();
-            if (item.name.startsWith("gc.")) {
+            if (item.name.startsWith("gc.") || expectedMetadata.get(item.name).optional) {
                 continue; // We don't deal with them here
             }
             Map<String, Object> fromServer = elements.get(item.name);
@@ -333,7 +333,7 @@ public class MpMetricTest {
 
             boolean found = false;
             // Skip GC
-            if (mm.name.startsWith("gc.")) {
+            if (mm.name.startsWith("gc.") || expectedMetadata.get(mm.name).optional) {
                 continue;
             }
             for (String line : lines) {
@@ -516,6 +516,163 @@ public class MpMetricTest {
         Map<String, MiniMeta> expectedMetadata = getExpectedMetadataFromXmlFile(MetricRegistry.Type.APPLICATION);
         checkMetadataPresent(elements, expectedMetadata);
 
+        assert missing.isEmpty() : "Following application items are missing: " + Arrays.toString(missing.toArray());
+    }
+    
+    @Test
+    @RunAsClient
+    @InSequence(21)
+    public void testApplicationTagJson() {
+
+        JsonPath jsonPath =  given().header("Accept", APPLICATION_JSON)
+            .when()
+            .options("/metrics/application/purple").jsonPath();
+        String tags = jsonPath.getString("purple.tags");
+        assert tags != null;
+        assert tags.contains("app=myShop");
+        assert tags.contains("tier=integration");
+    }
+
+    @Test
+    @RunAsClient
+    @InSequence(22)
+    public void testApplicationTagPrometheus() {
+
+        given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/purple")
+            .then().statusCode(200)
+            .and()
+            .body(containsString("tier=\"integration\""))
+            .body(containsString("app=\"myShop\""));
+    }
+
+    @Test
+    @RunAsClient
+    @InSequence(28)
+    public void testConvertingToBaseUnit() {
+        Header wantPrometheusFormat = new Header("Accept", TEXT_PLAIN);
+        given().header(wantPrometheusFormat).get("/metrics/application").then().statusCode(200)
+        .and().body(containsString("TYPE application:org_eclipse_microprofile_metrics_test_metric_app_bean_gauge_me_a_bytes gauge"))
+        .and().body(containsString("TYPE application:metric_test_test1_gauge_bytes gauge"));
+
+        
+    }
+    
+    @Test
+    @RunAsClient
+    @InSequence(29)
+    public void testNonStandardUnitsJSON() {
+        
+        Header wantJSONFormat = new Header("Accept", APPLICATION_JSON);
+        given().header(wantJSONFormat).options("/metrics/application/jellybeanHistogram").then().statusCode(200)
+        .body("jellybeanHistogram.unit", equalTo("jellybeans"));
+        
+    }
+    
+    @Test
+    @RunAsClient
+    @InSequence(30)
+    public void testNonStandardUnitsPrometheus() {
+        
+        String prefix = "jellybean_histogram_";
+
+        Header wantPrometheusFormat = new Header("Accept", TEXT_PLAIN);
+        given().header(wantPrometheusFormat).get("/metrics/application/jellybeanHistogram").then().statusCode(200)
+        .and()
+        .body(containsString(prefix + "jellybeans_count"))
+        .body(containsString("# TYPE application:" + prefix + "jellybeans summary"))
+        .body(containsString(prefix + "mean_jellybeans"))
+        .body(containsString(prefix + "min_jellybeans"))
+        .body(containsString(prefix + "max_jellybeans"))
+        .body(containsString(prefix + "stddev_jellybeans"))
+        .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.5\"}"))
+        .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.75\"}"))
+        .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.95\"}"))
+        .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.98\"}"))
+        .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.99\"}"))
+        .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.999\"}"));
+    }
+    
+    @Test
+    @RunAsClient
+    @InSequence(31)
+    public void testOptionalBaseMetrics() {
+        Header wantJson = new Header("Accept", APPLICATION_JSON);
+
+        JsonPath jsonPath = given().header(wantJson).options("/metrics/base").jsonPath();
+
+        Map<String, Object> elements = jsonPath.getMap(".");
+        Map<String, MiniMeta> names = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
+        
+        for (String item : names.keySet()) {
+            if (elements.containsKey(item) && names.get(item).optional) {
+                String prefix = names.get(item).name;
+                String type = "\""+prefix+"\""+".type";
+                String unit= "\""+prefix+"\""+".unit";
+                
+                given().header(wantJson).options("/metrics/base/"+prefix).then().statusCode(200)
+                .body(type, equalTo(names.get(item).type))
+                .body(unit, equalTo(names.get(item).unit));
+            }
+        }
+        
+    }
+
+    private Map<String, MiniMeta> getExpectedMetadataFromXmlFile(MetricRegistry.Type scope) {
+      ClassLoader cl = this.getClass().getClassLoader();
+      String fileName;
+      switch (scope) {
+          case BASE:
+              fileName = "base_metrics.xml";
+              break;
+          case APPLICATION:
+              fileName = "application_metrics.xml";
+              break;
+          default:
+              throw new IllegalArgumentException("No definitions for " + scope.getName() + " supported");
+      }
+      InputStream is = cl.getResourceAsStream(fileName);
+
+      DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
+      DocumentBuilder builder;
+      Document document;
+      try {
+          builder = fac.newDocumentBuilder();
+          document = builder.parse(is);
+      }
+      catch (ParserConfigurationException | SAXException | IOException e) {
+          throw new RuntimeException(e);
+      }
+
+      Element root = (Element) document.getElementsByTagName("config").item(0);
+      NodeList metrics = root.getElementsByTagName("metric");
+      Map<String, MiniMeta> metaMap = new HashMap<>(metrics.getLength());
+      for (int i = 0; i < metrics.getLength(); i++) {
+          Element metric = (Element) metrics.item(i);
+          MiniMeta mm = new MiniMeta();
+          mm.multi = Boolean.parseBoolean(metric.getAttribute("multi"));
+          mm.name = metric.getAttribute("name");
+          mm.type = metric.getAttribute("type");
+          mm.unit = metric.getAttribute("unit");
+          mm.optional = Boolean.parseBoolean(metric.getAttribute("optional"));
+          metaMap.put(mm.name, mm);
+      }
+      return metaMap;
+
+  }
+
+    @Test
+    @RunAsClient
+    @InSequence(20)
+    public void testApplicationMetadataTypeAndUnit() {
+        Header wantJson = new Header("Accept", APPLICATION_JSON);
+
+        JsonPath jsonPath = given().header(wantJson).options("/metrics/application").jsonPath();
+
+        Map<String, Map<String, Object>> elements = jsonPath.getMap(".");
+
+        Map<String, MiniMeta> expectedMetadata = getExpectedMetadataFromXmlFile(MetricRegistry.Type.APPLICATION);
+        checkMetadataPresent(elements, expectedMetadata);
+
     }
 
     @Test
@@ -591,6 +748,7 @@ public class MpMetricTest {
         private String type;
         private String unit;
         private boolean multi;
+        private boolean optional;
 
         String toPromString() {
             String out = name.replace('-', '_').replace('.', '_').replace(' ', '_');
@@ -631,6 +789,7 @@ public class MpMetricTest {
             sb.append(", type='").append(type).append('\'');
             sb.append(", unit='").append(unit).append('\'');
             sb.append(", multi=").append(multi);
+            sb.append(", optional =").append(optional);
             sb.append('}');
             return sb.toString();
         }

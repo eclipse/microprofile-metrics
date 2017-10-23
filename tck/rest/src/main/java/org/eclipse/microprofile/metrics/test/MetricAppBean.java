@@ -28,8 +28,10 @@ import javax.inject.Inject;
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.Gauge;
 import org.eclipse.microprofile.metrics.Histogram;
+import org.eclipse.microprofile.metrics.Metadata;
 import org.eclipse.microprofile.metrics.Meter;
 import org.eclipse.microprofile.metrics.MetricRegistry;
+import org.eclipse.microprofile.metrics.MetricType;
 import org.eclipse.microprofile.metrics.MetricUnits;
 import org.eclipse.microprofile.metrics.Timer;
 import org.eclipse.microprofile.metrics.annotation.Counted;
@@ -55,6 +57,10 @@ public class MetricAppBean {
     @Inject
     @Metric(name = "purple", absolute = true, tags = "app=myShop")
     private Counter purpleCount;
+    
+    @Inject
+    @Metric(absolute = true, unit="jellybeans")
+    private Histogram jellybeanHistogram;
 
     @Inject
     // @RegistryType(type=MetricRegistry.Type.BASE)
@@ -78,7 +84,8 @@ public class MetricAppBean {
             gauge = () -> {
                 return 19L;
             };
-            metrics.register("metricTest.test1.gauge", gauge);
+            Metadata gaugeMetadata = new Metadata("metricTest.test1.gauge",MetricType.GAUGE, MetricUnits.GIGABYTES);
+            metrics.register("metricTest.test1.gauge", gauge, gaugeMetadata);
         }
 
     }
