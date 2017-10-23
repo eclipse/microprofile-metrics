@@ -86,7 +86,7 @@ public class MonotonicCountedClassBeanTest {
     @Test
     @InSequence(1)
     public void countedMethodsNotCalledYet() {
-        Assert.assertTrue("Counters are not registered correctly", registry.getCounters().keySet().containsAll(COUNTER_NAMES));
+        assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(COUNTER_NAMES)));
 
         assertThat("Constructor timer count is incorrect", registry.getCounters().get(CONSTRUCTOR_COUNTER_NAME).getCount(),
                 is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
@@ -99,8 +99,8 @@ public class MonotonicCountedClassBeanTest {
     @Test
     @InSequence(2)
     public void callCountedMethodsOnce() {
-        Assert.assertTrue("Counters are not registered correctly", registry.getCounters().keySet().containsAll(COUNTER_NAMES));
-
+        assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(COUNTER_NAMES)));
+        
         assertThat("Constructor timer count is incorrect", registry.getCounters().get(CONSTRUCTOR_COUNTER_NAME).getCount(),
                 is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
 

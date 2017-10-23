@@ -69,6 +69,7 @@ import org.xml.sax.SAXException;
  * @author Heiko W. Rupp <hrupp@redhat.com>
  * @author Don Bourne <dbourne@ca.ibm.com>
  */
+@SuppressWarnings("CdiInjectionPointsInspection")
 @RunWith(Arquillian.class)
 public class MpMetricTest {
 
@@ -516,7 +517,6 @@ public class MpMetricTest {
         Map<String, MiniMeta> expectedMetadata = getExpectedMetadataFromXmlFile(MetricRegistry.Type.APPLICATION);
         checkMetadataPresent(elements, expectedMetadata);
 
-        assert missing.isEmpty() : "Following application items are missing: " + Arrays.toString(missing.toArray());
     }
     
     @Test
@@ -524,7 +524,7 @@ public class MpMetricTest {
     @InSequence(21)
     public void testApplicationTagJson() {
 
-        JsonPath jsonPath =  given().header("Accept", APPLICATION_JSON)
+        JsonPath jsonPath = given().header("Accept", APPLICATION_JSON)
             .when()
             .options("/metrics/application/purple").jsonPath();
         String tags = jsonPath.getString("purple.tags");
@@ -545,76 +545,108 @@ public class MpMetricTest {
             .body(containsString("app=\"myShop\""));
     }
 
-    @Test
-    @RunAsClient
-    @InSequence(28)
-    public void testConvertingToBaseUnit() {
-        Header wantPrometheusFormat = new Header("Accept", TEXT_PLAIN);
-        given().header(wantPrometheusFormat).get("/metrics/application").then().statusCode(200)
-        .and().body(containsString("TYPE application:org_eclipse_microprofile_metrics_test_metric_app_bean_gauge_me_a_bytes gauge"))
-        .and().body(containsString("TYPE application:metric_test_test1_gauge_bytes gauge"));
 
-        
+    @InSequence(23)
+    public void testApplicationMeterUnitPrometheus() {
+
+        given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/meterMeA")
+            .then().statusCode(200)
+            .and()
+            .body(containsString("meter_me_a_total"))
+            .body(containsString("meter_me_a_rate_per_second"))
+            .body(containsString("meter_me_a_one_min_rate_per_second"))
+            .body(containsString("meter_me_a_five_min_rate_per_second"))
+            .body(containsString("meter_me_a_fifteen_min_rate_per_second"));
     }
-    
+
     @Test
     @RunAsClient
-    @InSequence(29)
-    public void testNonStandardUnitsJSON() {
-        
-        Header wantJSONFormat = new Header("Accept", APPLICATION_JSON);
-        given().header(wantJSONFormat).options("/metrics/application/jellybeanHistogram").then().statusCode(200)
-        .body("jellybeanHistogram.unit", equalTo("jellybeans"));
-        
+    @InSequence(24)
+    public void testApplicationTimerUnitPrometheus() {
+
+        String prefix = "org_eclipse_microprofile_metrics_test_metric_app_bean_time_me_a_";
+        given().header("Accept", TEXT_PLAIN)
+            .when()
+              .get("/metrics/application/org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA")
+            .then().statusCode(200)
+            .and()
+            .body(containsString("# TYPE application:" + prefix + "seconds summary"))
+            .body(containsString(prefix + "seconds_count"))
+            .body(containsString(prefix + "rate_per_second"))
+            .body(containsString(prefix + "one_min_rate_per_second"))
+            .body(containsString(prefix + "five_min_rate_per_second"))
+            .body(containsString(prefix + "fifteen_min_rate_per_second"))
+            .body(containsString(prefix + "mean_seconds"))
+            .body(containsString(prefix + "min_seconds"))
+            .body(containsString(prefix + "max_seconds"))
+            .body(containsString(prefix + "stddev_second"))
+            .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.5\"}"))
+            .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.75\"}"))
+            .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.95\"}"))
+            .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.98\"}"))
+            .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.99\"}"))
+            .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.999\"}"))
+        ;
     }
-    
-    @Test
-    @RunAsClient
-    @InSequence(30)
-    public void testNonStandardUnitsPrometheus() {
-        
-        String prefix = "jellybean_histogram_";
 
-        Header wantPrometheusFormat = new Header("Accept", TEXT_PLAIN);
-        given().header(wantPrometheusFormat).get("/metrics/application/jellybeanHistogram").then().statusCode(200)
-        .and()
-        .body(containsString(prefix + "jellybeans_count"))
-        .body(containsString("# TYPE application:" + prefix + "jellybeans summary"))
-        .body(containsString(prefix + "mean_jellybeans"))
-        .body(containsString(prefix + "min_jellybeans"))
-        .body(containsString(prefix + "max_jellybeans"))
-        .body(containsString(prefix + "stddev_jellybeans"))
-        .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.5\"}"))
-        .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.75\"}"))
-        .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.95\"}"))
-        .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.98\"}"))
-        .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.99\"}"))
-        .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.999\"}"));
+    @InSequence(25)
+    public void testApplicationHistogramUnitBytesPrometheus() {
+
+        String prefix = "metric_test_test1_histogram_";
+
+        given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/metricTest.test1.histogram")
+            .then().statusCode(200)
+            .and()
+            .body(containsString(prefix + "bytes_count"))
+            .body(containsString("# TYPE application:" + prefix + "bytes summary"))
+            .body(containsString(prefix + "mean_bytes"))
+            .body(containsString(prefix + "min_bytes"))
+            .body(containsString(prefix + "max_bytes"))
+            .body(containsString(prefix + "stddev_bytes"))
+            .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.5\"}"))
+            .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.75\"}"))
+            .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.95\"}"))
+            .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.98\"}"))
+            .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.99\"}"))
+            .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.999\"}"))
+        ;
     }
-    
+
     @Test
     @RunAsClient
-    @InSequence(31)
-    public void testOptionalBaseMetrics() {
-        Header wantJson = new Header("Accept", APPLICATION_JSON);
+    @InSequence(26)
+    public void testApplicationHistogramUnitNonePrometheus() {
 
-        JsonPath jsonPath = given().header(wantJson).options("/metrics/base").jsonPath();
+        String prefix = "metric_test_test1_histogram2";
 
-        Map<String, Object> elements = jsonPath.getMap(".");
-        Map<String, MiniMeta> names = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
-        
-        for (String item : names.keySet()) {
-            if (elements.containsKey(item) && names.get(item).optional) {
-                String prefix = names.get(item).name;
-                String type = "\""+prefix+"\""+".type";
-                String unit= "\""+prefix+"\""+".unit";
-                
-                given().header(wantJson).options("/metrics/base/"+prefix).then().statusCode(200)
-                .body(type, equalTo(names.get(item).type))
-                .body(unit, equalTo(names.get(item).unit));
-            }
-        }
-        
+        given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/metricTest.test1.histogram2")
+            .then().statusCode(200)
+            .and()
+            .body(containsString(prefix + "_count"))
+            .body(containsString("# TYPE application:" + prefix + " summary"))
+            .body(containsString(prefix + "_mean"))
+            .body(containsString(prefix + "_min"))
+            .body(containsString(prefix + "_max"))
+            .body(containsString(prefix + "_stddev"))
+            .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.5\"}"))
+            .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.75\"}"))
+            .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.95\"}"))
+            .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.98\"}"))
+            .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.99\"}"))
+            .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.999\"}"))
+        ;
+    }
+
+    @Test
+    @RunAsClient
+    @InSequence(27)
+    public void testPrometheus406ForOptions() {
+        given()
+            .header("Accept", TEXT_PLAIN)
+        .when()
+            .options("/metrics/application/metricTest.test1.histogram2")
+        .then()
+            .statusCode(406);
     }
 
     private Map<String, MiniMeta> getExpectedMetadataFromXmlFile(MetricRegistry.Type scope) {
@@ -660,89 +692,7 @@ public class MpMetricTest {
 
   }
 
-    @Test
-    @RunAsClient
-    @InSequence(20)
-    public void testApplicationMetadataTypeAndUnit() {
-        Header wantJson = new Header("Accept", APPLICATION_JSON);
-
-        JsonPath jsonPath = given().header(wantJson).options("/metrics/application").jsonPath();
-
-        Map<String, Map<String, Object>> elements = jsonPath.getMap(".");
-
-        Map<String, MiniMeta> expectedMetadata = getExpectedMetadataFromXmlFile(MetricRegistry.Type.APPLICATION);
-        checkMetadataPresent(elements, expectedMetadata);
-
-    }
-
-    @Test
-    @RunAsClient
-    @InSequence(21)
-    public void testApplicationTagJson() {
-
-        JsonPath jsonPath =  given().header("Accept", APPLICATION_JSON)
-            .when()
-            .options("/metrics/application/purple").jsonPath();
-        String tags = jsonPath.getString("purple.tags");
-        assert tags != null;
-        assert tags.contains("app=myShop");
-        assert tags.contains("tier=integration");
-    }
-
-    @Test
-    @RunAsClient
-    @InSequence(22)
-    public void testApplicationTagPrometheus() {
-
-        given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/purple")
-            .then().statusCode(200)
-            .and()
-            .body(containsString("tier=\"integration\""))
-            .body(containsString("app=\"myShop\""));
-    }
-
-    private Map<String, MiniMeta> getExpectedMetadataFromXmlFile(MetricRegistry.Type scope) {
-      ClassLoader cl = this.getClass().getClassLoader();
-      String fileName;
-      switch (scope) {
-          case BASE:
-              fileName = "base_metrics.xml";
-              break;
-          case APPLICATION:
-              fileName = "application_metrics.xml";
-              break;
-          default:
-              throw new IllegalArgumentException("No definitions for " + scope.getName() + " supported");
-      }
-      InputStream is = cl.getResourceAsStream(fileName);
-
-      DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
-      DocumentBuilder builder;
-      Document document;
-      try {
-          builder = fac.newDocumentBuilder();
-          document = builder.parse(is);
-      }
-      catch (ParserConfigurationException | SAXException | IOException e) {
-          throw new RuntimeException(e);
-      }
-
-      Element root = (Element) document.getElementsByTagName("config").item(0);
-      NodeList metrics = root.getElementsByTagName("metric");
-      Map<String, MiniMeta> metaMap = new HashMap<>(metrics.getLength());
-      for (int i = 0; i < metrics.getLength(); i++) {
-          Element metric = (Element) metrics.item(i);
-          MiniMeta mm = new MiniMeta();
-          mm.multi = Boolean.parseBoolean(metric.getAttribute("multi"));
-          mm.name = metric.getAttribute("name");
-          mm.type = metric.getAttribute("type");
-          mm.unit = metric.getAttribute("unit");
-          metaMap.put(mm.name, mm);
-      }
-      return metaMap;
-
-  }
-
+    @SuppressWarnings("StringBufferReplaceableByString")
     private static class MiniMeta {
         private String name;
         private String type;

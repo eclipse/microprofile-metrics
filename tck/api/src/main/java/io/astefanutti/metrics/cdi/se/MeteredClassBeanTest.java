@@ -86,21 +86,22 @@ public class MeteredClassBeanTest {
     @Test
     @InSequence(1)
     public void meteredMethodsNotCalledYet() {
-        Assert.assertTrue("Meters are not registered correctly", registry.getMeters().keySet().containsAll(METER_NAMES));
+        assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(METER_NAMES)));
 
-        assertThat("Constructor meter count is incorrect", registry.getMeters().get(CONSTRUCTOR_METER_NAME).getCount(),
+        assertThat("Constructor meter count is incorrect", registry.getMeters().get(CONSTRUCTOR_METER_NAME).getCount(), 
                 is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
 
         // Make sure that the method meters haven't been marked yet
-        assertThat("Method meter counts are incorrect", registry.getMeters(METHOD_METERS).values(),
-                everyItem(Matchers.<Meter> hasProperty("count", equalTo(METHOD_COUNT.get()))));
+        assertThat("Method meter counts are incorrect", registry.getMeters(METHOD_METERS).values(), 
+                everyItem(Matchers.<Meter>hasProperty("count", equalTo(METHOD_COUNT.get()))));
+
     }
 
     @Test
     @InSequence(2)
     public void callMeteredMethodsOnce() {
-        Assert.assertTrue("Meters are not registered correctly", registry.getMeters().keySet().containsAll(METER_NAMES));
-
+        assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(METER_NAMES)));
+        
         assertThat("Constructor meter count is incorrect", registry.getMeters().get(CONSTRUCTOR_METER_NAME).getCount(),
                 is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
 

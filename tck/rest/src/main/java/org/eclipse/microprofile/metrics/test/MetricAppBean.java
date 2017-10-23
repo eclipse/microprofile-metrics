@@ -97,12 +97,16 @@ public class MetricAppBean {
 
     public void histogramMe() {
 
-        Histogram histogram = metrics.histogram("metricTest.test1.histogram");
+        Metadata metadata = new Metadata("metricTest.test1.histogram", MetricType.HISTOGRAM, MetricUnits.BYTES);
+        Histogram histogram = metrics.histogram(metadata);
 
         for (int i = 0; i < 1000; i++) {
             histogram.update(i);
         }
 
+        Metadata metadata2 = new Metadata("metricTest.test1.histogram2", MetricType.HISTOGRAM,MetricUnits.NONE);
+        Histogram histogram2 = metrics.histogram(metadata2);
+        histogram2.update(1);
     }
 
     public void meterMe() {

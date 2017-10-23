@@ -17,7 +17,8 @@ package io.astefanutti.metrics.cdi.se;
 
 import java.util.Arrays;
 import java.util.Set;
-
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.metrics.MetricRegistry;
@@ -64,6 +65,6 @@ public class DefaultNameMetricMethodBeanTest {
 
     @Test
     public void metricMethodsWithDefaultNamingConvention() {
-        Assert.assertTrue("Metrics are not registered correctly", registry.getMetrics().keySet().containsAll(metricNames()));
+        assertThat("Metrics are not registered correctly", registry.getMetrics().keySet(), is(equalTo(metricNames())));
     }
 }

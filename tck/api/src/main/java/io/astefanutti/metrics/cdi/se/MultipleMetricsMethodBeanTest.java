@@ -78,13 +78,13 @@ public class MultipleMetricsMethodBeanTest {
     @Test
     @InSequence(1)
     public void metricsMethodNotCalledYet() {
-        Assert.assertTrue("Metrics are not registered correctly", registry.getMetrics().keySet().containsAll(absoluteMetricNames()));
+        assertThat("Metrics are not registered correctly", registry.getMetrics().keySet(), is(equalTo(absoluteMetricNames())));
     }
 
     @Test
     @InSequence(2)
     public void callMetricsMethodOnce() {
-        Assert.assertTrue("Metrics are not registered correctly", registry.getMetrics().keySet().containsAll(absoluteMetricNames()));
+        assertThat("Metrics are not registered correctly", registry.getMetrics().keySet(), is(equalTo(absoluteMetricNames())));
 
         // Call the monitored method and assert it's been instrumented
         bean.metricsMethod();

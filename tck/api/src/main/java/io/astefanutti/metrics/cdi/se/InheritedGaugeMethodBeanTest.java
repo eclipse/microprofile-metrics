@@ -88,7 +88,7 @@ public class InheritedGaugeMethodBeanTest {
     @Test
     @InSequence(2)
     public void callGaugesAfterSetterCalls() {
-        Assert.assertThat("Gauges are not registered correctly", registry.getGauges(), allOf(hasKey(PARENT_GAUGE_NAME), hasKey(CHILD_GAUGE_NAME)));
+        assertThat("Gauges are not registered correctly", registry.getGauges(), allOf(hasKey(PARENT_GAUGE_NAME), hasKey(CHILD_GAUGE_NAME)));
         @SuppressWarnings("unchecked")
         Gauge<Long> parentGauge = registry.getGauges().get(PARENT_GAUGE_NAME);
         @SuppressWarnings("unchecked")

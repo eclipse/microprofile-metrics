@@ -41,7 +41,7 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public class TimedMethodBeanTest {
 
-    private final static String TIMER_NAME = MetricRegistry.name(TimedMethodBean.class, "timedMethod");
+    private final static String TIMER_NAME = MetricRegistry.name(TimedMethodBean2.class, "timedMethod");
 
     private final static AtomicLong TIMER_COUNT = new AtomicLong();
 
@@ -49,7 +49,7 @@ public class TimedMethodBeanTest {
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
             // Test bean
-            .addClass(TimedMethodBean.class)
+            .addClass(TimedMethodBean2.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
@@ -58,7 +58,7 @@ public class TimedMethodBeanTest {
     private MetricRegistry registry;
 
     @Inject
-    private TimedMethodBean bean;
+    private TimedMethodBean2 bean;
 
     @Test
     @InSequence(1)
