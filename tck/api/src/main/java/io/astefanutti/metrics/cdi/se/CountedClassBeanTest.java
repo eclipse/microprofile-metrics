@@ -16,10 +16,8 @@
 package io.astefanutti.metrics.cdi.se;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.everyItem;
 import java.util.Set;
 
@@ -35,7 +33,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
