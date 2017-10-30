@@ -69,6 +69,7 @@ import org.xml.sax.SAXException;
  * @author Heiko W. Rupp <hrupp@redhat.com>
  * @author Don Bourne <dbourne@ca.ibm.com>
  */
+@SuppressWarnings("CdiInjectionPointsInspection")
 @RunWith(Arquillian.class)
 public class MpMetricTest {
 
@@ -523,7 +524,7 @@ public class MpMetricTest {
     @InSequence(21)
     public void testApplicationTagJson() {
 
-        JsonPath jsonPath =  given().header("Accept", APPLICATION_JSON)
+        JsonPath jsonPath = given().header("Accept", APPLICATION_JSON)
             .when()
             .options("/metrics/application/purple").jsonPath();
         String tags = jsonPath.getString("purple.tags");
@@ -543,6 +544,111 @@ public class MpMetricTest {
             .body(containsString("tier=\"integration\""))
             .body(containsString("app=\"myShop\""));
     }
+
+
+    @InSequence(23)
+    public void testApplicationMeterUnitPrometheus() {
+
+        given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/meterMeA")
+            .then().statusCode(200)
+            .and()
+            .body(containsString("meter_me_a_total"))
+            .body(containsString("meter_me_a_rate_per_second"))
+            .body(containsString("meter_me_a_one_min_rate_per_second"))
+            .body(containsString("meter_me_a_five_min_rate_per_second"))
+            .body(containsString("meter_me_a_fifteen_min_rate_per_second"));
+    }
+
+    @Test
+    @RunAsClient
+    @InSequence(24)
+    public void testApplicationTimerUnitPrometheus() {
+
+        String prefix = "org_eclipse_microprofile_metrics_test_metric_app_bean_time_me_a_";
+        given().header("Accept", TEXT_PLAIN)
+            .when()
+              .get("/metrics/application/org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA")
+            .then().statusCode(200)
+            .and()
+            .body(containsString("# TYPE application:" + prefix + "seconds summary"))
+            .body(containsString(prefix + "seconds_count"))
+            .body(containsString(prefix + "rate_per_second"))
+            .body(containsString(prefix + "one_min_rate_per_second"))
+            .body(containsString(prefix + "five_min_rate_per_second"))
+            .body(containsString(prefix + "fifteen_min_rate_per_second"))
+            .body(containsString(prefix + "mean_seconds"))
+            .body(containsString(prefix + "min_seconds"))
+            .body(containsString(prefix + "max_seconds"))
+            .body(containsString(prefix + "stddev_second"))
+            .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.5\"}"))
+            .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.75\"}"))
+            .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.95\"}"))
+            .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.98\"}"))
+            .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.99\"}"))
+            .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.999\"}"))
+        ;
+    }
+
+    @InSequence(25)
+    public void testApplicationHistogramUnitBytesPrometheus() {
+
+        String prefix = "metric_test_test1_histogram_";
+
+        given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/metricTest.test1.histogram")
+            .then().statusCode(200)
+            .and()
+            .body(containsString(prefix + "bytes_count"))
+            .body(containsString("# TYPE application:" + prefix + "bytes summary"))
+            .body(containsString(prefix + "mean_bytes"))
+            .body(containsString(prefix + "min_bytes"))
+            .body(containsString(prefix + "max_bytes"))
+            .body(containsString(prefix + "stddev_bytes"))
+            .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.5\"}"))
+            .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.75\"}"))
+            .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.95\"}"))
+            .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.98\"}"))
+            .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.99\"}"))
+            .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.999\"}"))
+        ;
+    }
+
+    @Test
+    @RunAsClient
+    @InSequence(26)
+    public void testApplicationHistogramUnitNonePrometheus() {
+
+        String prefix = "metric_test_test1_histogram2";
+
+        given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/metricTest.test1.histogram2")
+            .then().statusCode(200)
+            .and()
+            .body(containsString(prefix + "_count"))
+            .body(containsString("# TYPE application:" + prefix + " summary"))
+            .body(containsString(prefix + "_mean"))
+            .body(containsString(prefix + "_min"))
+            .body(containsString(prefix + "_max"))
+            .body(containsString(prefix + "_stddev"))
+            .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.5\"}"))
+            .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.75\"}"))
+            .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.95\"}"))
+            .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.98\"}"))
+            .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.99\"}"))
+            .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.999\"}"))
+        ;
+    }
+
+    @Test
+    @RunAsClient
+    @InSequence(27)
+    public void testPrometheus406ForOptions() {
+        given()
+            .header("Accept", TEXT_PLAIN)
+        .when()
+            .options("/metrics/application/metricTest.test1.histogram2")
+        .then()
+            .statusCode(406);
+    }
+
 
     private Map<String, MiniMeta> getExpectedMetadataFromXmlFile(MetricRegistry.Type scope) {
       ClassLoader cl = this.getClass().getClassLoader();
@@ -586,6 +692,7 @@ public class MpMetricTest {
 
   }
 
+    @SuppressWarnings("StringBufferReplaceableByString")
     private static class MiniMeta {
         private String name;
         private String type;
