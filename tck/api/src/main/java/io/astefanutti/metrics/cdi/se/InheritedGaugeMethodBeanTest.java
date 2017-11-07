@@ -33,7 +33,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -88,7 +87,7 @@ public class InheritedGaugeMethodBeanTest {
     @Test
     @InSequence(2)
     public void callGaugesAfterSetterCalls() {
-        Assert.assertThat("Gauges are not registered correctly", registry.getGauges(), allOf(hasKey(PARENT_GAUGE_NAME), hasKey(CHILD_GAUGE_NAME)));
+        assertThat("Gauges are not registered correctly", registry.getGauges(), allOf(hasKey(PARENT_GAUGE_NAME), hasKey(CHILD_GAUGE_NAME)));
         @SuppressWarnings("unchecked")
         Gauge<Long> parentGauge = registry.getGauges().get(PARENT_GAUGE_NAME);
         @SuppressWarnings("unchecked")

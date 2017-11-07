@@ -20,6 +20,8 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -27,7 +29,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.Assert;
+import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -63,6 +65,6 @@ public class TimerFieldBeanTest {
 
     @Test
     public void timerFieldsWithDefaultNamingConvention() {
-        Assert.assertTrue("Timers are not registered correctly", registry.getMetrics().keySet().containsAll(metricNames()));
+        assertThat("Timers are not registered correctly", registry.getMetrics().keySet(), is(equalTo(metricNames())));
     }
 }

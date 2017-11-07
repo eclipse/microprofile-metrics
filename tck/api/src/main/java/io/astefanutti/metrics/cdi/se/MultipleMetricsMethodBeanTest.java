@@ -32,7 +32,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -78,13 +77,13 @@ public class MultipleMetricsMethodBeanTest {
     @Test
     @InSequence(1)
     public void metricsMethodNotCalledYet() {
-        Assert.assertTrue("Metrics are not registered correctly", registry.getMetrics().keySet().containsAll(absoluteMetricNames()));
+        assertThat("Metrics are not registered correctly", registry.getMetrics().keySet(), is(equalTo(absoluteMetricNames())));
     }
 
     @Test
     @InSequence(2)
     public void callMetricsMethodOnce() {
-        Assert.assertTrue("Metrics are not registered correctly", registry.getMetrics().keySet().containsAll(absoluteMetricNames()));
+        assertThat("Metrics are not registered correctly", registry.getMetrics().keySet(), is(equalTo(absoluteMetricNames())));
 
         // Call the monitored method and assert it's been instrumented
         bean.metricsMethod();

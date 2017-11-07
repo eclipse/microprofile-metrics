@@ -37,7 +37,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -93,8 +92,8 @@ public class TimedClassBeanTest {
     @Test
     @InSequence(1)
     public void timedMethodsNotCalledYet() {
-        Assert.assertTrue("Timers are not registered correctly", registry.getTimers().keySet().containsAll(TIMER_NAMES));
-
+        assertThat("Timers are not registered correctly", registry.getTimers().keySet(), is(equalTo(TIMER_NAMES)));
+        
         assertThat("Constructor timer count is incorrect", registry.getTimers().get(CONSTRUCTOR_TIMER_NAME).getCount(), is(equalTo(1L)));
 
         // Make sure that the method timers haven't been timed yet
@@ -105,8 +104,8 @@ public class TimedClassBeanTest {
     @Test
     @InSequence(2)
     public void callTimedMethodsOnce() {
-        Assert.assertTrue("Timers are not registered correctly", registry.getTimers().keySet().containsAll(TIMER_NAMES));
-
+        assertThat("Timers are not registered correctly", registry.getTimers().keySet(), is(equalTo(TIMER_NAMES)));
+        
         assertThat("Constructor timer count is incorrect", registry.getTimers().get(CONSTRUCTOR_TIMER_NAME).getCount(), is(equalTo(1L)));
 
         // Call the timed methods and assert they've been timed

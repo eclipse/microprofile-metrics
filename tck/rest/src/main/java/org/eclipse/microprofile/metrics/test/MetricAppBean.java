@@ -57,6 +57,10 @@ public class MetricAppBean {
     @Inject
     @Metric(name = "purple", absolute = true, tags = "app=myShop")
     private Counter purpleCount;
+    
+    @Inject
+    @Metric(absolute = true, unit="jellybeans")
+    private Histogram jellybeanHistogram;
 
     @Inject
     // @RegistryType(type=MetricRegistry.Type.BASE)
@@ -80,7 +84,8 @@ public class MetricAppBean {
             gauge = () -> {
                 return 19L;
             };
-            metrics.register("metricTest.test1.gauge", gauge);
+            Metadata gaugeMetadata = new Metadata("metricTest.test1.gauge",MetricType.GAUGE, MetricUnits.GIGABYTES);
+            metrics.register("metricTest.test1.gauge", gauge, gaugeMetadata);
         }
 
     }
