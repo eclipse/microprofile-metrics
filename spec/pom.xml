@@ -26,6 +26,7 @@
     <artifactId>microprofile-metrics-spec</artifactId>
     <packaging>pom</packaging>
     <name>MicroProfile Metrics Specification</name>
+    <description>MicroProfile Metrics Specification :: Specification</description>
 
     <properties>
         <asciidoctor-maven.version>1.5.5</asciidoctor-maven.version>
@@ -33,6 +34,7 @@
         <license>Apache License v 2.0</license>
         <maven.build.timestamp.format>MMMM dd, yyyy</maven.build.timestamp.format>
         <revisiondate>${maven.build.timestamp}</revisiondate>
+        <revremark>Draft</revremark>
     </properties>
 
     <build>
@@ -58,6 +60,11 @@
                         </goals>
                         <configuration>
                             <backend>pdf</backend>
+                            <attributes>
+                                <revnumber>${project.version}</revnumber>
+                                <revremark>${revremark}</revremark>
+                                <revdate>${revisiondate}</revdate>
+                            </attributes>
                         </configuration>
                     </execution>
                     <execution>

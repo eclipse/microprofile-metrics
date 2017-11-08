@@ -19,6 +19,7 @@
 
 	<artifactId>microprofile-metrics-api-tck</artifactId>
 	<name>MicroProfile Metrics API-TCK</name>
+	<description>MicroProfile Metrics :: API-TCK</description>
 
 	<build>
 		<plugins>

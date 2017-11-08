@@ -28,9 +28,6 @@ ifdef::backend-pdf[]
 :pagenums:
 endif::[]
 :doctype: book
-:revnumber: 1.0
-:revdate: 2017-08-22
-:revremark: Proposal
 :toc: left
 :toclevels: 4
 :sectnums:
