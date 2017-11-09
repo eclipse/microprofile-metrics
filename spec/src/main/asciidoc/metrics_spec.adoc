@@ -72,6 +72,11 @@ planning and pro-active discovery of issues (e.g. disk usage growing without bou
 Metrics can also help those scheduling systems decide when to scale the application
 to run on more or fewer machines.
 
+=== Major changes to previous versions
+
+* Changes since 1.0
+** Added integration scope
+** Added sub-scopes to application and integration
 
 == Architecture
 
@@ -88,17 +93,39 @@ See section <<app-metrics-api>> for more information regarding the application m
 
 Metrics that are exposed need to be configured in the server. On top of the pure metrics, metadata needs to be provided.
 
-The following three sets of sub-resource (scopes) are exposed.
+The following sets of sub-resource (scopes) are exposed.
 
 * base: metrics that all MicroProfile vendors have to provide
 * vendor: vendor specific metrics (optional)
 * application: application-specific metrics (optional)
+* integration: a place for other MicroProfile specs to expose their data
 
-NOTE: It is expected that a future version of this specification will also have a sub-resource for integrations
-with other specifications of MicroProfile.
 
 [[scopes]]
 ==== Scopes
+
+===== Sub-scopes 
+
+Some of the scopes allow to provide sub-scopes to separate metrics with the same name from possibly different
+sources. When sub-scopes are used, they serve as an intermediate layer below the main scope.
+Sub-scopes are optional and may be mixed with metrics at scope level.
+
+
+.Example of mixing metrics without sub-scope with sub-scoped data
+----
+application:application_count # <1>
+application:myShop:checkout_count # <2>
+application:myShop:checkout_amount # <3>
+application:otherApp:checkout_count # <4>
+----
+<1> a metric without sub-scope
+<2> metric in myShop sub-scope
+<3> metric in myShop sub-scope
+<4> metric in otherApp sub-scope
+
+TODO: how do we make sure that metric names directly below scope do not clash with sub-scope names?
+
+TODO: should sub-scopes only be optional for applications and mandatory for integration scope?
 
 ===== Required Base metrics
 
@@ -126,6 +153,8 @@ Details of this Java API are described in <<app-metrics-api>>.
 
 Application specific metrics are exposed under `/metrics/application`.
 
+Sub-scopes are allowed to expose metrics of different applications that are deployed into one server.
+
 
 ===== Vendor specific Metrics
 
@@ -140,6 +169,37 @@ Examples for vendor specific data could be metrics like:
 
 Vendor specific metrics are not supposed to be portable between different implementations
 of MicroProfile servers, even if they are compliant with the same version of this specification.
+
+===== Integration Metrics
+
+TODO: shorter name of scope like 'int' ?
+
+This scope allows for other MicroProfile specifications or technologies to expose their data
+in well-known places. 
+
+TODO: do we also want to expose non-MP metrics here like Servlet stats?
+
+NOTE: An example could be Fault Tolerance where it is possible to define how often a call to a remote system is 
+automatically re-done before it then possibly fails. It is possible that on each call it takes 3-4 retries, so that
+the maximum number of retires is never reached. Nevertheless there is an issue, as there are always retries necessary.
+Exposing the retry-numbers help operators to find this issue.   
+
+Integrations can use the <<app-metrics-api>> to expose their data in the respective scope
+
+Sub-scopes are required to expose metrics of different MicroProfile specifications. The sub-scopes
+serve as name spaces. The next table shows the technology and the respective name of the sub-scope.
+
+
+.Defined sub-scopes
+[cols="1,3"]
+|===
+|Name of sub-scope |Technology
+
+|ft 
+|Fault Tolerance
+
+|===
+ 
 
 [[supplying_of_tags]]
 ==== Supplying of Tags
@@ -206,6 +266,10 @@ There is one `MetricRegistry` instance for each of the scopes listed in <<scopes
 Metrics can be added to or retrieved from the registry either using the `@Metric` annotation
 (see <<api-annotations, Metrics Annotations>>) or using the `MetricRegistry` object directly.
 
+==== Sub-registries
+
+Scopes that allow for sub-scopes also have sub-registries, one per sub-scope.
+
 [[rest-api]]
 === Exposing metrics via REST API
 
@@ -238,9 +302,11 @@ The API MUST NOT return a 500 Internal Server Error code to represent a non-exis
 | `/metrics` | GET | JSON, Prometheus | Returns all registered metrics
 | `/metrics/<scope>` | GET | JSON, Prometheus | Returns metrics registered for the respective scope. Scopes are listed in <<metrics-setup>>
 | `/metrics/<scope>/<metric_name>` | GET | JSON, Prometheus | Returns the metric that matches the metric name for the respective scope
+| `/metrics/<scope>/<sub-scope>/<metric_name>` | GET | JSON, Prometheus | Returns the metric that matches the metric name for the respective scope and sub-scope
 | `/metrics` | OPTIONS | JSON | Returns all registered metrics' metadata
 | `/metrics/<scope>` | OPTIONS | JSON | Returns metrics' metadata registered for the respective scope. Scopes are listed in <<metrics-setup>>
 | `/metrics/<scope>/<metric_name>` | OPTIONS | JSON | Returns the metric's metadata that matches the metric name for the respective scope
+| `/metrics/<scope>/<sub-scope>/<metric_name>` | OPTIONS | JSON | Returns the metric's metadata that matches the metric name for the respective scope and sub-scope
 |===
 
 == REST endpoints
@@ -278,13 +344,17 @@ or
 }
 ----
 
-In case `/metrics` is requested, then the data for the scopes are wrapped in the scope name:
+In case `/metrics` is requested, then the data for the scopes and sub-scopes are wrapped in the scope name:
 
 [source]
 ----
 {
   "application": {
-    "hitCount": 45
+    "hitCount": 45,
+    "myApp": {
+       "checkoutCount" : 123,
+       "checkoutAmount" :12345.1
+    }
   },
   "base": {
      "thread.count" : 33,
@@ -540,6 +610,7 @@ Prometheus text format does not allow for all characters and adds the base unit 
 * Dot (`.`), Space ( ), Dash (`-`) are translated to underscore (`_`).
 * Scope is always specified at the start of the metric name.
 * Scope and name are separated by colon (`:`).
+* Sub-scopes, if present, are inserted between scope and metric and end with a colon (`:`)
 * camelCase is translated to camel_case
 * Double underscore is translated to single underscore
 * Colon-underscore (`:_`) is translated to single colon
@@ -994,10 +1065,12 @@ Note: This is a vendor specific attribute/operation that is not defined in java.
 
 
 [[app-metrics-api]]
-== Application Metrics Programming Model
+== Application and Integration Metrics Programming Model
 
 MicroProfile Metrics provides a way to register Application-specific metrics to allow applications to expose metrics in
-the _application_ scope (see <<scopes>> for the description of scopes).
+the _application_ scope. 
+
+Likewise metrics of integrations can be exposed under the _integration_ scope (see <<scopes>> for the description of scopes).
 
 Metrics and their metadata are added to a _Metric Registry_ upon definition and can afterwards have their values set
 and retrieved via the Java-API and also be exposed via the REST-API (see <<rest-api>>).
@@ -1411,10 +1484,12 @@ public void init(@Metric(name="instances") Counter instances) {
 === Metric Registries
 
 The `MetricRegistry` is used to maintain a collection of metrics along with their metadata.
-There is one shared singleton of the `MetricRegistry` per scope (_application_, _base_, and _vendor_).
-When metrics are registered using annotations, the metrics are registered in the _application_ `MetricRegistry` (and thus the _application_ scope).
+There is one shared singleton of the `MetricRegistry` per scope (_application_, _base_, _integration_ and _vendor_).
+When metrics are registered using annotations, the metrics are registered in the _application_ `MetricRegistry` 
+(and thus the _application_ scope).
 
-When injected, the `@RegistryType` is used as a qualifier to selectively inject either the `APPLICATION`, `BASE`, or `VENDOR` registry.
+When injected, the `@RegistryType` is used as a qualifier to selectively inject either the `APPLICATION`, `BASE`, 
+`INTEGRATION` or `VENDOR` registry.
 If no qualifier is used, the default `MetricRegistry` returned is the `APPLICATION` registry.
 
 Implementations may choose to use a Factory class to produce the injectable `MetricRegistry` bean via CDI. See <<metric-registry-factory>>. Note: The factory would be an internal class and not exposed to the application.
@@ -1426,7 +1501,8 @@ The implementation must produce the corresponding `MetricRegistry` specified by 
 NOTE: The implementor can optionally provide a _read_only_ copy of the `MetricRegistry` for _base_ and _vendor_ scopes.
 
 ==== Application Metric Registry
-The implementation must produce the _application_ `MetricRegistry` when no `RegistryType` is provided (`@Default`) or when the `RegistryType` is `APPLICATION`.
+The implementation must produce the _application_ `MetricRegistry` when no `RegistryType` is provided (`@Default`) 
+or when the `RegistryType` is `APPLICATION`.
 
 .Example of the application injecting the application registry
 [source, java]
@@ -1442,6 +1518,32 @@ MetricRegistry metricRegistry;
 @RegistryType(type=MetricRegistry.Type.APPLICATION)
 MetricRegistry metricRegistry;
 ----
+
+If the application wishes to use a sub-scope, it can apply the `@SubRegistry` annotation to set a deployment-wide
+sub-registry:
+
+.Example with sub-scope
+[source, java]
+----
+@SubRegistry(name="myApp")
+public class MyApplication {
+
+    @Inject
+    MetricRegistry metricRegistry;
+
+    [...]
+}
+----
+
+The sub-registry can also be provided in a programmatic way:
+
+[source, java]
+----
+@Inject
+@RegistryType(type=MetricRegistry.Type.APPLICATION, subtype="myApp")
+MetricRegistry metricRegistry;
+----
+
 
 ==== Base Metric Registry
 The implementation must produce the _base_ `MetricRegistry` when the `RegistryType` is `BASE`. The _base_ `MetricRegistry` must contain the required metrics specified in <<required-metrics>>.
@@ -1462,6 +1564,19 @@ The implementation must produce the _vendor_ `MetricRegistry` when the `Registry
 ----
 @Inject
 @RegistryType(type=MetricRegistry.Type.VENDOR)
+MetricRegistry vendorRegistry;
+----
+
+==== Integration Metric Registry
+The implementation must produce the _integration_ `MetricRegistry` when the `RegistryType` is `INTEGRATION`. 
+The _integration_ `MetricRegistry` must contain any integration specific metrics in respective sub-registries.
+Integrations need to always provide their sub-scope.
+
+.Example of the application injecting the Fault-Tolerance integration registry
+[source, java]
+----
+@Inject
+@RegistryType(type=MetricRegistry.Type.INTEGRATION,subtype="ft")
 MetricRegistry vendorRegistry;
 ----
 
@@ -1558,6 +1673,13 @@ public class MetricRegistryFactory {
     @RegistryType(type = Type.VENDOR)
     public static MetricRegistry getVendorRegistry() {
         // Returns the static instance of the Vendor MetricRegistry
+        [...]
+    }
+
+    @Produces
+    @RegistryType(type = Type.INTEGRATION)
+    public static MetricRegistry getIntegrationRegistry() {
+        // Returns the static instance of the Integration MetricRegistry
         [...]
     }
 

@@ -41,9 +41,9 @@ import org.eclipse.microprofile.metrics.MetricRegistry;
  *      {@literal @}RegistryType(type=MetricRegistry.Type.BASE)
  *      MetricRegistry baseRegistry;
  * </code></pre>
- * 
+ *
  * @see org.eclipse.microprofile.metrics.MetricRegistry.Type
- * 
+ *
  * @author Raymond Lam
  *
  */
@@ -52,5 +52,8 @@ import org.eclipse.microprofile.metrics.MetricRegistry;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
 public @interface RegistryType {
+    /** type of registry */
     MetricRegistry.Type type() default MetricRegistry.Type.APPLICATION;
+    /** Sub-registry in case type is application or integration */
+    String subtype();
 }
