@@ -115,7 +115,7 @@
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <useReleaseProfile>false</useReleaseProfile>
                     <localCheckout>true</localCheckout>
-                    <arguments>${arguments} -Prelease -Drevmark=${revmark}</arguments>
+                    <arguments>${arguments} -Prelease -Drevremark=${revremark}</arguments>
                 </configuration>
             </plugin>
             <plugin>
