@@ -25,6 +25,7 @@
 
     <artifactId>microprofile-metrics-api</artifactId>
     <name>MicroProfile Metrics API</name>
+    <description>MicroProfile Metrics :: API</description>
 
 
     <dependencies>
