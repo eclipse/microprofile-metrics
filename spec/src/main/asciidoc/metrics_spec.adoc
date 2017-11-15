@@ -1220,11 +1220,12 @@ When a method is annotated, the implementation must register a gauge for the met
 .Example of an annotated method
 [source, java]
 ----
-@Gauge
+@Gauge(unit = MetricUnits.KILOBITS) // <1>
 public long getValue() {
   return value;
 }
 ----
+<1> Gauges require a unit to be set explicitly.
 
 
 ==== @Metered
