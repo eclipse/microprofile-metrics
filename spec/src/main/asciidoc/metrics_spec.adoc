@@ -1007,7 +1007,7 @@ In order to make setting the values easier, Annotations are made available.
 .Example set-up of a Gauge metric.  No unit is given, so `MetricUnits.NONE` is used, an explicit name is provided
 [source,java]
 ----
-@Gauge(name = "queueSize")
+@Gauge(unit = MetricUnits.NONE, name = "queueSize")
 public int getQueueSize() {
   return queue.size;
 }
@@ -1204,7 +1204,7 @@ public class CounterBean {
 ----
 
 ==== @Gauge
-An annotation for marking a method as a gauge.
+An annotation for marking a method as a gauge. No default `MetricUnit` is supplied, so the `unit` must always be specified explicitly.
 
 The implementation must support the following annotation target:
 
@@ -1220,7 +1220,7 @@ When a method is annotated, the implementation must register a gauge for the met
 .Example of an annotated method
 [source, java]
 ----
-@Gauge
+@Gauge(unit = MetricUnits.NONE)
 public long getValue() {
   return value;
 }
