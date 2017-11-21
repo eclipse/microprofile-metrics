@@ -126,6 +126,8 @@ public abstract class MetricRegistry {
     /**
      * Given a {@link Metric}, registers it under the given name along with the provided {@link Metadata}.
      *
+     * @deprecated As of version 1.1, use {@link #register(Metadata, Metric) } instead
+     *
      * @param name      the name of the metric
      * @param metric    the metric
      * @param metadata  the metadata
@@ -133,7 +135,22 @@ public abstract class MetricRegistry {
      * @return {@code metric}
      * @throws IllegalArgumentException if the name is already registered
      */
+    @Deprecated
     public abstract <T extends Metric> T register(String name, T metric, Metadata metadata) throws IllegalArgumentException;
+
+    
+    /**
+     * Given a {@link Metric}, registers it under the provided {@link Metadata}.
+     *
+     * @param metadata  the metadata
+     * @param metric    the metric
+     * @param <T>       the type of the metric
+     * @return {@code metric}
+     * @throws IllegalArgumentException if the name is already registered
+     * 
+     * @since 1.1
+     */
+    public abstract <T extends Metric> T register(Metadata metadata, T metric) throws IllegalArgumentException;
 
 
     /**
