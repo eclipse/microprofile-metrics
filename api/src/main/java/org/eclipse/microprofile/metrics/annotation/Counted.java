@@ -50,8 +50,8 @@ import org.eclipse.microprofile.metrics.MetricUnits;
  * A counter with the fully qualified class name + {@code fancyName} will be created and each time the
  * {@code #fancyName(String)} method is invoked, the counter will be marked.
  * Similarly, the same applies for a constructor annotated with counted.
- * (See {@link #monotonic()} for how the counter will be incremented). 
- * 
+ * (See {@link #monotonic()} for how the counter will be incremented).
+ *
  * <p>
  * Given a class annotated with {@literal @}Counted like this:
  * </p>
@@ -82,7 +82,7 @@ public @interface Counted {
     /**
      * @return The tags of the counter. Each {@code String} tag must be in the form of 'key=value'. If the input is empty or does
      * not contain a '=' sign, the entry is ignored.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
@@ -96,7 +96,7 @@ public @interface Counted {
     boolean absolute() default false;
 
     /**
-     * @return 
+     * @return
      * If {@code false} (default), the counter is decremented when the annotated
      * method returns, counting current invocations of the annotated method.
      * If {@code true}, the counter increases monotonically, counting total
@@ -104,31 +104,39 @@ public @interface Counted {
      */
     @Nonbinding
     boolean monotonic() default false;
-    
+
     /**
      * @return The display name of the counter.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String displayName() default "";
-    
+
     /**
      * @return The description of the counter.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String description() default "";
-    
-    
+
+
     /**
      * @return The unit of the counter. By default, the value is {@link MetricUnits#NONE}.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      * @see org.eclipse.microprofile.metrics.MetricUnits
      */
     @Nonbinding
     String unit() default MetricUnits.NONE;
+
+    /**
+     * Denotes if this metric instance can be reused by multiple registrations.
+     * @return false if not reusable, true otherwise
+     * @since Metrics 1.1
+     */
+    @Nonbinding
+    boolean reusable() default false;
 
 }

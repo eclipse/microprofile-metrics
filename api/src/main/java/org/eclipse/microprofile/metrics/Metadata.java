@@ -30,7 +30,7 @@ import java.util.Map.Entry;
 
 /**
  * Bean holding the metadata of one single metric.
- * 
+ *
  * The metadata contains:
  * <ul>
  * <li>
@@ -58,12 +58,12 @@ import java.util.Map.Entry;
  *      export MP_METRICS_TAGS=app=shop,tier=integration
  * </code></pre>
  * </li>
- * </ul> 
- * 
+ * </ul>
+ *
  * @author hrupp, Raymond Lam
  */
 public class Metadata {
-    
+
      /**
      * Name of the metric.
      * <p>
@@ -71,7 +71,7 @@ public class Metadata {
      * </p>
      */
     private String name;
-    
+
     /**
      * Display name of the metric. If not set, the name is taken.
      * <p>
@@ -88,7 +88,7 @@ public class Metadata {
      * </p>
      */
     private String description;
-    
+
     /**
      * Type of the metric.
      * <p>
@@ -103,7 +103,22 @@ public class Metadata {
      * </p>
      */
     private String unit = MetricUnits.NONE;
-    
+
+    /**
+     * Can this metric name (in a scope) be used multiple times?
+     * <p>
+     *   Setting this is optional. The default is <tt>false</tt>, which
+     *   prevents reusing.
+     * </p>
+     * Note that this only has an effect if the <tt>name</tt> is explicitly given or
+     * <tt>absolute</tt> is set to true and two methods that are marked as metric have
+     * the same name.
+     *
+     * If the name is automatically determined, then this flag has no effect as
+     * all metric names are different anyway
+     */
+    private boolean reusable = false;
+
     /**
      * Tags of the metric. Augmented by global tags.
      * <p>
@@ -117,7 +132,7 @@ public class Metadata {
      * The environment variable used to pass in global tags.
      */
     public static final String GLOBAL_TAGS_VARIABLE = "MP_METRICS_TAGS";
-    
+
     /**
      * Defines if the metric can have multiple objects and needs special
      * treatment or if it is a singleton.
@@ -131,7 +146,7 @@ public class Metadata {
 
     /**
      * Constructs a Metadata object with default units
-     * 
+     *
      * @param name The name of the metric
      * @param type The type of the metric
      */
@@ -159,7 +174,7 @@ public class Metadata {
 
     /**
      * Constructs a Metadata object
-     * 
+     *
      * @param name The name of the metric
      * @param type The type of the metric
      * @param unit The units of the metric
@@ -173,7 +188,7 @@ public class Metadata {
 
     /**
      * Constructs a Metadata object
-     * 
+     *
      * @param name The name of the metric
      * @param displayName The display (friendly) name of the metric
      * @param description The description of the metric
@@ -191,7 +206,7 @@ public class Metadata {
 
     /**
      * Constructs a Metadata object
-     * 
+     *
      * @param name The name of the metric
      * @param displayName The display (friendly) name of the metric
      * @param description The description of the metric
@@ -218,8 +233,9 @@ public class Metadata {
      * <li>{@code type} - The type of the metric</li>
      * <li>{@code unit} - The units of the metric</li>
      * <li>{@code tags} - The tags of the metric  - cannot be null</li>
+     * <li>{@code reusable} - The metric name can be registered multiple times if the value is <tt>true</tt></li>
      * </ul>
-     * 
+     *
      * @param in a map of key/value pairs representing Metadata
      */
     public Metadata(Map<String, String> in) {
@@ -233,11 +249,12 @@ public class Metadata {
             String tagString = (String) in.get("tags");
             addTags(tagString);
         }
+        this.setReusable(Boolean.parseBoolean(in.get("reusable")));
     }
 
     /**
      * Returns the metric name.
-     * 
+     *
      * @return the metric name.
      */
     public String getName() {
@@ -246,7 +263,7 @@ public class Metadata {
 
     /**
      * Sets the metric name.
-     * 
+     *
      * @param name the new metric name
      */
     public void setName(String name) {
@@ -266,7 +283,7 @@ public class Metadata {
 
     /**
      * Sets the display name.
-     * 
+     *
      * @param displayName the new display name
      */
     public void setDisplayName(String displayName) {
@@ -291,9 +308,9 @@ public class Metadata {
 
     /**
      * Returns the String representation of the {@link MetricType}.
-     * 
+     *
      * @return the MetricType as a String
-     * 
+     *
      * @see MetricType
      */
     public String getType() {
@@ -342,6 +359,22 @@ public class Metadata {
     }
 
     /**
+     * Can the metric be reused (i.e. same name registered multiple times)?
+     * @return True if reusable, false otherwise
+     */
+    public boolean isReusable() {
+        return reusable;
+    }
+
+    /**
+     * Set if the metric can be reusable (i.e. same name registered multiple times)?
+     * @param reusable True if reusable, false otherwise
+     */
+    public void setReusable(boolean reusable) {
+        this.reusable = reusable;
+    }
+
+    /**
      * Gets the list of tags as a single String in the format 'key="value",key2="value2",...'
      * @return a String containing the tags
      */
@@ -372,7 +405,7 @@ public class Metadata {
     /**
      * Add one single tag with the format: 'key=value'. If the input is empty or does
      * not contain a '=' sign, the entry is ignored.
-     * 
+     *
      * @param kvString
      *            Input string
      */
@@ -387,7 +420,7 @@ public class Metadata {
      * Add multiple tags delimited by commas.
      * The format must be in the form 'key1=value1, key2=value2'.
      * This method will call {@link #addTag(String)} on each tag.
-     * 
+     *
      * @param tagsString a string containing multiple tags
      */
     public void addTags(String tagsString) {
@@ -403,7 +436,7 @@ public class Metadata {
 
     /**
      * Sets the tags hashmap.
-     * 
+     *
      * @param tags a hashmap containing tags.
      */
     public void setTags(HashMap<String, String> tags) {

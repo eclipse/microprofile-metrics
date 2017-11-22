@@ -197,6 +197,12 @@ The Metadata:
 * displayName (optional): A human readable name of the metric for display purposes if the metric name is not
 human readable. This could e.g. be the case when the metric name is a uuid.
 * tags (optional): A list of `key=value` pairs, which are separated by comma. See also <<supplying_of_tags>>.
+* reusable (optional): If set to `true`, then it is allowed to register a metric multiple times under the same name.
+Note that all such instances must set `reusable` to `true`.
+Default is `false`.
+The implementation must throw an `IllegalArgumentException` in case an attempt is made to register a metric multiple times where not all instances
+are marked as reusable.
+See also <<reusing_of_metrics>>.
 
 Metadata must not change over the lifetime of a process (i.e. it is not allowed
 to return the units as seconds in one retrieval and as hours in a subsequent one).
@@ -215,6 +221,34 @@ There is one `MetricRegistry` instance for each of the scopes listed in <<scopes
 
 Metrics can be added to or retrieved from the registry either using the `@Metric` annotation
 (see <<api-annotations, Metrics Annotations>>) or using the `MetricRegistry` object directly.
+
+[[reusing_of_metrics]]
+==== Reusing of Metrics
+
+By default it is not allowed to register more than one metric under a certain name in a scope. This is done
+to prevent hard to spot copy & paste errors, where for example all methods of a Jax-Rs class are marked with
+`@Timed(name="myApp", absolute=true)`.
+
+If this behaviour is required, then it is possible to mark all such instances as _reusable_ by passing
+the respective flag via Metadata or field in the Annotation. Gauges are not reusable.
+
+Only metrics of the same type can be reused under the same name.
+Trying to reuse a name for different types will result in an `IllegalArgumentException`.
+
+TIP: If you want to re-use a metric name, then you need to also explicitly set the `name` field OR set `absolute`
+to `true` and have multiple methods annotated as metric that have the same method name.
+
+.Example of reused counters
+[source,java]
+----
+    @Counted(name = "countMe", absolute = true, reusable = true)
+    public void countMeA() { }
+
+    @Counted(name = "countMe", absolute = true, reusable = true)
+    public void countMeB() { }
+----
+
+In the above examples both `countMeA()` and `countMeB()` will share a single Counter with registered name `countMe` in application scope.
 
 [[rest-api]]
 === Exposing metrics via REST API
@@ -1044,8 +1078,12 @@ annotated objects change.
 * The implementation must expose the values of the objects registered in the MetricsRegistry via REST-API as described
 in <<rest-api>>.
 * Metrics registered via non-annotations API need their values be set via updates from the application code.
-* The implementation must flag duplicate metrics upon registration and reject the duplicate.
-A duplicate metric is a metric that has the same scope and name as an existing one.
+* The implementation must flag duplicate metrics upon registration and reject the duplicate unless the metric
+is explicitly marked as reusable upon first registration and in all subsequent registrations.
+** A duplicate metric is a metric that has the same scope and name as an existing one.
+** The implementation must throw an `IllegalArgumentException` when the metric is rejected.
+** It is not allowed to reuse a metric (name) for metrics of different types.
+The implementation must throw an `IllegalArgumentException` if such a mismatch is detected.
 
 
 === Base Package
@@ -1114,11 +1152,13 @@ All annotations (Except `RegistryType`) have the following fields that correspon
 in <<meta-data-def>>.
 
 `String name`:: Optional. Sets the name of the metric. If not explicitly given the name of the annotated object is used.
-`boolean absolute`:: If `true`, uses the given name as an absolute name of the metric. If `false`, prepends the package name and class name before the given name. Default value is `false`.
+`boolean absolute`:: If `true`, uses the given name as the absolute name of the metric.
+If `false`, prepends the package name and class name before the given name. Default value is `false`.
 `String displayName`:: Optional. A human readable display name for metadata.
 `String description`:: Optional. A description of the metric.
 `String unit`:: Unit of the metric. For `@Gauge` no default is provided. Check the `MetricUnits` class for a set of pre-defined units.
 `String[] tags`:: Optional. Array of Strings in the `<key>=<value>` format to supply special tags to a metric.
+`boolean reusable`:: Denotes if a metric with a certain name can be registered in more than one place. Does not apply to gauges.
 
 NOTE: Implementors are encouraged to issue warnings in the server log if metadata is missing. Implementors
 MAY stop the deployment of an application if Metadata is missing.
