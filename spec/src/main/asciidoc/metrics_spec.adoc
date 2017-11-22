@@ -69,6 +69,14 @@ planning and pro-active discovery of issues (e.g. disk usage growing without bou
 Metrics can also help those scheduling systems decide when to scale the application
 to run on more or fewer machines.
 
+=== Major changes to previous versions
+
+* Since 1.0
+** Improved TCK
+** `org.eclipse.microprofile.metrics.MetricRegistry.register(String name, Metric, Metadata)` is deprecated.
+Use `org.eclipse.microprofile.metrics.MetricRegistry.register(Metadata, Metric)` instead, where `Metadata`
+already has a field for the name.
+** Global tags are now supplied via the means of MicroProfile Config (the env variable is still valid).
 
 == Architecture
 
@@ -153,9 +161,14 @@ queries (Give me the API hit count for `app=myShop && tier=app_server`).
 Tags can be supplied in two ways:
 
 * At the level of a metric as described in <<app-metrics-api>>.
-* At the application server level by passing the list of tags in an environment variable `MP_METRICS_TAGS`.
+* At the application server level by using https://github.com/eclipse/microprofile-config[MicroProfile Config] and
+setting a property of the name `MP_METRICS_TAGS`.
+This property translates to the environment variable `MP_METRICS_TAGS`.
 
-.Set up global tags
+NOTE: The use of MicroProfile-Config is mandatory in MicroProfile-Metrics 1.1 even if it only serves to provide
+the global tags that existed already in Metrics 1.0. Future version of the spec will introduce more config options.
+
+.Set up global tags via environment
 [source,bash]
 ----
 export MP_METRICS_TAGS=app=shop,tier=integration

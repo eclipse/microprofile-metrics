@@ -25,6 +25,7 @@ package org.eclipse.microprofile.metrics.test;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.Gauge;
 import org.eclipse.microprofile.metrics.Histogram;
@@ -57,7 +58,7 @@ public class MetricAppBean {
     @Inject
     @Metric(name = "purple", absolute = true, tags = "app=myShop")
     private Counter purpleCount;
-    
+
     @Inject
     @Metric(absolute = true, unit="jellybeans")
     private Histogram jellybeanHistogram;
@@ -65,6 +66,11 @@ public class MetricAppBean {
     @Inject
     // @RegistryType(type=MetricRegistry.Type.BASE)
     private MetricRegistry metrics;
+
+    @Inject
+    @ConfigProperty(name = "MP_METRICS_TAGS")
+    private String globalTags;
+
 
     public void countMe() {
         Counter counter = metrics.counter("metricTest.test1.count");
@@ -142,4 +148,7 @@ public class MetricAppBean {
 
     }
 
+    public String getGlobalTags() {
+        return globalTags;
+    }
 }
