@@ -107,12 +107,5 @@
 			<scope>compile</scope>
 		</dependency>
 
-		<!-- Container adapters: -->
-		<dependency>
-			<groupId>org.jboss.arquillian.container</groupId>
-			<artifactId>arquillian-wlp-managed-8.5</artifactId>
-			<version>1.0.0.Beta2</version>
-		</dependency>
-
 	</dependencies>
 </project>
