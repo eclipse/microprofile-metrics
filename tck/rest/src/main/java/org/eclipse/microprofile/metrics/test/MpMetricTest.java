@@ -518,7 +518,7 @@ public class MpMetricTest {
         checkMetadataPresent(elements, expectedMetadata);
 
     }
-    
+
     @Test
     @RunAsClient
     @InSequence(21)
@@ -657,25 +657,25 @@ public class MpMetricTest {
         .and().body(containsString("TYPE application:org_eclipse_microprofile_metrics_test_metric_app_bean_gauge_me_a_bytes gauge"))
         .and().body(containsString("TYPE application:metric_test_test1_gauge_bytes gauge"));
 
-        
+
     }
-    
+
     @Test
     @RunAsClient
     @InSequence(29)
     public void testNonStandardUnitsJSON() {
-        
+
         Header wantJSONFormat = new Header("Accept", APPLICATION_JSON);
         given().header(wantJSONFormat).options("/metrics/application/jellybeanHistogram").then().statusCode(200)
         .body("jellybeanHistogram.unit", equalTo("jellybeans"));
-        
+
     }
-    
+
     @Test
     @RunAsClient
     @InSequence(30)
     public void testNonStandardUnitsPrometheus() {
-        
+
         String prefix = "jellybean_histogram_";
 
         Header wantPrometheusFormat = new Header("Accept", TEXT_PLAIN);
@@ -694,7 +694,7 @@ public class MpMetricTest {
         .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.99\"}"))
         .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.999\"}"));
     }
-    
+
     @Test
     @RunAsClient
     @InSequence(31)
@@ -705,22 +705,29 @@ public class MpMetricTest {
 
         Map<String, Object> elements = jsonPath.getMap(".");
         Map<String, MiniMeta> names = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
-        
+
         for (String item : names.keySet()) {
             if (elements.containsKey(item) && names.get(item).optional) {
                 String prefix = names.get(item).name;
                 String type = "\""+prefix+"\""+".type";
                 String unit= "\""+prefix+"\""+".unit";
-                
+
                 given().header(wantJson).options("/metrics/base/"+prefix).then().statusCode(200)
                 .body(type, equalTo(names.get(item).type))
                 .body(unit, equalTo(names.get(item).unit));
             }
         }
-        
+
     }
 
-    
+
+    @Test
+    @InSequence(32)
+    public void testGlobalTagsViaConfig() {
+      assert "tier=integration".equals(metricAppBean.getGlobalTags());
+    }
+
+
     private Map<String, MiniMeta> getExpectedMetadataFromXmlFile(MetricRegistry.Type scope) {
       ClassLoader cl = this.getClass().getClassLoader();
       String fileName;
@@ -763,7 +770,7 @@ public class MpMetricTest {
       return metaMap;
 
   }
-    
+
     @SuppressWarnings("StringBufferReplaceableByString")
     private static class MiniMeta {
         private String name;
