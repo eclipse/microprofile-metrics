@@ -253,6 +253,10 @@ The API MUST NOT return a 500 Internal Server Error code to represent a non-exis
 | `/metrics/<scope>/<metric_name>` | OPTIONS | JSON | Returns the metric's metadata that matches the metric name for the respective scope
 |===
 
+NOTE: The implementation must return a 406 response code if the request's HTTP Accept header for an OPTIONS request
+does not match `application/json`.
+
+
 == REST endpoints
 
 This section describes the REST-api, that monitoring agents would use to retrieve the collected metrics.
@@ -457,7 +461,6 @@ The value of the counter must be equivalent to a call to the instance Counter's 
 
 Metadata is exposed in a tree-like fashion with sub-trees for the sub-resources mentioned previously.
 
-NOTE: The implementation should return a 406 response code if the request's HTTP Accept header does not match `application/json`.
 
 Example:
 
