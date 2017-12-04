@@ -233,7 +233,8 @@ public class Metadata {
      * <li>{@code type} - The type of the metric</li>
      * <li>{@code unit} - The units of the metric</li>
      * <li>{@code tags} - The tags of the metric  - cannot be null</li>
-     * <li>{@code reusable} - The metric name can be registered multiple times if the value is <tt>true</tt></li>
+     * <li>{@code reusable} - If <tt>true</tt>, this metric name is permitted to be used at multiple registration points. If
+     * <tt>false</tt>, this metric name is only permitted to be used at one registration point per MetricRegistry.</li>
      * </ul>
      *
      * @param in a map of key/value pairs representing Metadata
