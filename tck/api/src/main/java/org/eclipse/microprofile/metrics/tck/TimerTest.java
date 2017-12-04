@@ -83,7 +83,7 @@ public class TimerTest {
         isInitialized = true;
     }
 
-    @Test
+//    @Test
     @InSequence(1)
     public void testRates() throws Exception {
         double beforeStartTime = System.nanoTime();
