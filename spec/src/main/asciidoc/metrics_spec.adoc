@@ -200,9 +200,7 @@ human readable. This could e.g. be the case when the metric name is a uuid.
 * reusable (optional): If set to `true`, then it is allowed to register a metric multiple times under the same name.
 Note that all such instances must set `reusable` to `true`.
 Default is `false`.
-The implementation must throw an `IllegalArgumentException` in case an attempt is made to register a metric multiple times where not all instances
-are marked as reusable.
-See also <<reusing_of_metrics>>.
+See <<reusing_of_metrics>> for more details.
 
 Metadata must not change over the lifetime of a process (i.e. it is not allowed
 to return the units as seconds in one retrieval and as hours in a subsequent one).
@@ -231,6 +229,10 @@ to prevent hard to spot copy & paste errors, where for example all methods of a 
 
 If this behaviour is required, then it is possible to mark all such instances as _reusable_ by passing
 the respective flag via Metadata or field in the Annotation. Gauges are not reusable.
+
+The implementation must throw an 'IllegalArgumentException' during a metric registration call when the call would result
+in the reuse of a metric where that metric was either previously declared not reusable or where the registration call itself
+declares the metric to not be reusable.
 
 Only metrics of the same type can be reused under the same name.
 Trying to reuse a name for different types will result in an `IllegalArgumentException`.
@@ -1084,6 +1086,7 @@ is explicitly marked as reusable upon first registration and in all subsequent r
 ** The implementation must throw an `IllegalArgumentException` when the metric is rejected.
 ** It is not allowed to reuse a metric (name) for metrics of different types.
 The implementation must throw an `IllegalArgumentException` if such a mismatch is detected.
+** See <<reusing_of_metrics>> for more details.
 
 
 === Base Package
