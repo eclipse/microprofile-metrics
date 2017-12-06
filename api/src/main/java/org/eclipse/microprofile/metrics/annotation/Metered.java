@@ -49,7 +49,7 @@ import org.eclipse.microprofile.metrics.MetricUnits;
  * A meter with the fully qualified class name + {@code fancyName} will be created and each time the
  * {@code #fancyName(String)} method is invoked, the meter will be marked.
  * Similarly, the same applies for a constructor annotated with metered.
- * 
+ *
  * <p>
  * Given a class annotated with {@literal @}Metered like this:
  * </p>
@@ -79,7 +79,7 @@ public @interface Metered {
     /**
      * @return The tags of the meter. Each {@code String} tag must be in the form of 'key=value'. If the input is empty or does
      * not contain a '=' sign, the entry is ignored.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
@@ -91,30 +91,38 @@ public @interface Metered {
      */
     @Nonbinding
     boolean absolute() default false;
-    
+
     /**
      * @return The display name of the meter.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String displayName() default "";
-    
+
     /**
      * @return The description of the meter.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String description() default "";
-    
+
     /**
      * @return The unit of the meter. By default, the value is {@link MetricUnits#PER_SECOND}.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      * @see org.eclipse.microprofile.metrics.MetricUnits
      */
     @Nonbinding
     String unit() default MetricUnits.PER_SECOND;
+
+    /**
+     * Denotes if this metric instance can be reused by multiple registrations.
+     * @return false if not reusable, true otherwise
+     * @since Metrics 1.1
+     */
+    @Nonbinding
+    boolean reusable() default false;
 
 }

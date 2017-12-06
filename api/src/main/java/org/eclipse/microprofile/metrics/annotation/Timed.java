@@ -48,7 +48,7 @@ import org.eclipse.microprofile.metrics.MetricUnits;
  * </code></pre>
  * A timer with the fully qualified class name + {@code fancyName} will be created and each time the
  * {@code #fancyName(String)} method is invoked, the method's execution will be timed.
- * 
+ *
  * <p>
  * Given a class annotated with {@literal @}Timed like this:
  * </p>
@@ -78,7 +78,7 @@ public @interface Timed {
     /**
      * @return The tags of the timer. Each {@code String} tag must be in the form of 'key=value'. If the input is empty or does
      * not contain a '=' sign, the entry is ignored.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
@@ -90,30 +90,37 @@ public @interface Timed {
      */
     @Nonbinding
     boolean absolute() default false;
-    
+
     /**
      * @return The display name of the timer.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String displayName() default "";
-    
+
     /**
      * @return The description of the timer.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
-    String description() default "";   
-    
+    String description() default "";
+
    /**
     * @return The unit of the timer. By default, the value is {@link MetricUnits#NANOSECONDS}.
-    * 
+    *
      * @see org.eclipse.microprofile.metrics.Metadata
      * @see org.eclipse.microprofile.metrics.MetricUnits
     */
     @Nonbinding
     String unit() default MetricUnits.NANOSECONDS;
 
+    /**
+     * Denotes if this metric instance can be reused by multiple registrations.
+     * @return false if not reusable, true otherwise
+     * @since Metrics 1.1
+     */
+    @Nonbinding
+    boolean reusable() default false;
 }
