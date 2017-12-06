@@ -288,6 +288,7 @@ public class MpMetricTest {
                 continue; // We don't deal with them here
             }
             Map<String, Object> fromServer = elements.get(item.name);
+            assert fromServer != null : "Got no data for " + item.name + " from the server";
             assert item.type.equals(fromServer.get("type")) : "expected " + item.type + " but got "
                 + fromServer.get("type") + " for " + item.name;
             assert item.unit.equals(fromServer.get("unit")) : "expected " + item.unit + " but got "
