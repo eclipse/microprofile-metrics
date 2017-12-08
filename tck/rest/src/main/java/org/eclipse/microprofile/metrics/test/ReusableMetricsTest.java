@@ -26,8 +26,11 @@ package org.eclipse.microprofile.metrics.test;
 
 import static com.jayway.restassured.RestAssured.given;
 
+import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Header;
+import java.net.MalformedURLException;
+import java.net.URL;
 import javax.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -36,6 +39,7 @@ import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -43,13 +47,44 @@ import org.junit.runner.RunWith;
  * @author Heiko W. Rupp
  */
 @RunWith(Arquillian.class)
-public class MicroprofileMetricsTest2 {
+public class ReusableMetricsTest {
 
   private static final String APPLICATION_JSON = "application/json";
+  private static final String DEFAULT_PROTOCOL = "http";
+  private static final String DEFAULT_HOST = "localhost";
+  private static final int DEFAULT_PORT = 8080;
 
   @Inject
-  private MetricAppBean2 metricAppBean;
+    private MetricAppBean2 metricAppBean;
 
+    @BeforeClass
+    static public void setup() throws MalformedURLException {
+        // set base URI and port number to use for all requests
+        String serverUrl = System.getProperty("test.url");
+        String protocol = DEFAULT_PROTOCOL;
+        String host = DEFAULT_HOST;
+        int port = DEFAULT_PORT;
+
+        if (serverUrl != null) {
+            URL url = new URL(serverUrl);
+            protocol = url.getProtocol();
+            host = url.getHost();
+            port = (url.getPort() == -1) ? DEFAULT_PORT : url.getPort();
+        }
+
+        RestAssured.baseURI = protocol + "://" + host;
+        RestAssured.port = port;
+
+        // set user name and password to use for basic authentication for all requests
+        String userName = System.getProperty("test.user");
+        String password = System.getProperty("test.pwd");
+
+        if (userName != null && password != null) {
+            RestAssured.authentication = RestAssured.basic(userName, password);
+            RestAssured.useRelaxedHTTPSValidation();
+        }
+
+    }
 
   @Deployment
   public static JavaArchive createDeployment() {
