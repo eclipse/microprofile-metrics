@@ -19,6 +19,9 @@
 
 === Major changes to previous versions
 
+* Since 1.1
+** Removed unnecessary `@InterceptorBinding` annotation from `org.eclipse.microprofile.metrics.annotation.Metric`.
+
 * Since 1.0
 ** Improved TCK
 ** `org.eclipse.microprofile.metrics.MetricRegistry.register(String name, Metric, Metadata)` is deprecated.
