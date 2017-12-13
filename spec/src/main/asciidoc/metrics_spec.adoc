@@ -1135,8 +1135,8 @@ The following Annotations exist, see below for common fields:
 |@Counted | M, C, T | Denotes a counter, which counts the invocations of the annotated object. | MetricUnits.NONE
 |@Gauge   | M | Denotes a gauge, which samples the value of the annotated object.  | _none_ Must be supplied by the user
 |@Metered | M, C, T  | Denotes a meter, which tracks the frequency of invocations of the annotated object. | MetricUnits.PER_SECOND
-|@Metric  | M, F, P | An annotation requesting that a metric should be injected. This annotation can be used on the fields
-    of type `Meter`, `Timer`, `Counter`, and `Histogram`. | MetricUnits.NONE
+|@Metric  | M, F, P | An annotation that contains the metadata information when requesting a metric to be injected or produced. This annotation can be used on fields
+    of type `Meter`, `Timer`, `Counter`, and `Histogram`. For `Gauge`, the `@Metric` annotation can only be used on producer methods/fields. | MetricUnits.NONE
 |@Timed   | M, C, T | Denotes a timer, which tracks duration of the annotated object. | MetricUnits.NANOSECONDS
 |===
 (C=Constructor, F=Field, M=Method, P=Parameter, T=Type)
