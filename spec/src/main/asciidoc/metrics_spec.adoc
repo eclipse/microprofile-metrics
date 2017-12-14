@@ -1219,15 +1219,22 @@ The implementation must support the following annotation targets:
 
 In addition to the metadata fields, `@Counted` has the following field:
 
-`monotonic`:: If `false` (default), the counter is decremented when the annotated method returns, counting current invocations of the annotated method.
+`monotonic`:: If `false` (default), the counter is incremented before the annotated method is invoked and
+decremented after the annotated method returns, counting current invocations of the annotated method.
++
 If `true`, the counter increases monotonically, counting total invocations of the annotated method.
-
++
+WARNING: The intuitive expectation is that each invocation of a method marked with `@Counted` would result in the
+respective counter being increased by one. This is not the case with the default semantics of the `monotonic` flag.
+ +
+If you want the counter being increased on each invocation you need to use `@Counted(monotonic = true)`.
 
 The following lists the behavior for each annotation target.
 
 ===== CONSTRUCTOR
 
-When a constructor is annotated, the implementation must register a counter for the constructor using the <<annotated-naming-convention>>. The counter is incremented and/or decremented according to the `monotonic` field when the constructor is invoked.
+When a constructor is annotated, the implementation must register a counter for the constructor using the <<annotated-naming-convention>>.
+The counter is treated according to the `monotonic` field when the constructor is invoked.
 
 .Example of an annotated constructor
 [source, java]
@@ -1239,7 +1246,8 @@ public CounterBean() {
 
 ===== METHOD
 
-When a method is annotated, the implementation must register a counter for the method using the <<annotated-naming-convention>>. The counter is incremented and/or decremented according to the `monotonic` field when the method is invoked.
+When a method is annotated, the implementation must register a counter for the method using the <<annotated-naming-convention>>.
+The counter is treated according to the `monotonic` field when the method is invoked.
 
 .Example of an annotated method
 [source, java]
@@ -1250,7 +1258,8 @@ public void run() {
 ----
 
 ===== TYPE
-When a type/class is annotated, the implementation must register a counter for each of the constructors and methods using the <<annotated-naming-convention>>. The counters are incremented and/or decremented according to the `monotonic` field when the corresponding constructor/method is invoked.
+When a type/class is annotated, the implementation must register a counter for each of the constructors and methods using the <<annotated-naming-convention>>.
+The counters are treated according to the `monotonic` field when the corresponding constructor/method is invoked.
 
 .Example of an annotated type/class
 [source, java]
