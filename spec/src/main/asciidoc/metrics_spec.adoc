@@ -77,6 +77,8 @@ to run on more or fewer machines.
 Use `org.eclipse.microprofile.metrics.MetricRegistry.register(Metadata, Metric)` instead, where `Metadata`
 already has a field for the name.
 ** Global tags are now supplied via the means of MicroProfile Config (the env variable is still valid).
+** Annotations and `Metadata` can now have a flag `reusable` that indicates that the metric name can be registered
+more than once. Default is `false` as in Metrics 1.0. See <<reusing_of_metrics>>.
 
 == Architecture
 
