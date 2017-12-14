@@ -1220,6 +1220,10 @@ In addition to the metadata fields, `@Counted` has the following field:
 `monotonic`:: If `false` (default), the counter is decremented when the annotated method returns, counting current invocations of the annotated method.
 If `true`, the counter increases monotonically, counting total invocations of the annotated method.
 
+WARNING: The normal expectation is that each invocation of of a method marked with `@Counted` would result in the
+respective counter being increased by one. This is not the case with the default semantics of the `monotonic` flag.
+ +
+If you want the counter being increased on each invocation you need to use `@Counted(monotonic = true)`.
 
 The following lists the behavior for each annotation target.
 
