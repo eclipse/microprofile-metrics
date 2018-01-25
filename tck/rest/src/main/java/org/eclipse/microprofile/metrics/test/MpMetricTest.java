@@ -728,6 +728,28 @@ public class MpMetricTest {
       assert "tier=integration".equals(metricAppBean.getGlobalTags());
     }
 
+    @Test
+    @InSequence(33)
+    public void testSetupPromNoBadCharsInNames() {
+        metricAppBean.createPromMetrics();
+    }
+
+    @Test
+    @RunAsClient
+    @InSequence(34)
+    public void testPromNoBadCharsInNames() {
+        given().header("Accept", TEXT_PLAIN).when().get("/metrics/application")
+            .then().statusCode(200)
+            .and()
+                // metrics.counter("pm_counter-with-dashes");
+            .body(containsString("pm_counter_with_dashes"))
+                // metrics.counter("pm_counter#hash_x'y_");
+            .body(containsString("pm_counter_hash_x_y_"))
+                // metrics.counter("pm_counter-umlaut-äöü");
+            .body(containsString("pm_counter_umlaut_"))
+                // metrics.counter("pm_counter+accent_ê_");
+            .body(containsString("pm_counter_accent_"));
+    }
 
     private Map<String, MiniMeta> getExpectedMetadataFromXmlFile(MetricRegistry.Type scope) {
       ClassLoader cl = this.getClass().getClassLoader();

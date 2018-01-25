@@ -587,8 +587,9 @@ base:bar_val_bytes{component="backend", app="webshop"} 42000 <3>
 ==== Translation rules for metric names
 
 Prometheus text format does not allow for all characters and adds the base unit of a family to the name.
+Characters allowed are `[a-zA-Z0-9_]` (Ascii alphabet, numbers and underscore).
 
-* Dot (`.`), Space ( ), Dash (`-`) are translated to underscore (`_`).
+* Characters that do not fall in above category are translated to underscore (`_`).
 * Scope is always specified at the start of the metric name.
 * Scope and name are separated by colon (`:`).
 * camelCase is translated to camel_case

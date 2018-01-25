@@ -151,4 +151,20 @@ public class MetricAppBean {
     public String getGlobalTags() {
         return globalTags;
     }
+
+    /**
+     * We create a few metrics with names that are outside the
+     * characters that prometheus allows which is [a-zA-Z0-9_]
+     */
+    public void createPromMetrics() {
+
+        metrics.counter("pm_counter-with-dashes");
+
+        metrics.counter("pm_counter#hash_x'y_");
+
+        metrics.counter("pm_counter-umlaut-äöü");
+
+        metrics.counter("pm_counter+accent_ê_");
+
+    }
 }
