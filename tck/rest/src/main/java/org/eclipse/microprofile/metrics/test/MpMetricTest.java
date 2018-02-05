@@ -27,6 +27,12 @@ import static com.jayway.restassured.RestAssured.when;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import com.jayway.restassured.response.Header;
 import com.jayway.restassured.RestAssured;
@@ -156,18 +162,18 @@ public class MpMetricTest {
         Map response = given().header(acceptHeader).when().get("/metrics").as(Map.class);
 
         // all servers should have some base metrics
-        assert response.containsKey("base");
+        assertTrue(response.containsKey("base"));
 
         // There may be application metrics, so check if the key exists and bail if it has no data
         if (response.containsKey("application")) {
           Map applicationData = (Map) response.get("application");
-          assert applicationData.size()>0;
+          assertThat(applicationData.size(), greaterThan(0));
         }
 
         // There may be vendor metrics, so check if the key exists and bail if it has no data
         if (response.containsKey("vendor")) {
           Map vendorData = (Map) response.get("vendor");
-          assert vendorData.size()>0;
+          assertThat(vendorData.size(), greaterThan(0));
         }
     }
 
@@ -218,8 +224,8 @@ public class MpMetricTest {
                 missing.add(item);
             }
         }
-
-        assert missing.isEmpty() : "Following base items are missing: " + Arrays.toString(missing.toArray());
+        
+        assertTrue("Following base items are missing: " + Arrays.toString(missing.toArray()), missing.isEmpty());
     }
 
     @Test
@@ -263,7 +269,7 @@ public class MpMetricTest {
             }
         }
 
-        assert missing.isEmpty() : "Following base items are missing: " + Arrays.toString(missing.toArray());
+        assertTrue("Following base items are missing: " + Arrays.toString(missing.toArray()), missing.isEmpty());
     }
 
     @Test
@@ -288,11 +294,11 @@ public class MpMetricTest {
                 continue; // We don't deal with them here
             }
             Map<String, Object> fromServer = elements.get(item.name);
-            assert fromServer != null : "Got no data for " + item.name + " from the server";
-            assert item.type.equals(fromServer.get("type")) : "expected " + item.type + " but got "
-                + fromServer.get("type") + " for " + item.name;
-            assert item.unit.equals(fromServer.get("unit")) : "expected " + item.unit + " but got "
-                + fromServer.get("unit") + " for " + item.name;
+            assertNotNull("Got no data for " + item.name + " from the server", fromServer);
+            assertEquals("expected " + item.type + " but got "
+                    + fromServer.get("type") + " for " + item.name, item.type, fromServer.get("type"));
+            assertEquals("expected " + item.unit + " but got "
+                    + fromServer.get("unit") + " for " + item.name, item.unit, fromServer.get("unit"));
         }
     }
 
@@ -310,9 +316,9 @@ public class MpMetricTest {
                 continue;
             }
             String[] tmp = line.split(" ");
-            assert tmp.length == 2;
-            assert !tmp[0].matches("[-.]") : "Line has illegal chars " + line;
-            assert !tmp[0].matches("__") : "Found __ in " + line;
+            assertEquals(tmp.length, 2);
+            assertFalse("Line has illegal chars " + line, tmp[0].matches("[-.]"));
+            assertFalse("Found __ in " + line, tmp[0].matches("__"));
         }
     }
 
@@ -347,13 +353,13 @@ public class MpMetricTest {
                 line = line.substring(c + 1);
                 String promName = mm.toPromString();
                 String[] tmp = line.split(" ");
-                assert tmp.length == 2;
+                assertEquals(tmp.length, 2);
                 if (tmp[0].startsWith(promName)) {
                     found = true;
-                    assert tmp[1].equals(mm.type) : "Expected [" + mm.toString() + "] got [" + fullLine + "]";
+                    assertEquals("Expected [" + mm.toString() + "] got [" + fullLine + "]", tmp[1], mm.type);
                 }
             }
-            assert found : "Not found [" + mm.toString() + "]";
+            assertTrue("Not found [" + mm.toString() + "]", found);
 
         }
     }
@@ -370,11 +376,11 @@ public class MpMetricTest {
         Map<String, Object> elements = jsonPath.getMap(".");
         for (String name : elements.keySet()) {
             if (name.startsWith("gc.")) {
-                assert name.endsWith(".count") || name.endsWith(".time");
+                assertTrue(name.endsWith(".count") || name.endsWith(".time"));
                 count++;
             }
         }
-        assert count > 0;
+        assertThat(count, greaterThan(0));
     }
 
     @Test
@@ -386,7 +392,7 @@ public class MpMetricTest {
         Response response = given().header(wantJson).options("/metrics/application");
         int code = response.getStatusCode();
 
-        assert code == 200 || code == 204;
+        assertTrue(code == 200 || code == 204);
 
     }
 
@@ -501,8 +507,7 @@ public class MpMetricTest {
                 missing.add(item);
             }
         }
-
-        assert missing.isEmpty() : "Following application items are missing: " + Arrays.toString(missing.toArray());
+        assertTrue("Following application items are missing: " + Arrays.toString(missing.toArray()), missing.isEmpty());
     }
 
     @Test
@@ -529,9 +534,9 @@ public class MpMetricTest {
             .when()
             .options("/metrics/application/purple").jsonPath();
         String tags = jsonPath.getString("purple.tags");
-        assert tags != null;
-        assert tags.contains("app=myShop");
-        assert tags.contains("tier=integration");
+        assertNotNull(tags);
+        assertTrue(tags.contains("app=myShop"));
+        assertTrue(tags.contains("tier=integration"));
     }
 
     @Test
@@ -725,7 +730,7 @@ public class MpMetricTest {
     @Test
     @InSequence(32)
     public void testGlobalTagsViaConfig() {
-      assert "tier=integration".equals(metricAppBean.getGlobalTags());
+        assertEquals(metricAppBean.getGlobalTags(), "tier=integration");
     }
 
     @Test
