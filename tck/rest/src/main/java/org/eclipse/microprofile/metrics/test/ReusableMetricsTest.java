@@ -24,14 +24,15 @@
 
 package org.eclipse.microprofile.metrics.test;
 
+import static org.hamcrest.Matchers.equalTo;
 import static com.jayway.restassured.RestAssured.given;
 
 import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Header;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javax.inject.Inject;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -110,11 +111,10 @@ public class ReusableMetricsTest {
 
     Header acceptJson = new Header("Accept", APPLICATION_JSON);
 
-    JsonPath path = given().header(acceptJson).get("/metrics/application").jsonPath();
-
-    assert path.getInt("countMe2") == 1;
-    assert path.getInt("'org.eclipse.microprofile.metrics.test.MetricAppBean2.meterMe2'.count") == 1;
-    assert path.getInt("timeMe2.count") == 1;
+    given().header(acceptJson).get("/metrics/application").then()
+            .assertThat().body("countMe2", equalTo(1))
+            .assertThat().body("'org.eclipse.microprofile.metrics.test.MetricAppBean2.meterMe2'.count", equalTo(1))
+            .assertThat().body("timeMe2.count", equalTo(1));
 
 
   }
@@ -134,11 +134,10 @@ public class ReusableMetricsTest {
 
     Header acceptJson = new Header("Accept", APPLICATION_JSON);
 
-    JsonPath path = given().header(acceptJson).get("/metrics/application").jsonPath();
-
-    assert path.getInt("countMe2") == 2;
-    assert path.getInt("'org.eclipse.microprofile.metrics.test.MetricAppBean2.meterMe2'.count") == 2;
-    assert path.getInt("timeMe2.count") == 2;
+    given().header(acceptJson).get("/metrics/application").then()
+    .assertThat().body("countMe2", equalTo(2))
+    .assertThat().body("'org.eclipse.microprofile.metrics.test.MetricAppBean2.meterMe2'.count", equalTo(2))
+    .assertThat().body("timeMe2.count", equalTo(2));
 
   }
 
@@ -156,51 +155,29 @@ public class ReusableMetricsTest {
 
     Header acceptJson = new Header("Accept", APPLICATION_JSON);
 
-    JsonPath path = given().header(acceptJson).get("/metrics/application").jsonPath();
-
-    assert path.getInt("reusableHisto.count") == 2;
-    assert path.getInt("reusableHisto.min") == 1;
-    assert path.getInt("reusableHisto.max") == 3;
+    given().header(acceptJson).get("/metrics/application").then()
+    .assertThat().body("reusableHisto.count", equalTo(2))
+    .assertThat().body("reusableHisto.min", equalTo(1))
+    .assertThat().body("reusableHisto.max", equalTo(3));
 
   }
 
-  @Test
+  @Test(expected=IllegalArgumentException.class)
   @InSequence(7)
   public void testBadReusable() {
-
-    try {
       metricAppBean.badRegisterReusableHistogram();
-    }
-    catch (IllegalArgumentException e) {
-      return; // This was expected
-    }
-    assert false;
   }
 
-  @Test
+  @Test(expected=IllegalArgumentException.class)
   @InSequence(8)
   public void testBadReusable2() {
-
-    try {
       metricAppBean.badRegisterReusableHistogram2();
-    }
-    catch (IllegalArgumentException e) {
-      return; // This was expected
-    }
-    assert false;
   }
 
-  @Test
+  @Test(expected=IllegalArgumentException.class)
   @InSequence(9)
   public void testBadReusableMixed() {
-
-    try {
       metricAppBean.badRegisterReusableMixed();
-    }
-    catch (IllegalArgumentException e) {
-      return; // This was expected
-    }
-    assert false;
   }
 
 
