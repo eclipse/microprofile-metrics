@@ -242,13 +242,13 @@ public class Metadata {
      */
     public Metadata(Map<String, String> in) {
         this();
-        this.name = (String) in.get("name");
-        this.description = (String) in.get("description");
-        this.displayName = (String) in.get("displayName");
-        this.setType((String) in.get("type"));
-        this.setUnit((String) in.get("unit"));
+        this.name = Objects.requireNonNull(in.get("name"), "name is required");
+        this.description = in.get("description");
+        this.displayName = in.get("displayName");
+        this.setType(in.get("type"));
+        this.setUnit(in.get("unit"));
         if (in.keySet().contains("tags")) {
-            String tagString = (String) in.get("tags");
+            String tagString = in.get("tags");
             addTags(tagString);
         }
         this.setReusable(Boolean.parseBoolean(in.get("reusable")));
