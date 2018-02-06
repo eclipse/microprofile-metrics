@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 /**
  * Bean holding the metadata of one single metric.
@@ -152,7 +153,7 @@ public class Metadata {
      */
     public Metadata(String name, MetricType type) {
         this();
-        this.name = name;
+        this.name = Objects.requireNonNull(name, "name is required");
         this.type = type;
 
         // Assign default units
@@ -181,7 +182,7 @@ public class Metadata {
      */
     public Metadata(String name, MetricType type, String unit) {
         this();
-        this.name = name;
+        this.name = Objects.requireNonNull(name, "name is required");
         this.type = type;
         this.unit = unit;
     }
@@ -197,7 +198,7 @@ public class Metadata {
      */
     public Metadata(String name, String displayName, String description, MetricType type, String unit) {
         this();
-        this.name = name;
+        this.name = Objects.requireNonNull(name, "name is required");
         this.displayName = displayName;
         this.description = description;
         this.type = type;
@@ -216,7 +217,7 @@ public class Metadata {
      */
     public Metadata(String name, String displayName, String description, MetricType type, String unit, String tags) {
         this();
-        this.name = name;
+        this.name = Objects.requireNonNull(name, "name is required");
         this.displayName = displayName;
         this.description = description;
         this.type = type;
@@ -268,7 +269,7 @@ public class Metadata {
      * @param name the new metric name
      */
     public void setName(String name) {
-        this.name = name;
+        this.name = Objects.requireNonNull(name, "name is required");
     }
 
     /**
@@ -446,10 +447,7 @@ public class Metadata {
 
     @Override
     public int hashCode() {
-        int result = name.hashCode();
-        result = 31 * result + type.hashCode();
-        result = 31 * result + unit.hashCode();
-        return result;
+        return Objects.hash(name, type, unit);
     }
 
     @Override
