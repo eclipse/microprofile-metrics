@@ -31,7 +31,7 @@ import java.util.Objects;
 
 /**
  * Bean holding the metadata of one single metric.
- *
+ * <p>
  * The metadata contains:
  * <ul>
  * <li>
@@ -65,7 +65,7 @@ import java.util.Objects;
  */
 public class Metadata {
 
-     /**
+    /**
      * Name of the metric.
      * <p>
      * A required field which holds the name of the metric object.
@@ -108,13 +108,13 @@ public class Metadata {
     /**
      * Can this metric name (in a scope) be used multiple times?
      * <p>
-     *   Setting this is optional. The default is <tt>false</tt>, which
-     *   prevents reusing.
+     * Setting this is optional. The default is <tt>false</tt>, which
+     * prevents reusing.
      * </p>
      * Note that this only has an effect if the <tt>name</tt> is explicitly given or
      * <tt>absolute</tt> is set to true and two methods that are marked as metric have
      * the same name.
-     *
+     * <p>
      * If the name is automatically determined, then this flag has no effect as
      * all metric names are different anyway
      */
@@ -153,23 +153,23 @@ public class Metadata {
      */
     public Metadata(String name, MetricType type) {
         this();
-        this.name = Objects.requireNonNull(name, "name is required");
+        this.name = checkName(name);
         this.type = type;
 
         // Assign default units
         switch (type) {
-        case TIMER:
-            this.unit = MetricUnits.NANOSECONDS;
-            break;
-        case METERED:
-            this.unit = MetricUnits.PER_SECOND;
-            break;
-        case HISTOGRAM:
-        case GAUGE:
-        case COUNTER:
-        default:
-            this.unit = MetricUnits.NONE;
-            break;
+            case TIMER:
+                this.unit = MetricUnits.NANOSECONDS;
+                break;
+            case METERED:
+                this.unit = MetricUnits.PER_SECOND;
+                break;
+            case HISTOGRAM:
+            case GAUGE:
+            case COUNTER:
+            default:
+                this.unit = MetricUnits.NONE;
+                break;
         }
     }
 
@@ -182,23 +182,31 @@ public class Metadata {
      */
     public Metadata(String name, MetricType type, String unit) {
         this();
-        this.name = Objects.requireNonNull(name, "name is required");
+        this.name = checkName(name);
         this.type = type;
         this.unit = unit;
+    }
+
+    private String checkName(String name) {
+        Objects.requireNonNull(name, "name is required");
+        if (name.isEmpty()) {
+            throw new IllegalArgumentException("The metadata name cannot be empty");
+        }
+        return name;
     }
 
     /**
      * Constructs a Metadata object
      *
-     * @param name The name of the metric
+     * @param name        The name of the metric
      * @param displayName The display (friendly) name of the metric
      * @param description The description of the metric
-     * @param type The type of the metric
-     * @param unit The units of the metric
+     * @param type        The type of the metric
+     * @param unit        The units of the metric
      */
     public Metadata(String name, String displayName, String description, MetricType type, String unit) {
         this();
-        this.name = Objects.requireNonNull(name, "name is required");
+        this.name = checkName(name);
         this.displayName = displayName;
         this.description = description;
         this.type = type;
@@ -208,16 +216,16 @@ public class Metadata {
     /**
      * Constructs a Metadata object
      *
-     * @param name The name of the metric
+     * @param name        The name of the metric
      * @param displayName The display (friendly) name of the metric
      * @param description The description of the metric
-     * @param type The type of the metric
-     * @param unit The units of the metric
-     * @param tags The tags of the metric
+     * @param type        The type of the metric
+     * @param unit        The units of the metric
+     * @param tags        The tags of the metric
      */
     public Metadata(String name, String displayName, String description, MetricType type, String unit, String tags) {
         this();
-        this.name = Objects.requireNonNull(name, "name is required");
+        this.name = checkName(name);
         this.displayName = displayName;
         this.description = description;
         this.type = type;
@@ -242,7 +250,7 @@ public class Metadata {
      */
     public Metadata(Map<String, String> in) {
         this();
-        this.name = Objects.requireNonNull(in.get("name"), "name is required");
+        this.name = checkName(in.get("name"));
         this.description = in.get("description");
         this.displayName = in.get("displayName");
         this.setType(in.get("type"));
@@ -269,11 +277,12 @@ public class Metadata {
      * @param name the new metric name
      */
     public void setName(String name) {
-        this.name = Objects.requireNonNull(name, "name is required");
+        this.name = checkName(name);
     }
 
     /**
      * Returns the display name if set, otherwise this method returns the metric name.
+     *
      * @return the display name
      */
     public String getDisplayName() {
@@ -294,6 +303,7 @@ public class Metadata {
 
     /**
      * Returns the description of the metric.
+     *
      * @return the description
      */
     public String getDescription() {
@@ -302,6 +312,7 @@ public class Metadata {
 
     /**
      * Sets the description of the metric.
+     *
      * @param description the new description
      */
     public void setDescription(String description) {
@@ -312,7 +323,6 @@ public class Metadata {
      * Returns the String representation of the {@link MetricType}.
      *
      * @return the MetricType as a String
-     *
      * @see MetricType
      */
     public String getType() {
@@ -321,6 +331,7 @@ public class Metadata {
 
     /**
      * Returns the {@link MetricType} of the metric
+     *
      * @return the {@link MetricType}
      */
     public MetricType getTypeRaw() {
@@ -329,6 +340,7 @@ public class Metadata {
 
     /**
      * Sets the metric type using a String representation of {@link MetricType}.
+     *
      * @param type the new metric type
      * @throws IllegalArgumentException if the String is not a valid {@link MetricType}
      */
@@ -338,6 +350,7 @@ public class Metadata {
 
     /**
      * Sets the type of the metric
+     *
      * @param type the new metric type
      */
     public void setType(MetricType type) {
@@ -346,6 +359,7 @@ public class Metadata {
 
     /**
      * Returns the unit of the metric.
+     *
      * @return the unit
      */
     public String getUnit() {
@@ -354,6 +368,7 @@ public class Metadata {
 
     /**
      * Sets the unit of the metric.
+     *
      * @param unit the new unit
      */
     public void setUnit(String unit) {
@@ -362,6 +377,7 @@ public class Metadata {
 
     /**
      * Can the metric be reused (i.e. same name registered multiple times)?
+     *
      * @return True if reusable, false otherwise
      */
     public boolean isReusable() {
@@ -370,6 +386,7 @@ public class Metadata {
 
     /**
      * Set if the metric can be reusable (i.e. same name registered multiple times)?
+     *
      * @param reusable True if reusable, false otherwise
      */
     public void setReusable(boolean reusable) {
@@ -378,6 +395,7 @@ public class Metadata {
 
     /**
      * Gets the list of tags as a single String in the format 'key="value",key2="value2",...'
+     *
      * @return a String containing the tags
      */
     public String getTagsAsString() {
@@ -398,6 +416,7 @@ public class Metadata {
 
     /**
      * Returns the underlying HashMap containing the tags.
+     *
      * @return a hashmap of tags
      */
     public HashMap<String, String> getTags() {
@@ -408,8 +427,7 @@ public class Metadata {
      * Add one single tag with the format: 'key=value'. If the input is empty or does
      * not contain a '=' sign, the entry is ignored.
      *
-     * @param kvString
-     *            Input string
+     * @param kvString Input string
      */
     public void addTag(String kvString) {
         if (kvString == null || kvString.isEmpty() || !kvString.contains("=")) {
