@@ -45,7 +45,9 @@ public class HistogramTest {
 
     @Deployment
     public static JavaArchive createDeployment() {
-        return ShrinkWrap.create(JavaArchive.class).addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+        return ShrinkWrap.create(JavaArchive.class)
+                .addClass(TestUtils.class)
+                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -104,8 +106,8 @@ public class HistogramTest {
         Assert.assertTrue(histograms.containsKey(histogramIntName));
         Assert.assertTrue(histograms.containsKey(histogramLongName));
 
-        Assert.assertEquals(48, histograms.get(histogramIntName).getSnapshot().getValue(0.5), 0);
-        Assert.assertEquals(480, histograms.get(histogramLongName).getSnapshot().getValue(0.5), 0);
+        TestUtils.assertEqualsWithTolerance(48, histograms.get(histogramIntName).getSnapshot().getValue(0.5));
+        TestUtils.assertEqualsWithTolerance(480, histograms.get(histogramLongName).getSnapshot().getValue(0.5));
     }
 
     @Test
@@ -126,67 +128,69 @@ public class HistogramTest {
 
     @Test
     public void testSnapshot75thPercentile() throws Exception {
-        Assert.assertEquals(75, histogramInt.getSnapshot().get75thPercentile(), 0);
-        Assert.assertEquals(750, histogramLong.getSnapshot().get75thPercentile(), 0);
+        TestUtils.assertEqualsWithTolerance(75, histogramInt.getSnapshot().get75thPercentile());
+        TestUtils.assertEqualsWithTolerance(750, histogramLong.getSnapshot().get75thPercentile());
     }
 
     @Test
     public void testSnapshot95thPercentile() throws Exception {
-        Assert.assertEquals(96, histogramInt.getSnapshot().get95thPercentile(), 0);
-        Assert.assertEquals(960, histogramLong.getSnapshot().get95thPercentile(), 0);
+        TestUtils.assertEqualsWithTolerance(96, histogramInt.getSnapshot().get95thPercentile());
+        TestUtils.assertEqualsWithTolerance(960, histogramLong.getSnapshot().get95thPercentile());
     }
 
     @Test
     public void testSnapshot98thPercentile() throws Exception {
-        Assert.assertEquals(98, histogramInt.getSnapshot().get98thPercentile(), 0);
-        Assert.assertEquals(980, histogramLong.getSnapshot().get98thPercentile(), 0);
+        TestUtils.assertEqualsWithTolerance(98, histogramInt.getSnapshot().get98thPercentile());
+        TestUtils.assertEqualsWithTolerance(980, histogramLong.getSnapshot().get98thPercentile());
     }
 
     @Test
     public void testSnapshot99thPercentile() throws Exception {
-        Assert.assertEquals(98, histogramInt.getSnapshot().get99thPercentile(), 0);
-        Assert.assertEquals(980, histogramLong.getSnapshot().get99thPercentile(), 0);
+        TestUtils.assertEqualsWithTolerance(98, histogramInt.getSnapshot().get99thPercentile());
+        TestUtils.assertEqualsWithTolerance(980, histogramLong.getSnapshot().get99thPercentile());
     }
 
     @Test
     public void testSnapshot999thPercentile() throws Exception {
-        Assert.assertEquals(99, histogramInt.getSnapshot().get999thPercentile(), 0);
-        Assert.assertEquals(990, histogramLong.getSnapshot().get999thPercentile(), 0);
+        TestUtils.assertEqualsWithTolerance(99, histogramInt.getSnapshot().get999thPercentile());
+        TestUtils.assertEqualsWithTolerance(990, histogramLong.getSnapshot().get999thPercentile());
     }
 
     @Test
     public void testSnapshotMax() throws Exception {
-        Assert.assertEquals(99.0, histogramInt.getSnapshot().getMax(), 0);
-        Assert.assertEquals(990.0, histogramLong.getSnapshot().getMax(), 0);
+        Assert.assertEquals(99, histogramInt.getSnapshot().getMax());
+        Assert.assertEquals(990, histogramLong.getSnapshot().getMax());
     }
 
     @Test
     public void testSnapshotMin() throws Exception {
-        Assert.assertEquals(0.0, histogramInt.getSnapshot().getMin(), 0);
-        Assert.assertEquals(0.0, histogramLong.getSnapshot().getMin(), 0);
+        Assert.assertEquals(0, histogramInt.getSnapshot().getMin());
+        Assert.assertEquals(0, histogramLong.getSnapshot().getMin());
     }
 
     @Test
     public void testSnapshotMean() throws Exception {
-        Assert.assertEquals(50.6, histogramInt.getSnapshot().getMean(), 0.1);
-        Assert.assertEquals(506.3, histogramLong.getSnapshot().getMean(), 0.1);
+        TestUtils.assertEqualsWithTolerance(50.6, histogramInt.getSnapshot().getMean());
+        TestUtils.assertEqualsWithTolerance(506.3, histogramLong.getSnapshot().getMean());
     }
 
     @Test
     public void testSnapshotMedian() throws Exception {
-        Assert.assertEquals(48, histogramInt.getSnapshot().getMedian(), 0);
-        Assert.assertEquals(480, histogramLong.getSnapshot().getMedian(), 0);
+        TestUtils.assertEqualsWithTolerance(48, histogramInt.getSnapshot().getMedian());
+        TestUtils.assertEqualsWithTolerance(480, histogramLong.getSnapshot().getMedian());
     }
 
     @Test
     public void testSnapshotStdDev() throws Exception {
-        Assert.assertEquals(29.4, histogramInt.getSnapshot().getStdDev(), 0.1);
-        Assert.assertEquals(294.3, histogramLong.getSnapshot().getStdDev(), 0.1);
+        TestUtils.assertEqualsWithTolerance(29.4, histogramInt.getSnapshot().getStdDev());
+        TestUtils.assertEqualsWithTolerance(294.3, histogramLong.getSnapshot().getStdDev());
     }
 
     @Test
     public void testSnapshotSize() throws Exception {
-        Assert.assertEquals(200.0, histogramInt.getSnapshot().size(), 0);
-        Assert.assertEquals(200.0, histogramLong.getSnapshot().size(), 0);
+        Assert.assertEquals(200, histogramInt.getSnapshot().size());
+        Assert.assertEquals(200, histogramLong.getSnapshot().size());
     }
+    
+
 }
