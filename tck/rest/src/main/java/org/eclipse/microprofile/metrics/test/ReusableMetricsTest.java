@@ -164,18 +164,6 @@ public class ReusableMetricsTest {
 
   @Test(expected=IllegalArgumentException.class)
   @InSequence(7)
-  public void testBadReusable() {
-      metricAppBean.badRegisterReusableHistogram();
-  }
-
-  @Test(expected=IllegalArgumentException.class)
-  @InSequence(8)
-  public void testBadReusable2() {
-      metricAppBean.badRegisterReusableHistogram2();
-  }
-
-  @Test(expected=IllegalArgumentException.class)
-  @InSequence(9)
   public void testBadReusableMixed() {
       metricAppBean.badRegisterReusableMixed();
   }
