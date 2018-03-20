@@ -83,6 +83,7 @@ public class MetricAppBean2 {
         histogram1.update(3);
     }
 
+
     public void badRegisterReusableMixed() {
 
         Metadata metadata = new Metadata("badReusableMixed", MetricType.HISTOGRAM);
