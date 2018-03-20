@@ -116,7 +116,7 @@ public interface Metadata {
     /**
      * Returns the underlying HashMap containing the tags.
      *
-     * @return a hashmap of tags
+     * @return a {@link Map} of tags
      */
     Map<String, String> getTags();
 

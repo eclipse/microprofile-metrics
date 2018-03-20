@@ -137,4 +137,13 @@ public class MetadataBuilder {
         this.tags = Objects.requireNonNull(tags, "tags is required");
         return this;
     }
+
+    /**
+     *
+     * @return
+     * @throws IllegalStateException when either name or type are null
+     */
+    public Metadata build() {
+        return new DefaultMetadata(name, displayName, description, type, unit, reusable, tags);
+    }
 }
