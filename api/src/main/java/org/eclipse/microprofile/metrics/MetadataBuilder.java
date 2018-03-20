@@ -61,6 +61,17 @@ public class MetadataBuilder {
         addTags(globalTagsFromEnv);
     }
 
+    MetadataBuilder(Metadata metadata) {
+        this.name = metadata.getName();
+        this.type = metadata.getTypeRaw();
+        this.reusable = metadata.isReusable();
+        this.tags.putAll(metadata.getTags());
+        metadata.getDisplayName().ifPresent(this::withDisplayName);
+        metadata.getDescription().ifPresent(this::withDescription);
+        metadata.getUnit().ifPresent(this::withUnit);
+
+    }
+
 
     /**
      * Sets the name
