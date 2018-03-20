@@ -28,8 +28,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-class DefaultMetadata implements Metadata{
+class DefaultMetadata implements Metadata {
 
     /**
      * Name of the metric.
@@ -132,19 +133,9 @@ class DefaultMetadata implements Metadata{
 
     @Override
     public String getTagsAsString() {
-        StringBuilder result = new StringBuilder();
-
-        Iterator<Map.Entry<String, String>> iterator = this.tags.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, String> pair = iterator.next();
-            result.append(pair.getKey()).append("=\"").append(pair.getValue()).append("\"");
-            if (iterator.hasNext()) {
-                result.append(",");
-            }
-
-        }
-
-        return result.toString();
+        return this.tags.entrySet()
+                .stream().map(e -> e.getKey() + "=\"" + e.getValue() + "\"")
+                .collect(Collectors.joining(","));
     }
 
     @Override
