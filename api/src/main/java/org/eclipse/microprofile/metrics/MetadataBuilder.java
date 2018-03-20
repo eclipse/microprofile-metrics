@@ -28,7 +28,11 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * The {@link Metadata} builder
+ * The {@link Metadata} builder.
+ * This builder has a default value:
+ * {@link MetadataBuilder#type} as {@link MetricType#INVALID}
+ * {@link MetadataBuilder#unit} as {@link MetricUnits#NONE}
+ * {@link MetadataBuilder#reusable} as {@link Boolean#FALSE}
  */
 public class MetadataBuilder {
     /**
