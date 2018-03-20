@@ -83,35 +83,6 @@ public class MetricAppBean2 {
         histogram1.update(3);
     }
 
-    public void badRegisterReusableHistogram() {
-
-        Metadata metadata = new Metadata("badReusableHisto1", MetricType.HISTOGRAM);
-        metadata.setReusable(true);
-        Histogram histogram = registry.histogram(metadata);
-
-        histogram.update(1);
-
-        // The 2nd one does not have the re-use flag set,
-        // so we expect an exception
-        metadata.setReusable(false);
-        registry.histogram(metadata);
-
-    }
-
-    public void badRegisterReusableHistogram2() {
-
-        Metadata metadata = new Metadata("badReusableHisto2", MetricType.HISTOGRAM);
-        Histogram histogram = registry.histogram(metadata);
-
-        histogram.update(1);
-
-        // The 1st one did not have the re-use flag set,
-        // so we expect an exception
-        metadata.setReusable(true);
-        registry.histogram(metadata);
-
-    }
-
     public void badRegisterReusableMixed() {
 
         Metadata metadata = new Metadata("badReusableMixed", MetricType.HISTOGRAM);
