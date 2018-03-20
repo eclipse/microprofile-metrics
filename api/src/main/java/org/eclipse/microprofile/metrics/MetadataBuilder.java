@@ -26,6 +26,7 @@ package org.eclipse.microprofile.metrics;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * The {@link Metadata} builder.
@@ -56,6 +57,8 @@ public class MetadataBuilder {
     private Map<String, String> tags = new HashMap<>();
 
     MetadataBuilder() {
+        String globalTagsFromEnv = System.getenv(GLOBAL_TAGS_VARIABLE);
+        addTags(globalTagsFromEnv);
     }
 
 
@@ -140,22 +143,31 @@ public class MetadataBuilder {
     }
 
     /**
-     * Sets the tags
+     * Add multiple tags delimited by commas.
+     * The format must be in the form 'key1=value1, key2=value2'.
+     * This method will call {@link #addTag(String)} on each tag.
      *
-     * @param tags the name
-     * @return the builder instance
-     * @throws NullPointerException when tags is null
+     * @param tagsString a string containing multiple tags
      */
-    public MetadataBuilder withTags(Map<String, String> tags) {
-        this.tags = Objects.requireNonNull(tags, "tags is required");
-        return this;
+    public void addTags(String tagsString) {
+        if (tagsString == null || tagsString.isEmpty()) {
+            return;
+        }
+        String[] singleTags = tagsString.split(",");
+        Stream.of(singleTags).map(String::trim).forEach(this::addTag);
     }
 
-    public MetadataBuilder putTag(String key, String value) {
-        Objects.requireNonNull(key, "key is required");
-        Objects.requireNonNull(value, "value is required");
-        this.tags.put(key, value);
-        return this;
+    /**
+     * Add one single tag with the format: 'key=value'. If the input is empty or does
+     * not contain a '=' sign, the entry is ignored.
+     *
+     * @param kvString Input string
+     */
+    public void addTag(String kvString) {
+        if (kvString == null || kvString.isEmpty() || !kvString.contains("=")) {
+            return;
+        }
+        tags.put(kvString.substring(0, kvString.indexOf("=")), kvString.substring(kvString.indexOf("=") + 1));
     }
 
     /**
