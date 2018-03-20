@@ -159,13 +159,15 @@ public class MetadataBuilder {
      * This method will call {@link #addTag(String)} on each tag.
      *
      * @param tagsString a string containing multiple tags
+     * @return this instance with new tags
      */
-    public void addTags(String tagsString) {
+    public MetadataBuilder addTags(String tagsString) {
         if (tagsString == null || tagsString.isEmpty()) {
-            return;
+            return this;
         }
         String[] singleTags = tagsString.split(",");
         Stream.of(singleTags).map(String::trim).forEach(this::addTag);
+        return this;
     }
 
     /**
@@ -173,12 +175,14 @@ public class MetadataBuilder {
      * not contain a '=' sign, the entry is ignored.
      *
      * @param kvString Input string
+     * @return this instance with new tag
      */
-    public void addTag(String kvString) {
+    public MetadataBuilder addTag(String kvString) {
         if (kvString == null || kvString.isEmpty() || !kvString.contains("=")) {
-            return;
+            return this;
         }
         tags.put(kvString.substring(0, kvString.indexOf("=")), kvString.substring(kvString.indexOf("=") + 1));
+        return this;
     }
 
     /**
