@@ -31,14 +31,23 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
 public class TagsTest {
 
-    private Metadata metadata = new Metadata("count", "countMe", "countMe tags test", MetricType.COUNTER,
-            MetricUnits.PERCENT, "colour=blue");
+    private Metadata metadata;
+
+    @Before
+    public void setUp() {
+        this.metadata = Metadata.builder().withName("count").withDisplayName("countMe")
+                .withDescription("countMe tags test").withType(MetricType.COUNTER)
+                .withUnit(MetricUnits.PERCENT).addTag("colour=blue");
+         = new Metadata("count", "countMe", "countMe tags test", MetricType.COUNTER,
+                MetricUnits.PERCENT, "colour=blue");
+    }
 
     @Deployment
     public static JavaArchive createDeployment() {
