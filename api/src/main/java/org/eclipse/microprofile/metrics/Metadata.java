@@ -102,7 +102,7 @@ public interface Metadata {
     MetricType getTypeRaw();
 
 
-    String getUnit();
+    Optional<String> getUnit();
 
     boolean isReusable();
 
