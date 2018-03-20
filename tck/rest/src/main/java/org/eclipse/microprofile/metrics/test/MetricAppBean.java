@@ -139,7 +139,8 @@ public class MetricAppBean {
         Timer.Context context = timer.time();
         try {
             Thread.sleep((long) (Math.random() * 1000));
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e) {
         } finally {
             context.stop();
         }
