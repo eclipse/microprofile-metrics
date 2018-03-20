@@ -23,5 +23,33 @@
  **********************************************************************/
 package org.eclipse.microprofile.metrics;
 
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * The {@link Metadata} builder
+ */
 public class MetadataBuilder {
+    /**
+     * The environment variable used to pass in global tags.
+     */
+    public static final String GLOBAL_TAGS_VARIABLE = "MP_METRICS_TAGS";
+
+
+    private String name;
+
+    private String displayName;
+
+    private String description;
+
+    private MetricType type = MetricType.INVALID;
+
+    private String unit = MetricUnits.NONE;
+
+    private boolean reusable = false;
+
+    private Map<String, String> tags = new HashMap<>();
+
+    MetadataBuilder() {
+    }
 }
