@@ -139,11 +139,13 @@ public class MetadataBuilder {
     }
 
     /**
-     *
      * @return
-     * @throws IllegalStateException when either name or type are null
+     * @throws IllegalStateException when either name is null
      */
     public Metadata build() {
+        if (Objects.isNull(name)) {
+            throw new IllegalStateException("Name is required");
+        }
         return new DefaultMetadata(name, displayName, description, type, unit, reusable, tags);
     }
 }
