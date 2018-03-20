@@ -40,7 +40,7 @@ class DefaultMetadata implements Metadata {
      * A required field which holds the name of the metric object.
      * </p>
      */
-    private String name;
+    private final String name;
 
     /**
      * Display name of the metric. If not set, the name is taken.
@@ -49,7 +49,7 @@ class DefaultMetadata implements Metadata {
      * By default it is set to the name of the metric object.
      * </p>
      */
-    private String displayName;
+    private  final String displayName;
 
     /**
      * A human readable description.
@@ -57,7 +57,7 @@ class DefaultMetadata implements Metadata {
      * An optional field which holds the description of the metric object.
      * </p>
      */
-    private String description;
+    private  final String description;
 
     /**
      * Type of the metric.
@@ -65,14 +65,14 @@ class DefaultMetadata implements Metadata {
      * A required field which holds the type of the metric object.
      * </p>
      */
-    private MetricType type = MetricType.INVALID;
+    private  final MetricType type;
     /**
      * Unit of the metric.
      * <p>
      * An optional field which holds the Unit of the metric object.
      * </p>
      */
-    private String unit = MetricUnits.NONE;
+    private final String unit;
 
     /**
      * Can this metric name (in a scope) be used multiple times?
@@ -87,7 +87,7 @@ class DefaultMetadata implements Metadata {
      * If the name is automatically determined, then this flag has no effect as
      * all metric names are different anyway
      */
-    private boolean reusable = false;
+    private final boolean reusable;
 
     /**
      * Tags of the metric. Augmented by global tags.
@@ -96,7 +96,19 @@ class DefaultMetadata implements Metadata {
      * augmented by global tags.
      * </p>
      */
-    private Map<String, String> tags = new HashMap<>();
+    private final Map<String, String> tags;
+
+    public DefaultMetadata(String name, String displayName, String description,
+                           MetricType type, String unit, boolean reusable,
+                           Map<String, String> tags) {
+        this.name = name;
+        this.displayName = displayName;
+        this.description = description;
+        this.type = type;
+        this.unit = unit;
+        this.reusable = reusable;
+        this.tags = tags;
+    }
 
     @Override
     public String getName() {
