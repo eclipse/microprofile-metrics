@@ -24,6 +24,7 @@
 package org.eclipse.microprofile.metrics;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -119,5 +120,24 @@ public interface Metadata {
      * @return a {@link Map} of tags
      */
     Map<String, String> getTags();
+
+    /**
+     * Returns a new builder
+     * @return a new {@link MetadataBuilder} instance
+     */
+    static MetadataBuilder builder() {
+        return new MetadataBuilder();
+    }
+
+    /**
+     * Returns a new builder with the {@link Metadata} information
+     * @param metadata the metadata
+     * @return  a new {@link MetadataBuilder} instance with the {@link Metadata} values
+     * @throws NullPointerException when metadata is null
+     */
+    static MetadataBuilder builder(Metadata metadata) {
+        Objects.requireNonNull(metadata, "metadata is required");
+        return new MetadataBuilder(metadata);
+    }
 
 }
