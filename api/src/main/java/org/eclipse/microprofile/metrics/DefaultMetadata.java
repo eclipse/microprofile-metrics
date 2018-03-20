@@ -26,6 +26,7 @@ package org.eclipse.microprofile.metrics;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -49,7 +50,7 @@ class DefaultMetadata implements Metadata {
      * By default it is set to the name of the metric object.
      * </p>
      */
-    private  final String displayName;
+    private final String displayName;
 
     /**
      * A human readable description.
@@ -57,7 +58,7 @@ class DefaultMetadata implements Metadata {
      * An optional field which holds the description of the metric object.
      * </p>
      */
-    private  final String description;
+    private final String description;
 
     /**
      * Type of the metric.
@@ -65,7 +66,7 @@ class DefaultMetadata implements Metadata {
      * A required field which holds the type of the metric object.
      * </p>
      */
-    private  final MetricType type;
+    private final MetricType type;
     /**
      * Unit of the metric.
      * <p>
@@ -155,5 +156,24 @@ class DefaultMetadata implements Metadata {
     @Override
     public Map<String, String> getTags() {
         return Collections.unmodifiableMap(tags);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Metadata)) {
+            return false;
+        }
+        Metadata that = (Metadata) o;
+        return Objects.equals(name, that.getName()) &&
+                type == that.getTypeRaw() &&
+                Objects.equals(unit, that.getUnit().orElse(null));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, type, unit);
     }
 }

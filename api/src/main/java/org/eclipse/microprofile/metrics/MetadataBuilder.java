@@ -120,13 +120,22 @@ public class MetadataBuilder {
     }
 
     /**
-     * Sets the reusable
+     * Sets the reusable to {@link Boolean#TRUE}
      *
-     * @param reusable the name
      * @return the builder instance
      */
-    public MetadataBuilder withReusable(boolean reusable) {
-        this.reusable = reusable;
+    public MetadataBuilder reusable() {
+        this.reusable = true;
+        return this;
+    }
+
+    /**
+     * Sets the reusable to {@link Boolean#FALSE}
+     *
+     * @return the builder instance
+     */
+    public MetadataBuilder notReusable() {
+        this.reusable = false;
         return this;
     }
 
@@ -139,6 +148,13 @@ public class MetadataBuilder {
      */
     public MetadataBuilder withTags(Map<String, String> tags) {
         this.tags = Objects.requireNonNull(tags, "tags is required");
+        return this;
+    }
+
+    public MetadataBuilder putTag(String key, String value) {
+        Objects.requireNonNull(key, "key is required");
+        Objects.requireNonNull(value, "value is required");
+        this.tags.put(key, value);
         return this;
     }
 
