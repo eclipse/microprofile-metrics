@@ -23,11 +23,8 @@
  **********************************************************************/
 package org.eclipse.microprofile.metrics;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Bean holding the metadata of one single metric.
@@ -63,261 +60,31 @@ import java.util.Objects;
  *
  * @author hrupp, Raymond Lam
  */
-public class Metadata {
+public interface Metadata {
 
-    /**
-     * Name of the metric.
-     * <p>
-     * A required field which holds the name of the metric object.
-     * </p>
-     */
-    private String name;
-
-    /**
-     * Display name of the metric. If not set, the name is taken.
-     * <p>
-     * An optional field which holds the display (Friendly) name of the metric object.
-     * By default it is set to the name of the metric object.
-     * </p>
-     */
-    private String displayName;
-
-    /**
-     * A human readable description.
-     * <p>
-     * An optional field which holds the description of the metric object.
-     * </p>
-     */
-    private String description;
-
-    /**
-     * Type of the metric.
-     * <p>
-     * A required field which holds the type of the metric object.
-     * </p>
-     */
-    private MetricType type = MetricType.INVALID;
-    /**
-     * Unit of the metric.
-     * <p>
-     * An optional field which holds the Unit of the metric object.
-     * </p>
-     */
-    private String unit = MetricUnits.NONE;
-
-    /**
-     * Can this metric name (in a scope) be used multiple times?
-     * <p>
-     * Setting this is optional. The default is <tt>false</tt>, which
-     * prevents reusing.
-     * </p>
-     * Note that this only has an effect if the <tt>name</tt> is explicitly given or
-     * <tt>absolute</tt> is set to true and two methods that are marked as metric have
-     * the same name.
-     * <p>
-     * If the name is automatically determined, then this flag has no effect as
-     * all metric names are different anyway
-     */
-    private boolean reusable = false;
-
-    /**
-     * Tags of the metric. Augmented by global tags.
-     * <p>
-     * An optional field which holds the tags of the metric object which can be
-     * augmented by global tags.
-     * </p>
-     */
-    private HashMap<String, String> tags = new HashMap<String, String>();
-
-    /**
-     * The environment variable used to pass in global tags.
-     */
-    public static final String GLOBAL_TAGS_VARIABLE = "MP_METRICS_TAGS";
-
-    /**
-     * Defines if the metric can have multiple objects and needs special
-     * treatment or if it is a singleton.
-     * <p/>
-     */
-    Metadata() {
-        String globalTagsFromEnv = System.getenv(GLOBAL_TAGS_VARIABLE);
-
-        addTags(globalTagsFromEnv);
-    }
-
-    /**
-     * Constructs a Metadata object with default units
-     *
-     * @param name The name of the metric
-     * @param type The type of the metric
-     */
-    public Metadata(String name, MetricType type) {
-        this();
-        this.name = checkName(name);
-        this.type = type;
-
-        // Assign default units
-        switch (type) {
-            case TIMER:
-                this.unit = MetricUnits.NANOSECONDS;
-                break;
-            case METERED:
-                this.unit = MetricUnits.PER_SECOND;
-                break;
-            case HISTOGRAM:
-            case GAUGE:
-            case COUNTER:
-            default:
-                this.unit = MetricUnits.NONE;
-                break;
-        }
-    }
-
-    /**
-     * Constructs a Metadata object
-     *
-     * @param name The name of the metric
-     * @param type The type of the metric
-     * @param unit The units of the metric
-     */
-    public Metadata(String name, MetricType type, String unit) {
-        this();
-        this.name = checkName(name);
-        this.type = type;
-        this.unit = unit;
-    }
-
-    private String checkName(String name) {
-        Objects.requireNonNull(name, "name is required");
-        if (name.isEmpty()) {
-            throw new IllegalArgumentException("The metadata name cannot be empty");
-        }
-        return name;
-    }
-
-    /**
-     * Constructs a Metadata object
-     *
-     * @param name        The name of the metric
-     * @param displayName The display (friendly) name of the metric
-     * @param description The description of the metric
-     * @param type        The type of the metric
-     * @param unit        The units of the metric
-     */
-    public Metadata(String name, String displayName, String description, MetricType type, String unit) {
-        this();
-        this.name = checkName(name);
-        this.displayName = displayName;
-        this.description = description;
-        this.type = type;
-        this.unit = unit;
-    }
-
-    /**
-     * Constructs a Metadata object
-     *
-     * @param name        The name of the metric
-     * @param displayName The display (friendly) name of the metric
-     * @param description The description of the metric
-     * @param type        The type of the metric
-     * @param unit        The units of the metric
-     * @param tags        The tags of the metric
-     */
-    public Metadata(String name, String displayName, String description, MetricType type, String unit, String tags) {
-        this();
-        this.name = checkName(name);
-        this.displayName = displayName;
-        this.description = description;
-        this.type = type;
-        this.unit = unit;
-        addTags(tags);
-    }
-
-    /**
-     * Constructs a Metadata object from a map with the following keys
-     * <ul>
-     * <li>{@code name} - The name of the metric</li>
-     * <li>{@code displayName} - The display (friendly) name of the metric</li>
-     * <li>{@code description} - The description of the metric</li>
-     * <li>{@code type} - The type of the metric</li>
-     * <li>{@code unit} - The units of the metric</li>
-     * <li>{@code tags} - The tags of the metric  - cannot be null</li>
-     * <li>{@code reusable} - If <tt>true</tt>, this metric name is permitted to be used at multiple registration points. If
-     * <tt>false</tt>, this metric name is only permitted to be used at one registration point per MetricRegistry.</li>
-     * </ul>
-     *
-     * @param in a map of key/value pairs representing Metadata
-     */
-    public Metadata(Map<String, String> in) {
-        this();
-        this.name = checkName(in.get("name"));
-        this.description = in.get("description");
-        this.displayName = in.get("displayName");
-        this.setType(in.get("type"));
-        this.setUnit(in.get("unit"));
-        if (in.keySet().contains("tags")) {
-            String tagString = in.get("tags");
-            addTags(tagString);
-        }
-        this.setReusable(Boolean.parseBoolean(in.get("reusable")));
-    }
 
     /**
      * Returns the metric name.
      *
      * @return the metric name.
      */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Sets the metric name.
-     *
-     * @param name the new metric name
-     */
-    public void setName(String name) {
-        this.name = checkName(name);
-    }
+    String getName();
 
     /**
      * Returns the display name if set, otherwise this method returns the metric name.
      *
      * @return the display name
      */
-    public String getDisplayName() {
-        if (displayName == null) {
-            return name;
-        }
-        return displayName;
-    }
+    Optional<String> getDisplayName();
 
-    /**
-     * Sets the display name.
-     *
-     * @param displayName the new display name
-     */
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
 
     /**
      * Returns the description of the metric.
      *
      * @return the description
      */
-    public String getDescription() {
-        return description;
-    }
+    Optional<String> getDescription();
 
-    /**
-     * Sets the description of the metric.
-     *
-     * @param description the new description
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     /**
      * Returns the String representation of the {@link MetricType}.
@@ -325,159 +92,32 @@ public class Metadata {
      * @return the MetricType as a String
      * @see MetricType
      */
-    public String getType() {
-        return type == null ? MetricType.INVALID.toString() : type.toString();
-    }
+    String getType();
 
     /**
      * Returns the {@link MetricType} of the metric
      *
      * @return the {@link MetricType}
      */
-    public MetricType getTypeRaw() {
-        return type;
-    }
+    MetricType getTypeRaw();
 
-    /**
-     * Sets the metric type using a String representation of {@link MetricType}.
-     *
-     * @param type the new metric type
-     * @throws IllegalArgumentException if the String is not a valid {@link MetricType}
-     */
-    public void setType(String type) throws IllegalArgumentException {
-        this.type = MetricType.from(type);
-    }
 
-    /**
-     * Sets the type of the metric
-     *
-     * @param type the new metric type
-     */
-    public void setType(MetricType type) {
-        this.type = type;
-    }
+    String getUnit();
 
-    /**
-     * Returns the unit of the metric.
-     *
-     * @return the unit
-     */
-    public String getUnit() {
-        return unit;
-    }
-
-    /**
-     * Sets the unit of the metric.
-     *
-     * @param unit the new unit
-     */
-    public void setUnit(String unit) {
-        this.unit = unit;
-    }
-
-    /**
-     * Can the metric be reused (i.e. same name registered multiple times)?
-     *
-     * @return True if reusable, false otherwise
-     */
-    public boolean isReusable() {
-        return reusable;
-    }
-
-    /**
-     * Set if the metric can be reusable (i.e. same name registered multiple times)?
-     *
-     * @param reusable True if reusable, false otherwise
-     */
-    public void setReusable(boolean reusable) {
-        this.reusable = reusable;
-    }
+    boolean isReusable();
 
     /**
      * Gets the list of tags as a single String in the format 'key="value",key2="value2",...'
      *
      * @return a String containing the tags
      */
-    public String getTagsAsString() {
-        StringBuilder result = new StringBuilder();
-
-        Iterator<Entry<String, String>> iterator = this.tags.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, String> pair = iterator.next();
-            result.append(pair.getKey()).append("=\"").append(pair.getValue()).append("\"");
-            if (iterator.hasNext()) {
-                result.append(",");
-            }
-
-        }
-
-        return result.toString();
-    }
+    String getTagsAsString();
 
     /**
      * Returns the underlying HashMap containing the tags.
      *
      * @return a hashmap of tags
      */
-    public HashMap<String, String> getTags() {
-        return this.tags;
-    }
-
-    /**
-     * Add one single tag with the format: 'key=value'. If the input is empty or does
-     * not contain a '=' sign, the entry is ignored.
-     *
-     * @param kvString Input string
-     */
-    public void addTag(String kvString) {
-        if (kvString == null || kvString.isEmpty() || !kvString.contains("=")) {
-            return;
-        }
-        tags.put(kvString.substring(0, kvString.indexOf("=")), kvString.substring(kvString.indexOf("=") + 1));
-    }
-
-    /**
-     * Add multiple tags delimited by commas.
-     * The format must be in the form 'key1=value1, key2=value2'.
-     * This method will call {@link #addTag(String)} on each tag.
-     *
-     * @param tagsString a string containing multiple tags
-     */
-    public void addTags(String tagsString) {
-        if (tagsString == null || tagsString.isEmpty()) {
-            return;
-        }
-
-        String[] singleTags = tagsString.split(",");
-        for (String singleTag : singleTags) {
-            addTag(singleTag.trim());
-        }
-    }
-
-    /**
-     * Sets the tags hashmap.
-     *
-     * @param tags a hashmap containing tags.
-     */
-    public void setTags(HashMap<String, String> tags) {
-        this.tags = tags;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, type, unit);
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("MetadataEntry{");
-        sb.append("name='").append(name).append('\'');
-        sb.append(", description='").append(description).append('\'');
-        sb.append(", type='").append(type).append('\'');
-        sb.append(", unit='").append(unit).append('\'');
-        sb.append(", tags='").append(tags).append('\'');
-        sb.append('}');
-        return sb.toString();
-    }
+    Map<String, String> getTags();
 
 }
