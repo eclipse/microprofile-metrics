@@ -25,6 +25,7 @@ package org.eclipse.microprofile.metrics;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * The {@link Metadata} builder
@@ -51,5 +52,89 @@ public class MetadataBuilder {
     private Map<String, String> tags = new HashMap<>();
 
     MetadataBuilder() {
+    }
+
+
+    /**
+     * Sets the name
+     *
+     * @param name the name
+     * @return the builder instance
+     * @throws NullPointerException when name is null
+     */
+    public MetadataBuilder withName(String name) {
+        this.name = Objects.requireNonNull(name, "name is required");
+        return this;
+    }
+
+    /**
+     * Sets the displayName
+     *
+     * @param displayName the displayName
+     * @return the builder instance
+     * @throws NullPointerException when displayName is null
+     */
+    public MetadataBuilder withDisplayName(String displayName) {
+        this.displayName = Objects.requireNonNull(displayName, "displayName is required");
+        return this;
+    }
+
+    /**
+     * Sets the description
+     *
+     * @param description the name
+     * @return the builder instance
+     * @throws NullPointerException when description is null
+     */
+    public MetadataBuilder withDescription(String description) {
+        this.description = Objects.requireNonNull(description, "description is required");
+        return this;
+    }
+
+    /**
+     * Sets the type
+     *
+     * @param type the name
+     * @return the builder instance
+     * @throws NullPointerException when type is null
+     */
+    public MetadataBuilder withType(MetricType type) {
+        this.type = Objects.requireNonNull(type, "type is required");
+        return this;
+    }
+
+    /**
+     * Sets the unit
+     *
+     * @param unit the name
+     * @return the builder instance
+     * @throws NullPointerException when unit is null
+     */
+    public MetadataBuilder withUnit(String unit) {
+        this.unit = Objects.requireNonNull(unit, "unit is required");
+        return this;
+    }
+
+    /**
+     * Sets the reusable
+     *
+     * @param reusable the name
+     * @return the builder instance
+     */
+    public MetadataBuilder withReusable(boolean reusable) {
+        this.reusable = reusable;
+        return this;
+    }
+
+    /**
+     * Sets the tags
+     *
+     * @param tags the name
+     * @return the builder instance
+     * @throws NullPointerException when tags is null
+     */
+    public MetadataBuilder withTags(Map<String, String> tags) {
+        this.tags = Objects.requireNonNull(tags, "tags is required");
+        return this;
     }
 }
