@@ -36,10 +36,6 @@ import java.util.stream.Stream;
  * {@link MetadataBuilder#reusable} as {@link Boolean#FALSE}
  */
 public class MetadataBuilder {
-    /**
-     * The environment variable used to pass in global tags.
-     */
-    public static final String GLOBAL_TAGS_VARIABLE = "MP_METRICS_TAGS";
 
 
     private String name;
@@ -57,8 +53,6 @@ public class MetadataBuilder {
     private Map<String, String> tags = new HashMap<>();
 
     MetadataBuilder() {
-        String globalTagsFromEnv = System.getenv(GLOBAL_TAGS_VARIABLE);
-        addTags(globalTagsFromEnv);
     }
 
     MetadataBuilder(Metadata metadata) {
