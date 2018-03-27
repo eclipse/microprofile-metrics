@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2018 Contributors to the Eclipse Foundation
  *               2017 Red Hat, Inc. and/or its affiliates
  *               and other contributors as indicated by the @author tags.
  *
@@ -37,6 +37,7 @@ import java.util.stream.Stream;
  */
 public class MetadataBuilder {
 
+    public static final String GLOBAL_TAGS_VARIABLE = "MP_METRICS_TAGS";
 
     private String name;
 
@@ -53,6 +54,8 @@ public class MetadataBuilder {
     private Map<String, String> tags = new HashMap<>();
 
     MetadataBuilder() {
+        String globalTagsFromEnv = System.getenv(GLOBAL_TAGS_VARIABLE);
+        addTags(globalTagsFromEnv);
     }
 
     MetadataBuilder(Metadata metadata) {
