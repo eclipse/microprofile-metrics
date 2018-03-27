@@ -116,8 +116,8 @@ class DefaultMetadata implements Metadata {
     }
 
     @Override
-    public Optional<String> getDisplayName() {
-        return Optional.ofNullable(displayName);
+    public String getDisplayName() {
+        return Optional.ofNullable(displayName).orElse(name);
     }
 
     @Override
