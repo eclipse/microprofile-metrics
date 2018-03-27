@@ -76,7 +76,7 @@ public interface Metadata {
      *
      * @return the display name
      */
-    Optional<String> getDisplayName();
+    String getDisplayName();
 
 
     /**
