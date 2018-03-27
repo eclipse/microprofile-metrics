@@ -63,7 +63,7 @@ public class MetadataBuilder {
         this.type = metadata.getTypeRaw();
         this.reusable = metadata.isReusable();
         this.tags.putAll(metadata.getTags());
-        metadata.getDisplayName().ifPresent(this::withDisplayName);
+        this.displayName = metadata.getDisplayName();
         metadata.getDescription().ifPresent(this::withDescription);
         metadata.getUnit().ifPresent(this::withUnit);
 
