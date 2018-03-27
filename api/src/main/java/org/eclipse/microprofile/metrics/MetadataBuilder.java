@@ -190,6 +190,14 @@ public class MetadataBuilder {
         if (Objects.isNull(name)) {
             throw new IllegalStateException("Name is required");
         }
+        switch (type) {
+            case HISTOGRAM:
+            case TIMER:
+            case METERED:
+            if(Objects.isNull(unit) || MetricUnits.NONE.equals(unit)) {
+                throw new IllegalStateException("To this type of Metadata the unit is required");
+            }
+        }
         return new DefaultMetadata(name, displayName, description, type, unit, reusable, tags);
     }
 }
