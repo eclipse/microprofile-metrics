@@ -39,18 +39,18 @@ public interface Timer extends Metered, Sampling {
      *
      * @see Timer#time()
      */
-    public interface Context extends Closeable {
+    interface Context extends Closeable {
 
         /**
          * Updates the timer with the difference between current and start time. Call to this method will
          * not reset the start time. Multiple calls result in multiple updates.
          * @return the elapsed time in nanoseconds
          */
-        public long stop();
+        long stop();
 
         /** Equivalent to calling {@link #stop()}. */
         @Override
-        public void close();
+        void close();
     }
     /**
      * Adds a recorded duration.
@@ -58,7 +58,7 @@ public interface Timer extends Metered, Sampling {
      * @param duration the length of the duration
      * @param unit     the scale unit of {@code duration}
      */
-    public void update(long duration, TimeUnit unit);
+    void update(long duration, TimeUnit unit);
 
     /**
      * Times and records the duration of event.
@@ -69,7 +69,7 @@ public interface Timer extends Metered, Sampling {
      * @return the value returned by {@code event}
      * @throws Exception if {@code event} throws an {@link Exception}
      */
-    public <T> T time(Callable<T> event) throws Exception;
+    <T> T time(Callable<T> event) throws Exception;
 
     /**
      * Times and records the duration of event.
@@ -77,7 +77,7 @@ public interface Timer extends Metered, Sampling {
      * @param event a {@link Runnable} whose {@link Runnable#run()} method implements a process
      *              whose duration should be timed
      */
-    public void time(Runnable event);
+    void time(Runnable event);
 
     /**
      * Returns a new {@link Context}.
@@ -85,23 +85,23 @@ public interface Timer extends Metered, Sampling {
      * @return a new {@link Context}
      * @see Context
      */
-    public Context time();
+    Context time();
 
     @Override
-    public long getCount();
+    long getCount();
 
     @Override
-    public double getFifteenMinuteRate();
+    double getFifteenMinuteRate();
 
     @Override
-    public double getFiveMinuteRate();
+    double getFiveMinuteRate();
 
     @Override
-    public double getMeanRate();
+    double getMeanRate();
 
     @Override
-    public double getOneMinuteRate();
+    double getOneMinuteRate();
 
     @Override
-    public Snapshot getSnapshot();
+    Snapshot getSnapshot();
 }
