@@ -23,6 +23,8 @@
 
 package org.eclipse.microprofile.metrics.tck;
 
+import static org.hamcrest.Matchers.lessThan;
+
 import java.util.Arrays;
 import java.util.SortedMap;
 import java.util.concurrent.TimeUnit;
@@ -48,7 +50,9 @@ import org.junit.runner.RunWith;
 public class TimerTest {
     @Deployment
     public static JavaArchive createDeployment() {
-        return ShrinkWrap.create(JavaArchive.class).addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+        return ShrinkWrap.create(JavaArchive.class)
+                .addClass(TestUtils.class)
+                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -83,38 +87,40 @@ public class TimerTest {
         isInitialized = true;
     }
 
-//    @Test
+    @Test
     @InSequence(1)
-    public void testRates() throws Exception {
-        double beforeStartTime = System.nanoTime();
+    public void testRate() throws Exception {
+
+        int markSeconds = 30;
+        int delaySeconds = 15;
+        
         Timer timer = registry.timer("testRate");
-        double afterStartTime = System.nanoTime();
-
-        Context context = timer.time();
-        context.stop();
-        Thread.sleep(10000);
-
-        double beforeUptime = System.nanoTime() - afterStartTime;
-        double mean = timer.getMeanRate() / TimeUnit.SECONDS.toNanos(1);
-        double afterUptime = System.nanoTime() - beforeStartTime;
-
-        double delta = (1 / (beforeUptime)) - (1 / (afterUptime));
-        // System.out.println("DEBUG: (count / (beforeUptime)) " + (1 /
-        // (beforeUptime)));
-        // System.out.println("DEBUG: (count / (afterUptime) " + (1 /
-        // (afterUptime)));
-        // System.out.println("DEBUG: beforeStartTime " + beforeStartTime);
-        // System.out.println("DEBUG: afterStartTime " + afterStartTime);
-        // System.out.println("DEBUG: beforeUptime " + beforeUptime);
-        // System.out.println("DEBUG: afterUptime " + afterUptime);
-        // System.out.println("DEBUG: mean " + mean);
-        // System.out.println("DEBUG: test " + delta);
-        Assert.assertEquals(1 / (beforeUptime), mean, delta);
-        Assert.assertEquals(0.184, timer.getOneMinuteRate(), 0.001);
-        Assert.assertEquals(0.196, timer.getFiveMinuteRate(), 0.001);
-        Assert.assertEquals(0.198, timer.getFifteenMinuteRate(), 0.001);
+        
+        // Call update ~1/sec
+        for (int i = 0; i < markSeconds; i++) {
+            timer.update(1, TimeUnit.SECONDS);
+            Thread.sleep(1000);
+        }
+        
+        // All rates should be around the value of ~1/sec
+        TestUtils.assertEqualsWithTolerance(1.0, timer.getMeanRate());
+        TestUtils.assertEqualsWithTolerance(1.0, timer.getOneMinuteRate());
+        TestUtils.assertEqualsWithTolerance(1.0, timer.getFiveMinuteRate());
+        TestUtils.assertEqualsWithTolerance(1.0, timer.getFifteenMinuteRate());
+        
+        Thread.sleep(delaySeconds * 1000);
+        
+        // Approximately calculate what the expected mean should be
+        // and let the tolerance account for the delta
+        double expectedMean = ((double) markSeconds/(markSeconds + delaySeconds));
+        TestUtils.assertEqualsWithTolerance(expectedMean, timer.getMeanRate());
+        
+        // After a delay, we expect some decay of values
+        Assert.assertThat(timer.getOneMinuteRate(), lessThan(1.0));
+        Assert.assertThat(timer.getFiveMinuteRate(), lessThan(1.0));
+        Assert.assertThat(timer.getFifteenMinuteRate(), lessThan(1.0));
     }
-
+    
     @Test
     @InSequence(2)
     public void testTime() throws Exception {
@@ -123,11 +129,12 @@ public class TimerTest {
         double beforeStartTime = System.nanoTime();
         Context context = timer.time();
         double afterStartTime = System.nanoTime();
-
+        Thread.sleep(1000);
+        
         double beforeStopTime = System.nanoTime();
         double time = context.stop();
         double afterStopTime = System.nanoTime();
-        Thread.sleep(10000);
+        
 
         double delta = (afterStartTime - beforeStartTime) + (afterStopTime - beforeStopTime);
         Assert.assertEquals(beforeStopTime - beforeStartTime, time, delta);
@@ -137,7 +144,6 @@ public class TimerTest {
     @InSequence(3)
     public void testTimerRegistry() throws Exception {
         String timerLongName = "test.longData.timer";
-        //String timerRateName = "testRate";
         String timerTimeName = "testTime";
 
         SortedMap<String, Timer> timers = registry.getTimers();
@@ -146,9 +152,7 @@ public class TimerTest {
         Assert.assertTrue(timers.containsKey(timerLongName));
         Assert.assertTrue(timers.containsKey(timerTimeName));
 
-        //Assert.assertEquals(1, timers.get(timerRateName).getCount(), 0);
-        //Assert.assertEquals(1, registry.timer("testRate").getCount(), 0);
-        Assert.assertEquals(480, timers.get(timerLongName).getSnapshot().getValue(0.5), 0);
+        TestUtils.assertEqualsWithTolerance(480, timers.get(timerLongName).getSnapshot().getValue(0.5));
     }
 
     @Test
@@ -183,56 +187,56 @@ public class TimerTest {
 
     @Test
     public void testSnapshot75thPercentile() throws Exception {
-        Assert.assertEquals(750, globalTimer.getSnapshot().get75thPercentile(), 0);
+        TestUtils.assertEqualsWithTolerance(750, globalTimer.getSnapshot().get75thPercentile());
     }
 
     @Test
     public void testSnapshot95thPercentile() throws Exception {
-        Assert.assertEquals(960, globalTimer.getSnapshot().get95thPercentile(), 0);
+        TestUtils.assertEqualsWithTolerance(960, globalTimer.getSnapshot().get95thPercentile());
     }
 
     @Test
     public void testSnapshot98thPercentile() throws Exception {
-        Assert.assertEquals(980, globalTimer.getSnapshot().get98thPercentile(), 0);
+        TestUtils.assertEqualsWithTolerance(980, globalTimer.getSnapshot().get98thPercentile());
     }
 
     @Test
     public void testSnapshot99thPercentile() throws Exception {
-        Assert.assertEquals(980, globalTimer.getSnapshot().get99thPercentile(), 0);
+        TestUtils.assertEqualsWithTolerance(980, globalTimer.getSnapshot().get99thPercentile());
     }
 
     @Test
     public void testSnapshot999thPercentile() throws Exception {
-        Assert.assertEquals(990, globalTimer.getSnapshot().get999thPercentile(), 0);
+        TestUtils.assertEqualsWithTolerance(990, globalTimer.getSnapshot().get999thPercentile());
     }
 
     @Test
     public void testSnapshotMax() throws Exception {
-        Assert.assertEquals(990.0, globalTimer.getSnapshot().getMax(), 0);
+        Assert.assertEquals(990, globalTimer.getSnapshot().getMax());
     }
 
     @Test
     public void testSnapshotMin() throws Exception {
-        Assert.assertEquals(0.0, globalTimer.getSnapshot().getMin(), 0);
+        Assert.assertEquals(0, globalTimer.getSnapshot().getMin());
     }
 
     @Test
     public void testSnapshotMean() throws Exception {
-        Assert.assertEquals(506.3, globalTimer.getSnapshot().getMean(), 0.1);
+        TestUtils.assertEqualsWithTolerance(506.3, globalTimer.getSnapshot().getMean());
     }
 
     @Test
     public void testSnapshotMedian() throws Exception {
-        Assert.assertEquals(480, globalTimer.getSnapshot().getMedian(), 0);
+        TestUtils.assertEqualsWithTolerance(480, globalTimer.getSnapshot().getMedian());
     }
 
     @Test
     public void testSnapshotStdDev() throws Exception {
-        Assert.assertEquals(294.3, globalTimer.getSnapshot().getStdDev(), 0.1);
+        TestUtils.assertEqualsWithTolerance(294.3, globalTimer.getSnapshot().getStdDev());
     }
 
     @Test
     public void testSnapshotSize() throws Exception {
-        Assert.assertEquals(200.0, globalTimer.getSnapshot().size(), 0);
+        Assert.assertEquals(200, globalTimer.getSnapshot().size());
     }
 }

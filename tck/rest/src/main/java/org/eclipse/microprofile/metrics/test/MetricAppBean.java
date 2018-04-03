@@ -64,7 +64,6 @@ public class MetricAppBean {
     private Histogram jellybeanHistogram;
 
     @Inject
-    // @RegistryType(type=MetricRegistry.Type.BASE)
     private MetricRegistry metrics;
 
     @Inject
@@ -110,8 +109,10 @@ public class MetricAppBean {
                 .withType(MetricType.HISTOGRAM).withUnit(MetricUnits.BYTES).build();
         Histogram histogram = metrics.histogram(metadata);
 
-        for (int i = 0; i < 1000; i++) {
+        // Go both ways to minimize error due to decay
+        for (int i = 0; i < 500; i++) {
             histogram.update(i);
+            histogram.update(999 - i);
         }
 
         Metadata metadata2 = Metadata.builder().withName("metricTest.test1.histogram2")

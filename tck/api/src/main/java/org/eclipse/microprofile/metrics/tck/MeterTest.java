@@ -23,15 +23,12 @@
 
 package org.eclipse.microprofile.metrics.tck;
 
-import java.util.concurrent.TimeUnit;
-
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Meter;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -39,11 +36,16 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static org.hamcrest.Matchers.lessThan;
+
+
 @RunWith(Arquillian.class)
 public class MeterTest {
     @Deployment
     public static JavaArchive createDeployment() {
-        return ShrinkWrap.create(JavaArchive.class).addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+        return ShrinkWrap.create(JavaArchive.class)
+                .addClass(TestUtils.class)
+                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -53,7 +55,6 @@ public class MeterTest {
     private MetricRegistry registry;
 
     @Test
-    @InSequence(1)
     public void testCount() throws Exception {
         // test mark()
         long countBefore = injectedMeter.getCount();
@@ -74,62 +75,38 @@ public class MeterTest {
         Assert.assertEquals(countBefore - 3, countAfter);
     }
 
-    private void verifyMeanRate(Meter meter, double beforeStartTime, double afterStartTime, int count) {
-        double beforeUptime = System.nanoTime() - afterStartTime;
-        double rate = meter.getMeanRate() / TimeUnit.SECONDS.toNanos(1);
-        double afterUptime = System.nanoTime() - beforeStartTime;
 
-        double delta = (count / (beforeUptime)) - (count / (afterUptime));
-        // System.out.println("DEBUG: (count / (beforeUptime)) " + (count /
-        // (beforeUptime)));
-        // System.out.println("DEBUG: (count / (afterUptime) " + (count /
-        // (afterUptime)));
-        // System.out.println("DEBUG: beforeStartTime " + beforeStartTime);
-        // System.out.println("DEBUG: afterStartTime " + afterStartTime);
-        // System.out.println("DEBUG: beforeUptime " + beforeUptime);
-        // System.out.println("DEBUG: afterUptime " + afterUptime);
-        // System.out.println("DEBUG: rate " + rate);
-        // System.out.println("DEBUG: test " + delta);
-        Assert.assertEquals(count / (beforeUptime), rate, delta);
-    }
-
-//    @Test
+    @Test
     public void testRates() throws Exception {
 
-        /* testMeterRates1 */
-        int count = 9999;
-        double beforeStartTime = System.nanoTime();
-        Meter meter = registry.meter("testMeterRates1");
-        double afterStartTime = System.nanoTime();
-        meter.mark(count);
-        Thread.sleep(10000); // Needs to be greater than the tick interval time.
-        verifyMeanRate(meter, beforeStartTime, afterStartTime, count);
-        Assert.assertEquals(1839.904, meter.getOneMinuteRate(), 0.001);
-        Assert.assertEquals(1966.746, meter.getFiveMinuteRate(), 0.001);
-        Assert.assertEquals(1988.720, meter.getFifteenMinuteRate(), 0.001);
+        int count = 100;
+        int markSeconds = 30;
+        int delaySeconds = 15;
+        
+        Meter meter = registry.meter("testMeterRatesLong");
+        
+        for (int i = 0; i < markSeconds; i++) {
+            meter.mark(count);
+            Thread.sleep(1000);
+        }
 
-        /* testMeterRates2 */
-        count = 1;
-        beforeStartTime = System.nanoTime();
-        meter = registry.meter("testMeterRates2");
-        afterStartTime = System.nanoTime();
-        meter.mark();
-        Thread.sleep(10000); // Needs to be greater than the tick interval time.
-        verifyMeanRate(meter, beforeStartTime, afterStartTime, count);
-        Assert.assertEquals(0.184, meter.getOneMinuteRate(), 0.001);
-        Assert.assertEquals(0.196, meter.getFiveMinuteRate(), 0.001);
-        Assert.assertEquals(0.198, meter.getFifteenMinuteRate(), 0.001);
+        // All rates should be around the value of count
+        TestUtils.assertEqualsWithTolerance(count, meter.getMeanRate());
+        TestUtils.assertEqualsWithTolerance(count, meter.getOneMinuteRate());
+        TestUtils.assertEqualsWithTolerance(count, meter.getFiveMinuteRate());
+        TestUtils.assertEqualsWithTolerance(count, meter.getFifteenMinuteRate());
+                
+        Thread.sleep(delaySeconds * 1000);
+        
+        // Approximately calculate what the expected mean should be
+        // and let the tolerance account for the delta
+        double expectedMean = count * ((double) markSeconds/(markSeconds + delaySeconds));
+        TestUtils.assertEqualsWithTolerance(expectedMean, meter.getMeanRate());
+        
+        // After a delay, we expect some decay of values
+        Assert.assertThat(meter.getOneMinuteRate(), lessThan((double)count));
+        Assert.assertThat(meter.getFiveMinuteRate(), lessThan((double)count));
+        Assert.assertThat(meter.getFifteenMinuteRate(), lessThan((double)count));
 
-        /* testMeterRates3 */
-        count = 2000000000;
-        beforeStartTime = System.nanoTime();
-        meter = registry.meter("testMeterRates3");
-        afterStartTime = System.nanoTime();
-        meter.mark(count);
-        Thread.sleep(10000); // Needs to be greater than the tick interval time.
-        verifyMeanRate(meter, beforeStartTime, afterStartTime, count);
-        Assert.assertEquals(368017765.851, meter.getOneMinuteRate(), 0.001);
-        Assert.assertEquals(393388581.528, meter.getFiveMinuteRate(), 0.001);
-        Assert.assertEquals(397783939.201, meter.getFifteenMinuteRate(), 0.001);
     }
 }
