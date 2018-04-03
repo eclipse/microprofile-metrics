@@ -166,13 +166,12 @@ class DefaultMetadata implements Metadata {
             return false;
         }
         Metadata that = (Metadata) o;
-        return Objects.equals(name, that.getName())
-                && type == that.getTypeRaw();
+        return Objects.equals(name, that.getName());
 
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, type);
+        return Objects.hashCode(name);
     }
 }
