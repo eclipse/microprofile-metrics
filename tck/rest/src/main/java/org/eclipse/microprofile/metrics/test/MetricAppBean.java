@@ -22,9 +22,6 @@
 
 package org.eclipse.microprofile.metrics.test;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.Gauge;
@@ -39,6 +36,9 @@ import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.Metered;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 import org.eclipse.microprofile.metrics.annotation.Timed;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 @ApplicationScoped
 public class MetricAppBean {
@@ -60,7 +60,7 @@ public class MetricAppBean {
     private Counter purpleCount;
 
     @Inject
-    @Metric(absolute = true, unit="jellybeans")
+    @Metric(absolute = true, unit = "jellybeans")
     private Histogram jellybeanHistogram;
 
     @Inject
@@ -90,8 +90,11 @@ public class MetricAppBean {
             gauge = () -> {
                 return 19L;
             };
-            Metadata gaugeMetadata = new Metadata("metricTest.test1.gauge",MetricType.GAUGE, MetricUnits.GIGABYTES);
-            metrics.register("metricTest.test1.gauge", gauge, gaugeMetadata);
+
+
+            Metadata metadata = Metadata.builder().withName("metricTest.test1.gauge")
+                    .withType(MetricType.GAUGE).withUnit(MetricUnits.GIGABYTES).build();
+            metrics.register("metricTest.test1.gauge", gauge, metadata);
         }
 
     }
@@ -103,14 +106,16 @@ public class MetricAppBean {
 
     public void histogramMe() {
 
-        Metadata metadata = new Metadata("metricTest.test1.histogram", MetricType.HISTOGRAM, MetricUnits.BYTES);
+        Metadata metadata = Metadata.builder().withName("metricTest.test1.histogram")
+                .withType(MetricType.HISTOGRAM).withUnit(MetricUnits.BYTES).build();
         Histogram histogram = metrics.histogram(metadata);
 
         for (int i = 0; i < 1000; i++) {
             histogram.update(i);
         }
 
-        Metadata metadata2 = new Metadata("metricTest.test1.histogram2", MetricType.HISTOGRAM,MetricUnits.NONE);
+        Metadata metadata2 = Metadata.builder().withName("metricTest.test1.histogram2")
+                .withType(MetricType.HISTOGRAM).withUnit(MetricUnits.NONE).build();
         Histogram histogram2 = metrics.histogram(metadata2);
         histogram2.update(1);
     }
@@ -136,8 +141,7 @@ public class MetricAppBean {
             Thread.sleep((long) (Math.random() * 1000));
         }
         catch (InterruptedException e) {
-        }
-        finally {
+        } finally {
             context.stop();
         }
 

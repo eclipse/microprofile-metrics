@@ -31,14 +31,21 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
 public class TagsTest {
 
-    private Metadata metadata = new Metadata("count", "countMe", "countMe tags test", MetricType.COUNTER,
-            MetricUnits.PERCENT, "colour=blue");
+    private Metadata metadata;
+
+    @Before
+    public void setUp() {
+        this.metadata = Metadata.builder().withName("count").withDisplayName("countMe")
+                .withDescription("countMe tags test").withType(MetricType.COUNTER)
+                .withUnit(MetricUnits.PERCENT).addTag("colour=blue").build();
+    }
 
     @Deployment
     public static JavaArchive createDeployment() {
@@ -53,14 +60,15 @@ public class TagsTest {
 
     @Test
     public void addTagsTest() {
-        metadata.addTags("colour=green,size=medium");
-        metadata.addTag("number=5");
 
-        Assert.assertNotNull(metadata);
-        Assert.assertTrue(metadata.getTags().containsKey("size"));
-        Assert.assertTrue(metadata.getTags().containsValue("green"));
-        Assert.assertFalse(metadata.getTags().containsValue("blue"));
-        Assert.assertTrue(metadata.getTags().containsKey("number"));
+        Metadata metadata2 = Metadata.builder(metadata)
+                .addTags("colour=green,size=medium").addTag("number=5").build();
+
+        Assert.assertNotNull(metadata2);
+        Assert.assertTrue(metadata2.getTags().containsKey("size"));
+        Assert.assertTrue(metadata2.getTags().containsValue("green"));
+        Assert.assertFalse(metadata2.getTags().containsValue("blue"));
+        Assert.assertTrue(metadata2.getTags().containsKey("number"));
     }
 
 }

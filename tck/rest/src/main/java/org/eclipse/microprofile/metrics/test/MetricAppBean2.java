@@ -72,8 +72,9 @@ public class MetricAppBean2 {
 
     public void registerReusableHistogram() {
 
-        Metadata metadata = new Metadata("reusableHisto", MetricType.HISTOGRAM);
-        metadata.setReusable(true);
+        Metadata metadata = Metadata.builder()
+            .withName("reusableHisto").withType(MetricType.HISTOGRAM)
+            .reusable().build();
         Histogram histogram = registry.histogram(metadata);
 
         histogram.update(1);
@@ -83,18 +84,22 @@ public class MetricAppBean2 {
         histogram1.update(3);
     }
 
+
     public void badRegisterReusableMixed() {
 
-        Metadata metadata = new Metadata("badReusableMixed", MetricType.HISTOGRAM);
-        metadata.setReusable(true);
+        Metadata metadata = Metadata.builder()
+            .withName("badReusableMixed").withType(MetricType.HISTOGRAM)
+            .reusable().build();
         Histogram histogram = registry.histogram(metadata);
 
         histogram.update(1);
 
         // We register a different metric type - that is forbidden
         // so we expect an exception
-        Metadata metadata2 = new Metadata("badReusableMixed", MetricType.COUNTER);
-        metadata2.setReusable(true);
+
+        Metadata metadata2 = Metadata.builder()
+            .withName("badReusableMixed").withType(MetricType.COUNTER)
+            .reusable().build();
         registry.counter(metadata2);
 
     }
