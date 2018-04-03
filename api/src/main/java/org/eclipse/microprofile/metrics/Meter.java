@@ -32,27 +32,27 @@ public interface Meter extends Metered {
     /**
      * Mark the occurrence of an event.
      */
-    public void mark();
+    void mark();
 
     /**
      * Mark the occurrence of a given number of events.
      *
      * @param n the number of events
      */
-    public void mark(long n);
+    void mark(long n);
 
     @Override
-    public long getCount();
+    long getCount();
 
     @Override
-    public double getFifteenMinuteRate();
+    double getFifteenMinuteRate();
 
     @Override
-    public double getFiveMinuteRate();
+    double getFiveMinuteRate();
 
     @Override
-    public double getMeanRate();
+    double getMeanRate();
 
     @Override
-    public double getOneMinuteRate();
+    double getOneMinuteRate();
 }

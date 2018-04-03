@@ -35,14 +35,14 @@ public interface Histogram extends Metric, Sampling, Counting {
      *
      * @param value the length of the value
      */
-    public void update(int value);
+    void update(int value);
 
     /**
      * Adds a recorded value.
      *
      * @param value the length of the value
      */
-    public void update(long value);
+    void update(long value);
 
     /**
      * Returns the number of values recorded.
@@ -50,8 +50,8 @@ public interface Histogram extends Metric, Sampling, Counting {
      * @return the number of values recorded
      */
     @Override
-    public long getCount();
+    long getCount();
 
     @Override
-    public Snapshot getSnapshot();
+    Snapshot getSnapshot();
 }
