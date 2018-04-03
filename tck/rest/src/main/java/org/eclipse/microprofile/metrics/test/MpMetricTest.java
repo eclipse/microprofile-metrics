@@ -28,6 +28,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertNotNull;
@@ -54,6 +56,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.microprofile.metrics.MetricRegistry;
+import org.hamcrest.Matcher;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -85,6 +88,8 @@ public class MpMetricTest {
     private static final String DEFAULT_PROTOCOL = "http";
     private static final String DEFAULT_HOST = "localhost";
     private static final int DEFAULT_PORT = 8080;
+
+    public static final double TOLERANCE = 0.025;
 
     @Inject
     private MetricAppBean metricAppBean;
@@ -442,14 +447,14 @@ public class MpMetricTest {
 
                 .body("'metricTest.test1.histogram'.count", equalTo(1000))
                 .body("'metricTest.test1.histogram'.max", equalTo(999))
-                .body("'metricTest.test1.histogram'.mean", equalTo((float) 499.5))
+                .body("'metricTest.test1.histogram'.mean", closeTo(499.5))
                 .body("'metricTest.test1.histogram'.min", equalTo(0))
-                .body("'metricTest.test1.histogram'.p50", equalTo((float) 499.0))
-                .body("'metricTest.test1.histogram'.p75", equalTo((float) 749))
-                .body("'metricTest.test1.histogram'.p95", equalTo((float) 949))
-                .body("'metricTest.test1.histogram'.p98", equalTo((float) 979))
-                .body("'metricTest.test1.histogram'.p99", equalTo((float) 989))
-                .body("'metricTest.test1.histogram'.p999", equalTo((float) 998))
+                .body("'metricTest.test1.histogram'.p50", closeTo(499.0))
+                .body("'metricTest.test1.histogram'.p75", closeTo(749))
+                .body("'metricTest.test1.histogram'.p95", closeTo(949))
+                .body("'metricTest.test1.histogram'.p98", closeTo(979))
+                .body("'metricTest.test1.histogram'.p99", closeTo(989))
+                .body("'metricTest.test1.histogram'.p999", closeTo(998))
                 .body("'metricTest.test1.histogram'", hasKey("stddev"))
 
                 .body("'metricTest.test1.meter'.count", equalTo(1))
@@ -734,6 +739,19 @@ public class MpMetricTest {
     }
 
 
+    /**
+     * Checks that the value is within tolerance of the expected value
+     * 
+     * Note: The JSON parser only returns float for earlier versions of restassured,
+     * so we need to return a float Matcher.
+     * @param operand
+     * @return
+     */
+    private Matcher<Float> closeTo (double operand) {
+        double delta = Math.abs(operand) * TOLERANCE;
+        return allOf(greaterThan((float) (operand - delta)), lessThan((float) (operand + delta)));
+    }
+    
     private Map<String, MiniMeta> getExpectedMetadataFromXmlFile(MetricRegistry.Type scope) {
       ClassLoader cl = this.getClass().getClassLoader();
       String fileName;
