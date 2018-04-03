@@ -1,7 +1,7 @@
 /*
  **********************************************************************
  * Copyright (c) 2018 Contributors to the Eclipse Foundation
- *               2017 Red Hat, Inc. and/or its affiliates
+ *               2018 Red Hat, Inc. and/or its affiliates
  *               and other contributors as indicated by the @author tags.
  *
  * See the NOTICES file(s) distributed with this work for additional
