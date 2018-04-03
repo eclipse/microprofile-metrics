@@ -192,11 +192,16 @@ public class MetadataBuilder {
         }
         switch (type) {
             case HISTOGRAM:
+            case GAUGE:
+            if(Objects.isNull(unit) || MetricUnits.NONE.equals(unit)) {
+                throw new IllegalStateException("A unit is required for this type of metric");
+            }
             case TIMER:
             case METERED:
-            if(Objects.isNull(unit) || MetricUnits.NONE.equals(unit)) {
-                throw new IllegalStateException("To this type of Metadata the unit is required");
-            }
+            case COUNTER:
+                if(Objects.nonNull(unit) || !MetricUnits.NONE.equals(unit)) {
+                    throw new IllegalStateException("A unit is not required for this type of metric");
+                }
         }
         return new DefaultMetadata(name, displayName, description, type, unit, reusable, tags);
     }
