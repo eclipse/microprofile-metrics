@@ -1436,7 +1436,7 @@ When a metric injected field is annotated, the implementation must provide the r
 [source, java]
 ----
 @Inject
-@Metric("applicationCount")
+@Metric(name = "applicationCount")
 Counter count;
 ----
 
