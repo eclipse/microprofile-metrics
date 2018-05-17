@@ -1,0 +1,118 @@
+//
+// Copyright (c) 2016-2018 Contributors to the Eclipse Foundation
+//
+// See the NOTICE file(s) distributed with this work for additional
+// information regarding copyright ownership.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+== Appendix
+
+=== Alternatives considered
+
+Jolokia JMX-HTTP bridge. Using this for application specific metrics would require those metrics
+to be exposed to JMX first, which many users are not familiar with.
+
+[[references]]
+=== References
+
+https://github.com/dropwizard/metrics/tree/v3.2.3[Dropwizard Metrics 3.2.3]
+
+https://github.com/astefanutti/metrics-cdi/tree/1.4.0[CDI extension for Dropwizard Metrics 1.4.0]
+
+https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html[HTTP return codes]
+
+https://github.com/unitsofmeasurement[UoM, JSR 363]
+
+http://metrics20.org/spec/[Metrics 2.0]
+
+=== Example configuration format for base and vendor-specific data
+
+
+The following is an example configuration in YAML format.
+
+[source]
+----
+base:
+  - name: "thread-count"
+    mbean: "java.lang:type=Threading/ThreadCount"
+    description: "Number of currently deployed threads"
+    unit: "none"
+    type: "gauge"
+    displayName: "Current Thread count"
+  - name: "peak-thread-count"
+    mbean: "java.lang:type=Threading/PeakThreadCount"
+    description: "Max number of threads"
+    unit: "none"
+    type: "gauge"
+  - name: "total-started-thread-count"
+    mbean: "java.lang:type=Threading/TotalStartedThreadCount"
+    description: "Number of threads started for this server"
+    unit: "none"
+    type: "counter"
+  - name: "max-heap"
+    mbean: "java.lang:type=Memory/HeapMemoryUsage#max"
+    description: "Number of threads started for this server"
+    unit: "bytes"
+    type: "counter"
+    tags: "kind=memory"
+
+vendor:
+  - name: "msc-loaded-modules"
+    mbean: "jboss.modules:type=ModuleLoader,name=BootModuleLoader-2/LoadedModuleCount"
+    description: "Number of loaded modules"
+    unit: "none"
+    type: "gauge"
+----
+
+This configuration can be backed into the runtime or be provided via an external configuration file.
+
+[[metric-registry-factory]]
+=== Example Metric Registry Factory
+
+.Sample skeleton factory class to produce MetricRegistry via CDI
+[source, java]
+----
+@ApplicationScoped
+public class MetricRegistryFactory {
+
+    @Produces
+    public static MetricRegistry getDefaultRegistry() {
+        return getApplicationRegistry();
+    }
+
+    @Produces
+    @RegistryType(type = Type.APPLICATION)
+    public static MetricRegistry getApplicationRegistry() {
+        // Returns the static instance of the Application MetricRegistry
+        [...]
+    }
+
+    @Produces
+    @RegistryType(type = Type.BASE)
+    public static MetricRegistry getBaseRegistry() {
+        // Returns the static instance of the Base MetricRegistry
+        [...]
+    }
+
+    @Produces
+    @RegistryType(type = Type.VENDOR)
+    public static MetricRegistry getVendorRegistry() {
+        // Returns the static instance of the Vendor MetricRegistry
+        [...]
+    }
+
+}
+
+----
