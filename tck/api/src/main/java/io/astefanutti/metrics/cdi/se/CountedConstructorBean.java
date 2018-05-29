@@ -15,11 +15,11 @@
  */
 package io.astefanutti.metrics.cdi.se;
 
-import org.eclipse.microprofile.metrics.annotation.Counted;
+import org.eclipse.microprofile.metrics.annotation.HitCounted;
 
 public class CountedConstructorBean {
 
-    @Counted(name = "countedConstructor", monotonic = true)
+    @HitCounted(name = "countedConstructor")
     public CountedConstructorBean() {
     }
 }

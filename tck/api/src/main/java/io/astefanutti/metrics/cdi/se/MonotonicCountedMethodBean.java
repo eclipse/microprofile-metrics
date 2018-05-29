@@ -18,10 +18,11 @@ package io.astefanutti.metrics.cdi.se;
 import org.eclipse.microprofile.metrics.annotation.Counted;
 
 import java.util.concurrent.Callable;
+import org.eclipse.microprofile.metrics.annotation.HitCounted;
 
 public class MonotonicCountedMethodBean<T> {
 
-    @Counted(name = "monotonicCountedMethod", absolute = true, monotonic = true)
+    @HitCounted(name = "monotonicCountedMethod", absolute = true)
     public T monotonicCountedMethod(Callable<T> callable) {
         try {
             return callable.call();

@@ -1,25 +1,26 @@
 /*
- **********************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
- *               2012 Ryan W Tenney (ryan@10e.us)
+ * ********************************************************************
+ *  Copyright (c) 2018 Contributors to the Eclipse Foundation
  *
- * See the NOTICES file(s) distributed with this work for additional
- * information regarding copyright ownership.
+ *  See the NOTICES file(s) distributed with this work for additional
+ *  information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  *
- * SPDX-License-Identifier: Apache-2.0
- **********************************************************************/
+ *  SPDX-License-Identifier: Apache-2.0
+ * ********************************************************************
+ *
+ */
 package org.eclipse.microprofile.metrics.annotation;
 
 import java.lang.annotation.Documented;
@@ -28,10 +29,8 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
 import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InterceptorBinding;
-
 import org.eclipse.microprofile.metrics.MetricUnits;
 
 /**
@@ -39,44 +38,40 @@ import org.eclipse.microprofile.metrics.MetricUnits;
  * The metric will be registered in the application MetricRegistry.
  *
  * <p>
- * Given a method annotated with {@literal @}Counted like this:
+ * Given a method annotated with {@literal @}HitCounted like this:
  * </p>
  * <pre><code>
- *     {@literal @}Counted(name = "fancyName")
+ *     {@literal @}HitCounted(name = "fancyName")
  *     public String fancyName(String name) {
  *         return "Sir Captain " + name;
  *     }
  * </code></pre>
  * A counter with the fully qualified class name + {@code fancyName} will be created and each time the
- * {@code #fancyName(String)} method is invoked, the counter will be marked.
+ * {@code #fancyName(String)} method is invoked, the counter will be increased by one.
  * Similarly, the same applies for a constructor annotated with counted.
- * (See {@link #monotonic()} for how the counter will be incremented).
  *
  * <p>
- * Given a class annotated with {@literal @}Counted like this:
+ * Given a class annotated with {@literal @}HitCounted like this:
  * </p>
  * <pre><code>
- *     {@literal @}Counted
+ *     {@literal @}HitCounted
  *     public class CounterBean {
  *         public void countMethod1() {}
  *         public void countMethod2() {}
  *     }
  * </code></pre>
  * A counter for the defining class will be created for each of the constructors/methods.
- * Each time the constructor/method is invoked, the respective counter will be marked.
- * (See {@link #monotonic()} for how the counter will be incremented)
+ * Each time the constructor/method is invoked, the respective counter will be increased by one.
  *
- * @deprecated Since MP-Metrics 2.0. Use @HitCounted and @ParallelCounted instead
- * @see HitCounted
+ * @since MP-Metrics 2.0.
  * @see ParallelCounted
  */
-@Deprecated
 @Inherited
 @Documented
 @InterceptorBinding
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
-public @interface Counted {
+public @interface HitCounted {
 
     /**
      * @return The name of the counter.
@@ -101,16 +96,6 @@ public @interface Counted {
     boolean absolute() default false;
 
     /**
-     * @return
-     * If {@code false} (default), the counter is decremented when the annotated
-     * method returns, counting current invocations of the annotated method.
-     * If {@code true}, the counter increases monotonically, counting total
-     * invocations of the annotated method.
-     */
-    @Nonbinding
-    boolean monotonic() default false;
-
-    /**
      * @return The display name of the counter.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -131,7 +116,7 @@ public @interface Counted {
      * @return The unit of the counter. By default, the value is {@link MetricUnits#NONE}.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
-     * @see org.eclipse.microprofile.metrics.MetricUnits
+     * @see MetricUnits
      */
     @Nonbinding
     String unit() default MetricUnits.NONE;

@@ -33,6 +33,7 @@ import org.eclipse.microprofile.metrics.MetricType;
 import org.eclipse.microprofile.metrics.MetricUnits;
 import org.eclipse.microprofile.metrics.Timer;
 import org.eclipse.microprofile.metrics.annotation.Counted;
+import org.eclipse.microprofile.metrics.annotation.HitCounted;
 import org.eclipse.microprofile.metrics.annotation.Metered;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 import org.eclipse.microprofile.metrics.annotation.Timed;
@@ -76,7 +77,7 @@ public class MetricAppBean {
         counter.inc();
     }
 
-    @Counted(name = "metricTest.test1.countMeA", monotonic = true, absolute = true)
+    @HitCounted(name = "metricTest.test1.countMeA", absolute = true)
     public void countMeA() {
 
     }

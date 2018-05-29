@@ -107,7 +107,9 @@ The following Annotations exist, see below for common fields:
 |===
 |Annotation | Applies to |  Description | Default Unit
 
-|@Counted | M, C, T | Denotes a counter, which counts the invocations of the annotated object. | MetricUnits.NONE
+|@Counted | M, C, T | DEPRECATED Denotes a counter, which counts the invocations of the annotated object. | MetricUnits.NONE
+|@HitCounted | M, C, T | Denotes a counter, which counts the invocations of the annotated object. | MetricUnits.NONE
+|@ParallelCounted | M, C, T | Denotes a counter, which counts the invocations of the annotated object. | MetricUnits.NONE
 |@Gauge   | M | Denotes a gauge, which samples the value of the annotated object.  | _none_ Must be supplied by the user
 |@Metered | M, C, T  | Denotes a meter, which tracks the frequency of invocations of the annotated object. | MetricUnits.PER_SECOND
 |@Metric  | M, F, P | An annotation that contains the metadata information when requesting a metric to be injected or produced. This annotation can be used on fields
@@ -181,7 +183,7 @@ greenCount
 purple
 ----
 
-==== @Counted
+==== @Counted / @HitCounted / @ParallelCounted
 An annotation for marking a method, constructor, or type as a counter.
 
 The implementation must support the following annotation targets:
@@ -189,6 +191,9 @@ The implementation must support the following annotation targets:
   * `CONSTRUCTOR`
   * `METHOD`
   * `TYPE`
+
+WARNING: `@Counted` is deprecated, please use `@HitCounted` / `@ParallelCounted`.
+`@Counted` will be removed in MicroProfile-Metrics 3.0.
 
 In addition to the metadata fields, `@Counted` has the following field:
 
@@ -201,6 +206,9 @@ WARNING: The intuitive expectation is that each invocation of a method marked wi
 respective counter being increased by one. This is not the case with the default semantics of the `monotonic` flag.
  +
 If you want the counter being increased on each invocation you need to use `@Counted(monotonic = true)`.
++
+NOTE: `@HitCounted` is the equivalent of the deprecated `@Counted(monotonic = true)` and `@ParallelCounted` the equivalent
+of the deprecated `@Counted` or  `@Counted(monotonic = false)`
 
 The following lists the behavior for each annotation target.
 
