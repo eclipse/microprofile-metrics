@@ -15,9 +15,9 @@
  */
 package io.astefanutti.metrics.cdi.se;
 
-import org.eclipse.microprofile.metrics.annotation.Counted;
+import org.eclipse.microprofile.metrics.annotation.ParallelCounted;
 
-@Counted(name = "countedClass")
+@ParallelCounted(name = "countedClass")
 public class CountedClassBean {
 
     public void countedMethodOne() {

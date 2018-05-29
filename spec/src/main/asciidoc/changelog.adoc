@@ -19,9 +19,14 @@
 
 === Major changes to previous versions
 
+* Since 2.0
+** Deprecate `@Counted` in favour of `@HitCounted` and `@ParallelCounted`
+
+
 * Since 1.1
 ** Removed unnecessary `@InterceptorBinding` annotation from `org.eclipse.microprofile.metrics.annotation.Metric`.
 ** Removed deprecated `org.eclipse.microprofile.metrics.MetricRegistry.register(String name, Metric, Metadata)`
+
 
 * Since 1.0
 ** Improved TCK

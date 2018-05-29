@@ -15,9 +15,9 @@
  */
 package io.astefanutti.metrics.cdi.se;
 
-import org.eclipse.microprofile.metrics.annotation.Counted;
+import org.eclipse.microprofile.metrics.annotation.HitCounted;
 
-@Counted(name = "monotonicCountedClass", monotonic = true)
+@HitCounted(name = "monotonicCountedClass")
 public class MonotonicCountedClassBean {
 
     public void countedMethodOne() {
