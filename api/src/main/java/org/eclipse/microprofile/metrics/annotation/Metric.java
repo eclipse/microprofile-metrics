@@ -28,7 +28,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import javax.enterprise.util.Nonbinding;
-import javax.interceptor.InterceptorBinding;
 
 import org.eclipse.microprofile.metrics.MetricUnits;
 
@@ -61,7 +60,6 @@ import org.eclipse.microprofile.metrics.MetricUnits;
  *     };
  * </code></pre>
  */
-@InterceptorBinding
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
 public @interface Metric {
