@@ -182,10 +182,10 @@ to `true` and have multiple methods annotated as metric that have the same metho
 .Example of reused counters
 [source,java]
 ----
-    @HitCounted(name = "countMe", absolute = true, reusable = true)
+    @Counted(name = "countMe", absolute = true, reusable = true)
     public void countMeA() { }
 
-    @HitCounted(name = "countMe", absolute = true, reusable = true)
+    @Counted(name = "countMe", absolute = true, reusable = true)
     public void countMeB() { }
 ----
 
@@ -193,7 +193,6 @@ In the above examples both `countMeA()` and `countMeB()` will share a single Cou
 
 The implementation must throw an 'IllegalArgumentException' if a counter defined via `@HitCounted` is reused as `@ParallelCounted` or vice versa.
 
-TODO: is it allowed to mark a method/... both as @HitCounted and @ParallelCounted? Yes, but what about naming?
 
 [[rest-api]]
 === Exposing metrics via REST API

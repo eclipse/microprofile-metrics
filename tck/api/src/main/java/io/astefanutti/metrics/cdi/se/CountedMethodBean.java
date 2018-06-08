@@ -15,12 +15,13 @@
  */
 package io.astefanutti.metrics.cdi.se;
 
+import org.eclipse.microprofile.metrics.annotation.Counted;
+
 import java.util.concurrent.Callable;
-import org.eclipse.microprofile.metrics.annotation.ParallelCounted;
 
 public class CountedMethodBean<T> {
 
-    @ParallelCounted(name = "countedMethod", absolute = true)
+    @Counted(name = "countedMethod", absolute = true)
     public T countedMethod(Callable<T> callable) {
         try {
             return callable.call();

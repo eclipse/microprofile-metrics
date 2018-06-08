@@ -37,7 +37,8 @@ import io.astefanutti.metrics.cdi.se.util.MetricsUtil;
 @RunWith(Arquillian.class)
 public class DefaultNameMetricMethodBeanTest {
 
-    private final static String[] METRIC_NAMES = { "defaultNameCountedMethod", "defaultNameMeteredMethod", "defaultNameTimedMethod" };
+    private final static String[] METRIC_NAMES = { "defaultNameCountedMethod", "defaultNamePCountedMethod",
+        "defaultNameHCountedMethod", "defaultNameMeteredMethod", "defaultNameTimedMethod" };
 
     private final static String[] ABSOLUTE_METRIC_NAMES = { "absoluteDefaultNameCountedMethod", "absoluteDefaultNameMeteredMethod",
             "absoluteDefaultNameTimedMethod" };

@@ -15,17 +15,27 @@
  */
 package io.astefanutti.metrics.cdi.se;
 
+import org.eclipse.microprofile.metrics.annotation.Counted;
+import org.eclipse.microprofile.metrics.annotation.HitCounted;
 import org.eclipse.microprofile.metrics.annotation.Metered;
 import org.eclipse.microprofile.metrics.annotation.ParallelCounted;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
 public class DefaultNameMetricMethodBean {
 
-    @ParallelCounted
+    @Counted
     public void defaultNameCountedMethod() {
     }
 
-    @ParallelCounted(absolute = true)
+    @ParallelCounted
+    public void defaultNamePCountedMethod() {
+    }
+
+    @HitCounted
+    public void defaultNameHCountedMethod() {
+    }
+
+    @Counted(absolute = true)
     public void absoluteDefaultNameCountedMethod() {
     }
 
