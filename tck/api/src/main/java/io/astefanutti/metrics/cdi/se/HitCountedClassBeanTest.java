@@ -1,17 +1,25 @@
-/**
- * Copyright © 2013 Antonin Stefanutti (antonin.stefanutti@gmail.com)
+/*
+ * ********************************************************************
+ *  Copyright (c) 2018 Contributors to the Eclipse Foundation
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  See the NOTICES file(s) distributed with this work for additional
+ *  information regarding copyright ownership.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *  SPDX-License-Identifier: Apache-2.0
+ * ********************************************************************
+ *
  */
 package io.astefanutti.metrics.cdi.se;
 
@@ -20,11 +28,10 @@ import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import io.astefanutti.metrics.cdi.se.util.MetricsUtil;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
-
 import javax.inject.Inject;
-
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.Metric;
 import org.eclipse.microprofile.metrics.MetricFilter;
@@ -40,23 +47,24 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import io.astefanutti.metrics.cdi.se.util.MetricsUtil;
-
 @RunWith(Arquillian.class)
-public class MonotonicCountedClassBeanTest {
+public class HitCountedClassBeanTest {
 
-    private static final String CONSTRUCTOR_NAME = "MonotonicCountedClassBean";
+    private static final String CONSTRUCTOR_NAME = "HitCountedClassBean";
 
-    private static final String CONSTRUCTOR_COUNTER_NAME = MetricsUtil.absoluteMetricName(MonotonicCountedClassBean.class, "monotonicCountedClass",
+    private static final String CONSTRUCTOR_COUNTER_NAME = MetricsUtil.absoluteMetricName(HitCountedClassBean.class,
+                                                                                          "hitCountedClass",
             CONSTRUCTOR_NAME);
 
     private static final String[] METHOD_NAMES = { "countedMethodOne", "countedMethodTwo", "countedMethodProtected", "countedMethodPackagedPrivate" };
 
-    private static final Set<String> METHOD_COUNTER_NAMES = MetricsUtil.absoluteMetricNames(MonotonicCountedClassBean.class, "monotonicCountedClass",
+    private static final Set<String> METHOD_COUNTER_NAMES = MetricsUtil.absoluteMetricNames(HitCountedClassBean.class,
+                                                                                            "hitCountedClass",
             METHOD_NAMES);
-
-    private static final Set<String> COUNTER_NAMES = MetricsUtil.absoluteMetricNames(MonotonicCountedClassBean.class, "monotonicCountedClass",
-            METHOD_NAMES, CONSTRUCTOR_NAME);
+    private static final Set<String> COUNTER_NAMES = MetricsUtil.absoluteMetricNames(HitCountedClassBean.class,
+                                                                                     "hitCountedClass",
+                                                                                     METHOD_NAMES,
+                                                                                     CONSTRUCTOR_NAME);
 
     private static final MetricFilter METHOD_COUNTERS = new MetricFilter() {
         @Override
@@ -71,7 +79,7 @@ public class MonotonicCountedClassBeanTest {
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
                 // Test bean
-                .addClasses(MonotonicCountedClassBean.class, MetricsUtil.class)
+                .addClasses(HitCountedClassBean.class, MetricsUtil.class)
                 // Bean archive deployment descriptor
                 .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
@@ -80,19 +88,21 @@ public class MonotonicCountedClassBeanTest {
     private MetricRegistry registry;
 
     @Inject
-    private MonotonicCountedClassBean bean;
+    private HitCountedClassBean bean;
 
     @Test
     @InSequence(1)
     public void countedMethodsNotCalledYet() {
-        assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(COUNTER_NAMES)));
 
-        assertThat("Constructor timer count is incorrect", registry.getCounters().get(CONSTRUCTOR_COUNTER_NAME).getCount(),
+       assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(COUNTER_NAMES)));
+
+        assertThat("Constructor hit counter count is incorrect", registry.getCounters().get(CONSTRUCTOR_COUNTER_NAME)
+                       .getCount(),
                 is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
 
         // Make sure that the counters haven't been incremented
-        assertThat("Method counter counts are incorrect", registry.getCounters(METHOD_COUNTERS).values(),
-                everyItem(Matchers.hasProperty("count", equalTo(0L))));
+        assertThat("HitCounter counts are incorrect", registry.getCounters(METHOD_COUNTERS).values(), everyItem(Matchers.hasProperty
+            ("count", equalTo(0L))));
     }
 
     @Test
