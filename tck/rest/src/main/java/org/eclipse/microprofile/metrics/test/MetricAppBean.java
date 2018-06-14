@@ -93,7 +93,7 @@ public class MetricAppBean {
 
             Metadata metadata = Metadata.builder().withName("metricTest.test1.gauge")
                     .withType(MetricType.GAUGE).withUnit(MetricUnits.GIGABYTES).build();
-            metrics.register("metricTest.test1.gauge", gauge, metadata);
+            metrics.register(metadata, gauge);
         }
 
     }
