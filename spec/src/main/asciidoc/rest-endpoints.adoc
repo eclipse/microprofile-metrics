@@ -80,7 +80,7 @@ The value of the gauge must be equivalent to a call to the instance Gauge's `get
 }
 ----
 
-==== Counter JSON Format
+==== Counter / HitCounter / ParallelCounter JSON Format
 
 The value of the counter must be equivalent to a call to the instance Counter's  `getCount()`.
 
@@ -375,7 +375,7 @@ The value of the gauge must be the value of `getValue()` with appropriate naming
 application:cost_dollars 80
 ----
 
-==== Counter Prometheus Text Format
+==== Counter / HitCounter / ParallelCounter Prometheus Text Format
 
 The value of the counter must be the value of `getCount()`.
 
@@ -388,6 +388,28 @@ NOTE: Implementors must not convert the unit of Counters or append the unit suff
 # HELP application:visitors The number of unique visitors
 application:visitors 80
 ----
+
+===== HitCounter / ParallelCounter
+
+HitCounters and ParallelCounters get an additional label, that spefify their type
+
+.Example Prometheus text format for a HitCounter.
+[source, ruby]
+----
+# TYPE application:visitors counter
+# HELP application:visitors The number of unique visitors
+application:visitors{_ctype=hit_counter} 80
+----
+
+.Example Prometheus text format for a ParallelCounter.
+[source, ruby]
+----
+# TYPE application:visitors counter
+# HELP application:visitors The number of unique visitors
+application:visitors{_ctype=parallel_counter} 80
+----
+
+
 
 ==== Meter Prometheus Text Format
 

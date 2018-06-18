@@ -20,6 +20,7 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.concurrent.Callable;
@@ -33,6 +34,7 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.MetricRegistry;
+import org.eclipse.microprofile.metrics.MetricType;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -146,13 +148,13 @@ public class CountedMethodBeanTest {
         Counter counter = registry.getCounters().get(COUNTER_NAME);
 
         // Remove the counter from metrics registry
-        registry.remove(COUNTER_NAME);
+        assertTrue(registry.unregister(COUNTER_NAME, MetricType.COUNTER));
 
         try {
             // Call the counted method and assert an exception is thrown
             bean.countedMethod(new Callable<Long>() {
                 @Override
-                public Long call() throws Exception {
+                public Long call() {
                     return null;
                 }
             });

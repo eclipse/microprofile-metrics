@@ -136,7 +136,7 @@ The Metadata:
 * displayName (optional): A human readable name of the metric for display purposes if the metric name is not
 human readable. This could e.g. be the case when the metric name is a uuid.
 * tags (optional): A list of `key=value` pairs, which are separated by comma. See also <<supplying_of_tags>>.
-* reusable (optional): If set to `true`, then it is allowed to register a metric multiple times under the same name.
+* reusable (optional): If set to `true`, then it is allowed to register a metric (of a type) multiple times under the same name.
 Note that all such instances must set `reusable` to `true`.
 Default is `false`.
 See <<reusing_of_metrics>> for more details.
@@ -162,9 +162,9 @@ Metrics can be added to or retrieved from the registry either using the `@Metric
 [[reusing_of_metrics]]
 ==== Reusing of Metrics
 
-By default it is not allowed to register more than one metric under a certain name in a scope. This is done
-to prevent hard to spot copy & paste errors, where for example all methods of a Jax-Rs class are marked with
-`@Timed(name="myApp", absolute=true)`.
+By default it is not allowed to register more than one metric under a certain name and type in a scope.
+This is done to prevent hard to spot copy & paste errors, where for example all methods of a Jax-Rs class
+are marked with `@Timed(name="myApp", absolute=true)`.
 
 If this behaviour is required, then it is possible to mark all such instances as _reusable_ by passing
 the respective flag via Metadata or field in the Annotation. Gauges are not reusable.
@@ -172,9 +172,6 @@ the respective flag via Metadata or field in the Annotation. Gauges are not reus
 The implementation must throw an 'IllegalArgumentException' during a metric registration call when the call would result
 in the reuse of a metric where that metric was either previously declared not reusable or where the registration call itself
 declares the metric to not be reusable.
-
-Only metrics of the same type can be reused under the same name.
-Trying to reuse a name for different types will result in an `IllegalArgumentException`.
 
 TIP: If you want to re-use a metric name, then you need to also explicitly set the `name` field OR set `absolute`
 to `true` and have multiple methods annotated as metric that have the same method name.
@@ -190,8 +187,6 @@ to `true` and have multiple methods annotated as metric that have the same metho
 ----
 
 In the above examples both `countMeA()` and `countMeB()` will share a single Counter with registered name `countMe` in application scope.
-
-The implementation must throw an 'IllegalArgumentException' if a counter defined via `@HitCounted` is reused as `@ParallelCounted` or vice versa.
 
 
 [[rest-api]]

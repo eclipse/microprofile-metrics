@@ -20,6 +20,7 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -27,6 +28,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.metrics.MetricRegistry;
+import org.eclipse.microprofile.metrics.MetricType;
 import org.eclipse.microprofile.metrics.Timer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -107,7 +109,7 @@ public class TimedMethodBeanTest {
         Timer timer = registry.getTimers().get(TIMER_NAME);
 
         // Remove the timer from metrics registry
-        registry.remove(TIMER_NAME);
+        assertTrue(registry.unregister(TIMER_NAME, MetricType.TIMER));
 
         try {
             // Call the timed method and assert an exception is thrown

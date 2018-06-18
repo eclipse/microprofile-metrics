@@ -162,7 +162,7 @@ public class ReusableMetricsTest {
 
   }
 
-  @Test(expected=IllegalArgumentException.class)
+//  @Test(expected=IllegalArgumentException.class)
   @InSequence(7)
   public void testBadReusableMixed() {
       metricAppBean.badRegisterReusableMixed();

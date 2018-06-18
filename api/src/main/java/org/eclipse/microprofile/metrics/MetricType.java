@@ -27,7 +27,7 @@ import java.util.EnumSet;
 
 /**
  * An enumeration representing the different types of metrics.
- * 
+ *
  * @author hrupp, Raymond Lam, Ouyang Zhou
  */
 public enum MetricType {
@@ -36,6 +36,10 @@ public enum MetricType {
      * An example could be the number of Transactions committed.
      */
     COUNTER("counter", Counter.class),
+
+    HIT_COUNTER("hit-counter", HitCounter.class),
+
+    PARALLEL_COUNTER("parallel-counter", ParallelCounter.class),
 
     /**
      * A Gauge has values that 'arbitrarily' goes up/down at each
@@ -55,11 +59,11 @@ public enum MetricType {
     HISTOGRAM("histogram", Histogram.class),
 
     /**
-     * A timer aggregates timing durations and provides duration 
+     * A timer aggregates timing durations and provides duration
      * statistics, plus throughput statistics
      */
     TIMER("timer", Timer.class),
-    
+
     /**
      * Invalid - Placeholder
      */

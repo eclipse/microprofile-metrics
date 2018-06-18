@@ -15,17 +15,18 @@
  */
 package io.astefanutti.metrics.cdi.se;
 
+import javax.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.metrics.MetricUnits;
+import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.Gauge;
 import org.eclipse.microprofile.metrics.annotation.HitCounted;
 import org.eclipse.microprofile.metrics.annotation.Metered;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
-import javax.enterprise.context.ApplicationScoped;
-
 @ApplicationScoped
 public class MultipleMetricsMethodBean {
 
+    @Counted(name = "counter", monotonic = true)
     @HitCounted(name = "counter")
     @Gauge(name = "gauge", unit=MetricUnits.NONE)
     @Metered(name = "meter")

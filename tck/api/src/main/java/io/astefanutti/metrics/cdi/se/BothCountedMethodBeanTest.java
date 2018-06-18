@@ -29,8 +29,11 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import io.astefanutti.metrics.cdi.se.util.MetricsUtil;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import javax.inject.Inject;
+import org.eclipse.microprofile.metrics.MetricFilter;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -44,22 +47,27 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
-public class ParallelCountedClassBeanTest {
+public class BothCountedMethodBeanTest {
 
-    private static final String CONSTRUCTOR_NAME = "ParallelCountedClassBean";
 
-    private static final String[] METHOD_NAMES = { "countedMethodOne", "countedMethodTwo", "countedMethodProtected", "countedMethodPackagedPrivate" };
+    private static final String METHOD_NAME =  "countedMethodOne";
 
-    private static final Set<String> COUNTER_NAMES = MetricsUtil.absoluteMetricNames(ParallelCountedClassBean.class,
-                                                                                     "countedClass",
-                                                                                     METHOD_NAMES,
-                                                                                     CONSTRUCTOR_NAME);
+    private static final Class<BothCountedMethodBean> CLAZZ = BothCountedMethodBean.class;
+
+    private static final String[] COUNTER_NAMES_A = new String[] {"bla",MetricsUtil.absoluteMetricName(CLAZZ,
+                                                                                     CLAZZ.getSimpleName(),
+                                                                                     METHOD_NAME)};
+    private static final Set<String> COUNTER_NAMES = new HashSet<>(Arrays.asList(COUNTER_NAMES_A));
+
+
+    private static final MetricFilter METHOD_COUNTERS_FILTER = (name, metric) -> COUNTER_NAMES.contains(name) ;
+
 
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
                 // Test bean
-                .addClasses(ParallelCountedClassBean.class, MetricsUtil.class)
+                .addClasses(CLAZZ, MetricsUtil.class)
                 // Bean archive deployment descriptor
                 .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
@@ -68,34 +76,42 @@ public class ParallelCountedClassBeanTest {
     private MetricRegistry registry;
 
     @Inject
-    private ParallelCountedClassBean bean;
+    private BothCountedMethodBean bean;
 
     @Test
     @InSequence(1)
     public void countedMethodsNotCalledYet() {
+        System.out.println("test 1");
+        assertThat("HitCounters are not registered correctly",
+                   registry.getHitCounters().keySet(), is(COUNTER_NAMES));
+        assertThat("ParallelCounters are not registered correctly",
+                   registry.getParallelCounters().keySet(), is(COUNTER_NAMES));
 
-       assertThat("Counters are not registered correctly", registry.getParallelCounters().keySet(), is(equalTo
-                                                                                                    (COUNTER_NAMES)));
         // Make sure that the counters haven't been incremented
-        assertThat("Counter counts are incorrect", registry.getParallelCounters().values(), everyItem(Matchers.hasProperty
+        assertThat("HitCounter counts are incorrect", registry.getHitCounters(METHOD_COUNTERS_FILTER).values(),
+                   everyItem(Matchers.hasProperty
+            ("count", equalTo(0L))));
+        assertThat("ParallelCounter counts are incorrect", registry.getParallelCounters(METHOD_COUNTERS_FILTER).values(),
+                   everyItem(Matchers.hasProperty
             ("count", equalTo(0L))));
     }
 
     @Test
     @InSequence(2)
     public void callCountedMethodsOnce() {
-        assertThat("Counters are not registered correctly", registry.getParallelCounters().keySet(), is(equalTo
-                                                                                                     (COUNTER_NAMES)));
+        System.out.println("test 2");
+        assertThat("Counters are not registered correctly", registry.getHitCounters().keySet(), is(COUNTER_NAMES));
+        assertThat("Counters are not registered correctly", registry.getParallelCounters().keySet(), is(COUNTER_NAMES));
 
-        // Call the counted methods and assert they're back to zero
+
+        // Call the counted methods and assert they've been incremented
         bean.countedMethodOne();
         bean.countedMethodTwo();
-        // Let's call the non-public methods as well
-        bean.countedMethodProtected();
-        bean.countedMethodPackagedPrivate();
 
-        // Make sure that the counters are back to zero
-        assertThat("Counter counts are incorrect", registry.getParallelCounters().values(), everyItem(Matchers.hasProperty
-            ("count", equalTo(0L))));
+        // Make sure that the counters have been incremented
+        assertThat("Method counter counts are incorrect", registry.getHitCounters(METHOD_COUNTERS_FILTER).values(),
+                everyItem(Matchers.hasProperty("count", equalTo(1L))));
+        assertThat("Method counter counts are incorrect", registry.getParallelCounters(METHOD_COUNTERS_FILTER).values(),
+                everyItem(Matchers.hasProperty("count", equalTo(0L))));
     }
 }
