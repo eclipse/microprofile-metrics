@@ -28,6 +28,7 @@ import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.Histogram;
 import org.eclipse.microprofile.metrics.Meter;
 import org.eclipse.microprofile.metrics.MetricRegistry;
+import org.eclipse.microprofile.metrics.MetricType;
 import org.eclipse.microprofile.metrics.Timer;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -93,8 +94,8 @@ public class MetricRegistryTest {
     @Test
     @InSequence(3)
     public void removeTest() {
-        metrics.remove("nameTest");
-        Assert.assertFalse(metrics.getNames().contains("nameTest"));
+        metrics.unregister("nameTest", MetricType.COUNTER);
+        Assert.assertFalse(metrics.getNames(MetricType.COUNTER).contains("nameTest"));
     }
 
 }

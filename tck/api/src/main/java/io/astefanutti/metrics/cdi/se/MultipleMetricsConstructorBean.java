@@ -17,10 +17,12 @@ package io.astefanutti.metrics.cdi.se;
 
 import org.eclipse.microprofile.metrics.annotation.HitCounted;
 import org.eclipse.microprofile.metrics.annotation.Metered;
+import org.eclipse.microprofile.metrics.annotation.ParallelCounted;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
 public class MultipleMetricsConstructorBean {
 
+    @ParallelCounted(name = "counter")
     @HitCounted(name = "counter")
     @Metered(name = "meter")
     @Timed(name = "timer")

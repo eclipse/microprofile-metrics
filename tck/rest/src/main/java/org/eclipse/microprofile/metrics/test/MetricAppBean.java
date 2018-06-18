@@ -22,6 +22,8 @@
 
 package org.eclipse.microprofile.metrics.test;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.Gauge;
@@ -32,13 +34,12 @@ import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.MetricType;
 import org.eclipse.microprofile.metrics.MetricUnits;
 import org.eclipse.microprofile.metrics.Timer;
+import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.HitCounted;
 import org.eclipse.microprofile.metrics.annotation.Metered;
 import org.eclipse.microprofile.metrics.annotation.Metric;
+import org.eclipse.microprofile.metrics.annotation.ParallelCounted;
 import org.eclipse.microprofile.metrics.annotation.Timed;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 @ApplicationScoped
 public class MetricAppBean {
@@ -76,8 +77,18 @@ public class MetricAppBean {
         counter.inc();
     }
 
-    @HitCounted(name = "metricTest.test1.countMeA", absolute = true)
+    @Counted(name = "metricTest.test1.countMeA", monotonic = true, absolute = true)
     public void countMeA() {
+
+    }
+
+    @HitCounted(name = "metricTest.test1.countMeB", absolute = true)
+    public void countMeB() {
+
+    }
+
+    @ParallelCounted(name = "metricTest.test1.countMeC", absolute = true)
+    public void countMeC() {
 
     }
 

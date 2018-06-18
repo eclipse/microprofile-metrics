@@ -32,6 +32,7 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.MetricRegistry;
+import org.eclipse.microprofile.metrics.MetricType;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -146,19 +147,19 @@ public class MonotonicCountedMethodBeanTest {
         Counter counter = registry.getCounters().get(COUNTER_NAME);
 
         // Remove the counter from metrics registry
-        registry.remove(COUNTER_NAME);
+        registry.unregister(COUNTER_NAME, MetricType.COUNTER);
 
         try {
             // Call the counted method and assert an exception is thrown
             bean.monotonicCountedMethod(new Callable<Long>() {
                 @Override
-                public Long call() throws Exception {
+                public Long call() {
                     return null;
                 }
             });
         }
         catch (Exception cause) {
-            assertThat(cause, is(Matchers.<Exception>instanceOf(IllegalStateException.class)));
+            assertThat(cause, is(Matchers.instanceOf(IllegalStateException.class)));
             assertThat(cause.getMessage(), is(equalTo("No counter with name [" + COUNTER_NAME + "] found in registry [" + registry + "]")));
             // Make sure that the counter hasn't been called
             assertThat("Counter count is incorrect", counter.getCount(), is(equalTo(COUNTER_COUNT.get())));

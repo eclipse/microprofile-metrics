@@ -145,7 +145,9 @@ public abstract class MetricRegistry {
      *
      * @param name the name of the metric
      * @return a new or pre-existing {@link Counter}
+     * @deprecated Use #hitCounter() or #parallelCounter() instead
      */
+    @Deprecated
     public abstract Counter counter(String name);
 
     /**
@@ -158,8 +160,56 @@ public abstract class MetricRegistry {
      *
      * @param metadata the name of the metric
      * @return a new or pre-existing {@link Counter}
+     * @deprecated Use #hitCounter() or #parallelCounter() instead
      */
+    @Deprecated
     public abstract Counter counter(Metadata metadata);
+
+    /**
+     * Return the {@link Counter} registered under this name; or create and register
+     * a new {@link Counter} if none is registered.
+     * If a {@link Counter} was created, a {@link Metadata} object will be registered with the name and type.
+     *
+     * @param name the name of the metric
+     * @return a new or pre-existing {@link Counter}
+     */
+    public abstract HitCounter hitCounter(String name);
+
+    /**
+     * Return the {@link Counter} registered under the {@link Metadata}'s name; or create and register
+     * a new {@link Counter} if none is registered.
+     * If a {@link Counter} was created, the provided {@link Metadata} object will be registered.
+     * <p>
+     * Note: The {@link Metadata} will not be updated if the metric is already registered.
+     * </p>
+     *
+     * @param metadata the name of the metric
+     * @return a new or pre-existing {@link Counter}
+     */
+    public abstract HitCounter hitCounter(Metadata metadata);
+
+    /**
+     * Return the {@link Counter} registered under this name; or create and register
+     * a new {@link Counter} if none is registered.
+     * If a {@link Counter} was created, a {@link Metadata} object will be registered with the name and type.
+     *
+     * @param name the name of the metric
+     * @return a new or pre-existing {@link Counter}
+     */
+    public abstract ParallelCounter parallelCounter(String name);
+
+    /**
+     * Return the {@link Counter} registered under the {@link Metadata}'s name; or create and register
+     * a new {@link Counter} if none is registered.
+     * If a {@link Counter} was created, the provided {@link Metadata} object will be registered.
+     * <p>
+     * Note: The {@link Metadata} will not be updated if the metric is already registered.
+     * </p>
+     *
+     * @param metadata the name of the metric
+     * @return a new or pre-existing {@link Counter}
+     */
+    public abstract ParallelCounter parallelCounter(Metadata metadata);
 
 
 
@@ -241,8 +291,26 @@ public abstract class MetricRegistry {
      *
      * @param name the name of the metric
      * @return whether or not the metric was removed
+     * @deprecated Use {@link #unregister(String, MetricType)} instead.
      */
+    @Deprecated
     public abstract boolean remove(String name);
+
+    /**
+     * Removes the metric with the given name and type.
+     *
+     * @param name the name of the metric
+     * @return whether or not the metric was removed
+     */
+    public abstract boolean unregister(String name, MetricType type);
+
+    /**
+     * Removes the metric with the given name and type inside the passed Metadata.
+     *
+     * @param metadata A metadata object with name and type
+     * @return whether or not the metric was removed
+     */
+    public abstract boolean unregister(Metadata metadata);
 
     /**
      * Removes all metrics which match the given filter.
@@ -257,7 +325,15 @@ public abstract class MetricRegistry {
      *
      * @return the names of all the metrics
      */
+    @Deprecated
     public abstract SortedSet<String> getNames();
+
+    /**
+     * Returns a set of the names of all the metrics for a type in the registry.
+     *
+     * @return the names of all the metrics
+     */
+    public abstract SortedSet<String> getNames(MetricType type);
 
     /**
      * Returns a map of all the gauges in the registry and their names.
@@ -279,7 +355,22 @@ public abstract class MetricRegistry {
      *
      * @return all the counters in the registry
      */
+    @Deprecated
     public abstract SortedMap<String, Counter> getCounters();
+
+    /**
+     * Returns a map of all the hit counters in the registry and their names.
+     *
+     * @return all the counters in the registry
+     */
+    public abstract SortedMap<String, HitCounter> getHitCounters();
+
+    /**
+     * Returns a map of all the parallel counters in the registry and their names.
+     *
+     * @return all the counters in the registry
+     */
+    public abstract SortedMap<String, ParallelCounter> getParallelCounters();
 
     /**
      * Returns a map of all the counters in the registry and their names which match the given
@@ -288,7 +379,26 @@ public abstract class MetricRegistry {
      * @param filter    the metric filter to match
      * @return all the counters in the registry
      */
+    @Deprecated
     public abstract SortedMap<String, Counter> getCounters(MetricFilter filter);
+
+    /**
+     * Returns a map of all the hit counters in the registry and their names which match the given
+     * filter.
+     *
+     * @param filter    the metric filter to match
+     * @return all the hit counters in the registry
+     */
+    public abstract SortedMap<String, HitCounter> getHitCounters(MetricFilter filter);
+
+    /**
+     * Returns a map of all the parallel counters in the registry and their names which match the given
+     * filter.
+     *
+     * @param filter    the metric filter to match
+     * @return all the parallel counters in the registry
+     */
+    public abstract SortedMap<String, ParallelCounter> getParallelCounters(MetricFilter filter);
 
     /**
      * Returns a map of all the histograms in the registry and their names.

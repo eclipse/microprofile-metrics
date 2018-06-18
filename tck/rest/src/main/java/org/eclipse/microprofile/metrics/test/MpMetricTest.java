@@ -229,7 +229,7 @@ public class MpMetricTest {
                 missing.add(item);
             }
         }
-        
+
         assertTrue("Following base items are missing: " + Arrays.toString(missing.toArray()), missing.isEmpty());
     }
 
@@ -310,7 +310,7 @@ public class MpMetricTest {
     @Test
     @RunAsClient
     @InSequence(13)
-    public void testPrometheusFormatNoBadChars() throws Exception {
+    public void testPrometheusFormatNoBadChars() {
         Header wantPrometheusFormat = new Header("Accept", TEXT_PLAIN);
 
         String data = given().header(wantPrometheusFormat).get("/metrics/base").asString();
@@ -372,7 +372,7 @@ public class MpMetricTest {
     @Test
     @RunAsClient
     @InSequence(15)
-    public void testBaseMetadataGarbageCollection() throws Exception {
+    public void testBaseMetadataGarbageCollection() {
         Header wantJson = new Header("Accept", APPLICATION_JSON);
 
         JsonPath jsonPath = given().header(wantJson).options("/metrics/base").jsonPath();
@@ -407,6 +407,8 @@ public class MpMetricTest {
 
         metricAppBean.countMe();
         metricAppBean.countMeA();
+        metricAppBean.countMeB();
+        metricAppBean.countMeC();
 
         metricAppBean.gaugeMe();
         metricAppBean.gaugeMeA();
@@ -440,6 +442,8 @@ public class MpMetricTest {
                 .body("'metricTest.test1.count'", equalTo(1))
 
                 .body("'metricTest.test1.countMeA'", equalTo(1))
+                .body("'metricTest.test1.countMeB'", equalTo(1))
+                .body("'metricTest.test1.countMeC'", equalTo(0))
 
                 .body("'metricTest.test1.gauge'", equalTo(19))
 
@@ -761,9 +765,35 @@ public class MpMetricTest {
             .body(containsString("pm_counter_accent_"));
     }
 
+    @Test
+    @RunAsClient
+    @InSequence(35)
+    public void testPromHitCounter() {
+        given().header("Accept",TEXT_PLAIN).when().get("/metrics/application/metricTest.test1.countMeB")
+            .then().statusCode(200)
+            .and()
+            // TODO the tags are brittle, as they can appear in any order
+            .body(containsString("metric_test_test1_count_me_b{_ctype=\"hit_counter\",tier=\"integration\"}"))
+            .and()
+            .body(containsString("# TYPE application:metric_test_test1_count_me_b counter"));
+    }
+
+    @Test
+    @RunAsClient
+    @InSequence(36)
+    public void testPromParallelCounter() {
+        given().header("Accept",TEXT_PLAIN).when().get("/metrics/application/metricTest.test1.countMeC")
+            .then().statusCode(200)
+            .and()
+            // TODO the tags are brittle, as they can appear in any order
+            .body(containsString("metric_test_test1_count_me_c{_ctype=\"parallel_counter\",tier=\"integration\"}"))
+            .and()
+            .body(containsString("# TYPE application:metric_test_test1_count_me_c counter"));
+    }
+
     /**
      * Checks that the value is within tolerance of the expected value
-     * 
+     *
      * Note: The JSON parser only returns float for earlier versions of restassured,
      * so we need to return a float Matcher.
      * @param operand
@@ -773,7 +803,7 @@ public class MpMetricTest {
         double delta = Math.abs(operand) * TOLERANCE;
         return allOf(greaterThan((float) (operand - delta)), lessThan((float) (operand + delta)));
     }
-    
+
     private Map<String, MiniMeta> getExpectedMetadataFromXmlFile(MetricRegistry.Type scope) {
       ClassLoader cl = this.getClass().getClassLoader();
       String fileName;

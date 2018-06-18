@@ -93,23 +93,27 @@ public class HitCountedClassBeanTest {
     @InSequence(1)
     public void countedMethodsNotCalledYet() {
 
-       assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(COUNTER_NAMES)));
+       assertThat("Counters are not registered correctly", registry.getHitCounters().keySet(), is(equalTo
+                                                                                                    (COUNTER_NAMES)));
 
-        assertThat("Constructor hit counter count is incorrect", registry.getCounters().get(CONSTRUCTOR_COUNTER_NAME)
+        assertThat("Constructor hit counter count is incorrect", registry.getHitCounters().get(CONSTRUCTOR_COUNTER_NAME)
                        .getCount(),
                 is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
 
         // Make sure that the counters haven't been incremented
-        assertThat("HitCounter counts are incorrect", registry.getCounters(METHOD_COUNTERS).values(), everyItem(Matchers.hasProperty
+        assertThat("HitCounter counts are incorrect", registry.getHitCounters(METHOD_COUNTERS).values(), everyItem
+            (Matchers.hasProperty
             ("count", equalTo(0L))));
     }
 
     @Test
     @InSequence(2)
     public void callCountedMethodsOnce() {
-        assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(COUNTER_NAMES)));
+        assertThat("Counters are not registered correctly", registry.getHitCounters().keySet(), is(equalTo
+                                                                                                     (COUNTER_NAMES)));
 
-        assertThat("Constructor timer count is incorrect", registry.getCounters().get(CONSTRUCTOR_COUNTER_NAME).getCount(),
+        assertThat("Constructor timer count is incorrect", registry.getHitCounters().get(CONSTRUCTOR_COUNTER_NAME)
+                       .getCount(),
                 is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
 
         // Call the counted methods and assert they've been incremented
@@ -120,7 +124,7 @@ public class HitCountedClassBeanTest {
         bean.countedMethodPackagedPrivate();
 
         // Make sure that the counters have been incremented
-        assertThat("Method counter counts are incorrect", registry.getCounters(METHOD_COUNTERS).values(),
+        assertThat("Method counter counts are incorrect", registry.getHitCounters(METHOD_COUNTERS).values(),
                 everyItem(Matchers.hasProperty("count", equalTo(1L))));
     }
 }
