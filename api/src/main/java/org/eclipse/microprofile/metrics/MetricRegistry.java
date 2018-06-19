@@ -120,7 +120,9 @@ public abstract class MetricRegistry {
      * @param <T>    the type of the metric
      * @return {@code metric}
      * @throws IllegalArgumentException if the name is already registered
+     * @deprecated Use {@link #register(Metadata, Metric)} instead.
      */
+    @Deprecated
     public abstract <T extends Metric> T register(String name, T metric) throws IllegalArgumentException;
 
     /**
@@ -463,6 +465,7 @@ public abstract class MetricRegistry {
 
     /**
      * Returns a map of all the metrics in the registry and their names.
+     * Note that there may be duplicate keys
      *
      * @return all the metrics in the registry
      */
@@ -470,6 +473,7 @@ public abstract class MetricRegistry {
 
     /**
      * Returns a map of all the metadata in the registry and their names.
+     * Note that there may be duplicate keys
      *
      * @return all the metadata in the registry
      */

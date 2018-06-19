@@ -27,6 +27,7 @@ package org.eclipse.microprofile.metrics.test;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.eclipse.microprofile.metrics.Histogram;
+import org.eclipse.microprofile.metrics.HitCounter;
 import org.eclipse.microprofile.metrics.Metadata;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.MetricType;
@@ -85,23 +86,64 @@ public class MetricAppBean2 {
     }
 
 
-    public void badRegisterReusableMixed() {
+    public void badRegisterReusable() {
 
         Metadata metadata = Metadata.builder()
-            .withName("badReusableMixed").withType(MetricType.HISTOGRAM)
-            .reusable().build();
+            .withName("badReusable").withType(MetricType.HISTOGRAM)
+            .build();
         Histogram histogram = registry.histogram(metadata);
 
         histogram.update(1);
+
+        // We register a different metric of the same type - that is forbidden
+        // so we expect an exception
+
+        Metadata metadata2 = Metadata.builder()
+            .withName("badReusable").withType(MetricType.HISTOGRAM)
+            .reusable().build();
+        registry.histogram(metadata2);
+
+    }
+
+    public void badRegisterReusable2() {
+
+        Metadata metadata = Metadata.builder()
+            .withName("badReusable2").withType(MetricType.HIT_COUNTER)
+            .build();
+        registry.register(metadata, new DummyHitCounter());
 
         // We register a different metric type - that is forbidden
         // so we expect an exception
 
         Metadata metadata2 = Metadata.builder()
-            .withName("badReusableMixed").withType(MetricType.COUNTER)
+            .withName("badReusable2").withType(MetricType.HIT_COUNTER)
             .reusable().build();
-        registry.counter(metadata2);
+        registry.register(metadata2, new DummyHitCounter());
 
     }
 
+
+    private static class DummyHitCounter implements HitCounter {
+
+        @Override
+        public void inc() {
+        }
+
+        @Override
+        public void inc(long n) {
+        }
+
+        @Override
+        public void dec() {
+        }
+
+        @Override
+        public void dec(long n) {
+        }
+
+        @Override
+        public long getCount() {
+            return 0;  // TODO: Customise this generated block
+        }
+    }
 }
