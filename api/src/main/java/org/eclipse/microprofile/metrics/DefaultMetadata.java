@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * The default implementation of {@link Metadata}
  */
-class DefaultMetadata implements Metadata {
+public class DefaultMetadata implements Metadata {
 
     /**
      * Name of the metric.
@@ -98,7 +98,7 @@ class DefaultMetadata implements Metadata {
      */
     private final Map<String, String> tags;
 
-    public DefaultMetadata(String name, String displayName, String description,
+    protected DefaultMetadata(String name, String displayName, String description,
                            MetricType type, String unit, boolean reusable,
                            Map<String, String> tags) {
         this.name = name;
