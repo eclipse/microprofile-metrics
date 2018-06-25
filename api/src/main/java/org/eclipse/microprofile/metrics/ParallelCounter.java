@@ -25,6 +25,8 @@ package org.eclipse.microprofile.metrics;
 
 /**
  * An incrementing and decrementing counter metric.
+ * Unlike a Hit Counter, it has a high water mark, that can be queried
+ * and reset.
  */
 public interface ParallelCounter extends Metric, Counting {
 
@@ -59,4 +61,21 @@ public interface ParallelCounter extends Metric, Counting {
      */
     @Override
     long getCount();
+
+    /**
+     * Return the high water mark for the counter
+     * @return highest value
+     */
+    long getMax();
+
+    /**
+     * Reset the high water mark
+     */
+    void resetMax();
+
+    /**
+     * array that contains the values of the high water mark over the last 10 minutes
+     */
+    long[] maxLast10Minutes();
+
 }

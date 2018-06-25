@@ -408,6 +408,7 @@ public class MpMetricTest {
         metricAppBean.countMe();
         metricAppBean.countMeA();
         metricAppBean.countMeB();
+        metricAppBean.countMeB(); // HitCounter
         metricAppBean.countMeC();
 
         metricAppBean.gaugeMe();
@@ -442,8 +443,9 @@ public class MpMetricTest {
                 .body("'metricTest.test1.count'", equalTo(1))
 
                 .body("'metricTest.test1.countMeA'", equalTo(1))
-                .body("'metricTest.test1.countMeB'", equalTo(1))
+                .body("'metricTest.test1.countMeB'", equalTo(2))
                 .body("'metricTest.test1.countMeC'", equalTo(0))
+                .body("'metricTest.test1.countMeC.max'", equalTo(1))
 
                 .body("'metricTest.test1.gauge'", equalTo(19))
 
@@ -788,7 +790,25 @@ public class MpMetricTest {
             // TODO the tags are brittle, as they can appear in any order
             .body(containsString("metric_test_test1_count_me_c{_ctype=\"parallel_counter\",tier=\"integration\"}"))
             .and()
-            .body(containsString("# TYPE application:metric_test_test1_count_me_c counter"));
+            .body(containsString("metric_test_test1_count_me_c_max{tier=\"integration\",_ctype=\"parallel_counter\"}"))
+            .and()
+            .body(containsString("application:metric_test_test1_count_me_c_max{tier=\"integration\",_ctype=\"parallel_counter\",ago=\"0\"}"))
+            .and()
+            .body(containsString("# TYPE application:metric_test_test1_count_me_c gauge"));
+    }
+
+    @Test
+    @RunAsClient
+    @InSequence(37)
+    public void testJsonParallelCounter() {
+        JsonPath jp =
+            given().header("Accept",APPLICATION_JSON)
+                .when().get("/metrics/application/metricTest.test1.countMeC")
+            .jsonPath();
+
+        assertNotNull(jp.getString("'metricTest.test1.countMeC'"));
+        assertEquals(1, (int)jp.get("'metricTest.test1.countMeC.max'"));
+        assertEquals(0, (int)jp.get("'metricTest.test1.countMeC.max.0'"));
     }
 
     /**

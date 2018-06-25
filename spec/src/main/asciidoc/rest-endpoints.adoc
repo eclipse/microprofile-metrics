@@ -80,7 +80,7 @@ The value of the gauge must be equivalent to a call to the instance Gauge's `get
 }
 ----
 
-==== Counter / HitCounter / ParallelCounter JSON Format
+==== Counter / HitCounter  JSON Format
 
 The value of the counter must be equivalent to a call to the instance Counter's  `getCount()`.
 
@@ -89,6 +89,24 @@ The value of the counter must be equivalent to a call to the instance Counter's 
 ----
 {
   "hitCount": 45
+}
+----
+
+==== ParallelCounter JSON Format
+
+The value of the parallel counter must be equivalent to a call to the instance Counter's  `getCount()`.
+In addition the saved values of the last 10 minutes, which can be retrieved via `maxLast10Minutes()` are
+supplied by attaching `.max.<n>` (where 'n' is the slot') as keys.
+
+.Example ParallelCounter JSON GET Response
+[source, json]
+----
+{
+  "invCount": 4,
+  "invCount.max.0": 7,
+  "invCount.max.1": 0,
+  [...]
+  "invCount.max.9": 22
 }
 ----
 
@@ -389,9 +407,9 @@ NOTE: Implementors must not convert the unit of Counters or append the unit suff
 application:visitors 80
 ----
 
-===== HitCounter / ParallelCounter
+===== HitCounter
 
-HitCounters and ParallelCounters get an additional label, that spefify their type
+HitCounters get an additional label, that specify their type
 
 .Example Prometheus text format for a HitCounter.
 [source, ruby]
@@ -401,15 +419,24 @@ HitCounters and ParallelCounters get an additional label, that spefify their typ
 application:visitors{_ctype=hit_counter} 80
 ----
 
+===== ParallelCounter
+
+ParallelCounters get an additional label, that specify their type.
+On top for each ParallelCounter an additional value line for the
+high water mark is created.
+
 .Example Prometheus text format for a ParallelCounter.
 [source, ruby]
 ----
-# TYPE application:visitors counter
+# TYPE application:visitors gauge
 # HELP application:visitors The number of unique visitors
-application:visitors{_ctype=parallel_counter} 80
+application:visitors{_ctype=parallel_counter} 80   <1>
+application:visitors_max{_ctype=parallel_counter} 150  <2>
 ----
+<1> Counter value at time of fetching
+<2> High water mark (since last fetch)
 
-
+NOTE:: A ParallelCounter is reported as _gauge_, as its values can arbitrarily go up and down.
 
 ==== Meter Prometheus Text Format
 

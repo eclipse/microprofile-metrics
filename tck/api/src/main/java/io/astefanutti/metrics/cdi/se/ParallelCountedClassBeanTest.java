@@ -29,9 +29,11 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import io.astefanutti.metrics.cdi.se.util.MetricsUtil;
+import java.util.Collection;
 import java.util.Set;
 import javax.inject.Inject;
 import org.eclipse.microprofile.metrics.MetricRegistry;
+import org.eclipse.microprofile.metrics.ParallelCounter;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -94,8 +96,28 @@ public class ParallelCountedClassBeanTest {
         bean.countedMethodProtected();
         bean.countedMethodPackagedPrivate();
 
+        Collection<ParallelCounter> parallelCounters = registry.getParallelCounters().values();
+
         // Make sure that the counters are back to zero
-        assertThat("Counter counts are incorrect", registry.getParallelCounters().values(), everyItem(Matchers.hasProperty
+        assertThat("Counter counts are incorrect", parallelCounters, everyItem(Matchers.hasProperty
             ("count", equalTo(0L))));
+
+        // Now check the high water mark
+        assertThat("Counter max are incorrect", parallelCounters, everyItem(Matchers.hasProperty
+            ("max", equalTo(1L))));
+
+        // reset high water mark
+        for (ParallelCounter pc : parallelCounters) {
+          pc.resetMax();
+        }
+
+      // Now check the high water mark is 0
+        assertThat("Counter max are incorrect", parallelCounters, everyItem(Matchers.hasProperty
+          ("max", equalTo(0L))));
+
+
+
+
+
     }
 }

@@ -128,6 +128,11 @@ The Metadata:
 * unit: a fixed set of string units
 * type:
 ** counter: an incrementally increasing or decreasing numeric value (e.g. total number of requests received or total number of concurrently active HTTP sessions).
+Counters are sub-divided into:
+*** HitCounter: a counter that monotonically increases (e.g. number of transactions committed)
+*** ParallelCounter: a counter that counts parallel invocations of an entity.
+It increases upon entering the entity and decreases upon exit.
+The ParallelCounter keeps an array of the per minute high-water marks for the last 10 minutes.
 ** gauge: a metric that is sampled to obtain its value (e.g. cpu temperature or disk usage).
 ** meter: a metric which tracks mean throughput and one-, five-, and fifteen-minute exponentially-weighted moving average throughput.
 ** histogram: a metric which calculates the distribution of a value.
