@@ -450,7 +450,7 @@ public void init(@Metric(name="instances") Counter instances) {
 [[metric-registries]]
 === Metric Registries
 
-The `MetricRegistry` is used to maintain a collection of metrics along with their metadata.
+The `MetricRegistry` is used to maintain a collection of metrics along with their <<pgm-metadata,metadata>>.
 There is one shared singleton of the `MetricRegistry` per scope (_application_, _base_, and _vendor_).
 When metrics are registered using annotations, the metrics are registered in the _application_ `MetricRegistry` (and thus the _application_ scope).
 
@@ -504,3 +504,24 @@ The implementation must produce the _vendor_ `MetricRegistry` when the `Registry
 @RegistryType(type=MetricRegistry.Type.VENDOR)
 MetricRegistry vendorRegistry;
 ----
+
+[[pgm-metadata]]
+==== Metadata
+
+Metadata is an interface to construct an immutable object. The object can be built via a `MetadataBuilder` with a fluent api.
+
+.Example of constucting a `Metadata` object for a Meter and registering it in Application scope
+[source, java]
+----
+Metadata m = Metadata.builder()
+    .withName("myMeter")
+    .withDescription("Example meter")
+    .withType(MetricType.METER)
+    .addTag("colour=blue")
+    .build();
+
+Meter me = new MyMeterImpl();
+metricRegistry.register(m, me);
+----
+
+A default implementation `DefaultMetadata` is provided in the API for convenience.

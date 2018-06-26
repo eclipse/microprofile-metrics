@@ -22,6 +22,7 @@
 * Since 1.1
 ** Removed unnecessary `@InterceptorBinding` annotation from `org.eclipse.microprofile.metrics.annotation.Metric`.
 ** Removed deprecated `org.eclipse.microprofile.metrics.MetricRegistry.register(String name, Metric, Metadata)`
+** `Metadata` is now immutable and built via a `MetadataBuilder`.
 
 * Since 1.0
 ** Improved TCK
