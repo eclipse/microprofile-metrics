@@ -95,18 +95,15 @@ The value of the counter must be equivalent to a call to the instance Counter's 
 ==== ParallelCounter JSON Format
 
 The value of the parallel counter must be equivalent to a call to the instance Counter's  `getCount()`.
-In addition the saved values of the last 10 minutes, which can be retrieved via `maxLast10Minutes()` are
-supplied by attaching `.max.<n>` (where 'n' is the slot') as keys.
+In addition the saved value of the minute, which can be retrieved via `getRecentPeak()` are
+supplied by attaching `.recentPeak` as key.
 
 .Example ParallelCounter JSON GET Response
 [source, json]
 ----
 {
   "invCount": 4,
-  "invCount.max.0": 7,
-  "invCount.max.1": 0,
-  [...]
-  "invCount.max.9": 22
+  "invCount.recentPeak": 7,
 }
 ----
 
@@ -409,29 +406,30 @@ application:visitors 80
 
 ===== HitCounter
 
-HitCounters get an additional label, that specify their type
+HitCounters get an additional suffix `_total` unless the metric name already ends in `_total`.
 
 .Example Prometheus text format for a HitCounter.
 [source, ruby]
 ----
-# TYPE application:visitors counter
-# HELP application:visitors The number of unique visitors
-application:visitors{_ctype=hit_counter} 80
+# TYPE application:visitors_total counter
+# HELP application:visitors_total The number of unique visitors
+application:visitors_total 80
 ----
 
 ===== ParallelCounter
 
-ParallelCounters get an additional label, that specify their type.
+ParallelCounters get a suffix of `_activecount`.
 On top for each ParallelCounter an additional value line for the
-high water mark is created.
+high water mark is created by appending `_recent_peak`.
 
 .Example Prometheus text format for a ParallelCounter.
 [source, ruby]
 ----
-# TYPE application:visitors gauge
-# HELP application:visitors The number of unique visitors
-application:visitors{_ctype=parallel_counter} 80   <1>
-application:visitors_max{_ctype=parallel_counter} 150  <2>
+# TYPE application:visitors_activecount gauge
+# HELP application:visitors_activecount The number of unique visitors
+application:visitors_activecount 80   <1>
+# TYPE application:visitors_activecount_recent_peak gauge
+application:visitors_activecount_recent_peak 150  <2>
 ----
 <1> Counter value at time of fetching
 <2> High water mark (since last fetch)

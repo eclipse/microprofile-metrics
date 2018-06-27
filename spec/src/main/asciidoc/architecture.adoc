@@ -132,7 +132,7 @@ Counters are sub-divided into:
 *** HitCounter: a counter that monotonically increases (e.g. number of transactions committed)
 *** ParallelCounter: a counter that counts parallel invocations of an entity.
 It increases upon entering the entity and decreases upon exit.
-The ParallelCounter keeps an array of the per minute high-water marks for the last 10 minutes.
+The ParallelCounter keeps a high-water mark for a (server-wide) configurable interval.
 ** gauge: a metric that is sampled to obtain its value (e.g. cpu temperature or disk usage).
 ** meter: a metric which tracks mean throughput and one-, five-, and fifteen-minute exponentially-weighted moving average throughput.
 ** histogram: a metric which calculates the distribution of a value.
@@ -233,3 +233,20 @@ The API MUST NOT return a 500 Internal Server Error code to represent a non-exis
 
 NOTE: The implementation must return a 406 response code if the request's HTTP Accept header for an OPTIONS request
 does not match `application/json`.
+
+
+=== Duties of the runtime
+
+The following sections lists duties of the runtime.
+This spec lists further requirements in other sections.
+
+==== ParallelCounters
+
+ParallelCounters keep a high water mark for a configurable interval (global value for the server).
+The default value is one minute.
+
+The interval must be configurable via MicroProfile Config under the
+key `mp.metrics.high_water__mark_interval_seconds`.
+Allowed values are in the range of 30s to 10 minutes.
+
+The runtime must ensure that the high water mark is reset to 0 after the interval has elapsed.

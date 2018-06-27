@@ -445,7 +445,7 @@ public class MpMetricTest {
                 .body("'metricTest.test1.countMeA'", equalTo(1))
                 .body("'metricTest.test1.countMeB'", equalTo(2))
                 .body("'metricTest.test1.countMeC'", equalTo(0))
-                .body("'metricTest.test1.countMeC.max'", equalTo(1))
+                .body("'metricTest.test1.countMeC.recentPeak'", equalTo(1))
 
                 .body("'metricTest.test1.gauge'", equalTo(19))
 
@@ -774,10 +774,9 @@ public class MpMetricTest {
         given().header("Accept",TEXT_PLAIN).when().get("/metrics/application/metricTest.test1.countMeB")
             .then().statusCode(200)
             .and()
-            // TODO the tags are brittle, as they can appear in any order
-            .body(containsString("metric_test_test1_count_me_b{_ctype=\"hit_counter\",tier=\"integration\"}"))
+            .body(containsString("metric_test_test1_count_me_b_total{tier=\"integration\"}"))
             .and()
-            .body(containsString("# TYPE application:metric_test_test1_count_me_b counter"));
+            .body(containsString("# TYPE application:metric_test_test1_count_me_b_total counter"));
     }
 
     @Test
@@ -787,14 +786,11 @@ public class MpMetricTest {
         given().header("Accept",TEXT_PLAIN).when().get("/metrics/application/metricTest.test1.countMeC")
             .then().statusCode(200)
             .and()
-            // TODO the tags are brittle, as they can appear in any order
-            .body(containsString("metric_test_test1_count_me_c{_ctype=\"parallel_counter\",tier=\"integration\"}"))
+            .body(containsString("metric_test_test1_count_me_c_activecount{tier=\"integration\"}"))
             .and()
-            .body(containsString("metric_test_test1_count_me_c_max{tier=\"integration\",_ctype=\"parallel_counter\"}"))
+            .body(containsString("metric_test_test1_count_me_c_activecount_recent_peak{tier=\"integration\"}"))
             .and()
-            .body(containsString("application:metric_test_test1_count_me_c_max{tier=\"integration\",_ctype=\"parallel_counter\",ago=\"0\"}"))
-            .and()
-            .body(containsString("# TYPE application:metric_test_test1_count_me_c gauge"));
+            .body(containsString("# TYPE application:metric_test_test1_count_me_c_activecount gauge"));
     }
 
     @Test
@@ -807,8 +803,8 @@ public class MpMetricTest {
             .jsonPath();
 
         assertNotNull(jp.getString("'metricTest.test1.countMeC'"));
-        assertEquals(1, (int)jp.get("'metricTest.test1.countMeC.max'"));
-        assertEquals(0, (int)jp.get("'metricTest.test1.countMeC.max.0'"));
+        assertNotNull(jp.get("'metricTest.test1.countMeC.recentPeak'"));
+        assertEquals(1, (int)jp.get("'metricTest.test1.countMeC.recentPeak'"));
     }
 
     /**

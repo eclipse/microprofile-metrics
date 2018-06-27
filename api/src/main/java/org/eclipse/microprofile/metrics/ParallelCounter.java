@@ -64,18 +64,14 @@ public interface ParallelCounter extends Metric, Counting {
 
     /**
      * Return the high water mark for the counter
-     * @return highest value
+     * @return highest value since the last reset
      */
-    long getMax();
+    long getRecentPeak();
 
     /**
      * Reset the high water mark
      */
-    void resetMax();
+    void resetRecentPeak();
 
-    /**
-     * array that contains the values of the high water mark over the last 10 minutes
-     */
-    long[] maxLast10Minutes();
 
 }

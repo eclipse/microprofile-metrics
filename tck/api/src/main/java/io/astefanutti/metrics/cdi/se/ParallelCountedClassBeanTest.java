@@ -104,16 +104,16 @@ public class ParallelCountedClassBeanTest {
 
         // Now check the high water mark
         assertThat("Counter max are incorrect", parallelCounters, everyItem(Matchers.hasProperty
-            ("max", equalTo(1L))));
+            ("recentPeak", equalTo(1L))));
 
         // reset high water mark
         for (ParallelCounter pc : parallelCounters) {
-          pc.resetMax();
+          pc.resetRecentPeak();
         }
 
       // Now check the high water mark is 0
         assertThat("Counter max are incorrect", parallelCounters, everyItem(Matchers.hasProperty
-          ("max", equalTo(0L))));
+          ("recentPeak", equalTo(0L))));
 
 
 
