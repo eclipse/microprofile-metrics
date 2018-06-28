@@ -174,4 +174,16 @@ public class DefaultMetadata implements Metadata {
     public int hashCode() {
         return Objects.hashCode(name);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("DefaultMetadata{");
+        sb.append("name='").append(name).append('\'');
+        sb.append(", type=").append(type);
+        sb.append(", unit='").append(unit).append('\'');
+        sb.append(", reusable=").append(reusable);
+        sb.append(", tags=").append(tags);
+        sb.append('}');
+        return sb.toString();
+    }
 }
