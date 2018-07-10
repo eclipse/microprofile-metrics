@@ -57,7 +57,7 @@ in <<rest-api>>.
 * Metrics registered via non-annotations API need their values be set via updates from the application code.
 * The implementation must flag duplicate metrics upon registration and reject the duplicate unless the metric
 is explicitly marked as reusable upon first registration and in all subsequent registrations.
-** A duplicate metric is a metric that has the same scope and name as an existing one.
+** A duplicate metric is a metric that has the same scope, name and tags as an existing one.
 ** The implementation must throw an `IllegalArgumentException` when the metric is rejected.
 ** It is not allowed to reuse a metric (name) for metrics of different types.
 The implementation must throw an `IllegalArgumentException` if such a mismatch is detected.
