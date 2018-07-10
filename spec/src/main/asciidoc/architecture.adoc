@@ -102,17 +102,21 @@ In MicroProfile Metrics, tags add an additional dimension to metrics that share 
 and etc). Rather than incorporating this in the metric name, tags can be used to capture these information in separate metrics.
 
 [source]
-```
+----
 carCount{type=sedan,colour=red}
 carCount{type=sedan,colour=blue}
 carCount{type=suv,colour=red}
 carCount{type=coupe,colour=blue}
-```
+----
 
-The key name for the tag must match the regex `[a-zA-Z_][a-zA-Z0-9_]*` (Ascii alphabet, numbers and underscore). If an illegal character is
-used, the implementation must throw an IllegalArgumentException.
+For portability reasons, the key name for the tag must match the regex `[a-zA-Z_][a-zA-Z0-9_]*` (Ascii alphabet, numbers and underscore).
+If an illegal character is used, the implementation must throw an IllegalArgumentException.
 
-The tag value may contain any Unicode character.
+The tag value may contain any UTF-8 encoded character.
+
+NOTE: The REST endpoints provided by MicroProfile Metrics have different reserved characters based on the format.
+The characters are only escaped as needed when exposed through the REST endpoints.
+See <<rest_endpoints>> for more information on the reserved characters.
 
 Tags can be supplied in two ways:
 

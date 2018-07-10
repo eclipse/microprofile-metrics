@@ -17,6 +17,7 @@
 // limitations under the License.
 //
 
+[[rest_endpoints]]
 == REST endpoints
 
 This section describes the REST-api, that monitoring agents would use to retrieve the collected metrics.
@@ -32,11 +33,10 @@ A sub-tree that does not contain data must be omitted.
 
 The metric name in JSON is comprised of the metric name appended with the metric tags (if they exist).
 The metric tags is represented by a comma separated list of key/value tag pairs surrounded by braces `{` and `}`
-Each tag is a key-value-pair in the format of `<key>=<value>`.
+Each tag is a key-value-pair in the format of `<key>=<value>`. The list of tags must be sorted alphabetically.
 
 If the metric name or tag value contains a special reserved JSON character, these characters must be escaped in the JSON response.
 
-For every unique metric, the implementation must always return the same metric name for that metric (the order of the tags cannot change between requests).
 
 [source]
 ----
@@ -267,12 +267,11 @@ then `OPTIONS /metrics/base/fooVal` will expose:
 ----
 
 {
-  "fooVal": {
+  "fooVal{app=webshop}": {
     "unit": "milliseconds",
     "type": "gauge",
     "description": "The size of foo after each request",
-    "displayName": "Size of foo",
-    "tags": "app=webshop"
+    "displayName": "Size of foo"
   }
 }
 
@@ -295,17 +294,15 @@ then `OPTIONS /metrics/base` exposes:
 [source]
 ----
 {
-  "fooVal": {
+  "fooVal{app=webshop}": {
     "unit": "milliseconds",
     "type": "gauge",
     "description": "The average duration of foo requests during last 5 minutes",
-    "displayName": "Duration of foo",
-    "tags": "app=webshop"
+    "displayName": "Duration of foo"
   },
-  "barVal": {
+  "barVal{app=webshop,component=backend}": {
     "unit": "megabytes",
     "type": "gauge",
-    "tags": "component=backend,app=webshop"
   }
 }
 ----
@@ -360,9 +357,9 @@ The `quantile` tag must be included alongside the metrics tags within the curly 
 
 The tag value can be any Unicode character but the following characters must be escaped:
 
-* Backslash (`\`) must be escaped as `\\`
-* Double-quotes (`"`) must be escaped as `\"`
-* Line feed (`\n`) must be escaped as `\n`
+* Backslash (`\`) must be escaped as `\\` (as two characters: `\` and `\`)
+* Double-quotes (`"`) must be escaped as `\"` (as two characters: `\` and `"`)
+* Line feed (`\n`) must be escaped as `\n` (as two characters: `\` and `n`)
 
 [[OpenMetrics_units]]
 ==== Handling of units
