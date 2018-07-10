@@ -187,7 +187,7 @@ public class MpMetricTest {
     @InSequence(5)
     public void testBase() {
         given().header("Accept", APPLICATION_JSON).when().get("/metrics/base").then().statusCode(200).and()
-                .contentType(MpMetricTest.APPLICATION_JSON).and().body(containsString("thread.max.count"));
+                .contentType(MpMetricTest.APPLICATION_JSON).and().body(containsString("thread.max.count{tier=integration}"));
     }
 
     @Test
@@ -206,7 +206,7 @@ public class MpMetricTest {
         Header wantJson = new Header("Accept", APPLICATION_JSON);
 
         given().header(wantJson).when().get("/metrics/base/thread.max.count").then().statusCode(200).and()
-                .contentType(MpMetricTest.APPLICATION_JSON).and().body(containsString("thread.max.count"));
+                .contentType(MpMetricTest.APPLICATION_JSON).and().body(containsString("thread.max.count{tier=integration}"));
     }
 
     @Test
@@ -221,12 +221,12 @@ public class MpMetricTest {
         List<String> missing = new ArrayList<>();
 
         Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
-        for (String item : baseNames.keySet()) {
-            if (item.startsWith("gc.")) {
+        for (MiniMeta item : baseNames.values()) {
+            if (item.name.startsWith("gc.")) {
                 continue;
             }
-            if (!elements.containsKey(item) && !baseNames.get(item).optional) {
-                missing.add(item);
+            if (!elements.containsKey(item.toJSONName()) && !baseNames.get(item.toJSONName()).optional) {
+                missing.add(item.toJSONName());
             }
         }
 
@@ -265,12 +265,12 @@ public class MpMetricTest {
         List<String> missing = new ArrayList<>();
 
         Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
-        for (String item : baseNames.keySet()) {
-            if (item.startsWith("gc.") || baseNames.get(item).optional) {
+        for (MiniMeta item : baseNames.values()) {
+            if (item.name.startsWith("gc.") || baseNames.get(item.name).optional) {
                 continue;
             }
-            if (!elements.containsKey(item)) {
-                missing.add(item);
+            if (!elements.containsKey(item.toJSONName())) {
+                missing.add(item.toJSONName());
             }
         }
 
@@ -298,7 +298,7 @@ public class MpMetricTest {
             if (item.name.startsWith("gc.") || expectedMetadata.get(item.name).optional) {
                 continue; // We don't deal with them here
             }
-            Map<String, Object> fromServer = elements.get(item.name);
+            Map<String, Object> fromServer = elements.get(item.toJSONName());
             assertNotNull("Got no data for " + item.name + " from the server", fromServer);
             assertEquals("expected " + item.type + " but got "
                     + fromServer.get("type") + " for " + item.name, item.type, fromServer.get("type"));
@@ -381,7 +381,7 @@ public class MpMetricTest {
         Map<String, Object> elements = jsonPath.getMap(".");
         for (String name : elements.keySet()) {
             if (name.startsWith("gc.")) {
-                assertTrue(name.endsWith(".count") || name.endsWith(".time"));
+                assertTrue(name.endsWith(".count{tier=integration}") || name.endsWith(".time{tier=integration}"));
                 count++;
             }
         }
@@ -429,70 +429,75 @@ public class MpMetricTest {
 
         given().header(wantJson).get("/metrics/application").then().statusCode(200)
 
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.redCount'", equalTo(0))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.redCount{tier=integration}'", equalTo(0))
 
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.blue'", equalTo(0))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.blue{tier=integration}'", equalTo(0))
 
-                .body("greenCount", equalTo(0))
+                .body("greenCount{tier=integration}", equalTo(0))
 
-                .body("purple", equalTo(0))
+                .body("purple{tier=integration}", equalTo(0))
 
-                .body("'metricTest.test1.count'", equalTo(1))
+                .body("'metricTest.test1.count{tier=integration}'", equalTo(1))
 
-                .body("'metricTest.test1.countMeA'", equalTo(1))
+                .body("'metricTest.test1.countMeA{tier=integration}'", equalTo(1))
 
-                .body("'metricTest.test1.gauge'", equalTo(19))
+                .body("'metricTest.test1.gauge{tier=integration}'", equalTo(19))
 
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeA'", equalTo(1000))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeA{tier=integration}'", equalTo(1000))
 
-                .body("'metricTest.test1.histogram'.count", equalTo(1000))
-                .body("'metricTest.test1.histogram'.max", equalTo(999))
-                .body("'metricTest.test1.histogram'.mean", closeTo(499.5))
-                .body("'metricTest.test1.histogram'.min", equalTo(0))
-                .body("'metricTest.test1.histogram'.p50", closeTo(499.0))
-                .body("'metricTest.test1.histogram'.p75", closeTo(749))
-                .body("'metricTest.test1.histogram'.p95", closeTo(949))
-                .body("'metricTest.test1.histogram'.p98", closeTo(979))
-                .body("'metricTest.test1.histogram'.p99", closeTo(989))
-                .body("'metricTest.test1.histogram'.p999", closeTo(998))
-                .body("'metricTest.test1.histogram'", hasKey("stddev"))
+                .body("'metricTest.test1.histogram'.count{tier=integration}", equalTo(1000))
+                .body("'metricTest.test1.histogram'.max{tier=integration}", equalTo(999))
+                .body("'metricTest.test1.histogram'.mean{tier=integration}", closeTo(499.5))
+                .body("'metricTest.test1.histogram'.min{tier=integration}", equalTo(0))
+                .body("'metricTest.test1.histogram'.p50{tier=integration}", closeTo(499.0))
+                .body("'metricTest.test1.histogram'.p75{tier=integration}", closeTo(749))
+                .body("'metricTest.test1.histogram'.p95{tier=integration}", closeTo(949))
+                .body("'metricTest.test1.histogram'.p98{tier=integration}", closeTo(979))
+                .body("'metricTest.test1.histogram'.p99{tier=integration}", closeTo(989))
+                .body("'metricTest.test1.histogram'.p999{tier=integration}", closeTo(998))
+                .body("'metricTest.test1.histogram'", hasKey("stddev{tier=integration}"))
 
-                .body("'metricTest.test1.meter'.count", equalTo(1))
-                .body("'metricTest.test1.meter'", hasKey("fifteenMinRate"))
-                .body("'metricTest.test1.meter'", hasKey("fiveMinRate"))
-                .body("'metricTest.test1.meter'", hasKey("meanRate"))
-                .body("'metricTest.test1.meter'", hasKey("oneMinRate"))
+                .body("'metricTest.test1.meter'.count{tier=integration}", equalTo(1))
+                .body("'metricTest.test1.meter'", hasKey("fifteenMinRate{tier=integration}"))
+                .body("'metricTest.test1.meter'", hasKey("fiveMinRate{tier=integration}"))
+                .body("'metricTest.test1.meter'", hasKey("meanRate{tier=integration}"))
+                .body("'metricTest.test1.meter'", hasKey("oneMinRate{tier=integration}"))
 
-                .body("meterMeA.count", equalTo(1)).body("meterMeA", hasKey("fifteenMinRate"))
-                .body("meterMeA", hasKey("fiveMinRate")).body("meterMeA", hasKey("meanRate"))
-                .body("meterMeA", hasKey("oneMinRate"))
+                .body("meterMeA.count", equalTo(1)).body("meterMeA", hasKey("fifteenMinRate{tier=integration}"))
+                .body("meterMeA", hasKey("fiveMinRate{tier=integration}")).body("meterMeA", hasKey("meanRate{tier=integration}"))
+                .body("meterMeA", hasKey("oneMinRate{tier=integration}"))
 
-                .body("'metricTest.test1.timer'.count", equalTo(1))
-                .body("'metricTest.test1.timer'", hasKey("fifteenMinRate"))
-                .body("'metricTest.test1.timer'", hasKey("fiveMinRate"))
-                .body("'metricTest.test1.timer'", hasKey("meanRate"))
-                .body("'metricTest.test1.timer'", hasKey("oneMinRate")).body("'metricTest.test1.timer'", hasKey("max"))
-                .body("'metricTest.test1.timer'", hasKey("mean")).body("'metricTest.test1.timer'", hasKey("min"))
-                .body("'metricTest.test1.timer'", hasKey("p50")).body("'metricTest.test1.timer'", hasKey("p75"))
-                .body("'metricTest.test1.timer'", hasKey("p95")).body("'metricTest.test1.timer'", hasKey("p98"))
-                .body("'metricTest.test1.timer'", hasKey("p99")).body("'metricTest.test1.timer'", hasKey("p999"))
+                .body("'metricTest.test1.timer'.count{tier=integration}", equalTo(1))
+                .body("'metricTest.test1.timer'", hasKey("fifteenMinRate{tier=integration}"))
+                .body("'metricTest.test1.timer'", hasKey("fiveMinRate{tier=integration}"))
+                .body("'metricTest.test1.timer'", hasKey("meanRate{tier=integration}"))
+                .body("'metricTest.test1.timer'", hasKey("oneMinRate{tier=integration}"))
+                .body("'metricTest.test1.timer'", hasKey("max{tier=integration}"))
+                .body("'metricTest.test1.timer'", hasKey("mean{tier=integration}"))
+                .body("'metricTest.test1.timer'", hasKey("min{tier=integration}"))
+                .body("'metricTest.test1.timer'", hasKey("p50{tier=integration}"))
+                .body("'metricTest.test1.timer'", hasKey("p75{tier=integration}"))
+                .body("'metricTest.test1.timer'", hasKey("p95{tier=integration}"))
+                .body("'metricTest.test1.timer'", hasKey("p98{tier=integration}"))
+                .body("'metricTest.test1.timer'", hasKey("p99{tier=integration}"))
+                .body("'metricTest.test1.timer'", hasKey("p999{tier=integration}"))
                 .body("'metricTest.test1.timer'", hasKey("stddev"))
 
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'.count", equalTo(1))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("fifteenMinRate"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("fiveMinRate"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("meanRate"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("oneMinRate"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("max"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("mean"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("min"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p50"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p75"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p95"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p98"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p99"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p999"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("stddev"));
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'.count{tier=integration}", equalTo(1))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("fifteenMinRate{tier=integration}"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("fiveMinRate{tier=integration}"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("meanRate{tier=integration}"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("oneMinRate{tier=integration}"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("max{tier=integration}"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("mean{tier=integration}"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("min{tier=integration}"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p50{tier=integration}"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p75{tier=integration}"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p95{tier=integration}"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p98{tier=integration}"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p99{tier=integration}"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p999{tier=integration}"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("stddev{tier=integration}"));
     }
 
     @Test
@@ -507,9 +512,9 @@ public class MpMetricTest {
         List<String> missing = new ArrayList<>();
 
         Map<String, MiniMeta> names = getExpectedMetadataFromXmlFile(MetricRegistry.Type.APPLICATION);
-        for (String item : names.keySet()) {
-            if (!elements.containsKey(item)) {
-                missing.add(item);
+        for (MiniMeta item : names.values()) {
+            if (!elements.containsKey(item.toJSONName())) {
+                missing.add(item.toJSONName());
             }
         }
         assertTrue("Following application items are missing: " + Arrays.toString(missing.toArray()), missing.isEmpty());
@@ -679,7 +684,7 @@ public class MpMetricTest {
 
         Header wantJSONFormat = new Header("Accept", APPLICATION_JSON);
         given().header(wantJSONFormat).options("/metrics/application/jellybeanHistogram").then().statusCode(200)
-        .body("jellybeanHistogram.unit", equalTo("jellybeans"));
+        .body("jellybeanHistogram{tier=integration}.unit", equalTo("jellybeans"));
 
     }
 
@@ -718,15 +723,15 @@ public class MpMetricTest {
         Map<String, Object> elements = jsonPath.getMap(".");
         Map<String, MiniMeta> names = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
 
-        for (String item : names.keySet()) {
-            if (elements.containsKey(item) && names.get(item).optional) {
-                String prefix = names.get(item).name;
+        for (MiniMeta item : names.values()) {
+            if (elements.containsKey(item.toJSONName()) && names.get(item.toJSONName()).optional) {
+                String prefix = names.get(item.toJSONName()).name;
                 String type = "\""+prefix+"\""+".type";
                 String unit= "\""+prefix+"\""+".unit";
 
                 given().header(wantJson).options("/metrics/base/"+prefix).then().statusCode(200)
-                .body(type, equalTo(names.get(item).type))
-                .body(unit, equalTo(names.get(item).unit));
+                .body(type, equalTo(names.get(item.toJSONName()).type))
+                .body(unit, equalTo(names.get(item.toJSONName()).unit));
             }
         }
 
@@ -877,6 +882,11 @@ public class MpMetricTest {
           mm.type = metric.getAttribute("type");
           mm.unit = metric.getAttribute("unit");
           mm.optional = Boolean.parseBoolean(metric.getAttribute("optional"));
+          String tags = metric.getAttribute("tags");
+          for (String tag: tags.split(",")) {
+              String[] str = tag.split("=");
+              mm.tags.put(str[0], str[1]);
+          }
           metaMap.put(mm.name, mm);
       }
       return metaMap;
@@ -890,7 +900,12 @@ public class MpMetricTest {
         private String unit;
         private boolean multi;
         private boolean optional;
+        private Map<String, String> tags = new HashMap<>();
 
+        public MiniMeta() {
+            tags.put("tier", "integration");
+        }
+        
         String toPromString() {
             String out = name.replace('-', '_').replace('.', '_').replace(' ', '_');
             out = out.replaceAll("(.)(\\p{Upper})", "$1_$2").toLowerCase();
@@ -901,6 +916,10 @@ public class MpMetricTest {
             out = out.replace(":_", ":");
 
             return out;
+        }
+        
+        String toJSONName() {
+            return name + tags.toString(); 
         }
 
         private String getBaseUnitAsPrometheusString(String unit) {
