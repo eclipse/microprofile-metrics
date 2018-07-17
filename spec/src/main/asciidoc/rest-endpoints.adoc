@@ -27,6 +27,9 @@ This section describes the REST-api, that monitoring agents would use to retriev
 * When using JSON format, the REST API will respond to GET requests with data formatted in a tree like fashion with sub-trees for the sub-resources.
 A sub-tree that does not contain data must be omitted.
 * A 'shadow tree' that responds to OPTIONS will provide the metadata.
+* The application name will be provided as tag `_app=<name>` if <<app-multi-app,multiple applications>> are deployed in the server.
+  See below for handling of tags.
+
 
 *REST-API Objects*
 
@@ -319,6 +322,10 @@ Characters allowed are `[a-zA-Z0-9_]` (Ascii alphabet, numbers and underscore).
 * Colon-underscore (`:_`) is translated to single colon
 * The unit is appended to the name, separated by underscore. See <<prometheus_units>>
 
+==== Handling of multiple apps
+
+The application name will be provided as tag `_app=<name>` if <<app-multi-app,multiple applications>> are deployed in the server.
+See the next section for handling of tags.
 
 ==== Handling of tags
 

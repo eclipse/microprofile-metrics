@@ -46,6 +46,22 @@ ported over by exchanging the package names.
 
 It will be possible to use the non-annotations API, but using the annotations will generally be easier for developers.
 
+[[app-multi-app]]
+=== Multi-Application support
+
+It is expected in a micro services environment that a server hosts one application only.
+This assumption is not always true.
+MicroProfile Metrics supports multiple applications deployed in one server.
+The default is the one application per server case.
+
+MicroProfile metrics will keep per application registries when more than application is deployed.
+
+The name of the application is determined by its `@javax.ws.rs.ApplicationPath` value.
+
+The application programmer can deliver an explicit value via the `@MetricAppName` annotation
+if the application is not a JAX-RS application or a different value is desired.
+
+
 === Responsibility of the MicroProfile Metrics implementation
 
 * The implementation must scan the application at deploy time for <<api-annotations>> and register the
@@ -62,6 +78,9 @@ is explicitly marked as reusable upon first registration and in all subsequent r
 ** It is not allowed to reuse a metric (name) for metrics of different types.
 The implementation must throw an `IllegalArgumentException` if such a mismatch is detected.
 ** See <<reusing_of_metrics>> for more details.
+* If more than one application is deployed, the implementation must
+** keep metrics of different applications deployed separate.
+** throw an exception during deployment in case no application name is implicitly or explicitly given.
 
 
 === Base Package
@@ -122,11 +141,12 @@ The following Annotations exist, see below for common fields:
 |Annotation | Description | Default
 
 |@RegistryType| Qualifies the scope of Metric Registry to inject when injecting a MetricRegistry. |  _application_ (scope)
+|@MetricAppName| Provides a name for the application | Value of `@javax.ws.rs.ApplicationPath` if provided. None otherwise
 |===
 
 ==== Fields
 
-All annotations (Except `RegistryType`) have the following fields that correspond to the metadata fields described
+All annotations (Except `RegistryType` and `MetricAppName`) have the following fields that correspond to the metadata fields described
 in <<meta-data-def>>.
 
 `String name`:: Optional. Sets the name of the metric. If not explicitly given the name of the annotated object is used.
@@ -482,6 +502,11 @@ MetricRegistry metricRegistry;
 @RegistryType(type=MetricRegistry.Type.APPLICATION)
 MetricRegistry metricRegistry;
 ----
+
+The implementation must register metrics for the current application if more than one application is deployed (see <<app-multi-app>> ).
+Is must also filter for the current application when metrics are retrieved from the registry.
+
+TIP: The implementor may chose to use tags to implement this separation and filtering.
 
 ==== Base Metric Registry
 The implementation must produce the _base_ `MetricRegistry` when the `RegistryType` is `BASE`. The _base_ `MetricRegistry` must contain the required metrics specified in <<required-metrics>>.
