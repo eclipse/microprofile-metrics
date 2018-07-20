@@ -197,10 +197,10 @@ In the above examples both `countMeA()` and `countMeB()` will share a single Cou
 Data is exposed via REST over HTTP under the `/metrics` base path in two different data formats for `GET` requests:
 
 * JSON format - used when the HTTP Accept header matches `application/json`.
-* Prometheus text format - default response format when the HTTP Accept header does not match any more specific
+* OpenMetrics text format - default response format when the HTTP Accept header does not match any more specific
 media type like `application/json`.
 +
-NOTE: Future versions may allow for more export formats that are triggered by their specific media type. The Prometheus
+NOTE: Future versions may allow for more export formats that are triggered by their specific media type. The OpenMetrics
 text format will stay as fall-back.
 
 Formats are detailed below.
@@ -220,9 +220,9 @@ The API MUST NOT return a 500 Internal Server Error code to represent a non-exis
 |===
 | Endpoint | Request Type | Supported Formats | Description
 
-| `/metrics` | GET | JSON, Prometheus | Returns all registered metrics
-| `/metrics/<scope>` | GET | JSON, Prometheus | Returns metrics registered for the respective scope. Scopes are listed in <<metrics-setup>>
-| `/metrics/<scope>/<metric_name>` | GET | JSON, Prometheus | Returns the metric that matches the metric name for the respective scope
+| `/metrics` | GET | JSON, OpenMetrics | Returns all registered metrics
+| `/metrics/<scope>` | GET | JSON, OpenMetrics | Returns metrics registered for the respective scope. Scopes are listed in <<metrics-setup>>
+| `/metrics/<scope>/<metric_name>` | GET | JSON, OpenMetrics | Returns the metric that matches the metric name for the respective scope
 | `/metrics` | OPTIONS | JSON | Returns all registered metrics' metadata
 | `/metrics/<scope>` | OPTIONS | JSON | Returns metrics' metadata registered for the respective scope. Scopes are listed in <<metrics-setup>>
 | `/metrics/<scope>/<metric_name>` | OPTIONS | JSON | Returns the metric's metadata that matches the metric name for the respective scope

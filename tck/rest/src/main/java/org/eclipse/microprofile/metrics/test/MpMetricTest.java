@@ -195,8 +195,8 @@ public class MpMetricTest {
     @InSequence(6)
     public void testBasePrometheus() {
         given().header("Accept", TEXT_PLAIN).when().get("/metrics/base").then().statusCode(200).and()
-                .contentType(TEXT_PLAIN).and().body(containsString("# TYPE base:thread_max_count"),
-                        containsString("base:thread_max_count{tier=\"integration\"}"));
+                .contentType(TEXT_PLAIN).and().body(containsString("# TYPE base_thread_max_count"),
+                        containsString("base_thread_max_count{tier=\"integration\"}"));
     }
 
     @Test
@@ -229,7 +229,7 @@ public class MpMetricTest {
                 missing.add(item);
             }
         }
-        
+
         assertTrue("Following base items are missing: " + Arrays.toString(missing.toArray()), missing.isEmpty());
     }
 
@@ -238,8 +238,8 @@ public class MpMetricTest {
     @InSequence(9)
     public void testBaseAttributePrometheus() {
         given().header("Accept", TEXT_PLAIN).when().get("/metrics/base/thread.max.count").then().statusCode(200).and()
-                .contentType(TEXT_PLAIN).and().body(containsString("# TYPE base:thread_max_count"),
-                        containsString("base:thread_max_count{tier=\"integration\"}"));
+                .contentType(TEXT_PLAIN).and().body(containsString("# TYPE base_thread_max_count"),
+                        containsString("base_thread_max_count{tier=\"integration\"}"));
     }
 
     @Test
@@ -310,7 +310,7 @@ public class MpMetricTest {
     @Test
     @RunAsClient
     @InSequence(13)
-    public void testPrometheusFormatNoBadChars() throws Exception {
+    public void testPrometheusFormatNoBadChars() {
         Header wantPrometheusFormat = new Header("Accept", TEXT_PLAIN);
 
         String data = given().header(wantPrometheusFormat).get("/metrics/base").asString();
@@ -350,7 +350,7 @@ public class MpMetricTest {
                 continue;
             }
             for (String line : lines) {
-                if (!line.startsWith("# TYPE base:")) {
+                if (!line.startsWith("# TYPE base_")) {
                     continue;
                 }
                 String fullLine = line;
@@ -372,7 +372,7 @@ public class MpMetricTest {
     @Test
     @RunAsClient
     @InSequence(15)
-    public void testBaseMetadataGarbageCollection() throws Exception {
+    public void testBaseMetadataGarbageCollection() {
         Header wantJson = new Header("Accept", APPLICATION_JSON);
 
         JsonPath jsonPath = given().header(wantJson).options("/metrics/base").jsonPath();
@@ -580,7 +580,7 @@ public class MpMetricTest {
               .get("/metrics/application/org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA")
             .then().statusCode(200)
             .and()
-            .body(containsString("# TYPE application:" + prefix + "seconds summary"))
+            .body(containsString("# TYPE application_" + prefix + "seconds summary"))
             .body(containsString(prefix + "seconds_count"))
             .body(containsString(prefix + "rate_per_second"))
             .body(containsString(prefix + "one_min_rate_per_second"))
@@ -608,7 +608,7 @@ public class MpMetricTest {
             .then().statusCode(200)
             .and()
             .body(containsString(prefix + "bytes_count"))
-            .body(containsString("# TYPE application:" + prefix + "bytes summary"))
+            .body(containsString("# TYPE application_" + prefix + "bytes summary"))
             .body(containsString(prefix + "mean_bytes"))
             .body(containsString(prefix + "min_bytes"))
             .body(containsString(prefix + "max_bytes"))
@@ -633,7 +633,7 @@ public class MpMetricTest {
             .then().statusCode(200)
             .and()
             .body(containsString(prefix + "_count"))
-            .body(containsString("# TYPE application:" + prefix + " summary"))
+            .body(containsString("# TYPE application_" + prefix + " summary"))
             .body(containsString(prefix + "_mean"))
             .body(containsString(prefix + "_min"))
             .body(containsString(prefix + "_max"))
@@ -665,8 +665,9 @@ public class MpMetricTest {
     public void testConvertingToBaseUnit() {
         Header wantPrometheusFormat = new Header("Accept", TEXT_PLAIN);
         given().header(wantPrometheusFormat).get("/metrics/application").then().statusCode(200)
-        .and().body(containsString("TYPE application:org_eclipse_microprofile_metrics_test_metric_app_bean_gauge_me_a_bytes gauge"))
-        .and().body(containsString("TYPE application:metric_test_test1_gauge_bytes gauge"));
+        .and().body(containsString(
+            "TYPE application_org_eclipse_microprofile_metrics_test_metric_app_bean_gauge_me_a_bytes gauge"))
+        .and().body(containsString("TYPE application_metric_test_test1_gauge_bytes gauge"));
 
 
     }
@@ -693,7 +694,7 @@ public class MpMetricTest {
         given().header(wantPrometheusFormat).get("/metrics/application/jellybeanHistogram").then().statusCode(200)
         .and()
         .body(containsString(prefix + "jellybeans_count"))
-        .body(containsString("# TYPE application:" + prefix + "jellybeans summary"))
+        .body(containsString("# TYPE application_" + prefix + "jellybeans summary"))
         .body(containsString(prefix + "mean_jellybeans"))
         .body(containsString(prefix + "min_jellybeans"))
         .body(containsString(prefix + "max_jellybeans"))
@@ -763,7 +764,7 @@ public class MpMetricTest {
 
     /**
      * Checks that the value is within tolerance of the expected value
-     * 
+     *
      * Note: The JSON parser only returns float for earlier versions of restassured,
      * so we need to return a float Matcher.
      * @param operand
@@ -773,7 +774,7 @@ public class MpMetricTest {
         double delta = Math.abs(operand) * TOLERANCE;
         return allOf(greaterThan((float) (operand - delta)), lessThan((float) (operand + delta)));
     }
-    
+
     private Map<String, MiniMeta> getExpectedMetadataFromXmlFile(MetricRegistry.Type scope) {
       ClassLoader cl = this.getClass().getClassLoader();
       String fileName;
