@@ -17,9 +17,11 @@
 // limitations under the License.
 //
 
-== REST endpoints
+== Default exporters
 
-This section describes the REST-api, that monitoring agents would use to retrieve the collected metrics.
+This section describes the default exporters that monitoring agents would use to retrieve the collected metrics
+via the <<rest-api,REST api>>.
+
 (Java-) methods mentioned refer to the respective Objects in the Java API. See also <<app-metrics-api>>
 
 === JSON format

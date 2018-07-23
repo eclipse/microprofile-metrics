@@ -194,7 +194,11 @@ In the above examples both `countMeA()` and `countMeB()` will share a single Cou
 [[rest-api]]
 === Exposing metrics via REST API
 
-Data is exposed via REST over HTTP under the `/metrics` base path in two different data formats for `GET` requests:
+Data is exposed via REST over HTTP under the `/metrics` base path in different data formats.
+There are two formats, described below that every implementation must provide.
+On top it is possible to provide more formats via <<exporter-spi,a provider interface>>.
+
+The formats for `GET` requests are:
 
 * JSON format - used when the HTTP Accept header matches `application/json`.
 * Prometheus text format - default response format when the HTTP Accept header does not match any more specific
@@ -230,3 +234,54 @@ The API MUST NOT return a 500 Internal Server Error code to represent a non-exis
 
 NOTE: The implementation must return a 406 response code if the request's HTTP Accept header for an OPTIONS request
 does not match `application/json`.
+
+[[exporter-spi]]
+=== The exporter SPI
+
+All metric exporters implement the `org.eclipse.microprofile.metrics.spi.MetricExporter` interface, which defines
+methods to export single metrics, a scope and all metrics.
+On top it provides the following methods to identify the supported media types and Http verbs:
+
+.Excerpt of MetricExporter
+[source, java]
+----
+  /**
+   * Media type this exporter produces. E.g. text/html or application/json
+   * @return
+   */
+  String getMediaType();
+
+  /**
+   * The http method this exporter reacts to
+   * @return
+   */
+  HttpMethod getMethod();
+
+  /**
+   * Exporter priority. If two exporters have the same media type and http verb,
+   * the one with the higher priority is used.
+   * @return Priority of the exporter.
+   */
+  int getPriority();
+----
+
+Implementations must determine the desired exporter by matching the media type and http verb with the incoming request.
+The implementation must return a "406 Not acceptable" code if such a combination is not provided.
+
+The implementation uses the exporter with the highest priority if two or more exporters support the
+same media type and http verb.
+
+The built-in converters have a priority of 100.
+The implementation must register the default exporters first and reject exporters that have the same value of
+media type/http verb/priority than previously registered ones.
+
+TODO: how to deal with application/json vs application/json+foobar ?
+
+==== Service Loader
+
+Implementations must allow to load exporters via the `ServiceLoader` interface.
+
+Register your implementation in a resource file `/META-INF/services/org.eclipse.microprofile.metrics.spi.MetricExporter`
+by including the fully-qualified class name of the exporter implementation/s in the file.
+
+The default exporters may be provided via service loader or can be bundled with the core implementation.
