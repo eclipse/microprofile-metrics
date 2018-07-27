@@ -55,20 +55,20 @@ public interface MetricExporter {
    * Export one single metric of a scope
    * @param scope The scope
    * @param metricName The name of the metric
-   * @return An expression in the right content type. See {@link #getContentType()}.
+   * @return An expression in the right content type. See {@link #getMediaType()}.
    */
   StringBuffer exportOneMetric(MetricRegistry.Type scope, String metricName);
 
   /**
    * Export all metrics of a scope
    * @param scope The scope
-   * @return An expression containing all metrics, encoded in the right content type. See {@link #getContentType()}.
+   * @return An expression containing all metrics, encoded in the right content type. See {@link #getMediaType()}.
    */
   StringBuffer exportOneScope(MetricRegistry.Type scope);
 
   /**
    * Export all metrics
-   * @return An expression containing all metrics, encoded in the right content type. See {@link #getContentType()}.
+   * @return An expression containing all metrics, encoded in the right content type. See {@link #getMediaType()}.
    */
   StringBuffer exportAllScopes();
 
