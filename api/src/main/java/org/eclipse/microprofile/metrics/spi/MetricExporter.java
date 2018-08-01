@@ -23,6 +23,7 @@
  */
 package org.eclipse.microprofile.metrics.spi;
 
+import java.util.Map;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 
 /**
@@ -41,13 +42,13 @@ public interface MetricExporter {
 
   /**
    * Media type this exporter produces. E.g. text/html or application/json
-   * @return
+   * @return The media type
    */
   String getMediaType();
 
   /**
    * The http method this exporter reacts to
-   * @return
+   * @return the http method this exporter supports
    */
   HttpMethod getMethod();
 
@@ -57,21 +58,26 @@ public interface MetricExporter {
    * @param metricName The name of the metric
    * @return An expression in the right content type. See {@link #getMediaType()}.
    */
-  StringBuffer exportOneMetric(MetricRegistry.Type scope, String metricName);
+  StringBuilder exportOneMetric(MetricRegistry.Type scope, String metricName);
 
   /**
    * Export all metrics of a scope
    * @param scope The scope
    * @return An expression containing all metrics, encoded in the right content type. See {@link #getMediaType()}.
    */
-  StringBuffer exportOneScope(MetricRegistry.Type scope);
+  StringBuilder exportOneScope(MetricRegistry.Type scope);
 
   /**
    * Export all metrics
    * @return An expression containing all metrics, encoded in the right content type. See {@link #getMediaType()}.
    */
-  StringBuffer exportAllScopes();
+  StringBuilder exportAllScopes();
 
+  /**
+   * Used to pass the configured registries to the exporter
+   * @param registryMap A map that contains all the registries (base, application, vendor)
+   */
+  void setRegistries(Map<MetricRegistry.Type,MetricRegistry> registryMap);
 
 
   enum HttpMethod {

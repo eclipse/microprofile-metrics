@@ -265,17 +265,27 @@ On top it provides the following methods to identify the supported media types a
   int getPriority();
 ----
 
+on top it defines a method to pass in the registries as a Map keyed by Scope
+
+[source,java]
+----
+  /**
+   * Used to pass the configured registries to the exporter
+   * @param registryMap A map that contains all the registries (base, application, vendor)
+   */
+  void setRegistries(Map<MetricRegistry.Type,MetricRegistry> registryMap);
+----
+
 Implementations must determine the desired exporter by matching the media type and http verb with the incoming request.
 The implementation must return a "406 Not acceptable" code if such a combination is not provided.
 
 The implementation uses the exporter with the highest priority if two or more exporters support the
 same media type and http verb.
 
-The built-in converters have a priority of 100.
+The built-in converters have a priority of 1.
 The implementation must register the default exporters first and reject exporters that have the same value of
 media type/http verb/priority than previously registered ones.
 
-TODO: how to deal with application/json vs application/json+foobar ?
 
 ==== Service Loader
 
