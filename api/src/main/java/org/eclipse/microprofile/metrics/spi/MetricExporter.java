@@ -47,31 +47,34 @@ public interface MetricExporter {
   String getMediaType();
 
   /**
-   * The http method this exporter reacts to
+   * The http method this exporter reacts to.
+   * The default is GET.
    * @return the http method this exporter supports
    */
-  HttpMethod getMethod();
+  default HttpMethod getMethod() {
+    return HttpMethod.GET;
+  }
 
   /**
    * Export one single metric of a scope
    * @param scope The scope
    * @param metricName The name of the metric
-   * @return An expression in the right content type. See {@link #getMediaType()}.
+   * @return A String in the right content type. See {@link #getMediaType()}.
    */
-  StringBuilder exportOneMetric(MetricRegistry.Type scope, String metricName);
+  String exportOneMetric(MetricRegistry.Type scope, String metricName);
 
   /**
    * Export all metrics of a scope
    * @param scope The scope
-   * @return An expression containing all metrics, encoded in the right content type. See {@link #getMediaType()}.
+   * @return A String containing all metrics, encoded in the right content type. See {@link #getMediaType()}.
    */
-  StringBuilder exportOneScope(MetricRegistry.Type scope);
+  String exportOneScope(MetricRegistry.Type scope);
 
   /**
    * Export all metrics
-   * @return An expression containing all metrics, encoded in the right content type. See {@link #getMediaType()}.
+   * @return A String containing all metrics, encoded in the right content type. See {@link #getMediaType()}.
    */
-  StringBuilder exportAllScopes();
+  String exportAllScopes();
 
   /**
    * Used to pass the configured registries to the exporter

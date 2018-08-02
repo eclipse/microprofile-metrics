@@ -240,7 +240,8 @@ does not match `application/json`.
 
 All metric exporters implement the `org.eclipse.microprofile.metrics.spi.MetricExporter` interface, which defines
 methods to export single metrics, a scope and all metrics.
-On top it provides the following methods to identify the supported media types and Http verbs:
+Those methods are expected to return a fully formatted String that can be sent as-is to the requesting client.
+It also provides the following methods to identify the supported media types and Http verbs:
 
 .Excerpt of MetricExporter
 [source, java]
@@ -265,7 +266,7 @@ On top it provides the following methods to identify the supported media types a
   int getPriority();
 ----
 
-on top it defines a method to pass in the registries as a Map keyed by Scope
+On top it defines a method to pass in the registries as a Map keyed by Scope:
 
 [source,java]
 ----
