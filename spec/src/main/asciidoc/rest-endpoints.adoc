@@ -82,7 +82,7 @@ The value of the gauge must be equivalent to a call to the instance Gauge's `get
 
 ==== Counter JSON Format
 
-The value of the counter must be equivalent to a call to the instance Counter's  `getCount()`.
+The value of the counter must be equivalent to a call to the instance Counter's `getCount()`.
 
 .Example Counter JSON GET Response
 [source, json]
@@ -281,43 +281,43 @@ then `OPTIONS /metrics/base` exposes:
 ----
 
 
-=== Prometheus format
+=== OpenMetrics format
 
-Data is exposed in the Prometheus text format, version 0.0.4 as described in
-https://prometheus.io/docs/instrumenting/exposition_formats/#text-format-details[Prometheus text format].
+Data is exposed in the OpenMetrics text format, version 0.0.4 as described in
+https://prometheus.io/docs/instrumenting/exposition_formats/#text-format-details[OpenMetrics text format].
 
-The metadata will be included as part of the normal Prometheus text format. Unlike the JSON format, the text format does not support OPTIONS requests.
+The metadata will be included as part of the normal OpenMetrics text format. Unlike the JSON format, the text format does not support OPTIONS requests.
 
 TIP: Users that want to write tools to transform the metadata can still request the metadata via OPTIONS
 request and `application/json` media type.
 
-The above json example would look like this in Prometheus format
+The above json example would look like this in OpenMetrics format
 
-.Example of Prometheus output
+.Example of OpenMetrics output
 [source]
 ----
-# TYPE base:foo_val_seconds gauge   <1>
-# HELP base:foo_val_seconds The average duration of foo requests during last 5 minutes <2>
-base:foo_val_seconds{app="webshop"} 12.345  <3>
-# TYPE base:bar_val_bytes gauge <1>
-base:bar_val_bytes{component="backend", app="webshop"} 42000 <3>
+# TYPE base_foo_val_seconds gauge   <1>
+# HELP base_foo_val_seconds The average duration of foo requests during last 5 minutes <2>
+base_foo_val_seconds{app="webshop"} 12.345  <3>
+# TYPE base_bar_val_bytes gauge <1>
+base_bar_val_bytes{component="backend", app="webshop"} 42000 <3>
 ----
 <1> Metric names are turned from camel case into snake_case.
 <2> The description goes into the HELP line
-<3> Metric names gets the base unit of the family appended with `_` and defined labels. Values are scaled accordingly. See <<prometheus_units>>
+<3> Metric names gets the base unit of the family appended with `_` and defined labels. Values are scaled accordingly. See <<OpenMetrics_units>>
 
 ==== Translation rules for metric names
 
-Prometheus text format does not allow for all characters and adds the base unit of a family to the name.
-Characters allowed are `[a-zA-Z0-9_]` (Ascii alphabet, numbers and underscore).
+OpenMetrics text format does not allow for all characters and adds the base unit of a family to the name.
+Characters allowed are `[a-zA-Z0-9_]` (Ascii alphabet, numbers and underscore). Exposed metric names must
+follow the pattern `[a-zA-Z_][a-zA-Z0-9_]*`.
 
 * Characters that do not fall in above category are translated to underscore (`_`).
 * Scope is always specified at the start of the metric name.
-* Scope and name are separated by colon (`:`).
+* Scope and name are separated by underscore (`_`).
 * camelCase is translated to camel_case
 * Double underscore is translated to single underscore
-* Colon-underscore (`:_`) is translated to single colon
-* The unit is appended to the name, separated by underscore. See <<prometheus_units>>
+* The unit is appended to the name, separated by underscore. See <<OpenMetrics_units>>
 
 
 ==== Handling of tags
@@ -325,10 +325,10 @@ Characters allowed are `[a-zA-Z0-9_]` (Ascii alphabet, numbers and underscore).
 Metric tags are appended to the metric name in curly braces `{` and `}` and are separated by comma.
 Each tag is a key-value-pair in the format of `<key>="<value>"` (the quotes around the value are required).
 
-[[prometheus_units]]
+[[OpenMetrics_units]]
 ==== Handling of units
 
-The Prometheus text format adheres to using "base units" when creating the HTTP response. Due to the different context of each metric type, certain metrics' values must be converted to the respective "base unit" when responding to Prometheus requests. For example, times in milliseconds must be divided by 1000 and displayed in the base unit (seconds).
+The OpenMetrics text format adheres to using "base units" when creating the HTTP response. Due to the different context of each metric type, certain metrics' values must be converted to the respective "base unit" when responding to OpenMetrics requests. For example, times in milliseconds must be divided by 1000 and displayed in the base unit (seconds).
 
 The following sections outline how each metric type is handled:
 
@@ -337,13 +337,13 @@ The following sections outline how each metric type is handled:
 The metric name and values for `Gauge` and `Histogram` are converted to the "base unit" in respect to the `unit` value in the Metadata.
 
 - If the Metadata is empty, `NONE`, or null, the metric name is used as is without appending the unit name and no scaling is applied.
-- If the metric's metadata contains a known unit, as defined in the `MetricUnits` class, the Prometheus value should be scaled to the _base unit_ of the respective family. The name of the base unit is appended to the metric name delimited by underscores (`_`).
+- If the metric's metadata contains a known unit, as defined in the `MetricUnits` class, the OpenMetrics value should be scaled to the _base unit_ of the respective family. The name of the base unit is appended to the metric name delimited by underscores (`_`).
 - If the `unit` is specified and is not defined in the `MetricUnits` class, the value is not scaled but the `unit` is still appended to the metric name delimited by underscores (`_`).
 
 
 Unit families and their base units are described under https://prometheus.io/docs/practices/naming/#base-units[Prometheus metric names, Base units].
 
-Families and Prometheus base units are:
+Families and OpenMetrics base units are:
 
 |===
 | Family | Base unit
@@ -363,11 +363,11 @@ Families and Prometheus base units are:
 
 `Meter` and `Timer` have fixed units as described below regardless of the `unit` value in the Metadata.
 
-==== Gauge Prometheus Text Format
+==== Gauge OpenMetrics Text Format
 
-The value of the gauge must be the value of `getValue()` with appropriate naming/scaling based on  <<prometheus_units>>
+The value of the gauge must be the value of `getValue()` with appropriate naming/scaling based on  <<OpenMetrics_units>>
 
-.Example Prometheus text format for a Gauge in dollars.
+.Example OpenMetrics text format for a Gauge in dollars.
 [source, ruby]
 ----
 # TYPE application:cost_dollars gauge
@@ -375,27 +375,28 @@ The value of the gauge must be the value of `getValue()` with appropriate naming
 application:cost_dollars 80
 ----
 
-==== Counter Prometheus Text Format
+==== Counter OpenMetrics Text Format
 
 The value of the counter must be the value of `getCount()`.
+The exposed metric name must have a  `_total` suffix.
+The suffix is not appended if the (translated) original metric name already ends in `_total`.
+Counters do not have a suffix for the unit.
 
-NOTE: Implementors must not convert the unit of Counters or append the unit suffix to the metric.
-
-.Example Prometheus text format for a Counter.
+.Example OpenMetrics text format for a Counter.
 [source, ruby]
 ----
-# TYPE application:visitors counter
-# HELP application:visitors The number of unique visitors
-application:visitors 80
+# TYPE application_visitors_total counter
+# HELP application_visitors_total The number of unique visitors
+application_visitors 80
 ----
 
-==== Meter Prometheus Text Format
+==== Meter OpenMetrics Text Format
 
 `Meter` is a complex metric type comprised of multiple key/values. Each key will require a suffix to be appended to the metric name. The format is specified by the table below.
 
 The `# HELP` description line is only required for the `total` value as shown below.
 
-.Prometheus text mapping for a Meter metric
+.OpenMetrics text mapping for a Meter metric
 [cols="2,1,2,1"]
 |===
 | Suffix{label}                   | TYPE    | Value (Meter method)                | Units
@@ -407,30 +408,30 @@ The `# HELP` description line is only required for the `total` value as shown be
 | `fifteen_min_rate_per_second`   | Gauge   | `getFifteenMinuteRate()`            | PER_SECOND
 |===
 
-.Example Prometheus text format for a Meter
+.Example OpenMetrics text format for a Meter
 [source, ruby]
 ----
-# TYPE application:requests_total counter
-# HELP application:requests_total Tracks the number of requests to the server
-application:requests_total 29382
-# TYPE application:requests_rate_per_second gauge
-application:requests_rate_per_second 12.223
-# TYPE application:requests_one_min_rate_per_second gauge
-application:requests_one_min_rate_per_second 12.563
-# TYPE application:requests_five_min_rate_per_second gauge
-application:requests_five_min_rate_per_second 12.364
-# TYPE application:requests_fifteen_min_rate_per_second gauge
-application:requests_fifteen_min_rate_per_second 12.126
+# TYPE application_requests_total counter
+# HELP application_requests_total Tracks the number of requests to the server
+application_requests_total 29382
+# TYPE application_requests_rate_per_second gauge
+application_requests_rate_per_second 12.223
+# TYPE application_requests_one_min_rate_per_second gauge
+application_requests_one_min_rate_per_second 12.563
+# TYPE application_requests_five_min_rate_per_second gauge
+application_requests_five_min_rate_per_second 12.364
+# TYPE application_requests_fifteen_min_rate_per_second gauge
+application_requests_fifteen_min_rate_per_second 12.126
 ----
 
 
-==== Histogram Prometheus Text Format
+==== Histogram OpenMetrics Text Format
 
-`Histogram` is a complex metric type comprised of multiple key/values. Each key will require a suffix to be appended to the metric name with appropriate naming/scaling based on <<prometheus_units>>.  The format is specified by the table below.
+`Histogram` is a complex metric type comprised of multiple key/values. Each key will require a suffix to be appended to the metric name with appropriate naming/scaling based on <<OpenMetrics_units>>.  The format is specified by the table below.
 
 The `# HELP` description line is only required for the `summary` value as shown below.
 
-.Prometheus text mapping for a Histogram metric
+.OpenMetrics text mapping for a Histogram metric
 [cols="2,1,2,1"]
 |===
 | Suffix{label}                   | TYPE    | Value (Histogram method)            | Units
@@ -448,40 +449,40 @@ The `# HELP` description line is only required for the `summary` value as shown 
 | `<units>{quantile="0.999"}`^2^  | Summary | `getSnapshot().get999thPercentile()`| <units>^1^
 |===
 
-^1^ The implementation is expected to convert the result returned by the `Histogram` into the base unit (if known). The `<unit>` represents the base metric unit and is named according to  <<prometheus_units>>.
+^1^ The implementation is expected to convert the result returned by the `Histogram` into the base unit (if known). The `<unit>` represents the base metric unit and is named according to  <<OpenMetrics_units>>.
 
-^2^ The `summary` type is a complex metric type for Prometheus which consists of the count and multiple quantile values.
+^2^ The `summary` type is a complex metric type for OpenMetrics which consists of the count and multiple quantile values.
 
-.Example Prometheus text format for a Histogram with unit bytes.
+.Example OpenMetrics text format for a Histogram with unit bytes.
 [source, ruby]
 ----
-# TYPE application:file_sizes_mean_bytes gauge
-application:file_sizes_mean_bytes 4738.231
-# TYPE application:file_sizes_max_bytes gauge
-application:file_sizes_max_bytes 31716
-# TYPE application:file_sizes_min_bytes gauge
-application:file_sizes_min_bytes 180
-# TYPE application:file_sizes_stddev_bytes gauge
-application:file_sizes_stddev_bytes 1054.7343037063602
-# TYPE application:file_sizes_bytes summary
-# HELP application:file_sizes_bytes Users file size
-application:file_sizes_bytes_count 2037
-application:file_sizes_bytes{quantile="0.5"} 4201
-application:file_sizes_bytes{quantile="0.75"} 6175
-application:file_sizes_bytes{quantile="0.95"} 13560
-application:file_sizes_bytes{quantile="0.98"} 29643
-application:file_sizes_bytes{quantile="0.99"} 31716
-application:file_sizes_bytes{quantile="0.999"} 31716
+# TYPE application_file_sizes_mean_bytes gauge
+application_file_sizes_mean_bytes 4738.231
+# TYPE application_file_sizes_max_bytes gauge
+application_file_sizes_max_bytes 31716
+# TYPE application_file_sizes_min_bytes gauge
+application_file_sizes_min_bytes 180
+# TYPE application_file_sizes_stddev_bytes gauge
+application_file_sizes_stddev_bytes 1054.7343037063602
+# TYPE application_file_sizes_bytes summary
+# HELP application_file_sizes_bytes Users file size
+application_file_sizes_bytes_count 2037
+application_file_sizes_bytes{quantile="0.5"} 4201
+application_file_sizes_bytes{quantile="0.75"} 6175
+application_file_sizes_bytes{quantile="0.95"} 13560
+application_file_sizes_bytes{quantile="0.98"} 29643
+application_file_sizes_bytes{quantile="0.99"} 31716
+application_file_sizes_bytes{quantile="0.999"} 31716
 ----
 
 
-==== Timer Prometheus Text Format
+==== Timer OpenMetrics Text Format
 
 `Timer` is a complex metric type comprised of multiple key/values. Each key will require a suffix to be appended to the metric name. The format is specified by the table below.
 
 The `# HELP` description line is only required for the `summary` value as shown below.
 
-.Prometheus text mapping for a Timer metric
+.OpenMetrics text mapping for a Timer metric
 [cols="2,1,2,1"]
 |===
 | Suffix{label}                   | TYPE    | Value (Timer method)                | Units
@@ -505,36 +506,36 @@ The `# HELP` description line is only required for the `summary` value as shown 
 
 ^1^ The implementation is expected to convert the result returned by the `Timer` into seconds
 
-^2^ The `summary` type is a complex metric type for Prometheus which consists of the count and multiple quantile values.
+^2^ The `summary` type is a complex metric type for OpenMetrics which consists of the count and multiple quantile values.
 
-.Example Prometheus text format for a Timer
+.Example OpenMetrics text format for a Timer
 [source, ruby]
 ----
-# TYPE application:response_time_rate_per_second gauge
-application:response_time_rate_per_second  0.004292520715985437
-# TYPE application:response_time_one_min_rate_per_second gauge
-application:response_time_one_min_rate_per_second  2.794076465421066E-14
-# TYPE application:response_time_five_min_rate_per_second  gauge
-application:response_time_five_min_rate_per_second  4.800392614619373E-4
-# TYPE application:response_time_fifteen_min_rate_per_second  gauge
-application:response_time_fifteen_min_rate_per_second  0.01063191047532505
-# TYPE application:response_time_mean_seconds gauge
-application:response_time_mean_seconds 0.000415041
-# TYPE application:response_time_max_seconds gauge
-application:response_time_max_seconds 0.0005608694
-# TYPE application:response_time_min_seconds gauge
-application:response_time_min_seconds 0.000169916
-# TYPE application:response_time_stddev_seconds gauge
-application:response_time_stddev_seconds 0.000652907
-# TYPE application:response_time_seconds summary
-# HELP application:response_time_seconds Server response time for /index.html
-application:response_time_seconds_count 80
-application:response_time_seconds{quantile="0.5"} 0.0002933240
-application:response_time_seconds{quantile="0.75"} 0.000344914
-application:response_time_seconds{quantile="0.95"} 0.000543647
-application:response_time_seconds{quantile="0.98"} 0.002706543
-application:response_time_seconds{quantile="0.99"} 0.005608694
-application:response_time_seconds{quantile="0.999"} 0.005608694
+# TYPE application_response_time_rate_per_second gauge
+application_response_time_rate_per_second  0.004292520715985437
+# TYPE application_response_time_one_min_rate_per_second gauge
+application_response_time_one_min_rate_per_second  2.794076465421066E-14
+# TYPE application_response_time_five_min_rate_per_second  gauge
+application_response_time_five_min_rate_per_second  4.800392614619373E-4
+# TYPE application_response_time_fifteen_min_rate_per_second  gauge
+application_response_time_fifteen_min_rate_per_second  0.01063191047532505
+# TYPE application_response_time_mean_seconds gauge
+application_response_time_mean_seconds 0.000415041
+# TYPE application_response_time_max_seconds gauge
+application_response_time_max_seconds 0.0005608694
+# TYPE application_response_time_min_seconds gauge
+application_response_time_min_seconds 0.000169916
+# TYPE application_response_time_stddev_seconds gauge
+application_response_time_stddev_seconds 0.000652907
+# TYPE application_response_time_seconds summary
+# HELP application_response_time_seconds Server response time for /index.html
+application_response_time_seconds_count 80
+application_response_time_seconds{quantile="0.5"} 0.0002933240
+application_response_time_seconds{quantile="0.75"} 0.000344914
+application_response_time_seconds{quantile="0.95"} 0.000543647
+application_response_time_seconds{quantile="0.98"} 0.002706543
+application_response_time_seconds{quantile="0.99"} 0.005608694
+application_response_time_seconds{quantile="0.999"} 0.005608694
 ----
 
 === Security
