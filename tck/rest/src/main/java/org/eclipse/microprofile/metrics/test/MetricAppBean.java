@@ -103,6 +103,11 @@ public class MetricAppBean {
         return 1000L;
     }
 
+    @org.eclipse.microprofile.metrics.annotation.Gauge(unit = "hands")
+    public long gaugeMeB() {
+        return 7777777;
+    }
+
     public void histogramMe() {
 
         Metadata metadata = Metadata.builder().withName("metricTest.test1.histogram")

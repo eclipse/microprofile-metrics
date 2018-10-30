@@ -410,6 +410,7 @@ public class MpMetricTest {
 
         metricAppBean.gaugeMe();
         metricAppBean.gaugeMeA();
+        metricAppBean.gaugeMeB();
 
         metricAppBean.histogramMe();
 
@@ -444,7 +445,7 @@ public class MpMetricTest {
                 .body("'metricTest.test1.gauge'", equalTo(19))
 
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeA'", equalTo(1000))
-
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeB'", equalTo(7777777))
                 .body("'metricTest.test1.histogram'.count", equalTo(1000))
                 .body("'metricTest.test1.histogram'.max", equalTo(999))
                 .body("'metricTest.test1.histogram'.mean", closeTo(499.5))
@@ -760,6 +761,15 @@ public class MpMetricTest {
             .body(containsString("pm_counter_umlaut_"))
                 // metrics.counter("pm_counter+accent_ê_");
             .body(containsString("pm_counter_accent_"));
+    }
+
+    @Test
+    @RunAsClient
+    @InSequence(35)
+    public void testCustomUnitAppendToName() {
+        Header wantPrometheusFormat = new Header("Accept", TEXT_PLAIN);
+        given().header(wantPrometheusFormat).get("/metrics/application").then().statusCode(200)
+        .and().body(containsString("TYPE application:org_eclipse_microprofile_metrics_test_metric_app_bean_gauge_me_b_hands gauge"));
     }
 
     /**
