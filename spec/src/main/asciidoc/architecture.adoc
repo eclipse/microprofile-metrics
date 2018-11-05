@@ -199,9 +199,8 @@ Data is exposed via REST over HTTP under the `/metrics` base path in two differe
 * JSON format - used when the HTTP Accept header best matches `application/json`.
 * OpenMetrics text format - used when the HTTP Accept header best matches `text/plain` or when Accept header would equally
 accept both `text/plain` and `application/json` and there is no other higher precedence format.
-+
 This format is also returned when no media type is requested (i.E. no Accept header is provided in the request)
-+
+
 NOTE: Implementations and/or future versions of this specification may allow for more export formats that are triggered
 by their specific media type.
 The OpenMetrics text format will stay as fall-back.

@@ -816,6 +816,16 @@ public class MpMetricTest {
             .contentType(TEXT_PLAIN);
     }
 
+    @Test
+    @RunAsClient
+    @InSequence(40)
+    public void testNoAcceptHeader() {
+        when().get("/metrics/application")
+            .then().statusCode(200)
+            .and()
+            .contentType(TEXT_PLAIN);
+    }
+
 
     /**
      * Checks that the value is within tolerance of the expected value
