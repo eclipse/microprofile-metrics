@@ -354,11 +354,11 @@ public class MpMetricTest {
                     continue;
                 }
                 String fullLine = line;
-                int c = line.indexOf(":");
+                int c = line.indexOf("_");
                 line = line.substring(c + 1);
                 String promName = mm.toPromString();
                 String[] tmp = line.split(" ");
-                assertEquals(tmp.length, 2);
+                assertEquals("Bad entry: " + line, tmp.length, 2);
                 if (tmp[0].startsWith(promName)) {
                     found = true;
                     assertEquals("Expected [" + mm.toString() + "] got [" + fullLine + "]", tmp[1], mm.type);
@@ -762,7 +762,7 @@ public class MpMetricTest {
             .body(containsString("pm_counter_accent_"));
     }
 
-    /**
+     /**
      * Checks that the value is within tolerance of the expected value
      *
      * Note: The JSON parser only returns float for earlier versions of restassured,
