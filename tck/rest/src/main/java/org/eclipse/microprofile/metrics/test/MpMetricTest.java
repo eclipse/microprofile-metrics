@@ -762,7 +762,72 @@ public class MpMetricTest {
             .body(containsString("pm_counter_accent_"));
     }
 
-     /**
+    @Test
+    @RunAsClient
+    @InSequence(35)
+    public void testAccept1() {
+        given().header("Accept","application/json;q=0.5,text/plain;q=0.5")
+            .when().get("/metrics/application")
+            .then().statusCode(200)
+            .and()
+            .contentType(TEXT_PLAIN);
+    }
+
+    @Test
+    @RunAsClient
+    @InSequence(36)
+    public void testAccept2() {
+        given().header("Accept","application/json;q=0.1,text/plain;q=0.9")
+            .when().get("/metrics/application")
+            .then().statusCode(200)
+            .and()
+            .contentType(TEXT_PLAIN);
+
+    }
+
+    @Test
+    @RunAsClient
+    @InSequence(37)
+    public void testAccept3() {
+        given().header("Accept","image/png,image/jpeg")
+            .when().get("/metrics/application")
+            .then().statusCode(406);
+    }
+
+    @Test
+    @RunAsClient
+    @InSequence(38)
+    public void testAccept4() {
+        given().header("Accept","*/*")
+            .when().get("/metrics/application")
+            .then().statusCode(200)
+            .and()
+            .contentType(TEXT_PLAIN);
+    }
+
+    @Test
+    @RunAsClient
+    @InSequence(39)
+    public void testAccept5() {
+        given().header("Accept","image/png;q=1,*/*;q=0.1")
+            .when().get("/metrics/application")
+            .then().statusCode(200)
+            .and()
+            .contentType(TEXT_PLAIN);
+    }
+
+    @Test
+    @RunAsClient
+    @InSequence(40)
+    public void testNoAcceptHeader() {
+        when().get("/metrics/application")
+            .then().statusCode(200)
+            .and()
+            .contentType(TEXT_PLAIN);
+    }
+
+
+    /**
      * Checks that the value is within tolerance of the expected value
      *
      * Note: The JSON parser only returns float for earlier versions of restassured,
