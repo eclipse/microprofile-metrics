@@ -34,6 +34,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -60,6 +61,13 @@ public class MetricProducerMethodBeanTest {
 
     @Inject
     private MetricProducerMethodBean bean;
+
+    @Before
+    public void instantiateApplicationScopedBean() {
+        // Let's trigger the instantiation of the application scoped bean explicitly
+        // as only a proxy gets injected otherwise
+        bean.toString();
+    }
 
     @Test
     @InSequence(1)
