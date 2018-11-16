@@ -387,7 +387,7 @@ Counters do not have a suffix for the unit.
 ----
 # TYPE application_visitors_total counter
 # HELP application_visitors_total The number of unique visitors
-application_visitors 80
+application_visitors_total 80
 ----
 
 ==== Meter OpenMetrics Text Format
