@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright © 2013 Antonin Stefanutti (antonin.stefanutti@gmail.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,7 +41,7 @@ public class CounterFieldBeanTest {
     private final static String COUNTER_NAME = MetricRegistry.name(CounterFieldBean.class, "counterName");
 
     private final static MetricID COUNTER_METRICID = new MetricID(COUNTER_NAME);
-    
+
     @Deployment
     public static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)

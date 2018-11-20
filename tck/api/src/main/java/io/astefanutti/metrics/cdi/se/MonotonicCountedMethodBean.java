@@ -21,7 +21,7 @@ import java.util.concurrent.Callable;
 
 public class MonotonicCountedMethodBean<T> {
 
-    @Counted(name = "monotonicCountedMethod", absolute = true, monotonic = true)
+    @Counted(name = "monotonicCountedMethod", absolute = true)
     public T monotonicCountedMethod(Callable<T> callable) {
         try {
             return callable.call();

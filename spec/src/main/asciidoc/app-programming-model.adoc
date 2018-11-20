@@ -111,6 +111,7 @@ The following Annotations exist, see below for common fields:
 |Annotation | Applies to |  Description | Default Unit
 
 |@Counted | M, C, T | Denotes a counter, which counts the invocations of the annotated object. | MetricUnits.NONE
+|@ConcurrentGauge | M, C, T | Denotes a gauge which counts the parallel invocations of the annotated object. | MetricUnits.NONE
 |@Gauge   | M | Denotes a gauge, which samples the value of the annotated object.  | _none_ Must be supplied by the user
 |@Metered | M, C, T  | Denotes a meter, which tracks the frequency of invocations of the annotated object. | MetricUnits.PER_SECOND
 |@Metric  | M, F, P | An annotation that contains the metadata information when requesting a metric to be injected or produced. This annotation can be used on fields
@@ -193,24 +194,15 @@ The implementation must support the following annotation targets:
   * `METHOD`
   * `TYPE`
 
-In addition to the metadata fields, `@Counted` has the following field:
-
-`monotonic`:: If `false` (default), the counter is incremented before the annotated method is invoked and
-decremented after the annotated method returns, counting current invocations of the annotated method.
-+
-If `true`, the counter increases monotonically, counting total invocations of the annotated method.
-+
-WARNING: The intuitive expectation is that each invocation of a method marked with `@Counted` would result in the
-respective counter being increased by one. This is not the case with the default semantics of the `monotonic` flag.
- +
-If you want the counter being increased on each invocation you need to use `@Counted(monotonic = true)`.
+NOTE: This annotation has changed in MicroProfile Metrics 2.0: A counter now monotonically increases upon invocation.
+The old behaviour pre 2.0 can now be achieved with `@ConcurrentGauge`.
 
 The following lists the behavior for each annotation target.
 
 ===== CONSTRUCTOR
 
 When a constructor is annotated, the implementation must register a counter for the constructor using the <<annotated-naming-convention>>.
-The counter is treated according to the `monotonic` field when the constructor is invoked.
+The counter is is increased by one when the constructor is invoked.
 
 .Example of an annotated constructor
 [source, java]
@@ -223,7 +215,7 @@ public CounterBean() {
 ===== METHOD
 
 When a method is annotated, the implementation must register a counter for the method using the <<annotated-naming-convention>>.
-The counter is treated according to the `monotonic` field when the method is invoked.
+The counter is increased by one when the method is invoked.
 
 .Example of an annotated method
 [source, java]
@@ -235,12 +227,66 @@ public void run() {
 
 ===== TYPE
 When a type/class is annotated, the implementation must register a counter for each of the constructors and methods using the <<annotated-naming-convention>>.
-The counters are treated according to the `monotonic` field when the corresponding constructor/method is invoked.
+The counters are increased by one when the corresponding constructor/method is invoked.
 
 .Example of an annotated type/class
 [source, java]
 ----
 @Counted
+public class CounterBean {
+
+  public void countMethod1() {}
+  public void countMethod2() {}
+
+}
+----
+
+==== @ConcurrentGauge
+An annotation for marking a method, constructor, or type as a parallel invocations counting gauge.
+The semantics is such that upon entering a marked item, the counter is increased by one and upon
+exit again decreased by one. The purpose of this annotation is to gauge the number of parallel
+invocations of the marked methods or constructors.
+
+The implementation must support the following annotation targets:
+
+  * `CONSTRUCTOR`
+  * `METHOD`
+  * `TYPE`
+
+
+The following lists the behavior for each annotation target.
+
+===== CONSTRUCTOR
+
+When a constructor is annotated, the implementation must register a gauge for the constructor using the <<annotated-naming-convention>>.
+
+.Example of an annotated constructor
+[source, java]
+----
+@ConcurrentGauge
+public CounterBean() {
+}
+----
+
+===== METHOD
+
+When a method is annotated, the implementation must register a gauge for the method using the <<annotated-naming-convention>>.
+
+.Example of an annotated method
+[source, java]
+----
+@ConcurrentGauge
+public void run() {
+}
+----
+
+===== TYPE
+When a type/class is annotated, the implementation must register a gauge for each of the constructors and methods using the <<annotated-naming-convention>>.
+
+.Example of an annotated type/class
+[source, java]
+----
+@ConcurrentGauge
 public class CounterBean {
 
   public void countMethod1() {}

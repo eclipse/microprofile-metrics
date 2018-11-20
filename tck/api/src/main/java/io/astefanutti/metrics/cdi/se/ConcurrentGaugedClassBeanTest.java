@@ -13,6 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/**
+ * ********************************************************************
+ *  Copyright (c) 2018 Contributors to the Eclipse Foundation
+ *
+ *  See the NOTICES file(s) distributed with this work for additional
+ *  information regarding copyright ownership.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *  SPDX-License-Identifier: Apache-2.0
+ * ********************************************************************
+ *
+ */
 package io.astefanutti.metrics.cdi.se;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -40,22 +63,22 @@ import org.junit.runner.RunWith;
 import io.astefanutti.metrics.cdi.se.util.MetricsUtil;
 
 @RunWith(Arquillian.class)
-public class CountedClassBeanTest {
+public class ConcurrentGaugedClassBeanTest {
 
-    private static final String CONSTRUCTOR_NAME = "CountedClassBean";
+    private static final String CONSTRUCTOR_NAME = "ConcurrentGaugedClassBean";
 
     private static final String[] METHOD_NAMES = { "countedMethodOne", "countedMethodTwo", "countedMethodProtected", "countedMethodPackagedPrivate" };
 
-    private static final Set<String> COUNTER_NAMES = MetricsUtil.absoluteMetricNames(CountedClassBean.class, "countedClass", METHOD_NAMES,
-            CONSTRUCTOR_NAME);
+    private static final Set<String> COUNTER_NAMES = MetricsUtil.absoluteMetricNames(ConcurrentGaugedClassBean.class, "cGaugedClass", METHOD_NAMES,
+                                                                                     CONSTRUCTOR_NAME);
 
     private static final Set<MetricID> COUNTER_METRICIDS = MetricsUtil.createMetricIDs(COUNTER_NAMES);
-            
+
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
                 // Test bean
-                .addClasses(CountedClassBean.class, MetricsUtil.class)
+                .addClasses(ConcurrentGaugedClassBean.class, MetricsUtil.class)
                 // Bean archive deployment descriptor
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
@@ -64,7 +87,7 @@ public class CountedClassBeanTest {
     private MetricRegistry registry;
 
     @Inject
-    private CountedClassBean bean;
+    private ConcurrentGaugedClassBean bean;
 
     @Test
     @InSequence(1)
@@ -78,7 +101,6 @@ public class CountedClassBeanTest {
     @InSequence(2)
     public void callCountedMethodsOnce() {
         assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(COUNTER_METRICIDS)));
-        
         // Call the counted methods and assert they're back to zero
         bean.countedMethodOne();
         bean.countedMethodTwo();

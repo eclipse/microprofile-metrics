@@ -26,7 +26,7 @@ import javax.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class MultipleMetricsMethodBean {
 
-    @Counted(name = "counter", monotonic = true)
+    @Counted(name = "counter")
     @Gauge(name = "gauge", unit=MetricUnits.NONE)
     @Metered(name = "meter")
     @Timed(name = "timer")

@@ -17,9 +17,17 @@ package io.astefanutti.metrics.cdi.se;
 
 import org.eclipse.microprofile.metrics.annotation.Counted;
 
-public class CountedConstructorBean {
+import java.util.concurrent.Callable;
 
-    @Counted(name = "countedConstructor", monotonic = true)
-    public CountedConstructorBean() {
+public class ConcurrentGaugedMethodBean<T> {
+
+    @Counted(name = "cGaugedMethod", absolute = true)
+    public T countedMethod(Callable<T> callable) {
+        try {
+            return callable.call();
+        }
+        catch (Exception cause) {
+            throw new RuntimeException(cause);
+        }
     }
 }

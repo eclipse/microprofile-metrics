@@ -15,23 +15,11 @@
  */
 package io.astefanutti.metrics.cdi.se;
 
-import org.eclipse.microprofile.metrics.annotation.Counted;
+import org.eclipse.microprofile.metrics.annotation.ConcurrentGauge;
 
-@Counted(name = "countedClass")
-public class CountedClassBean {
+public class ConcurrentGaugedConstructorBean {
 
-    public void countedMethodOne() {
-    }
-
-    public void countedMethodTwo() {
-    }
-
-    protected void countedMethodProtected() {
-    }
-
-    void countedMethodPackagedPrivate() {
-    }
-
-    private void countedMethodPrivate() {
+    @ConcurrentGauge(name = "cGaugedConstructor")
+    public ConcurrentGaugedConstructorBean() {
     }
 }

@@ -37,16 +37,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
-public class CountedConstructorBeanTest {
+public class ConcurrentGaugedConstructorBeanTest {
 
-    private final static String COUNTER_NAME = MetricRegistry.name(CountedConstructorBean.class, "countedConstructor");
+    private final static String COUNTER_NAME = MetricRegistry.name(ConcurrentGaugedConstructorBean.class, "cGaugedConstructor");
     private final static MetricID COUNTER_METRICID = new MetricID(COUNTER_NAME);
 
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
             // Test bean
-            .addClass(CountedConstructorBean.class)
+            .addClass(ConcurrentGaugedConstructorBean.class)
             // Bean archive deployment descriptor
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
@@ -55,9 +55,9 @@ public class CountedConstructorBeanTest {
     private MetricRegistry registry;
 
     @Inject
-    private Instance<CountedConstructorBean> instance;
+    private Instance<ConcurrentGaugedConstructorBean> instance;
 
-    //This test case becomes irrelevant as the registry already contains Timers from other test cases. 
+    //This test case becomes irrelevant as the registry already contains Timers from other test cases.
     /*
     @Test
     @InSequence(1)
