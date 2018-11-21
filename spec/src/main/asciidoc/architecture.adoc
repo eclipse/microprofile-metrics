@@ -151,7 +151,7 @@ The Metadata:
 * name: The name of the metric.
 * unit: a fixed set of string units
 * type:
-** counter: an monotonically increasing numeric value (e.g. total number of requests received).
+** counter: a monotonically increasing numeric value (e.g. total number of requests received).
 ** concurrent gauge: an incrementally increasing or decreasing numeric value (e.g. number of parallel invocations of a method).
 ** gauge: a metric that is sampled to obtain its value (e.g. cpu temperature or disk usage).
 ** meter: a metric which tracks mean throughput and one-, five-, and fifteen-minute exponentially-weighted moving average throughput.

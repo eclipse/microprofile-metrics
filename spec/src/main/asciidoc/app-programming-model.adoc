@@ -202,7 +202,7 @@ The following lists the behavior for each annotation target.
 ===== CONSTRUCTOR
 
 When a constructor is annotated, the implementation must register a counter for the constructor using the <<annotated-naming-convention>>.
-The counter is is increased by one when the constructor is invoked.
+The counter is increased by one when the constructor is invoked.
 
 .Example of an annotated constructor
 [source, java]

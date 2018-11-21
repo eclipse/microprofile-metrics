@@ -16,10 +16,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+// SPDX-License-Identifier: Apache-2.0
+//
 
 === Major changes to previous versions
 
-* Since 1.1
+
+
+* Changes in 2.0
+** Refactoring of Counters, as the old `@Counted` was misleading in practise.
+*** Counters via `@Counted` are now always monotonic, the `monotonic` attribute is gone.
+The `Counted` interface lost the `dec()` methods.
+*** Former non-monotonic counters are now `@ConcurrentGauge` and also in the output reported as gauges.
+*** See <<migration-hint-to-20, Migration hints>> about migration of applications using MicroProfile Metrics.
 ** Removed unnecessary `@InterceptorBinding` annotation from `org.eclipse.microprofile.metrics.annotation.Metric`.
 ** Removed deprecated `org.eclipse.microprofile.metrics.MetricRegistry.register(String name, Metric, Metadata)`
 ** `Metadata` is now immutable and built via a `MetadataBuilder`.
@@ -35,7 +44,7 @@ have been modified such that the 'tags' attribute is a list of nested lists whic
 ** Reserved characters in Prometheus format must be escaped.
 
 
-* Since 1.0
+* Changes in 1.1
 ** Improved TCK
 ** `org.eclipse.microprofile.metrics.MetricRegistry.register(String name, Metric, Metadata)` is deprecated.
 Use `org.eclipse.microprofile.metrics.MetricRegistry.register(Metadata, Metric)` instead, where `Metadata`
