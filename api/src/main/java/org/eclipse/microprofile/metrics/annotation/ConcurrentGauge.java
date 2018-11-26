@@ -75,7 +75,7 @@ import org.eclipse.microprofile.metrics.MetricUnits;
 @Documented
 @InterceptorBinding
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+@Target({ ElementType.TYPE, ElementType.CONSTRUCTOR, ElementType.METHOD })
 public @interface ConcurrentGauge {
 
     /**

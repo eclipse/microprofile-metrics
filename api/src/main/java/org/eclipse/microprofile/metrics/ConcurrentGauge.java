@@ -1,4 +1,4 @@
-/**
+/*
  * ********************************************************************
  *  Copyright (c) 2018 Contributors to the Eclipse Foundation
  *
@@ -26,20 +26,32 @@ package org.eclipse.microprofile.metrics;
 /**
  * A concurrent gauge is a gauge that measures parallel invocations of a method.
  *
- * In MicroProfile-Metrics before 2.0 this was done via @Counted(monotonic=false),
- * which led to confusion
- *
  * @author hrupp
  * @since 2.0
  *
  */
 public interface ConcurrentGauge extends Metric {
 
+  /** Get the current value of the ConcurrentGauge */
   long getCount();
+  /**
+   * Get the maximum value of the ConcurrentGauge for the previously completed minute.
+   *
+   * This represents the highest number of concurrent
+   * invocations in the last complete minute.
+   */
   long getMax();
+  /**
+   * Get the minimum value of the ConcurrentGauge for the previously completed minute.
+   *
+   * This represents the lowest number of concurrent
+   * invocations in the last complete minute.
+   */
   long getMin();
 
+  /** Increment the concurrent gauge's value by 1 */
   void inc();
+  /** Decrement the concurrent gauge's value by 1 */
   void dec();
 
 }

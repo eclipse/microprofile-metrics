@@ -487,11 +487,15 @@ Concurrent gauges do not have a suffix for the unit.
 .Example OpenMetrics text format for a Concurrent Gauge
 [source, ruby]
 ----
-# TYPE application_visitors_total counter
-# HELP application_visitors_total The number of parallel invocations of visitorsTotal()
-application_visitors_total 80
-application_visitors_min 20
-application_visitors_max 100
+# TYPE application_method_a_invocations_current gauge
+# HELP application_method_a_invocations_current The number of parallel invocations of visitorsTotal()
+application_method_a_invocations_current 80
+# TYPE application_method_a_invocations_min gauge
+# HELP application_method_a_invocations_min The lowest number of parallel invocations of visitorsTotal() in the last minute
+application_method_a_invocations_min 20
+# TYPE application_method_a_invocations_max gauge
+# HELP application_method_a_invocations_max The highest number of parallel invocations of visitorsTotal() in the last minute
+application_method_a_invocations_max 100
 ----
 
 ==== Meter OpenMetrics Text Format

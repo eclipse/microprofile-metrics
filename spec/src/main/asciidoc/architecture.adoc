@@ -153,6 +153,11 @@ The Metadata:
 * type:
 ** counter: a monotonically increasing numeric value (e.g. total number of requests received).
 ** concurrent gauge: an incrementally increasing or decreasing numeric value (e.g. number of parallel invocations of a method).
++
+This type exposes three values: current count, highest count within the previous full minute and lowest count within the
+previous full minute.
++
+Full minute is the minute from second 0 to just before second 0 on the next minute ( eg. from [10:46:00-10:46:59.99999999] ).
 ** gauge: a metric that is sampled to obtain its value (e.g. cpu temperature or disk usage).
 ** meter: a metric which tracks mean throughput and one-, five-, and fifteen-minute exponentially-weighted moving average throughput.
 ** histogram: a metric which calculates the distribution of a value.
