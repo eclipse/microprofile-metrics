@@ -23,7 +23,7 @@
 ** Removed unnecessary `@InterceptorBinding` annotation from `org.eclipse.microprofile.metrics.annotation.Metric`.
 ** Removed deprecated `org.eclipse.microprofile.metrics.MetricRegistry.register(String name, Metric, Metadata)`
 ** `Metadata` is now immutable and built via a `MetadataBuilder`.
-** Metrics are now uniquely identified by the combination of name and tags (order independent).
+** Metrics are now uniquely identified by a MetricID (combination of the metric's name and tags).
 ** Tag key names are restricted to match the regex `[a-zA-Z_][a-zA-Z0-9_]*`.
 ** JSON format now includes tags along with the metric name for the JSON key. As the tags are provided with the metric name,
 the OPTIONS requests do not list the tags as a nested JSON field.
