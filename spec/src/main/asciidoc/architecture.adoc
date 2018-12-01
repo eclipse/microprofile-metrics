@@ -99,7 +99,7 @@ queries (Give me the API hit count for `app=myShop && tier=app_server`).
 
 In MicroProfile Metrics, tags add an additional dimension to metrics that share a common basis. For example, a metric named
 `carCount` can be further differentiated by the car type (sedan, SUV, coupe, and etc) and the colour (red, blue, white, black,
-and etc). Rather than incorporating this in the metric name, tags can be used to capture these information in separate metrics.
+and etc). Rather than incorporating this in the metric name, tags can be used to capture this information in separate metrics.
 
 [source]
 ----
@@ -111,6 +111,7 @@ carCount{type=coupe,colour=blue}
 
 For portability reasons, the key name for the tag must match the regex `[a-zA-Z_][a-zA-Z0-9_]*` (Ascii alphabet, numbers and underscore).
 If an illegal character is used, the implementation must throw an IllegalArgumentException.
+If a duplicate tag is used, the last occurrence of the tag is used.
 
 The tag value may contain any UTF-8 encoded character.
 
@@ -134,7 +135,7 @@ the global tags that existed already in Metrics 1.0. Future version of the spec 
 export MP_METRICS_TAGS=app=shop,tier=integration
 ----
 
-Global tags and tags set in metric metadata are included in the output returned from the REST API.
+Global tags and tags registered with the metric are included in the output returned from the REST API.
 
 [[meta-data-def]]
 ==== Metadata
@@ -175,14 +176,23 @@ will be "the same" and form part of an app, where it would be confusing in
 an overall view if the same metric has different metadata.
 
 === Metric Registry
-The `MetricRegistry` stores the metrics and metadata information.
+The `MetricRegistry` stores the metrics and metadata information with a unique `MetricID`
 There is one `MetricRegistry` instance for each of the scopes listed in <<scopes>>.
 
 Metrics can be added to or retrieved from the registry either using the `@Metric` annotation
 (see <<api-annotations, Metrics Annotations>>) or using the `MetricRegistry` object directly.
 
-A metric is uniquely identified by the `MetricRegistry` if the combination of the name and tags (order independent) in the Metadata are unique.
-However, all metrics of the same name must be of the same type otherwise an `IllegalArgumentException` will be thrown.
+A metric is uniquely identified by the `MetricRegistry` if the `MetricID` associated with the metric is unique. That is to say, there are no other metrics with the same combination of metric name and tags. However, all metrics of the same name must be of the same type otherwise an `IllegalArgumentException` will be thrown.
+
+[[metricid-data-def]]
+==== MetricID
+
+The MetricID consists of the metric's name and tags (if supplied). This is used by the MetricRegistry to uniquely identify a metric and its' corresponding metadata.
+
+The MetricID:
+
+* name: The name of the metric.
+* tags (optional): A list of `key=value` pairs, which are separated by comma. See also <<supplying_of_tags>>.
 
 [[reusing_of_metrics]]
 ==== Reusing of Metrics

@@ -23,10 +23,7 @@
  **********************************************************************/
 package org.eclipse.microprofile.metrics;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 /**
  * The {@link Metadata} builder.
@@ -36,8 +33,6 @@ import java.util.stream.Stream;
  * {@link MetadataBuilder#reusable} as {@link Boolean#FALSE}
  */
 public class MetadataBuilder {
-
-    public static final String GLOBAL_TAGS_VARIABLE = "MP_METRICS_TAGS";
 
     private String name;
 
@@ -51,24 +46,18 @@ public class MetadataBuilder {
 
     private boolean reusable = false;
 
-    private Map<String, String> tags = new HashMap<>();
+    public MetadataBuilder() {
 
-    MetadataBuilder() {
-        String globalTagsFromEnv = System.getenv(GLOBAL_TAGS_VARIABLE);
-        addTags(globalTagsFromEnv);
     }
 
     MetadataBuilder(Metadata metadata) {
         this.name = metadata.getName();
         this.type = metadata.getTypeRaw();
         this.reusable = metadata.isReusable();
-        this.tags.putAll(metadata.getTags());
         this.displayName = metadata.getDisplayName();
         metadata.getDescription().ifPresent(this::withDescription);
         metadata.getUnit().ifPresent(this::withUnit);
-
     }
-
 
     /**
      * Sets the name
@@ -151,38 +140,6 @@ public class MetadataBuilder {
     }
 
     /**
-     * Add multiple tags delimited by commas.
-     * The format must be in the form 'key1=value1, key2=value2'.
-     * This method will call {@link #addTag(String)} on each tag.
-     *
-     * @param tagsString a string containing multiple tags
-     * @return this instance with new tags
-     */
-    public MetadataBuilder addTags(String tagsString) {
-        if (tagsString == null || tagsString.isEmpty()) {
-            return this;
-        }
-        String[] singleTags = tagsString.split(",");
-        Stream.of(singleTags).map(String::trim).forEach(this::addTag);
-        return this;
-    }
-
-    /**
-     * Add one single tag with the format: 'key=value'. If the input is empty or does
-     * not contain a '=' sign, the entry is ignored.
-     *
-     * @param kvString Input string
-     * @return this instance with new tag
-     */
-    public MetadataBuilder addTag(String kvString) {
-        if (kvString == null || kvString.isEmpty() || !kvString.contains("=")) {
-            return this;
-        }
-        tags.put(kvString.substring(0, kvString.indexOf("=")), kvString.substring(kvString.indexOf("=") + 1));
-        return this;
-    }
-
-    /**
      * @return
      * @throws IllegalStateException when either name is null
      */
@@ -191,6 +148,6 @@ public class MetadataBuilder {
             throw new IllegalStateException("Name is required");
         }
 
-        return new DefaultMetadata(name, displayName, description, type, unit, reusable, tags);
+        return new DefaultMetadata(name, displayName, description, type, unit, reusable);
     }
 }
