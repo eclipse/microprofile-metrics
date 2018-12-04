@@ -176,13 +176,15 @@ will be "the same" and form part of an app, where it would be confusing in
 an overall view if the same metric has different metadata.
 
 === Metric Registry
-The `MetricRegistry` stores the metrics and metadata information with a unique `MetricID`
+The `MetricRegistry` stores the metrics and metadata information.
 There is one `MetricRegistry` instance for each of the scopes listed in <<scopes>>.
 
 Metrics can be added to or retrieved from the registry either using the `@Metric` annotation
 (see <<api-annotations, Metrics Annotations>>) or using the `MetricRegistry` object directly.
 
 A metric is uniquely identified by the `MetricRegistry` if the `MetricID` associated with the metric is unique. That is to say, there are no other metrics with the same combination of metric name and tags. However, all metrics of the same name must be of the same type otherwise an `IllegalArgumentException` will be thrown.
+
+The metadata information is registered under a unique metric name and is immutable. All metrics of the same name must be registered with the same metadata information otherwise an "IllegalArgumentException" will be thrown.
 
 [[metricid-data-def]]
 ==== MetricID
