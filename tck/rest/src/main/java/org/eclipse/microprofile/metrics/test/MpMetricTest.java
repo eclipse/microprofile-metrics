@@ -407,9 +407,11 @@ public class MpMetricTest {
 
         metricAppBean.countMe();
         metricAppBean.countMeA();
+        metricAppBean.countMeB();
 
         metricAppBean.gaugeMe();
         metricAppBean.gaugeMeA();
+        metricAppBean.gaugeMeB();
 
         metricAppBean.histogramMe();
 
@@ -440,11 +442,13 @@ public class MpMetricTest {
                 .body("'metricTest.test1.count'", equalTo(1))
 
                 .body("'metricTest.test1.countMeA'", equalTo(1))
+                
+                .body("'metricTest.test1.countMeB'", equalTo(1))
 
                 .body("'metricTest.test1.gauge'", equalTo(19))
 
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeA'", equalTo(1000))
-
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeB'", equalTo(7777777))
                 .body("'metricTest.test1.histogram'.count", equalTo(1000))
                 .body("'metricTest.test1.histogram'.max", equalTo(999))
                 .body("'metricTest.test1.histogram'.mean", closeTo(499.5))
@@ -738,6 +742,23 @@ public class MpMetricTest {
         assertEquals(metricAppBean.getGlobalTags(), "tier=integration");
     }
 
+    @Test
+    @RunAsClient
+    @InSequence(33)
+    public void testCustomUnitAppendToGaugeName() {
+        Header wantPrometheusFormat = new Header("Accept", TEXT_PLAIN);
+        given().header(wantPrometheusFormat).get("/metrics/application").then().statusCode(200)
+        .and().body(containsString("TYPE application:org_eclipse_microprofile_metrics_test_metric_app_bean_gauge_me_b_hands gauge"));
+    }
+
+    @Test
+    @RunAsClient
+    @InSequence(34)
+    public void testNoCustomUnitForCounter() {
+        Header wantPrometheusFormat = new Header("Accept", TEXT_PLAIN);
+        given().header(wantPrometheusFormat).get("/metrics/application").then().statusCode(200)
+        .and().body(containsString("TYPE application:metric_test_test1_count_me_b counter"));
+    }
 
     /**
      * Checks that the value is within tolerance of the expected value
