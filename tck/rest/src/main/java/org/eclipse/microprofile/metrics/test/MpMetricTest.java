@@ -556,6 +556,8 @@ public class MpMetricTest {
             .body(containsString("app=\"myShop\""));
     }
 
+    @Test
+    @RunAsClient
     @InSequence(23)
     public void testApplicationMeterUnitPrometheus() {
 
@@ -599,6 +601,8 @@ public class MpMetricTest {
         ;
     }
 
+    @Test
+    @RunAsClient
     @InSequence(25)
     public void testApplicationHistogramUnitBytesPrometheus() {
 
