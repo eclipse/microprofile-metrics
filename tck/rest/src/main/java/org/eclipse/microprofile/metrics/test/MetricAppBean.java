@@ -40,11 +40,13 @@ import org.eclipse.microprofile.metrics.annotation.Metered;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
+import javax.enterprise.inject.Produces;
+
 @ApplicationScoped
 public class MetricAppBean {
 
     @Inject
-    @Metric
+    @Metric(description = "red-description", displayName = "red-display-name")
     private Counter redCount;
 
     @Inject
@@ -60,11 +62,18 @@ public class MetricAppBean {
     private Counter purpleCount;
 
     @Inject
-    @Metric(absolute = true, unit="jellybeans")
+    @Metric(absolute = true, unit = "jellybeans", description = "jellybeans-description", displayName = "jellybeans-displayName")
     private Histogram jellybeanHistogram;
 
     @Inject
     private MetricRegistry metrics;
+
+    @Produces
+    @Metric(name = "coffee_price_produces", unit = "USD", absolute = true,
+        description = "getCoffeePriceDescription", displayName = "getCoffeePriceDisplayName")
+    protected org.eclipse.microprofile.metrics.Gauge<Long> getCoffeePrice() {
+        return () -> 4L;
+    }
 
     @Inject
     @ConfigProperty(name = "MP_METRICS_TAGS")
@@ -76,7 +85,8 @@ public class MetricAppBean {
         counter.inc();
     }
 
-    @Counted(name = "metricTest.test1.countMeA", monotonic = true, absolute = true)
+    @Counted(name = "metricTest.test1.countMeA", monotonic = true, absolute = true,
+        description = "count-me-a-description", displayName = "count-me-a-display-name")
     public void countMeA() {
 
     }
@@ -100,7 +110,8 @@ public class MetricAppBean {
 
     }
 
-    @org.eclipse.microprofile.metrics.annotation.Gauge(unit = MetricUnits.KIBIBITS)
+    @org.eclipse.microprofile.metrics.annotation.Gauge(unit = MetricUnits.KIBIBITS,
+        description = "gauge-me-a-description", displayName = "gauge-me-a-displayname")
     public long gaugeMeA() {
         return 1000L;
     }
@@ -133,7 +144,7 @@ public class MetricAppBean {
 
     }
 
-    @Metered(absolute = true)
+    @Metered(absolute = true, description = "meter-me-a-description", displayName = "meter-me-a-display-name")
     public void meterMeA() {
 
     }
