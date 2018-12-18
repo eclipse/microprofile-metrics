@@ -46,10 +46,6 @@ public class MetadataBuilder {
 
     private boolean reusable = false;
 
-    public MetadataBuilder() {
-
-    }
-
     MetadataBuilder(Metadata metadata) {
         this.name = metadata.getName();
         this.type = metadata.getTypeRaw();
@@ -57,6 +53,11 @@ public class MetadataBuilder {
         this.displayName = metadata.getDisplayName();
         metadata.getDescription().ifPresent(this::withDescription);
         metadata.getUnit().ifPresent(this::withUnit);
+
+    }
+
+    public MetadataBuilder() {
+
     }
 
     /**

@@ -125,6 +125,7 @@ Tags can be supplied in two ways:
 * At the application server level by using https://github.com/eclipse/microprofile-config[MicroProfile Config] and
 setting a property of the name `MP_METRICS_TAGS`.
 This property translates to the environment variable `MP_METRICS_TAGS`.
+** Tag values set through `MP_METRICS_TAGS` MUST escape equal symbols `=` and commas `,` with a backslash `\`
 
 NOTE: The use of MicroProfile-Config is mandatory in MicroProfile-Metrics 1.1 even if it only serves to provide
 the global tags that existed already in Metrics 1.0. Future version of the spec will introduce more config options.
@@ -132,7 +133,7 @@ the global tags that existed already in Metrics 1.0. Future version of the spec 
 .Set up global tags via environment
 [source,bash]
 ----
-export MP_METRICS_TAGS=app=shop,tier=integration
+export MP_METRICS_TAGS=app=shop,tier=integration,special=deli\=ver\,y
 ----
 
 Global tags and tags registered with the metric are included in the output returned from the REST API.
@@ -194,7 +195,7 @@ The MetricID consists of the metric's name and tags (if supplied). This is used 
 The MetricID:
 
 * name: The name of the metric.
-* tags (optional): A list of `key=value` pairs, which are separated by comma. See also <<supplying_of_tags>>.
+* tags (optional): A list of Tag objects. See also <<supplying_of_tags>>.
 
 [[reusing_of_metrics]]
 ==== Reusing of Metrics

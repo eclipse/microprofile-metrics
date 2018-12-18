@@ -23,8 +23,10 @@
  **********************************************************************/
 package org.eclipse.microprofile.metrics;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -41,13 +43,18 @@ import java.util.stream.Stream;
  * {@code Name}: (Required) The name of the metric.
  * </li>
  * <li>
- * {@code Tags}: (Optional) The tags (represented by key/value pairs) of the metric which is augmented by global tags (if available).
- * Global tags can be set by passing the list of tags in an environment variable {@code MP_METRICS_TAGS}.
+ * {@code Tags}: (Optional) The tags (represented by {@link Tag} objects) of the metric
+ * which is augmented by global tags (if available). The tag name must match the
+ * regex `[a-zA-Z_][a-zA-Z0-9_]*` (Ascii alphabet, numbers and underscore). The tag value
+ * may contain any UTF-8 encoded character. Global tags can be set by passing
+ * the list of tags in an environment variable {@code MP_METRICS_TAGS}. Tag values set
+ * through `MP_METRICS_TAGS` MUST escape equal symbols `=` and commas `,` with a backslash `\`
+ *
  * For example, the following can be used to set the global tags:
  *
  * <pre>
  * <code>
- *      export MP_METRICS_TAGS=app=shop,tier=integration
+ *      export MP_METRICS_TAGS=app=shop,tier=integration,special=deli\=ver\,y
  * </code>
  * </pre>
  *
@@ -64,7 +71,7 @@ public class MetricID {
      * A required field which holds the name of the metric object.
      * </p>
      */
-    public final String name;
+    private final String name;
 
     /**
      * Tags of the metric. Augmented by global tags.
@@ -86,16 +93,16 @@ public class MetricID {
     }
 
     /**
-     * Constructs a MetricID with the given metric name and tags.
+     * Constructs a MetricID with the given metric name and {@link Tag}s.
      * If global tags are available then they will be appended to this MetricID
      *
      * @param name the name of the metric
      * @param tags the tags associated with this metric
      */
-    public MetricID(String name, String tags) {
+    public MetricID(String name, Tag... tags) {
         this.name = name;
         String globalTagsFromEnv = System.getenv(GLOBAL_TAGS_VARIABLE);
-        addTags(globalTagsFromEnv);
+        parseGlobalTags(globalTagsFromEnv);
         addTags(tags);
     }
 
@@ -109,6 +116,15 @@ public class MetricID {
     }
 
     /**
+     * Returns the underlying HashMap containing the tags.
+     *
+     * @return a {@link Map} of tags
+     */
+    public Map<String, String> getTags() {
+        return Collections.unmodifiableMap(tags);
+    }
+
+    /**
      * Gets the list of tags as a single String in the format 'key="value",key2="value2",...'
      *
      * @return a String containing the tags
@@ -118,12 +134,14 @@ public class MetricID {
     }
 
     /**
-     * Returns the underlying HashMap containing the tags.
+     * Gets the list of tags as a list of {@link Tag} objects
      *
-     * @return a {@link Map} of tags
+     * @return a a list of Tag objects
      */
-    public Map<String, String> getTags() {
-        return Collections.unmodifiableMap(tags);
+    public List<Tag> getTagsAsList() {
+        List<Tag> list = new ArrayList<Tag>();
+        this.tags.entrySet().stream().forEach(entry -> list.add(new Tag(entry.getKey(), entry.getValue())));
+        return Collections.unmodifiableList(list);
     }
 
     /** {@inheritDoc} */
@@ -146,31 +164,73 @@ public class MetricID {
     }
 
     /**
-     * Add multiple tags delimited by commas.
-     * The format must be in the form 'key1=value1, key2=value2'.
-     * This method will call {@link #addTag(String)} on each tag.
+     * Add multiple {@link Tag} objects
+     * This method will call {@link #addTag(Tag)} on each tag.
+     * If a key already exists then it will be overwritten.
      *
-     * @param tagsString a string containing multiple tags
+     * @param tagArray an array of {@link Tag} objects
      */
-    public void addTags(String tagsString) {
-        if (tagsString == null || tagsString.isEmpty()) {
+    private void addTags(Tag[] tagArray) {
+        if (tagArray == null || tagArray.length == 0) {
             return;
         }
-        String[] singleTags = tagsString.split(",");
-        Stream.of(singleTags).map(String::trim).forEach(this::addTag);
+        Stream.of(tagArray).forEach(this::addTag);
     }
 
     /**
-     * Add one single tag with the format: 'key=value'. If the input is empty or does
-     * not contain a '=' sign, the entry is ignored.
+     * Adds a singular {@link Tag} object into the MetricID.
+     * If the tag key/name already exists then it will be overwritten with
+     * the new value.
      *
-     * @param kvString Input string
+     * @param tag the {@link Tag} object
      */
-    public void addTag(String kvString) {
-        if (kvString == null || kvString.isEmpty() || !kvString.contains("=")) {
+    private void addTag(Tag tag) {
+        if (tag == null || tag.getTagName() == null || tag.getTagValue() == null) {
             return;
         }
-        tags.put(kvString.substring(0, kvString.indexOf("=")), kvString.substring(kvString.indexOf("=") + 1));
+        tags.put(tag.getTagName(), tag.getTagValue());
+    }
+
+    /**
+     * Parses the global tags retrieved from environment variable {@code MP_METRICS_TAGS}.
+     *
+     * @param globalTags the string of global tags retrieved from MP_METRICS_TAGS
+     * @throws IllegalArgumentException if the global tags list does not adhere to
+     *             the appropriate format.
+     */
+    private void parseGlobalTags(String globalTags) throws IllegalArgumentException {
+        if (globalTags == null || globalTags.length() == 0) {
+            return;
+        }
+        String[] kvPairs = globalTags.split("(?<!\\\\),");
+        for (String kvString : kvPairs) {
+
+            if (kvString.length() == 0) {
+                throw new IllegalArgumentException("Malformed list of Global Tags. Tag names "
+                                                   + "must match the following regex [a-zA-Z_][a-zA-Z0-9_]*."
+                                                   + "Global Tag values MUST escape equal signs `=` and commas `,`"
+                                                   + "with a backslash `\\` ");
+            }
+
+            String[] keyValueSplit = kvString.split("(?<!\\\\)=");
+            String key = keyValueSplit[0];
+            String value = keyValueSplit[1];
+
+            if (keyValueSplit.length != 2 || key.length() == 0 || value.length() == 0) {
+                throw new IllegalArgumentException("Malformed list of Global Tags. Tag names "
+                                                   + "must match the following regex [a-zA-Z_][a-zA-Z0-9_]*."
+                                                   + "Global Tag values MUST escape equal signs `=` and commas `,`"
+                                                   + "with a backslash `\\` ");
+            }
+
+            if (!key.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {
+                throw new IllegalArgumentException("Invalid Tag name. Tag names must match the following regex "
+                                                   + "[a-zA-Z_][a-zA-Z0-9_]*");
+            }
+            value = value.replace("\\,", ",");
+            value = value.replace("\\=", "=");
+            tags.put(key, value);
+        }
     }
 
 }

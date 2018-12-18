@@ -26,6 +26,7 @@
 ** Metrics are now uniquely identified by a MetricID (combination of the metric's name and tags).
 ** The 'Metadata' is mapped to a unique metric name in the `MetricRegistry` and this relationship is immutable.
 ** Tag key names are restricted to match the regex `[a-zA-Z_][a-zA-Z0-9_]*`.
+** Tag values defined through MP_METRICS_TAGS must escape equal signs `=` and commas `,` with a backslash `\`.
 ** JSON format now includes tags along with the metric name for the JSON key. As the tags are provided with the metric name,
 the OPTIONS requests do not list the tags as a nested JSON field.
 ** Reserved characters in Prometheus format must be escaped.
