@@ -25,10 +25,12 @@ package org.eclipse.microprofile.metrics;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -61,9 +63,15 @@ import java.util.stream.Stream;
  * </li>
  * </ul>
  */
-public class MetricID {
+public class MetricID implements Comparable<MetricID> {
 
     public static final String GLOBAL_TAGS_VARIABLE = "MP_METRICS_TAGS";
+
+    private static final String GLOBA_TAG_MALFORMED_EXCEPTION = "Malformed list of Global Tags. Tag names "
+                                                                + "must match the following regex [a-zA-Z_][a-zA-Z0-9_]*."
+                                                                + " Global Tag values must not be empty."
+                                                                + " Global Tag values MUST escape equal signs `=` and commas `,`"
+                                                                + "with a backslash `\\` ";
 
     /**
      * Name of the metric.
@@ -80,7 +88,7 @@ public class MetricID {
      * augmented by global tags.
      * </p>
      */
-    private final Map<String, String> tags = new HashMap<String, String>();
+    private final Map<String, String> tags = new TreeMap<String, String>();
 
     /**
      * Constructs a MetricID with the given metric name and no tags.
@@ -140,7 +148,7 @@ public class MetricID {
      */
     public List<Tag> getTagsAsList() {
         List<Tag> list = new ArrayList<Tag>();
-        this.tags.entrySet().stream().forEach(entry -> list.add(new Tag(entry.getKey(), entry.getValue())));
+        this.tags.forEach((key, value) -> list.add(new Tag(key, value)));
         return Collections.unmodifiableList(list);
     }
 
@@ -206,22 +214,17 @@ public class MetricID {
         for (String kvString : kvPairs) {
 
             if (kvString.length() == 0) {
-                throw new IllegalArgumentException("Malformed list of Global Tags. Tag names "
-                                                   + "must match the following regex [a-zA-Z_][a-zA-Z0-9_]*."
-                                                   + "Global Tag values MUST escape equal signs `=` and commas `,`"
-                                                   + "with a backslash `\\` ");
+                throw new IllegalArgumentException(GLOBA_TAG_MALFORMED_EXCEPTION);
             }
 
             String[] keyValueSplit = kvString.split("(?<!\\\\)=");
+
+            if (keyValueSplit.length != 2 || keyValueSplit[0].length() == 0 || keyValueSplit[1].length() == 0) {
+                throw new IllegalArgumentException(GLOBA_TAG_MALFORMED_EXCEPTION);
+            }
+
             String key = keyValueSplit[0];
             String value = keyValueSplit[1];
-
-            if (keyValueSplit.length != 2 || key.length() == 0 || value.length() == 0) {
-                throw new IllegalArgumentException("Malformed list of Global Tags. Tag names "
-                                                   + "must match the following regex [a-zA-Z_][a-zA-Z0-9_]*."
-                                                   + "Global Tag values MUST escape equal signs `=` and commas `,`"
-                                                   + "with a backslash `\\` ");
-            }
 
             if (!key.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {
                 throw new IllegalArgumentException("Invalid Tag name. Tag names must match the following regex "
@@ -233,4 +236,54 @@ public class MetricID {
         }
     }
 
+    /**
+     * Compares two MetricID objects through the following steps:
+     * <p>
+     * <ol>
+     * <li>
+     * Compares the names of the two MetricIDs lexicographically.
+     * </li>
+     * <li>
+     * If the names are equal: Compare the number of tags.
+     * </li>
+     * <li>
+     * If the tag lengths are equal: Compare the Tags (sorted by the Tag's key value)
+     * <ul>
+     * <li>
+     * a) Compare the Tag names/keys lexicographically
+     * </li>
+     * <li>
+     * b) If keys are equal, compare the Tag values lexicographically
+     * </li>
+     * </ul>
+     * </li>
+     * </ol>
+     *
+     * @param other the other MetricID
+     */
+    @Override
+    public int compareTo(MetricID other) {
+        int compareVal = this.name.compareTo(other.getName());
+        if (compareVal == 0) {
+            compareVal = this.tags.size() - other.getTags().size();
+            if (compareVal == 0) {
+                Iterator<Entry<String, String>> thisIterator = tags.entrySet().iterator();
+                Iterator<Entry<String, String>> otherIterator = other.getTags().entrySet().iterator();
+                while (thisIterator.hasNext() && otherIterator.hasNext()) {
+                    Entry<String, String> thisEntry = thisIterator.next();
+                    Entry<String, String> otherEntry = otherIterator.next();
+                    compareVal = thisEntry.getKey().compareTo(otherEntry.getKey());
+                    if (compareVal != 0) {
+                        return compareVal;
+                    } else {
+                        compareVal = thisEntry.getValue().compareTo(otherEntry.getValue());
+                        if (compareVal != 0) {
+                            return compareVal;
+                        }
+                    }
+                }
+            }
+        }
+        return compareVal;
+    }
 }
