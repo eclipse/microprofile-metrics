@@ -31,7 +31,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InterceptorBinding;
-import org.eclipse.microprofile.metrics.MetricUnits;
 
 /**
  * An annotation for marking a method, constructor, or class as concurrent gauged.
@@ -61,9 +60,9 @@ import org.eclipse.microprofile.metrics.MetricUnits;
  * </p>
  * <pre><code>
  *     {@literal @}ConcurrentGauge
- *     public class CounterBean {
- *         public void countMethod1() {}
- *         public void countMethod2() {}
+ *     public class CGaugedBean {
+ *         public void cGaugedMethod1() {}
+ *         public void cGaugedMethod2() {}
  *     }
  * </code></pre>
  * A counter for the defining class will be created for each of the constructors/methods.
@@ -117,15 +116,6 @@ public @interface ConcurrentGauge {
     @Nonbinding
     String description() default "";
 
-
-    /**
-     * @return The unit of the concurrent gauge. By default, the value is {@link MetricUnits#NONE}.
-     *
-     * @see org.eclipse.microprofile.metrics.Metadata
-     * @see MetricUnits
-     */
-    @Nonbinding
-    String unit() default MetricUnits.NONE;
 
     /**
      * Denotes if this metric instance can be reused by multiple registrations.

@@ -112,7 +112,7 @@ The following Annotations exist, see below for common fields:
 
 |@Counted | M, C, T | Denotes a counter, which counts the invocations of the annotated object. | MetricUnits.NONE
 |@ConcurrentGauge | M, C, T | Denotes a gauge which counts the parallel invocations of the annotated object. | MetricUnits.NONE
-|@Gauge   | M | Denotes a gauge, which samples the value of the annotated object.  | _none_ Must be supplied by the user
+|@Gauge   | M | Denotes a gauge, which samples the value of the annotated object.  | _no default_, must be supplied by the user
 |@Metered | M, C, T  | Denotes a meter, which tracks the frequency of invocations of the annotated object. | MetricUnits.PER_SECOND
 |@Metric  | M, F, P | An annotation that contains the metadata information when requesting a metric to be injected or produced. This annotation can be used on fields
     of type `Meter`, `Timer`, `Counter`, and `Histogram`. For `Gauge`, the `@Metric` annotation can only be used on producer methods/fields. | MetricUnits.NONE
@@ -194,7 +194,7 @@ The implementation must support the following annotation targets:
   * `METHOD`
   * `TYPE`
 
-NOTE: This annotation has changed in MicroProfile Metrics 2.0: A counter now monotonically increases upon invocation.
+NOTE: This annotation has changed in MicroProfile Metrics 2.0: Counters now always increase monotonically upon invocation.
 The old behaviour pre 2.0 can now be achieved with `@ConcurrentGauge`.
 
 The following lists the behavior for each annotation target.
@@ -226,7 +226,8 @@ public void run() {
 ----
 
 ===== TYPE
-When a type/class is annotated, the implementation must register a counter for each of the constructors and methods using the <<annotated-naming-convention>>.
+When a type/class is annotated, the implementation must register a counter for each of the constructors
+and methods using the <<annotated-naming-convention>>.
 The counters are increased by one when the corresponding constructor/method is invoked.
 
 .Example of an annotated type/class
@@ -242,8 +243,8 @@ public class CounterBean {
 ----
 
 ==== @ConcurrentGauge
-An annotation for marking a method, constructor, or type as a parallel invocations counting gauge.
-The semantics is such that upon entering a marked item, the counter is increased by one and upon
+An annotation for marking a method, constructor, or type as a parallel invocation counted.
+The semantics is such that upon entering a marked item, the parallel count is increased by one and upon
 exit again decreased by one. The purpose of this annotation is to gauge the number of parallel
 invocations of the marked methods or constructors.
 
@@ -258,7 +259,8 @@ The following lists the behavior for each annotation target.
 
 ===== CONSTRUCTOR
 
-When a constructor is annotated, the implementation must register a gauge for the constructor using the <<annotated-naming-convention>>.
+When a constructor is annotated, the implementation must register gauges, representing the current,
+previous minute maximum, and previous minute minimum values for the constructor using the <<annotated-naming-convention>>.
 
 .Example of an annotated constructor
 [source, java]
@@ -270,7 +272,8 @@ public CounterBean() {
 
 ===== METHOD
 
-When a method is annotated, the implementation must register a gauge for the method using the <<annotated-naming-convention>>.
+When a method is annotated, the implementation must register gauges, representing the current,
+previous minute maximum, and previous minute minimum values for the method using the <<annotated-naming-convention>>.
 
 .Example of an annotated method
 [source, java]
@@ -281,7 +284,9 @@ public void run() {
 ----
 
 ===== TYPE
-When a type/class is annotated, the implementation must register a gauge for each of the constructors and methods using the <<annotated-naming-convention>>.
+When a type/class is annotated, the implementation must register gauges, representing the current,
+previous minute maximum, and previous minute minimum values for each of the constructors and methods
+using the <<annotated-naming-convention>>.
 
 .Example of an annotated type/class
 [source, java]
