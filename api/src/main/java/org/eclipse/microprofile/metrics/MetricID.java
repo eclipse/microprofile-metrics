@@ -238,7 +238,7 @@ public class MetricID implements Comparable<MetricID> {
 
     /**
      * Compares two MetricID objects through the following steps:
-     * <p>
+     * <br>
      * <ol>
      * <li>
      * Compares the names of the two MetricIDs lexicographically.
@@ -275,7 +275,8 @@ public class MetricID implements Comparable<MetricID> {
                     compareVal = thisEntry.getKey().compareTo(otherEntry.getKey());
                     if (compareVal != 0) {
                         return compareVal;
-                    } else {
+                    } 
+                    else {
                         compareVal = thisEntry.getValue().compareTo(otherEntry.getValue());
                         if (compareVal != 0) {
                             return compareVal;

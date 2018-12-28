@@ -36,7 +36,7 @@ import java.util.Objects;
  * <li>
  * {@code TagValue}: (Required) The value of the tag.
  * </li>
- * <li>
+ * </ul>
  *
  */
 public class Tag {
@@ -47,7 +47,7 @@ public class Tag {
      * A required field which holds the name of the tag.
      * </p>
      */
-    final String tagName;
+    private final String tagName;
 
     /**
      * Value of the Tag.
@@ -55,7 +55,7 @@ public class Tag {
      * A required field which holds the value of the tag.
      * </p>
      */
-    final String tagValue;
+    private final String tagValue;
 
     /**
      * Constructs the Tag object with the given tag name and tag value

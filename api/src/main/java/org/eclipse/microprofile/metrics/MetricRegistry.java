@@ -409,7 +409,7 @@ public abstract class MetricRegistry {
     /**
      * Removes the metric with the given MetricID
      *
-     * @param MetricID the MetricID of the metric
+     * @param metricID the MetricID of the metric
      * @return whether or not the metric was removed
      *
      * @since 2.0
