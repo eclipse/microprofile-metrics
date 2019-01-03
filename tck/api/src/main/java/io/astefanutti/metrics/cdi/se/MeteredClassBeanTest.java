@@ -27,6 +27,7 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Meter;
 import org.eclipse.microprofile.metrics.Metric;
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricFilter;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.hamcrest.Matchers;
@@ -48,6 +49,8 @@ public class MeteredClassBeanTest {
     private static final String CONSTRUCTOR_NAME = "MeteredClassBean";
 
     private static final String CONSTRUCTOR_METER_NAME = MetricsUtil.absoluteMetricName(MeteredClassBean.class, "meteredClass", CONSTRUCTOR_NAME);
+    
+    private static final MetricID CONSTRUCTOR_METRICID = new MetricID(CONSTRUCTOR_METER_NAME);
 
     private static final String[] METHOD_NAMES = { "meteredMethodOne", "meteredMethodTwo", "meteredMethodProtected", "meteredMethodPackagedPrivate" };
 
@@ -63,6 +66,8 @@ public class MeteredClassBeanTest {
     private static final Set<String> METER_NAMES = MetricsUtil.absoluteMetricNames(MeteredClassBean.class, "meteredClass", METHOD_NAMES,
             CONSTRUCTOR_NAME);
 
+    private static final Set<MetricID> METER_METRICIDS = MetricsUtil.createMetricIDs(METER_NAMES);
+            
     private final static AtomicLong CONSTRUCTOR_COUNT = new AtomicLong();
 
     private final static AtomicLong METHOD_COUNT = new AtomicLong();
@@ -85,9 +90,10 @@ public class MeteredClassBeanTest {
     @Test
     @InSequence(1)
     public void meteredMethodsNotCalledYet() {
-        assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(METER_NAMES)));
+        assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(METER_METRICIDS)));
 
-        assertThat("Constructor meter count is incorrect", registry.getMeters().get(CONSTRUCTOR_METER_NAME).getCount(), 
+        
+        assertThat("Constructor meter count is incorrect", registry.getMeters().get(CONSTRUCTOR_METRICID).getCount(), 
                 is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
 
         // Make sure that the method meters haven't been marked yet
@@ -98,10 +104,10 @@ public class MeteredClassBeanTest {
 
     @Test
     @InSequence(2)
-    public void callMeteredMethodsOnce() {
-        assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(METER_NAMES)));
+    public void callMeteredMethodsOnce() {        
+        assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(METER_METRICIDS)));
         
-        assertThat("Constructor meter count is incorrect", registry.getMeters().get(CONSTRUCTOR_METER_NAME).getCount(),
+        assertThat("Constructor meter count is incorrect", registry.getMeters().get(CONSTRUCTOR_METRICID).getCount(),
                 is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
 
         // Call the metered methods and assert they've been marked

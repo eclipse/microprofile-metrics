@@ -29,6 +29,7 @@ import java.util.SortedMap;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Histogram;
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -99,15 +100,19 @@ public class HistogramTest {
     public void testMetricRegistry() throws Exception {
         String histogramIntName = "org.eclipse.microprofile.metrics.tck.HistogramTest.histogramInt";
         String histogramLongName = "test.longData.histogram";
-        SortedMap<String, Histogram> histograms = metrics.getHistograms();
+        
+        MetricID histogramIntNameMetricID = new MetricID(histogramIntName);
+        MetricID histogramLongNameMetricID = new MetricID(histogramLongName);
+        
+        SortedMap<MetricID, Histogram> histograms = metrics.getHistograms();
 
         Assert.assertTrue(histograms.size() == 2);
 
-        Assert.assertTrue(histograms.containsKey(histogramIntName));
-        Assert.assertTrue(histograms.containsKey(histogramLongName));
+        Assert.assertTrue(histograms.containsKey(histogramIntNameMetricID));
+        Assert.assertTrue(histograms.containsKey(histogramLongNameMetricID));
 
-        TestUtils.assertEqualsWithTolerance(48, histograms.get(histogramIntName).getSnapshot().getValue(0.5));
-        TestUtils.assertEqualsWithTolerance(480, histograms.get(histogramLongName).getSnapshot().getValue(0.5));
+        TestUtils.assertEqualsWithTolerance(48, histograms.get(histogramIntNameMetricID).getSnapshot().getValue(0.5));
+        TestUtils.assertEqualsWithTolerance(480, histograms.get(histogramLongNameMetricID).getSnapshot().getValue(0.5));
     }
 
     @Test

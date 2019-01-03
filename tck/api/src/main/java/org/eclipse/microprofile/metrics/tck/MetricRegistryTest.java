@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.Histogram;
 import org.eclipse.microprofile.metrics.Meter;
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.Timer;
 import org.eclipse.microprofile.metrics.annotation.Metric;
@@ -78,16 +79,16 @@ public class MetricRegistryTest {
     @InSequence(2)
     public void registerTest() {
         metrics.register("regCountTemp", countTemp);
-        Assert.assertTrue(metrics.getCounters().containsKey("regCountTemp"));
+        Assert.assertTrue(metrics.getCounters().containsKey(new MetricID("regCountTemp")));
 
         metrics.register("regHistoTemp", histoTemp);
-        Assert.assertTrue(metrics.getHistograms().containsKey("regHistoTemp"));
+        Assert.assertTrue(metrics.getHistograms().containsKey(new MetricID("regHistoTemp")));
 
         metrics.register("regTimerTemp", timerTemp);
-        Assert.assertTrue(metrics.getTimers().containsKey("regTimerTemp"));
+        Assert.assertTrue(metrics.getTimers().containsKey(new MetricID("regTimerTemp")));
 
         metrics.register("regMeterTemp", meterTemp);
-        Assert.assertTrue(metrics.getMeters().containsKey("regMeterTemp"));
+        Assert.assertTrue(metrics.getMeters().containsKey(new MetricID("regMeterTemp")));
     }
 
     @Test

@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasKey;
 import static org.junit.Assert.assertThat;
+import org.eclipse.microprofile.metrics.MetricID;
 
 import java.util.Arrays;
 
@@ -42,7 +43,10 @@ public class InheritedGaugeMethodBeanTest {
 
     private final static String PARENT_GAUGE_NAME = MetricRegistry.name(InheritedParentGaugeMethodBean.class, "inheritedParentGaugeMethod");
     private final static String CHILD_GAUGE_NAME = MetricRegistry.name(InheritedChildGaugeMethodBean.class, "inheritedChildGaugeMethod");
-
+    
+    private final static MetricID PARENT_METRICID = new MetricID(PARENT_GAUGE_NAME);
+    private final static MetricID CHILD_METRICID = new MetricID(CHILD_GAUGE_NAME);
+    
     @Deployment
     public static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
@@ -73,12 +77,12 @@ public class InheritedGaugeMethodBeanTest {
     @Test
     @InSequence(1)
     public void gaugesCalledWithDefaultValues() {
-        assertThat("Gauges are not registered correctly", registry.getGauges(), allOf(hasKey(PARENT_GAUGE_NAME), hasKey(CHILD_GAUGE_NAME)));
+        assertThat("Gauges are not registered correctly", registry.getGauges(), allOf(hasKey(PARENT_METRICID), hasKey(CHILD_METRICID)));
 
         @SuppressWarnings("unchecked")
-        Gauge<Long> parentGauge = registry.getGauges().get(PARENT_GAUGE_NAME);
+        Gauge<Long> parentGauge = registry.getGauges().get(PARENT_METRICID);
         @SuppressWarnings("unchecked")
-        Gauge<Long> childGauge = registry.getGauges().get(CHILD_GAUGE_NAME);
+        Gauge<Long> childGauge = registry.getGauges().get(CHILD_METRICID);
 
         // Make sure that the gauge has the expected value
         assertThat("Gauge values are incorrect", Arrays.asList(parentGauge.getValue(), childGauge.getValue()), contains(0L, 0L));
@@ -87,11 +91,11 @@ public class InheritedGaugeMethodBeanTest {
     @Test
     @InSequence(2)
     public void callGaugesAfterSetterCalls() {
-        assertThat("Gauges are not registered correctly", registry.getGauges(), allOf(hasKey(PARENT_GAUGE_NAME), hasKey(CHILD_GAUGE_NAME)));
+        assertThat("Gauges are not registered correctly", registry.getGauges(), allOf(hasKey(PARENT_METRICID), hasKey(CHILD_METRICID)));
         @SuppressWarnings("unchecked")
-        Gauge<Long> parentGauge = registry.getGauges().get(PARENT_GAUGE_NAME);
+        Gauge<Long> parentGauge = registry.getGauges().get(PARENT_METRICID);
         @SuppressWarnings("unchecked")
-        Gauge<Long> childGauge = registry.getGauges().get(CHILD_GAUGE_NAME);
+        Gauge<Long> childGauge = registry.getGauges().get(CHILD_METRICID);
 
         // Call the setter methods and assert the gauges are up-to-date
         long parentValue = Math.round(Math.random() * Long.MAX_VALUE);

@@ -28,6 +28,7 @@ import org.eclipse.microprofile.metrics.Gauge;
 import org.eclipse.microprofile.metrics.Histogram;
 import org.eclipse.microprofile.metrics.Metadata;
 import org.eclipse.microprofile.metrics.Meter;
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.MetricType;
 import org.eclipse.microprofile.metrics.MetricUnits;
@@ -84,7 +85,7 @@ public class MetricAppBean {
     public void gaugeMe() {
 
         @SuppressWarnings("unchecked")
-        Gauge<Long> gauge = metrics.getGauges().get("metricTest.test1.gauge");
+        Gauge<Long> gauge = metrics.getGauges().get(new MetricID("metricTest.test1.gauge"));
         if (gauge == null) {
             gauge = () -> {
                 return 19L;

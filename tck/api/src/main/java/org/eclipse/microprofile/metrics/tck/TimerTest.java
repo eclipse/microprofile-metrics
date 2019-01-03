@@ -32,6 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
 
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.Timer;
 import org.eclipse.microprofile.metrics.Timer.Context;
@@ -145,14 +146,18 @@ public class TimerTest {
     public void testTimerRegistry() throws Exception {
         String timerLongName = "test.longData.timer";
         String timerTimeName = "testTime";
-
-        SortedMap<String, Timer> timers = registry.getTimers();
+        
+        MetricID timerLongNameMetricID = new MetricID(timerLongName);
+        MetricID timerTimeNameMetricID = new MetricID(timerTimeName);
+        
+        SortedMap<MetricID, Timer> timers = registry.getTimers();
+        
         Assert.assertTrue(timers.size() > 0);
 
-        Assert.assertTrue(timers.containsKey(timerLongName));
-        Assert.assertTrue(timers.containsKey(timerTimeName));
+        Assert.assertTrue(timers.containsKey(timerLongNameMetricID));
+        Assert.assertTrue(timers.containsKey(timerTimeNameMetricID));
 
-        TestUtils.assertEqualsWithTolerance(480, timers.get(timerLongName).getSnapshot().getValue(0.5));
+        TestUtils.assertEqualsWithTolerance(480, timers.get(timerLongNameMetricID).getSnapshot().getValue(0.5));
     }
 
     @Test

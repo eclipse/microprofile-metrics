@@ -24,6 +24,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Counter;
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -48,6 +49,8 @@ public class CountedClassBeanTest {
     private static final Set<String> COUNTER_NAMES = MetricsUtil.absoluteMetricNames(CountedClassBean.class, "countedClass", METHOD_NAMES,
             CONSTRUCTOR_NAME);
 
+    private static final Set<MetricID> COUNTER_METRICIDS = MetricsUtil.createMetricIDs(COUNTER_NAMES);
+            
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
@@ -66,7 +69,7 @@ public class CountedClassBeanTest {
     @Test
     @InSequence(1)
     public void countedMethodsNotCalledYet() {
-        assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(COUNTER_NAMES)));
+        assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(COUNTER_METRICIDS)));
         // Make sure that the counters haven't been incremented
         assertThat("Counter counts are incorrect", registry.getCounters().values(), everyItem(Matchers.<Counter>hasProperty("count", equalTo(0L))));
     }
@@ -74,7 +77,7 @@ public class CountedClassBeanTest {
     @Test
     @InSequence(2)
     public void callCountedMethodsOnce() {
-        assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(COUNTER_NAMES)));
+        assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(COUNTER_METRICIDS)));
         
         // Call the counted methods and assert they're back to zero
         bean.countedMethodOne();

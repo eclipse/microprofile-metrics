@@ -66,7 +66,8 @@ public class VisibilityTimedMethodBeanTest {
     @Test
     @InSequence(1)
     public void timedMethodsNotCalledYet() {
-        assertThat("Timers are not registered correctly", registry.getTimers().keySet(), is(equalTo(absoluteMetricNames())));
+        assertThat("Timers are not registered correctly", registry.getTimers().keySet(), 
+            is(equalTo(MetricsUtil.createMetricIDs(absoluteMetricNames()))));
         
         // Make sure that all the timers haven't been called yet
         assertThat("Timer counts are incorrect", registry.getTimers().values(), everyItem(Matchers.<Timer>hasProperty("count", equalTo(0L))));
@@ -75,7 +76,8 @@ public class VisibilityTimedMethodBeanTest {
     @Test
     @InSequence(2)
     public void callTimedMethodsOnce() {
-        assertThat("Timers are not registered correctly", registry.getTimers().keySet(), is(equalTo(absoluteMetricNames())));
+        assertThat("Timers are not registered correctly", registry.getTimers().keySet(), 
+            is(equalTo(MetricsUtil.createMetricIDs(absoluteMetricNames()))));
         
         // Call the timed methods and assert they've all been timed once
         bean.publicTimedMethod();

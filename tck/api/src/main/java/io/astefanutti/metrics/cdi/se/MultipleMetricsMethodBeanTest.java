@@ -24,6 +24,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -77,23 +78,29 @@ public class MultipleMetricsMethodBeanTest {
     @Test
     @InSequence(1)
     public void metricsMethodNotCalledYet() {
-        assertThat("Metrics are not registered correctly", registry.getMetrics().keySet(), is(equalTo(absoluteMetricNames())));
+        assertThat("Metrics are not registered correctly", registry.getMetrics().keySet(), 
+            is(equalTo(MetricsUtil.createMetricIDs(absoluteMetricNames()))));
     }
 
     @Test
     @InSequence(2)
     public void callMetricsMethodOnce() {
-        assertThat("Metrics are not registered correctly", registry.getMetrics().keySet(), is(equalTo(absoluteMetricNames())));
+        assertThat("Metrics are not registered correctly", registry.getMetrics().keySet(),
+            is(equalTo(MetricsUtil.createMetricIDs(absoluteMetricNames()))));
 
         // Call the monitored method and assert it's been instrumented
         bean.metricsMethod();
 
         // Make sure that the metrics have been called
-        assertThat("Counter count is incorrect", registry.getCounters().get(absoluteMetricName("counter")).getCount(), is(equalTo(1L)));
-        assertThat("Meter count is incorrect", registry.getMeters().get(absoluteMetricName("meter")).getCount(), is(equalTo(1L)));
-        assertThat("Timer count is incorrect", registry.getTimers().get(absoluteMetricName("timer")).getCount(), is(equalTo(1L)));
+        assertThat("Counter count is incorrect", registry.getCounters()
+                .get(new MetricID(absoluteMetricName("counter"))).getCount(), is(equalTo(1L)));
+        assertThat("Meter count is incorrect", registry.getMeters()
+                .get(new MetricID(absoluteMetricName("meter"))).getCount(), is(equalTo(1L)));
+        assertThat("Timer count is incorrect", registry.getTimers()
+                .get(new MetricID(absoluteMetricName("timer"))).getCount(), is(equalTo(1L)));
         // Let's call the gauge at the end as Weld is intercepting the gauge
         // invocation while OWB not
-        assertThat("Gauge value is incorrect", registry.getGauges().get(absoluteMetricName("gauge")).getValue(), hasToString((equalTo("value"))));
+        assertThat("Gauge value is incorrect", registry.getGauges()
+                .get(new MetricID(absoluteMetricName("gauge"))).getValue(), hasToString((equalTo("value"))));
     }
 }

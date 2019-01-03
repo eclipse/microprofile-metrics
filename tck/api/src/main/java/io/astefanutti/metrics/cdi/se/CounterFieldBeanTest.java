@@ -23,6 +23,7 @@ import static org.junit.Assert.assertThat;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Counter;
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -39,6 +40,8 @@ public class CounterFieldBeanTest {
 
     private final static String COUNTER_NAME = MetricRegistry.name(CounterFieldBean.class, "counterName");
 
+    private final static MetricID COUNTER_METRICID = new MetricID(COUNTER_NAME);
+    
     @Deployment
     public static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
@@ -57,14 +60,14 @@ public class CounterFieldBeanTest {
     @Test
     @InSequence(1)
     public void counterFieldRegistered() {
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_NAME));
+        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_METRICID));
     }
 
     @Test
     @InSequence(2)
     public void incrementCounterField() {
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_NAME));
-        Counter counter = registry.getCounters().get(COUNTER_NAME);
+        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_METRICID));
+        Counter counter = registry.getCounters().get(COUNTER_METRICID);
 
         // Call the increment method and assert the counter is up-to-date
         long value = Math.round(Math.random() * Long.MAX_VALUE);

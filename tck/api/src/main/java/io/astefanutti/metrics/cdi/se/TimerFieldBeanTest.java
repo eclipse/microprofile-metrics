@@ -65,6 +65,7 @@ public class TimerFieldBeanTest {
 
     @Test
     public void timerFieldsWithDefaultNamingConvention() {
-        assertThat("Timers are not registered correctly", registry.getMetrics().keySet(), is(equalTo(metricNames())));
+        assertThat("Timers are not registered correctly", registry.getMetrics().keySet(), 
+            is(equalTo(MetricsUtil.createMetricIDs(metricNames()))));
     }
 }

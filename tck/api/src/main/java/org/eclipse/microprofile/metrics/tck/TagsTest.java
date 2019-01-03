@@ -23,8 +23,10 @@
 package org.eclipse.microprofile.metrics.tck;
 
 import org.eclipse.microprofile.metrics.Metadata;
-import org.eclipse.microprofile.metrics.MetricType;
-import org.eclipse.microprofile.metrics.MetricUnits;
+import org.eclipse.microprofile.metrics.MetricID;
+//import org.eclipse.microprofile.metrics.MetricType;
+//import org.eclipse.microprofile.metrics.MetricUnits;
+import org.eclipse.microprofile.metrics.Tag;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -39,12 +41,13 @@ import org.junit.runner.RunWith;
 public class TagsTest {
 
     private Metadata metadata;
+    private MetricID metricID;
 
     @Before
     public void setUp() {
-        this.metadata = Metadata.builder().withName("count").withDisplayName("countMe")
-                .withDescription("countMe tags test").withType(MetricType.COUNTER)
-                .withUnit(MetricUnits.PERCENT).addTag("colour=blue").build();
+        Tag one = new Tag("hello", "world");
+        Tag two = new Tag("goodbye", "friend");
+        this.metricID = new MetricID("metricName", one, two);
     }
 
     @Deployment
@@ -54,21 +57,8 @@ public class TagsTest {
 
     @Test
     public void tagsTest() {
-        Assert.assertNotNull(metadata);
-        Assert.assertTrue(metadata.getTags().containsValue("blue"));
-    }
-
-    @Test
-    public void addTagsTest() {
-
-        Metadata metadata2 = Metadata.builder(metadata)
-                .addTags("colour=green,size=medium").addTag("number=5").build();
-
-        Assert.assertNotNull(metadata2);
-        Assert.assertTrue(metadata2.getTags().containsKey("size"));
-        Assert.assertTrue(metadata2.getTags().containsValue("green"));
-        Assert.assertFalse(metadata2.getTags().containsValue("blue"));
-        Assert.assertTrue(metadata2.getTags().containsKey("number"));
+        Assert.assertTrue(metricID.getTags().containsValue("world"));
+        Assert.assertTrue(metricID.getTags().containsValue("friend"));
     }
 
 }
