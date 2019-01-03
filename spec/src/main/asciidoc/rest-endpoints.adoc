@@ -27,15 +27,17 @@ This section describes the REST-api, that monitoring agents would use to retriev
 
 * When using JSON format, the REST API will respond to GET requests with data formatted in a tree like fashion with sub-trees for the sub-resources.
 A sub-tree that does not contain data must be omitted.
-* A 'shadow tree' that responds to OPTIONS will provide the metadata.
+* A 'shadow tree' that responds to OPTIONS will provide the metadata and tags associated to a metric name.
 
 ==== Translation rules for metric names
 
-The metric name in JSON is comprised of the metric name appended with the metric tags (if they exist).
-The metric tags is represented by a comma separated list of key/value tag pairs surrounded by braces `{` and `}`
-Each tag is a key-value-pair in the format of `<key>=<value>`. The list of tags must be sorted alphabetically.
+The following rules apply only to GET requests:
+* The metric name in JSON is comprised of the metric name appended with the metric tags (if they exist).
+* The metric tags is represented by a comma separated list of key/value tag pairs surrounded by braces `{` and `}`
 
-If the metric name or tag value contains a special reserved JSON character, these characters must be escaped in the JSON response.
+The following apply to both GET and OPTION requests:
+* Each tag is a key-value-pair in the format of `<key>=<value>`. The list of tags must be sorted alphabetically.
+* If the metric name or tag value contains a special reserved JSON character, these characters must be escaped in the JSON response.
 
 
 [source]
@@ -250,7 +252,7 @@ The value of the counter must be equivalent to a call to the instance Counter's 
 
 
 Metadata is exposed in a tree-like fashion with sub-trees for the sub-resources mentioned previously.
-
+Tags from metrics associated with the metric name are also included.
 
 Example:
 
@@ -258,7 +260,7 @@ If `GET /metrics/base/fooVal` exposes:
 
 [source]
 ----
-{"fooVal": 12345}
+{"fooVal{app=webshop}": 12345}
 ----
 
 then `OPTIONS /metrics/base/fooVal` will expose:
@@ -267,11 +269,16 @@ then `OPTIONS /metrics/base/fooVal` will expose:
 ----
 
 {
-  "fooVal{app=webshop}": {
+  "fooVal": {
     "unit": "milliseconds",
     "type": "gauge",
     "description": "The size of foo after each request",
-    "displayName": "Size of foo"
+    "displayName": "Size of foo",
+    "tags": [
+      [
+        "app=webshop"
+      ]
+    ]
   }
 }
 
@@ -283,8 +290,8 @@ If `GET /metrics/base` exposes multiple values like this:
 [source]
 ----
 {
-  "fooVal": 12345,
-  "barVal": 42
+  "fooVal{app=webshop}": 12345,
+  "barVal{app=webshop,component=backend}": 42
 }
 ----
 
@@ -294,15 +301,26 @@ then `OPTIONS /metrics/base` exposes:
 [source]
 ----
 {
-  "fooVal{app=webshop}": {
+  "fooVal": {
     "unit": "milliseconds",
     "type": "gauge",
     "description": "The average duration of foo requests during last 5 minutes",
-    "displayName": "Duration of foo"
+    "displayName": "Duration of foo",
+    "tags": [
+      [
+        "app=webshop"
+      ]
+    ]
   },
-  "barVal{app=webshop,component=backend}": {
+  "barVal": {
     "unit": "megabytes",
     "type": "gauge",
+    "tags": [
+      [
+        "app=webshop",
+        "component=backend"
+      ]
+    ]
   }
 }
 ----

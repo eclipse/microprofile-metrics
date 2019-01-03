@@ -270,12 +270,12 @@ public class MpMetricTest {
         List<String> missing = new ArrayList<>();
 
         Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
-        for (MiniMeta item : baseNames.values()) {
-            if (item.name.startsWith("gc.") || baseNames.get(item.name).optional) {
+        for (String item : baseNames.keySet()) {
+            if (item.startsWith("gc.") || baseNames.get(item).optional) {
                 continue;
             }
-            if (!elements.containsKey(item.toJSONName())) {
-                missing.add(item.toJSONName());
+            if (!elements.containsKey(item)) {
+                missing.add(item);
             }
         }
 
@@ -303,7 +303,7 @@ public class MpMetricTest {
             if (item.name.startsWith("gc.") || expectedMetadata.get(item.name).optional) {
                 continue; // We don't deal with them here
             }
-            Map<String, Object> fromServer = elements.get(item.toJSONName());
+            Map<String, Object> fromServer = elements.get(item.name);
             assertNotNull("Got no data for " + item.name + " from the server", fromServer);
             assertEquals("expected " + item.type + " but got "
                     + fromServer.get("type") + " for " + item.name, item.type, fromServer.get("type"));
@@ -386,7 +386,7 @@ public class MpMetricTest {
         Map<String, Object> elements = jsonPath.getMap(".");
         for (String name : elements.keySet()) {
             if (name.startsWith("gc.")) {
-                assertTrue(name.endsWith(".count{tier=integration}") || name.endsWith(".time{tier=integration}"));
+                assertTrue(name.endsWith(".count") || name.endsWith(".time"));
                 count++;
             }
         }
@@ -520,9 +520,9 @@ public class MpMetricTest {
         List<String> missing = new ArrayList<>();
 
         Map<String, MiniMeta> names = getExpectedMetadataFromXmlFile(MetricRegistry.Type.APPLICATION);
-        for (MiniMeta item : names.values()) {
-            if (!elements.containsKey(item.toJSONName())) {
-                missing.add(item.toJSONName());
+        for (String item : names.keySet()) {
+            if (!elements.containsKey(item)) {
+                missing.add(item);
             }
         }
         assertTrue("Following application items are missing: " + Arrays.toString(missing.toArray()), missing.isEmpty());
@@ -547,13 +547,14 @@ public class MpMetricTest {
     @RunAsClient
     @InSequence(21)
     public void testApplicationTagJson() {
-        
-        given().header("Accept", APPLICATION_JSON)
+
+        JsonPath jsonPath = given().header("Accept", APPLICATION_JSON)
             .when()
-            .options("/metrics/application/purple")
-            .then().statusCode(200)
-            .and()
-            .body(containsString("purple{app=myShop,tier=integration}"));
+            .options("/metrics/application/purple").jsonPath();
+        String tags = jsonPath.getString("purple.tags");
+        assertNotNull(tags);
+        assertTrue(tags.contains("app=myShop"));
+        assertTrue(tags.contains("tier=integration"));
     }
 
     @Test
@@ -692,7 +693,7 @@ public class MpMetricTest {
         Header wantJSONFormat = new Header("Accept", APPLICATION_JSON);
         
         given().header(wantJSONFormat).options("/metrics/application/jellybeanHistogram").then().statusCode(200)
-         .body("'jellybeanHistogram{tier=integration}'.unit", equalTo("jellybeans"));
+         .body("jellybeanHistogram.unit", equalTo("jellybeans"));
 
     }
 

@@ -23,12 +23,14 @@
 ** Removed unnecessary `@InterceptorBinding` annotation from `org.eclipse.microprofile.metrics.annotation.Metric`.
 ** Removed deprecated `org.eclipse.microprofile.metrics.MetricRegistry.register(String name, Metric, Metadata)`
 ** `Metadata` is now immutable and built via a `MetadataBuilder`.
+** Introduced a Tag object which represents a singular tag key/value pair.
 ** Metrics are now uniquely identified by a MetricID (combination of the metric's name and tags).
 ** The 'Metadata' is mapped to a unique metric name in the `MetricRegistry` and this relationship is immutable.
 ** Tag key names are restricted to match the regex `[a-zA-Z_][a-zA-Z0-9_]*`.
 ** Tag values defined through MP_METRICS_TAGS must escape equal signs `=` and commas `,` with a backslash `\`.
-** JSON format now includes tags along with the metric name for the JSON key. As the tags are provided with the metric name,
-the OPTIONS requests do not list the tags as a nested JSON field.
+** JSON format for GET requests now includes tags along with the metric name. JSON format for OPTIONS requests
+have been modified such that the 'tags' attribute is a list of nested lists which holds tags from different metrics that
+ are associated with the metadata.
 ** Reserved characters in Prometheus format must be escaped.
 
 
