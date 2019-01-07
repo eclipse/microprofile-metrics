@@ -65,7 +65,9 @@ public class Tag {
      * @throws IllegalArgumentException If the tagName does not match [a-zA-Z_][a-zA-Z0-9_]*
      */
     public Tag(String tagName, String tagValue) throws IllegalArgumentException {
-        if (!tagName.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {
+        if (tagName == null ||
+            tagValue == null ||
+            !tagName.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {
             throw new IllegalArgumentException("Invalid Tag name. Tag names must match the following regex [a-zA-Z_][a-zA-Z0-9_]*");
         }
         this.tagName = tagName;
