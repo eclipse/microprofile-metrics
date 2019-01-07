@@ -23,6 +23,8 @@
  **********************************************************************/
 package org.eclipse.microprofile.metrics;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -139,7 +141,7 @@ public class Metadata {
      * <p/>
      */
     Metadata() {
-        String globalTagsFromEnv = System.getenv(GLOBAL_TAGS_VARIABLE);
+        String globalTagsFromEnv = AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getenv(GLOBAL_TAGS_VARIABLE));
 
         addTags(globalTagsFromEnv);
     }
