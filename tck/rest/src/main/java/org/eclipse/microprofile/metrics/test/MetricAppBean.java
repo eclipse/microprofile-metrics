@@ -80,6 +80,11 @@ public class MetricAppBean {
     public void countMeA() {
 
     }
+    
+    @Counted(name = "metricTest.test1.countMeB", monotonic = true, absolute = true, unit = "jellybean")
+    public long countMeB() {
+        return 666666;
+    }
 
     public void gaugeMe() {
 
@@ -98,6 +103,11 @@ public class MetricAppBean {
     @org.eclipse.microprofile.metrics.annotation.Gauge(unit = MetricUnits.KIBIBITS)
     public long gaugeMeA() {
         return 1000L;
+    }
+
+    @org.eclipse.microprofile.metrics.annotation.Gauge(unit = "hands")
+    public long gaugeMeB() {
+        return 7777777;
     }
 
     public void histogramMe() {
