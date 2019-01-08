@@ -82,6 +82,12 @@ public class MetricAppBean {
 
     }
 
+        
+    @Counted(name = "metricTest.test1.countMeB", monotonic = true, absolute = true, unit = "jellybean")
+    public long countMeB() {
+        return 666666;
+    }
+
     public void gaugeMe() {
 
         @SuppressWarnings("unchecked")
@@ -104,6 +110,11 @@ public class MetricAppBean {
         return 1000L;
     }
 
+        @org.eclipse.microprofile.metrics.annotation.Gauge(unit = "hands")
+    public long gaugeMeB() {
+        return 7777777;
+    }
+    
     public void histogramMe() {
 
         Metadata metadata = Metadata.builder().withName("metricTest.test1.histogram")

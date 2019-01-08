@@ -65,7 +65,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -126,9 +126,9 @@ public class MpMetricTest {
     }
 
     @Deployment
-    public static JavaArchive createDeployment() {
-        JavaArchive jar = ShrinkWrap.create(JavaArchive.class).addClass(MetricAppBean.class)
-                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+    public static WebArchive createDeployment() {
+        WebArchive jar = ShrinkWrap.create(WebArchive.class).addClass(MetricAppBean.class)
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 
         System.out.println(jar.toString(true));
         return jar;
@@ -197,8 +197,8 @@ public class MpMetricTest {
     @InSequence(6)
     public void testBasePrometheus() {
         given().header("Accept", TEXT_PLAIN).when().get("/metrics/base").then().statusCode(200).and()
-                .contentType(TEXT_PLAIN).and().body(containsString("# TYPE base_thread_max_count"),
-                        containsString("base_thread_max_count{tier=\"integration\"}"));
+                .contentType(TEXT_PLAIN).and().body(containsString("# TYPE base_thread_max_count_total"),
+                        containsString("base_thread_max_count_total{tier=\"integration\"}"));
     }
 
     @Test
@@ -243,8 +243,8 @@ public class MpMetricTest {
     @InSequence(9)
     public void testBaseAttributePrometheus() {
         given().header("Accept", TEXT_PLAIN).when().get("/metrics/base/thread.max.count").then().statusCode(200).and()
-                .contentType(TEXT_PLAIN).and().body(containsString("# TYPE base_thread_max_count"),
-                        containsString("base_thread_max_count{tier=\"integration\"}"));
+                .contentType(TEXT_PLAIN).and().body(containsString("# TYPE base_thread_max_count_total"),
+                        containsString("base_thread_max_count_total{tier=\"integration\"}"));
     }
 
     @Test
@@ -412,10 +412,11 @@ public class MpMetricTest {
 
         metricAppBean.countMe();
         metricAppBean.countMeA();
-
+        metricAppBean.countMeB();
+        
         metricAppBean.gaugeMe();
         metricAppBean.gaugeMeA();
-
+        metricAppBean.gaugeMeB();
         metricAppBean.histogramMe();
 
         metricAppBean.meterMe();
@@ -445,10 +446,12 @@ public class MpMetricTest {
                 .body("'metricTest.test1.count{tier=integration}'", equalTo(1))
 
                 .body("'metricTest.test1.countMeA{tier=integration}'", equalTo(1))
+                .body("'metricTest.test1.countMeB{tier=integration}'", equalTo(1))
 
                 .body("'metricTest.test1.gauge{tier=integration}'", equalTo(19))
 
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeA{tier=integration}'", equalTo(1000))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeB{tier=integration}'", equalTo(7777777))
 
                 .body("'metricTest.test1.histogram'.'count{tier=integration}'", equalTo(1000))
                 .body("'metricTest.test1.histogram'.'max{tier=integration}'", equalTo(999))
@@ -569,6 +572,8 @@ public class MpMetricTest {
             .body(containsString("app=\"myShop\""));
     }
 
+    @Test
+    @RunAsClient
     @InSequence(23)
     public void testApplicationMeterUnitPrometheus() {
 
@@ -612,6 +617,8 @@ public class MpMetricTest {
         ;
     }
 
+    @Test
+    @RunAsClient
     @InSequence(25)
     public void testApplicationHistogramUnitBytesPrometheus() {
 
@@ -840,7 +847,24 @@ public class MpMetricTest {
             .contentType(TEXT_PLAIN);
     }
 
+    @Test
+    @RunAsClient
+    @InSequence(41)
+    public void testCustomUnitAppendToGaugeName() {
+        Header wantPrometheusFormat = new Header("Accept", TEXT_PLAIN);
+        given().header(wantPrometheusFormat).get("/metrics/application").then().statusCode(200)
+        .and().body(containsString("TYPE application_org_eclipse_microprofile_metrics_test_metric_app_bean_gauge_me_b_hands gauge"));
+    }
 
+    @Test
+    @RunAsClient
+    @InSequence(42)
+    public void testNoCustomUnitForCounter() {
+        Header wantPrometheusFormat = new Header("Accept", TEXT_PLAIN);
+        given().header(wantPrometheusFormat).get("/metrics/application").then().statusCode(200)
+        .and().body(containsString("TYPE application_metric_test_test1_count_me_b_total counter"));
+    }
+    
     /**
      * Checks that the value is within tolerance of the expected value
      *

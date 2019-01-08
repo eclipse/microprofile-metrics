@@ -39,7 +39,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -88,9 +88,9 @@ public class ReusableMetricsTest {
     }
 
   @Deployment
-  public static JavaArchive createDeployment() {
-      JavaArchive jar = ShrinkWrap.create(JavaArchive.class).addClass(MetricAppBean2.class)
-              .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+  public static WebArchive createDeployment() {
+      WebArchive jar = ShrinkWrap.create(WebArchive.class).addClass(MetricAppBean2.class)
+              .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 
       return jar;
   }

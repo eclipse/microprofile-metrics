@@ -25,7 +25,9 @@
   <metric multi="false" name="purple" type="counter" unit="none" tags="app=myShop"/>
   <metric multi="false" name="jellybeanHistogram" type="histogram" unit="jellybeans"/>
   <metric multi="false" name="metricTest.test1.countMeA" type="counter" unit="none"/>
+  <metric multi="false" name="metricTest.test1.countMeB" type="counter" unit="jellybean"/>
   <metric multi="false" name="org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeA" type="gauge" unit="kibibits"/>
+  <metric multi="false" name="org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeB" type="gauge" unit="hands"/>
   <metric multi="false" name="meterMeA" type="meter" unit="per_second"/>
   <metric multi="false" name="org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA" type="timer" unit="nanoseconds"/>
 </config>
