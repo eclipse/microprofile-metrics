@@ -1,7 +1,7 @@
 /*
  **********************************************************************
- * Copyright (c) 2018 Contributors to the Eclipse Foundation
- *               2018 IBM Corporation and others
+ * Copyright (c) 2018, 2019 Contributors to the Eclipse Foundation
+ *               2018, 2019 IBM Corporation and others
  *               and other contributors as indicated by the @author tags.
  *
  * See the NOTICES file(s) distributed with this work for additional
@@ -67,7 +67,7 @@ public class MetricID implements Comparable<MetricID> {
 
     public static final String GLOBAL_TAGS_VARIABLE = "MP_METRICS_TAGS";
 
-    private static final String GLOBA_TAG_MALFORMED_EXCEPTION = "Malformed list of Global Tags. Tag names "
+    private static final String GLOBAL_TAG_MALFORMED_EXCEPTION = "Malformed list of Global Tags. Tag names "
                                                                 + "must match the following regex [a-zA-Z_][a-zA-Z0-9_]*."
                                                                 + " Global Tag values must not be empty."
                                                                 + " Global Tag values MUST escape equal signs `=` and commas `,`"
@@ -214,13 +214,13 @@ public class MetricID implements Comparable<MetricID> {
         for (String kvString : kvPairs) {
 
             if (kvString.length() == 0) {
-                throw new IllegalArgumentException(GLOBA_TAG_MALFORMED_EXCEPTION);
+                throw new IllegalArgumentException(GLOBAL_TAG_MALFORMED_EXCEPTION);
             }
 
             String[] keyValueSplit = kvString.split("(?<!\\\\)=");
 
             if (keyValueSplit.length != 2 || keyValueSplit[0].length() == 0 || keyValueSplit[1].length() == 0) {
-                throw new IllegalArgumentException(GLOBA_TAG_MALFORMED_EXCEPTION);
+                throw new IllegalArgumentException(GLOBAL_TAG_MALFORMED_EXCEPTION);
             }
 
             String key = keyValueSplit[0];
