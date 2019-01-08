@@ -183,14 +183,14 @@ There is one `MetricRegistry` instance for each of the scopes listed in <<scopes
 Metrics can be added to or retrieved from the registry either using the `@Metric` annotation
 (see <<api-annotations, Metrics Annotations>>) or using the `MetricRegistry` object directly.
 
-A metric is uniquely identified by the `MetricRegistry` if the `MetricID` associated with the metric is unique. That is to say, there are no other metrics with the same combination of metric name and tags. However, all metrics of the same name must be of the same type otherwise an `IllegalArgumentException` will be thrown.
+A metric is uniquely identified by the `MetricRegistry` if the `MetricID` associated with the metric is unique. That is to say, there are no other metrics with the same combination of metric name and tags. However, all metrics of the same name must be of the same type otherwise an `IllegalArgumentException` will be thrown. This exception will be thrown during registration.
 
-The metadata information is registered under a unique metric name and is immutable. All metrics of the same name must be registered with the same metadata information otherwise an "IllegalArgumentException" will be thrown.
+The metadata information is registered under a unique metric name and is immutable. All metrics of the same name must be registered with the same metadata information otherwise an "IllegalArgumentException" will be thrown. This exception will be thrown during registration.
 
 [[metricid-data-def]]
 ==== MetricID
 
-The MetricID consists of the metric's name and tags (if supplied). This is used by the MetricRegistry to uniquely identify a metric and its' corresponding metadata.
+The MetricID consists of the metric's name and tags (if supplied). This is used by the MetricRegistry to uniquely identify a metric and its corresponding metadata.
 
 The MetricID:
 
@@ -200,7 +200,7 @@ The MetricID:
 [[reusing_of_metrics]]
 ==== Reusing of Metrics
 
-By default it is not allowed to re-register more than one metric under a certain name and tags combination in a scope. This is done
+By default it is not allowed to register more than one metric under a certain name and tags combination in a scope. This is done
 to prevent hard to spot copy & paste errors, where for example all methods of a Jax-Rs class are marked with
 `@Timed(name="myApp", absolute=true)`.
 

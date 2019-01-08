@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2019 Contributors to the Eclipse Foundation
  *               2010-2013 Coda Hale, Yammer.com
  *
  * See the NOTICES file(s) distributed with this work for additional
@@ -27,16 +27,16 @@ package org.eclipse.microprofile.metrics;
  */
 public interface MetricFilter {
     /**
-     * Matches all metrics, regardless of type or name.
+     * Matches all metrics, regardless of type or {@link MetricID}.
      */
-    MetricFilter ALL = (name, metric) -> true;
+    MetricFilter ALL = (metricID, metric) -> true;
 
     /**
      * Returns {@code true} if the metric matches the filter; {@code false} otherwise.
      *
-     * @param name      the metric's name
-     * @param metric    the metric
+     * @param metricID the metric's {@link MetricID}
+     * @param metric the metric
      * @return {@code true} if the metric matches the filter
      */
-    boolean matches(String name, Metric metric);
+    boolean matches(MetricID metricID, Metric metric);
 }

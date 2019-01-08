@@ -33,7 +33,7 @@ A sub-tree that does not contain data must be omitted.
 
 The following rules apply only to GET requests:
 * The metric name in JSON is comprised of the metric name appended with the metric tags (if they exist).
-* The metric tags is represented by a comma separated list of key/value tag pairs surrounded by braces `{` and `}`
+* The metric tags are represented by a comma separated list of key/value tag pairs surrounded by braces `{` and `}`
 
 The following apply to both GET and OPTION requests:
 * Each tag is a key-value-pair in the format of `<key>=<value>`. The list of tags must be sorted alphabetically.
@@ -45,7 +45,7 @@ The following apply to both GET and OPTION requests:
 {
   "cars{colour=red,type=sedan}" : 12,
   "cars{colour=blue,type=sedan}" : 9,
-  "cars{colour=yellow,type=sedan}" : 16,
+  "cars{colour=yellow,type=sedan}" : 16
 }
 ----
 
@@ -80,7 +80,7 @@ or
 [source]
 ----
 {
-  "hitCount{type=yes}": 45,
+  "hitCount{type=yes}": 45
 }
 ----
 
@@ -149,7 +149,7 @@ The value of the counter must be equivalent to a call to the instance Counter's 
     "meanRate": 12.223,
     "oneMinRate": 12.563,
     "fiveMinRate": 12.364,
-    "fifteenMinRate": 12.126,
+    "fifteenMinRate": 12.126
   }
 }
 ----

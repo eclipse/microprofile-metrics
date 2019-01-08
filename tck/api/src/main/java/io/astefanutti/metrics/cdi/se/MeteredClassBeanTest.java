@@ -58,8 +58,8 @@ public class MeteredClassBeanTest {
 
     private static final MetricFilter METHOD_METERS = new MetricFilter() {
         @Override
-        public boolean matches(String name, Metric metric) {
-            return METHOD_METER_NAMES.contains(name);
+        public boolean matches(MetricID metricID, Metric metric) {
+            return METHOD_METER_NAMES.contains(metricID.getName());
         }
     };
 

@@ -65,8 +65,8 @@ public class MonotonicCountedClassBeanTest {
             
     private static final MetricFilter METHOD_COUNTERS = new MetricFilter() {
         @Override
-        public boolean matches(String name, Metric metric) {
-            return METHOD_COUNTER_NAMES.contains(name);
+        public boolean matches(MetricID metricID, Metric metric) {
+            return METHOD_COUNTER_NAMES.contains(metricID.getName());
         }
     };
 

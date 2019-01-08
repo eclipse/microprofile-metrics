@@ -25,6 +25,7 @@
 ** `Metadata` is now immutable and built via a `MetadataBuilder`.
 ** Introduced a Tag object which represents a singular tag key/value pair.
 ** Metrics are now uniquely identified by a MetricID (combination of the metric's name and tags).
+** MetricFilter modified to filter with MetricID instead of name
 ** The 'Metadata' is mapped to a unique metric name in the `MetricRegistry` and this relationship is immutable.
 ** Tag key names are restricted to match the regex `[a-zA-Z_][a-zA-Z0-9_]*`.
 ** Tag values defined through MP_METRICS_TAGS must escape equal signs `=` and commas `,` with a backslash `\`.

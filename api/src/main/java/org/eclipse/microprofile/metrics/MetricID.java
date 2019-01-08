@@ -71,7 +71,7 @@ public class MetricID implements Comparable<MetricID> {
                                                                 + "must match the following regex [a-zA-Z_][a-zA-Z0-9_]*."
                                                                 + " Global Tag values must not be empty."
                                                                 + " Global Tag values MUST escape equal signs `=` and commas `,`"
-                                                                + "with a backslash `\\` ";
+                                                                + " with a backslash `\\` ";
 
     /**
      * Name of the metric.
@@ -124,7 +124,7 @@ public class MetricID implements Comparable<MetricID> {
     }
 
     /**
-     * Returns the underlying HashMap containing the tags.
+     * Returns the underlying map containing the tags.
      *
      * @return a {@link Map} of tags
      */

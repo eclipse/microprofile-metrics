@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2018, 2019 Contributors to the Eclipse Foundation
  *               2018 Red Hat, Inc. and/or its affiliates
  *               and other contributors as indicated by the @author tags.
  *
@@ -140,13 +140,23 @@ public class DefaultMetadata implements Metadata {
             return false;
         }
         Metadata that = (Metadata) o;
-        return Objects.equals(name, that.getName());
 
+        //Retrieve the Optional value or set to the "defaults" if empty
+        String thatDescription = (that.getDescription().isPresent()) ? that.getDescription().get() : null;
+        String thatUnit = (that.getUnit().isPresent()) ? that.getUnit().get() : MetricUnits.NONE;
+        
+        //Need to use this.getDisplayname() and this.getTypeRaw() for the Optional.orElse() logic
+        return Objects.equals(name, that.getName()) &&
+                Objects.equals(this.getDisplayName(), that.getDisplayName()) &&
+                Objects.equals(description, thatDescription) &&
+                Objects.equals(unit, thatUnit) &&
+                Objects.equals(this.getTypeRaw(), that.getTypeRaw()) &&
+                Objects.equals(reusable, that.isReusable());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(name);
+        return Objects.hash(name, displayName, description, unit, type, reusable);
     }
 
     @Override

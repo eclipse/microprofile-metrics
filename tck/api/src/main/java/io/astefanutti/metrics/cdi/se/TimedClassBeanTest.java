@@ -59,8 +59,8 @@ public class TimedClassBeanTest {
 
     private static final MetricFilter METHOD_TIMERS = new MetricFilter() {
         @Override
-        public boolean matches(String name, Metric metric) {
-            return METHOD_TIMER_NAMES.contains(name);
+        public boolean matches(MetricID metricID, Metric metric) {
+            return METHOD_TIMER_NAMES.contains(metricID.getName());
         }
     };
 
