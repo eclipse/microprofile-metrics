@@ -291,7 +291,8 @@ If `GET /metrics/base` exposes multiple values like this:
 ----
 {
   "fooVal{app=webshop}": 12345,
-  "barVal{app=webshop,component=backend}": 42
+  "barVal{app=webshop,component=backend}": 42,
+  "barVal{app=webshop,component=frontend}": 63
 }
 ----
 
@@ -319,6 +320,10 @@ then `OPTIONS /metrics/base` exposes:
       [
         "app=webshop",
         "component=backend"
+      ],
+      [
+        "app=webshop",
+        "component=frontend"
       ]
     ]
   }
@@ -346,6 +351,8 @@ The above json example would look like this in OpenMetrics format
 base_foo_val_seconds{app="webshop"} 12.345  <3>
 # TYPE base_bar_val_bytes gauge <1>
 base_bar_val_bytes{component="backend", app="webshop"} 42000 <3>
+# TYPE base_bar_val_bytes gauge <1>
+base_bar_val_bytes{component="frontend", app="webshop"} 63000 <3>
 ----
 <1> Metric names are turned from camel case into snake_case.
 <2> The description goes into the HELP line
@@ -441,7 +448,7 @@ Counters do not have a suffix for the unit.
 ----
 # TYPE application_visitors_total counter
 # HELP application_visitors_total The number of unique visitors
-application_visitors 80
+application_visitors_total 80
 ----
 
 ==== Meter OpenMetrics Text Format

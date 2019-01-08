@@ -33,7 +33,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,11 +53,11 @@ public class TimerTagFieldBeanTest {
 
     @Deployment
     static Archive<?> createTestArchive() {
-        return ShrinkWrap.create(JavaArchive.class)
+        return ShrinkWrap.create(WebArchive.class)
             // Test bean
             .addClasses(TimerTagFieldBean.class, MetricsUtil.class)
             // Bean archive deployment descriptor
-            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
