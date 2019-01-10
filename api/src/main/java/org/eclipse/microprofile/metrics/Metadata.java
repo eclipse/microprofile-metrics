@@ -23,10 +23,13 @@
  **********************************************************************/
 package org.eclipse.microprofile.metrics;
 
+import org.eclipse.microprofile.config.ConfigProvider;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Bean holding the metadata of one single metric.
@@ -139,9 +142,8 @@ public class Metadata {
      * <p/>
      */
     Metadata() {
-        String globalTagsFromEnv = System.getenv(GLOBAL_TAGS_VARIABLE);
-
-        addTags(globalTagsFromEnv);
+        Optional<String> globalTags = ConfigProvider.getConfig().getOptionalValue(GLOBAL_TAGS_VARIABLE, String.class);
+        globalTags.ifPresent(this::addTags);
     }
 
     /**
