@@ -107,7 +107,7 @@ public class TagsTest {
         
         MetricID counterColourMID = new MetricID(counterName);
         MetricID counterRedMID = new MetricID(counterName, tagEarth,tagRed);
-        MetricID counterBlueMID = new MetricID(counterName, tagEarth,tagRed);
+        MetricID counterBlueMID = new MetricID(counterName, tagEarth,tagBlue);
         
         //check multi-dimensional metrics are registered
         assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterColourMID));
@@ -131,7 +131,7 @@ public class TagsTest {
         
         MetricID meterColourMID = new MetricID(meterName);
         MetricID meterRedMID = new MetricID(meterName, tagEarth,tagRed);
-        MetricID meterBlueMID = new MetricID(meterName, tagEarth,tagRed);
+        MetricID meterBlueMID = new MetricID(meterName, tagEarth,tagBlue);
         
         //check multi-dimensional metrics are registered
         assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(meterColourMID));
@@ -155,7 +155,7 @@ public class TagsTest {
         
         MetricID timerColourMID = new MetricID(timerName);
         MetricID timerRedMID = new MetricID(timerName, tagEarth,tagRed);
-        MetricID timerBlueMID = new MetricID(timerName, tagEarth,tagRed);
+        MetricID timerBlueMID = new MetricID(timerName, tagEarth,tagBlue);
         
         //check multi-dimensional metrics are registered
         assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timerColourMID));
@@ -179,7 +179,7 @@ public class TagsTest {
         
         MetricID histogramColourMID = new MetricID(histogramName);
         MetricID histogramRedMID = new MetricID(histogramName, tagEarth,tagRed);
-        MetricID histogramBlueMID = new MetricID(histogramName, tagEarth,tagRed);
+        MetricID histogramBlueMID = new MetricID(histogramName, tagEarth,tagBlue);
         
         //check multi-dimensional metrics are registered
         assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(histogramColourMID));
