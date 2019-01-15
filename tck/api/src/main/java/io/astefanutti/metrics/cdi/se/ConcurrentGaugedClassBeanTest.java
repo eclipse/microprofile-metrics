@@ -114,6 +114,6 @@ public class ConcurrentGaugedClassBeanTest {
 
         // Make sure that the max is one
         assertThat("Concurrent Gauges counts are incorrect", registry.getConcurrentGauges().values(),
-                   everyItem(Matchers.<ConcurrentGauge>hasProperty("count", equalTo(1L))));
+                   everyItem(Matchers.<ConcurrentGauge>hasProperty("max", equalTo(1L))));
     }
 }
