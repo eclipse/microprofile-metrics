@@ -1,4 +1,4 @@
-/**
+/*
  * ********************************************************************
  *  Copyright (c) 2018 Contributors to the Eclipse Foundation
  *
@@ -31,6 +31,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InterceptorBinding;
+import org.eclipse.microprofile.metrics.MetricUnits;
 
 /**
  * An annotation for marking a method, constructor, or class as concurrent gauged.
@@ -115,6 +116,15 @@ public @interface ConcurrentGauge {
      */
     @Nonbinding
     String description() default "";
+
+    /**
+     * @return The unit of the concurrent gauge. By default, the value is {@link MetricUnits#NONE}.
+     *
+     * @see org.eclipse.microprofile.metrics.Metadata
+     * @see org.eclipse.microprofile.metrics.MetricUnits
+     */
+    @Nonbinding
+    String unit() default MetricUnits.NONE;
 
 
     /**

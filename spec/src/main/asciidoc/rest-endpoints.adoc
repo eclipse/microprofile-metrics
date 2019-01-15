@@ -474,29 +474,26 @@ The exposed metric names have suffixes as follows:
 |===
 | Value | Suffix
 
-| `getCount` |  `_total`
+| `getCount` |  _<none>_
 | `getMin` |  `_min`
 | `getMax` |  `_max`
 |===
 
-
-The `_total` suffix is not appended if the (translated) original metric name already ends in `_total`.
 
 Concurrent gauges do not have a suffix for the unit.
 
 .Example OpenMetrics text format for a Concurrent Gauge
 [source, ruby]
 ----
-# TYPE application_method_a_invocations_current gauge
-# HELP application_method_a_invocations_current The number of parallel invocations of visitorsTotal()
-application_method_a_invocations_current 80
+# TYPE application_method_a_invocations gauge
+# HELP application_method_a_invocations The number of parallel invocations of visitorsTotal() #<1>
+application_method_a_invocations 80
 # TYPE application_method_a_invocations_min gauge
-# HELP application_method_a_invocations_min The lowest number of parallel invocations of visitorsTotal() in the last minute
 application_method_a_invocations_min 20
 # TYPE application_method_a_invocations_max gauge
-# HELP application_method_a_invocations_max The highest number of parallel invocations of visitorsTotal() in the last minute
 application_method_a_invocations_max 100
 ----
+<1> Note help is only emitted for the metric related to `getCount()`, but not for _min and _max.
 
 ==== Meter OpenMetrics Text Format
 
