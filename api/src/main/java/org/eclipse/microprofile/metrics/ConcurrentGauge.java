@@ -32,13 +32,19 @@ package org.eclipse.microprofile.metrics;
  */
 public interface ConcurrentGauge extends Metric {
 
-  /** Get the current value of the ConcurrentGauge */
+  /**
+   * Get the current value of the ConcurrentGauge
+   *
+   * @return the current value.
+   */
   long getCount();
   /**
    * Get the maximum value of the ConcurrentGauge for the previously completed minute.
    *
    * This represents the highest number of concurrent
    * invocations in the last complete minute.
+   *
+   * @return The maximum value in the previously completed minute.
    */
   long getMax();
   /**
@@ -46,6 +52,8 @@ public interface ConcurrentGauge extends Metric {
    *
    * This represents the lowest number of concurrent
    * invocations in the last complete minute.
+   *
+   * @return The minimum value in the previously completed minute.
    */
   long getMin();
 

@@ -242,6 +242,7 @@ public abstract class MetricRegistry {
      * If a {@link ConcurrentGauge} was created, a {@link Metadata} object will be registered with the name and type.
      *
      * @param name the name of the metric
+     * @param tags the tags of the metric
      * @return a new or pre-existing {@link ConcurrentGauge}
      */
     public abstract ConcurrentGauge concurrentGauge(String name, Tag... tags);
@@ -272,6 +273,7 @@ public abstract class MetricRegistry {
      * </p>
      *
      * @param metadata the name of the metric
+     * @param tags the tags of the metric
      * @return a new or pre-existing {@link ConcurrentGauge}
      */
     public abstract ConcurrentGauge concurrentGauge(Metadata metadata, Tag... tags);
@@ -529,27 +531,23 @@ public abstract class MetricRegistry {
     public abstract SortedMap<MetricID, Counter> getCounters(MetricFilter filter);
 
     /**
-<<<<<<< HEAD
-     * Returns a map of all the histograms in the registry and their {@link MetricID}s.
-=======
-     * Returns a map of all the concurrent gauges in the registry and their names.
+     * Returns a map of all the concurrent gauges in the registry and their {@link MetricID}s.
      *
      * @return all the concurrent gauges in the registry
      */
-    public abstract SortedMap<String, ConcurrentGauge> getConcurrentGauges();
+    public abstract SortedMap<MetricID, ConcurrentGauge> getConcurrentGauges();
 
     /**
-     * Returns a map of all the concurrent gauges in the registry and their names which match the given
-     * filter.
+     * Returns a map of all the concurrent gauges in the registry and their {@link MetricID}s which match
+     * the given filter.
      *
      * @param filter    the metric filter to match
      * @return all the concurrent gauges in the registry
      */
-    public abstract SortedMap<String, ConcurrentGauge> getConcurrentGauges(MetricFilter filter);
+    public abstract SortedMap<MetricID, ConcurrentGauge> getConcurrentGauges(MetricFilter filter);
 
     /**
-     * Returns a map of all the histograms in the registry and their names.
->>>>>>> Incorporate more feedback.
+     * Returns a map of all the histograms in the registry and their {@link MetricID}s.
      *
      * @return all the histograms in the registry
      */
