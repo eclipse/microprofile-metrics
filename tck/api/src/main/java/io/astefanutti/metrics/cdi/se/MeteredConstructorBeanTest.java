@@ -24,6 +24,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Meter;
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -39,6 +40,8 @@ import org.junit.runner.RunWith;
 public class MeteredConstructorBeanTest {
 
     private final static String METER_NAME = "meteredConstructor";
+    
+    private final static MetricID METER_METRICID = new MetricID(METER_NAME);
 
     @Deployment
     static Archive<?> createTestArchive() {
@@ -69,8 +72,8 @@ public class MeteredConstructorBeanTest {
             instance.get();
         }
 
-        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(METER_NAME));
-        Meter meter = registry.getMeters().get(METER_NAME);
+        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(METER_METRICID));
+        Meter meter = registry.getMeters().get(METER_METRICID);
 
         // Make sure that the meter has been called
         assertThat("Meter count is incorrect", meter.getCount(), is(equalTo(count)));

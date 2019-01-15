@@ -23,6 +23,7 @@ import static org.junit.Assert.assertThat;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.Timer;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -40,6 +41,8 @@ public class TimedConstructorBeanTest {
 
     private final static String TIMER_NAME = MetricRegistry.name(TimedConstructorBean.class, "timedConstructor");
 
+    private final static MetricID TIMER_METRICID = new MetricID(TIMER_NAME);
+    
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
@@ -72,8 +75,8 @@ public class TimedConstructorBeanTest {
             instance.get();
         }
 
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
-        Timer timer = registry.getTimers().get(TIMER_NAME);
+        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_METRICID));
+        Timer timer = registry.getTimers().get(TIMER_METRICID);
 
         // Make sure that the timer has been called
         assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(count)));

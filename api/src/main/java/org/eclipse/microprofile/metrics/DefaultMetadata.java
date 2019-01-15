@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2018, 2019 Contributors to the Eclipse Foundation
  *               2018 Red Hat, Inc. and/or its affiliates
  *               and other contributors as indicated by the @author tags.
  *
@@ -23,11 +23,8 @@
  **********************************************************************/
 package org.eclipse.microprofile.metrics;
 
-import java.util.Collections;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * The default implementation of {@link Metadata}
@@ -89,25 +86,14 @@ public class DefaultMetadata implements Metadata {
      */
     private final boolean reusable;
 
-    /**
-     * Tags of the metric. Augmented by global tags.
-     * <p>
-     * An optional field which holds the tags of the metric object which can be
-     * augmented by global tags.
-     * </p>
-     */
-    private final Map<String, String> tags;
-
     protected DefaultMetadata(String name, String displayName, String description,
-                           MetricType type, String unit, boolean reusable,
-                           Map<String, String> tags) {
+                              MetricType type, String unit, boolean reusable) {
         this.name = name;
         this.displayName = displayName;
         this.description = description;
         this.type = type;
         this.unit = unit;
         this.reusable = reusable;
-        this.tags = tags;
     }
 
     @Override
@@ -146,18 +132,6 @@ public class DefaultMetadata implements Metadata {
     }
 
     @Override
-    public String getTagsAsString() {
-        return this.tags.entrySet()
-                .stream().map(e -> e.getKey() + "=\"" + e.getValue() + "\"")
-                .collect(Collectors.joining(","));
-    }
-
-    @Override
-    public Map<String, String> getTags() {
-        return Collections.unmodifiableMap(tags);
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -166,13 +140,23 @@ public class DefaultMetadata implements Metadata {
             return false;
         }
         Metadata that = (Metadata) o;
-        return Objects.equals(name, that.getName());
 
+        //Retrieve the Optional value or set to the "defaults" if empty
+        String thatDescription = (that.getDescription().isPresent()) ? that.getDescription().get() : null;
+        String thatUnit = (that.getUnit().isPresent()) ? that.getUnit().get() : MetricUnits.NONE;
+        
+        //Need to use this.getDisplayname() and this.getTypeRaw() for the Optional.orElse() logic
+        return Objects.equals(name, that.getName()) &&
+                Objects.equals(this.getDisplayName(), that.getDisplayName()) &&
+                Objects.equals(description, thatDescription) &&
+                Objects.equals(unit, thatUnit) &&
+                Objects.equals(this.getTypeRaw(), that.getTypeRaw()) &&
+                Objects.equals(reusable, that.isReusable());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(name);
+        return Objects.hash(name, displayName, description, unit, type, reusable);
     }
 
     @Override
@@ -182,7 +166,6 @@ public class DefaultMetadata implements Metadata {
         sb.append(", type=").append(type);
         sb.append(", unit='").append(unit).append('\'');
         sb.append(", reusable=").append(reusable);
-        sb.append(", tags=").append(tags);
         sb.append('}');
         return sb.toString();
     }

@@ -23,7 +23,6 @@
  **********************************************************************/
 package org.eclipse.microprofile.metrics;
 
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -49,20 +48,11 @@ import java.util.Optional;
  * {@code Unit}: (Optional) The unit of the metric.
  * The unit may be any unit specified as a String or one specified in {@link MetricUnits}.
  * </li>
- * <li>
- * {@code Tags}: (Optional) The tags (represented by key/value pairs) of the metric which is augmented by global tags (if available).
- * Global tags can be set by passing the list of tags in an environment variable {@code MP_METRICS_TAGS}.
- * For example, the following can be used to set the global tags:
- * <pre><code>
- *      export MP_METRICS_TAGS=app=shop,tier=integration
- * </code></pre>
- * </li>
  * </ul>
  *
  * @author hrupp, Raymond Lam
  */
 public interface Metadata {
-
 
     /**
      * Returns the metric name.
@@ -78,14 +68,12 @@ public interface Metadata {
      */
     String getDisplayName();
 
-
     /**
      * Returns the description of the metric.
      *
      * @return the description
      */
     Optional<String> getDescription();
-
 
     /**
      * Returns the String representation of the {@link MetricType}.
@@ -102,27 +90,13 @@ public interface Metadata {
      */
     MetricType getTypeRaw();
 
-
     Optional<String> getUnit();
 
     boolean isReusable();
 
     /**
-     * Gets the list of tags as a single String in the format 'key="value",key2="value2",...'
-     *
-     * @return a String containing the tags
-     */
-    String getTagsAsString();
-
-    /**
-     * Returns the underlying HashMap containing the tags.
-     *
-     * @return a {@link Map} of tags
-     */
-    Map<String, String> getTags();
-
-    /**
      * Returns a new builder
+     *
      * @return a new {@link MetadataBuilder} instance
      */
     static MetadataBuilder builder() {
@@ -131,8 +105,9 @@ public interface Metadata {
 
     /**
      * Returns a new builder with the {@link Metadata} information
+     *
      * @param metadata the metadata
-     * @return  a new {@link MetadataBuilder} instance with the {@link Metadata} values
+     * @return a new {@link MetadataBuilder} instance with the {@link Metadata} values
      * @throws NullPointerException when metadata is null
      */
     static MetadataBuilder builder(Metadata metadata) {

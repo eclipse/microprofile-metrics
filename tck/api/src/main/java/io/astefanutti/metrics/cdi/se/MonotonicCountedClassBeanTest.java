@@ -27,6 +27,7 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.Metric;
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricFilter;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.hamcrest.Matchers;
@@ -50,6 +51,8 @@ public class MonotonicCountedClassBeanTest {
     private static final String CONSTRUCTOR_COUNTER_NAME = MetricsUtil.absoluteMetricName(MonotonicCountedClassBean.class, "monotonicCountedClass",
             CONSTRUCTOR_NAME);
 
+    private static final MetricID CONSTRUCTOR_METRICID = new MetricID(CONSTRUCTOR_COUNTER_NAME);
+            
     private static final String[] METHOD_NAMES = { "countedMethodOne", "countedMethodTwo", "countedMethodProtected", "countedMethodPackagedPrivate" };
 
     private static final Set<String> METHOD_COUNTER_NAMES = MetricsUtil.absoluteMetricNames(MonotonicCountedClassBean.class, "monotonicCountedClass",
@@ -58,10 +61,12 @@ public class MonotonicCountedClassBeanTest {
     private static final Set<String> COUNTER_NAMES = MetricsUtil.absoluteMetricNames(MonotonicCountedClassBean.class, "monotonicCountedClass",
             METHOD_NAMES, CONSTRUCTOR_NAME);
 
+    private static final Set<MetricID> COUNTER_METRICIDS = MetricsUtil.createMetricIDs(COUNTER_NAMES);
+            
     private static final MetricFilter METHOD_COUNTERS = new MetricFilter() {
         @Override
-        public boolean matches(String name, Metric metric) {
-            return METHOD_COUNTER_NAMES.contains(name);
+        public boolean matches(MetricID metricID, Metric metric) {
+            return METHOD_COUNTER_NAMES.contains(metricID.getName());
         }
     };
 
@@ -85,9 +90,9 @@ public class MonotonicCountedClassBeanTest {
     @Test
     @InSequence(1)
     public void countedMethodsNotCalledYet() {
-        assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(COUNTER_NAMES)));
+        assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(COUNTER_METRICIDS)));
 
-        assertThat("Constructor timer count is incorrect", registry.getCounters().get(CONSTRUCTOR_COUNTER_NAME).getCount(),
+        assertThat("Constructor timer count is incorrect", registry.getCounters().get(CONSTRUCTOR_METRICID).getCount(),
                 is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
 
         // Make sure that the counters haven't been incremented
@@ -97,10 +102,10 @@ public class MonotonicCountedClassBeanTest {
 
     @Test
     @InSequence(2)
-    public void callCountedMethodsOnce() {
-        assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(COUNTER_NAMES)));
+    public void callCountedMethodsOnce() { 
+        assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(COUNTER_METRICIDS)));
         
-        assertThat("Constructor timer count is incorrect", registry.getCounters().get(CONSTRUCTOR_COUNTER_NAME).getCount(),
+        assertThat("Constructor timer count is incorrect", registry.getCounters().get(CONSTRUCTOR_METRICID).getCount(),
                 is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
 
         // Call the counted methods and assert they've been incremented

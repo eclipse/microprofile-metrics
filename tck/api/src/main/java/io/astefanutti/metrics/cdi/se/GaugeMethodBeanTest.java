@@ -23,6 +23,7 @@ import static org.junit.Assert.assertThat;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Gauge;
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -40,6 +41,8 @@ public class GaugeMethodBeanTest {
 
     private final static String GAUGE_NAME = MetricRegistry.name(GaugeMethodBean.class, "gaugeMethod");
 
+    private final static MetricID GAUGE_METRICID = new MetricID(GAUGE_NAME);
+    
     @Deployment
     public static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
@@ -65,9 +68,9 @@ public class GaugeMethodBeanTest {
     @Test
     @InSequence(1)
     public void gaugeCalledWithDefaultValue() {
-        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(GAUGE_NAME));
+        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(GAUGE_METRICID));
         @SuppressWarnings("unchecked")
-        Gauge<Long> gauge = registry.getGauges().get(GAUGE_NAME);
+        Gauge<Long> gauge = registry.getGauges().get(GAUGE_METRICID);
 
         // Make sure that the gauge has the expected value
         assertThat("Gauge value is incorrect", gauge.getValue(), is(equalTo(0L)));
@@ -76,9 +79,9 @@ public class GaugeMethodBeanTest {
     @Test
     @InSequence(2)
     public void callGaugeAfterSetterCall() {
-        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(GAUGE_NAME));
+        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(GAUGE_METRICID));
         @SuppressWarnings("unchecked")
-        Gauge<Long> gauge = registry.getGauges().get(GAUGE_NAME);
+        Gauge<Long> gauge = registry.getGauges().get(GAUGE_METRICID);
 
         // Call the setter method and assert the gauge is up-to-date
         long value = Math.round(Math.random() * Long.MAX_VALUE);

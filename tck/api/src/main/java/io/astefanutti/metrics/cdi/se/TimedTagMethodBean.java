@@ -1,7 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017, 2019 Contributors to the Eclipse Foundation
- *               2010-2013 Coda Hale, Yammer.com
+ * Copyright (c) 2019 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,23 +19,17 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  **********************************************************************/
-package org.eclipse.microprofile.metrics;
+package io.astefanutti.metrics.cdi.se;
 
-/**
- * A filter used to determine whether or not a metric should be reported, among other things.
- */
-public interface MetricFilter {
-    /**
-     * Matches all metrics, regardless of type or {@link MetricID}.
-     */
-    MetricFilter ALL = (metricID, metric) -> true;
+import org.eclipse.microprofile.metrics.annotation.Timed;
 
-    /**
-     * Returns {@code true} if the metric matches the filter; {@code false} otherwise.
-     *
-     * @param metricID the metric's {@link MetricID}
-     * @param metric the metric
-     * @return {@code true} if the metric matches the filter
-     */
-    boolean matches(MetricID metricID, Metric metric);
+public class TimedTagMethodBean {
+
+    @Timed(name = "timedMethod", tags= {"number=one"})
+    public void timedMethodOne() {
+    }
+
+    @Timed(name = "timedMethod", tags= {"number=two"})
+    public void timedMethodTwo() {
+    }
 }

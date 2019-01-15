@@ -97,12 +97,35 @@ Tags have taken over the role to, for example, identify an application (`app=myS
 (`tier=database` or `tier=app_server`) and also the node/container id. Aggregation of metrics can then work over label
 queries (Give me the API hit count for `app=myShop && tier=app_server`).
 
+In MicroProfile Metrics, tags add an additional dimension to metrics that share a common basis. For example, a metric named
+`carCount` can be further differentiated by the car type (sedan, SUV, coupe, and etc) and the colour (red, blue, white, black,
+and etc). Rather than incorporating this in the metric name, tags can be used to capture this information in separate metrics.
+
+[source]
+----
+carCount{type=sedan,colour=red}
+carCount{type=sedan,colour=blue}
+carCount{type=suv,colour=red}
+carCount{type=coupe,colour=blue}
+----
+
+For portability reasons, the key name for the tag must match the regex `[a-zA-Z_][a-zA-Z0-9_]*` (Ascii alphabet, numbers and underscore).
+If an illegal character is used, the implementation must throw an IllegalArgumentException.
+If a duplicate tag is used, the last occurrence of the tag is used.
+
+The tag value may contain any UTF-8 encoded character.
+
+NOTE: The REST endpoints provided by MicroProfile Metrics have different reserved characters based on the format.
+The characters are only escaped as needed when exposed through the REST endpoints.
+See <<rest_endpoints>> for more information on the reserved characters.
+
 Tags can be supplied in two ways:
 
 * At the level of a metric as described in <<app-metrics-api>>.
 * At the application server level by using https://github.com/eclipse/microprofile-config[MicroProfile Config] and
 setting a property of the name `MP_METRICS_TAGS`.
 This property translates to the environment variable `MP_METRICS_TAGS`.
+** Tag values set through `MP_METRICS_TAGS` MUST escape equal symbols `=` and commas `,` with a backslash `\`
 
 NOTE: The use of MicroProfile-Config is mandatory in MicroProfile-Metrics 1.1 even if it only serves to provide
 the global tags that existed already in Metrics 1.0. Future version of the spec will introduce more config options.
@@ -110,10 +133,10 @@ the global tags that existed already in Metrics 1.0. Future version of the spec 
 .Set up global tags via environment
 [source,bash]
 ----
-export MP_METRICS_TAGS=app=shop,tier=integration
+export MP_METRICS_TAGS=app=shop,tier=integration,special=deli\=ver\,y
 ----
 
-Global tags and tags set in metric metadata are included in the output returned from the REST API.
+Global tags and tags registered with the metric are included in the output returned from the REST API.
 
 [[meta-data-def]]
 ==== Metadata
@@ -125,6 +148,7 @@ operators when correct metadata is provided, as this helps getting a context and
 
 The Metadata:
 
+* name: The name of the metric.
 * unit: a fixed set of string units
 * type:
 ** counter: an incrementally increasing or decreasing numeric value (e.g. total number of requests received or total number of concurrently active HTTP sessions).
@@ -159,10 +183,24 @@ There is one `MetricRegistry` instance for each of the scopes listed in <<scopes
 Metrics can be added to or retrieved from the registry either using the `@Metric` annotation
 (see <<api-annotations, Metrics Annotations>>) or using the `MetricRegistry` object directly.
 
+A metric is uniquely identified by the `MetricRegistry` if the `MetricID` associated with the metric is unique. That is to say, there are no other metrics with the same combination of metric name and tags. However, all metrics of the same name must be of the same type otherwise an `IllegalArgumentException` will be thrown. This exception will be thrown during registration.
+
+The metadata information is registered under a unique metric name and is immutable. All metrics of the same name must be registered with the same metadata information otherwise an "IllegalArgumentException" will be thrown. This exception will be thrown during registration.
+
+[[metricid-data-def]]
+==== MetricID
+
+The MetricID consists of the metric's name and tags (if supplied). This is used by the MetricRegistry to uniquely identify a metric and its corresponding metadata.
+
+The MetricID:
+
+* name: The name of the metric.
+* tags (optional): A list of Tag objects. See also <<supplying_of_tags>>.
+
 [[reusing_of_metrics]]
 ==== Reusing of Metrics
 
-By default it is not allowed to register more than one metric under a certain name in a scope. This is done
+By default it is not allowed to register more than one metric under a certain name and tags combination in a scope. This is done
 to prevent hard to spot copy & paste errors, where for example all methods of a Jax-Rs class are marked with
 `@Timed(name="myApp", absolute=true)`.
 

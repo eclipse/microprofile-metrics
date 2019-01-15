@@ -26,8 +26,12 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.Histogram;
+import org.eclipse.microprofile.metrics.Metadata;
 import org.eclipse.microprofile.metrics.Meter;
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
+import org.eclipse.microprofile.metrics.MetricType;
+import org.eclipse.microprofile.metrics.Tag;
 import org.eclipse.microprofile.metrics.Timer;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -78,16 +82,16 @@ public class MetricRegistryTest {
     @InSequence(2)
     public void registerTest() {
         metrics.register("regCountTemp", countTemp);
-        Assert.assertTrue(metrics.getCounters().containsKey("regCountTemp"));
+        Assert.assertTrue(metrics.getCounters().containsKey(new MetricID("regCountTemp")));
 
         metrics.register("regHistoTemp", histoTemp);
-        Assert.assertTrue(metrics.getHistograms().containsKey("regHistoTemp"));
+        Assert.assertTrue(metrics.getHistograms().containsKey(new MetricID("regHistoTemp")));
 
         metrics.register("regTimerTemp", timerTemp);
-        Assert.assertTrue(metrics.getTimers().containsKey("regTimerTemp"));
+        Assert.assertTrue(metrics.getTimers().containsKey(new MetricID("regTimerTemp")));
 
         metrics.register("regMeterTemp", meterTemp);
-        Assert.assertTrue(metrics.getMeters().containsKey("regMeterTemp"));
+        Assert.assertTrue(metrics.getMeters().containsKey(new MetricID("regMeterTemp")));
     }
 
     @Test
@@ -95,6 +99,27 @@ public class MetricRegistryTest {
     public void removeTest() {
         metrics.remove("nameTest");
         Assert.assertFalse(metrics.getNames().contains("nameTest"));
+    }
+    
+    @Test
+    @InSequence(4)
+    public void useExistingMetaDataTest() {
+        String displayName = "displayCounterFoo";
+        String metricName = "counterFoo";
+        
+        //first to register a "complex" metadata
+        metrics.counter(Metadata.builder().withName(metricName).withDisplayName(displayName).withType(MetricType.COUNTER).build());    
+        
+        Tag purpleTag = new Tag("colour","purple");
+        //creates with a simple/template metadata or uses an existing one.
+        metrics.counter(metricName, purpleTag);
+        
+        //check both counters have been registered
+        Assert.assertTrue(metrics.getCounters().containsKey(new MetricID(metricName)));
+        Assert.assertTrue(metrics.getCounters().containsKey(new MetricID(metricName, purpleTag)));
+        
+        //check that the "original" metadata wasn't replaced by the empty default metadata
+        Assert.assertEquals(metrics.getMetadata().get(metricName).getDisplayName(), displayName);
     }
 
 }

@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2019 Contributors to the Eclipse Foundation
  *               2010-2013 Coda Hale, Yammer.com
  *
  * See the NOTICES file(s) distributed with this work for additional
@@ -26,6 +26,7 @@ package org.eclipse.microprofile.metrics.tck;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Metric;
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricFilter;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -46,6 +47,6 @@ public class MetricFilterTest {
 
     @Test
     public void theAllFilterMatchesAllMetrics() throws Exception {
-        Assert.assertTrue(MetricFilter.ALL.matches("", metric));
+        Assert.assertTrue(MetricFilter.ALL.matches(new MetricID(""), metric));
     }
 }

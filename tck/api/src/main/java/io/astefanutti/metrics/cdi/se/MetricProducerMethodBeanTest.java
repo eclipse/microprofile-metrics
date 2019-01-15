@@ -25,6 +25,7 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Gauge;
 import org.eclipse.microprofile.metrics.Meter;
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.Timer;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -43,9 +44,15 @@ public class MetricProducerMethodBeanTest {
 
     private final static String CALLS_METRIC = MetricRegistry.name(MetricProducerMethodBean.class, "calls");
 
+    private final static MetricID CALLS_METRICID = new MetricID(CALLS_METRIC); 
+    
     private final static String HITS_METRIC = MetricRegistry.name(MetricProducerMethodBean.class, "hits");
 
+    private final static MetricID HITS_METRICID = new MetricID(HITS_METRIC); 
+    
     private final static String CACHE_HITS_METRIC = MetricRegistry.name(MetricProducerMethodBean.class, "cache-hits");
+    
+    private final static MetricID CACHE_HITS_METRICID = new MetricID(CACHE_HITS_METRIC); 
 
     @Deployment
     static Archive<?> createTestArchive() {
@@ -74,15 +81,15 @@ public class MetricProducerMethodBeanTest {
     public void cachedMethodNotCalledYet() {
         assertThat("Metrics are not registered correctly", registry.getMetrics(),
             allOf(
-                hasKey(CALLS_METRIC),
-                hasKey(HITS_METRIC),
-                hasKey(CACHE_HITS_METRIC)
+                hasKey(CALLS_METRICID),
+                hasKey(HITS_METRICID),
+                hasKey(CACHE_HITS_METRICID)
             )
         );
-        Timer calls = registry.getTimers().get(CALLS_METRIC);
-        Meter hits = registry.getMeters().get(HITS_METRIC);
+        Timer calls = registry.getTimers().get(CALLS_METRICID);
+        Meter hits = registry.getMeters().get(HITS_METRICID);
         @SuppressWarnings("unchecked")
-        Gauge<Double> gauge = (Gauge<Double>) registry.getGauges().get(CACHE_HITS_METRIC);
+        Gauge<Double> gauge = (Gauge<Double>) registry.getGauges().get(CACHE_HITS_METRICID);
 
         assertThat("Gauge value is incorrect", gauge.getValue(), is(equalTo(((double) hits.getCount() / (double) calls.getCount()))));
     }
@@ -92,15 +99,15 @@ public class MetricProducerMethodBeanTest {
     public void callCachedMethodMultipleTimes() {
         assertThat("Metrics are not registered correctly", registry.getMetrics(),
             allOf(
-                hasKey(CALLS_METRIC),
-                hasKey(HITS_METRIC),
-                hasKey(CACHE_HITS_METRIC)
+                hasKey(CALLS_METRICID),
+                hasKey(HITS_METRICID),
+                hasKey(CACHE_HITS_METRICID)
             )
         );
-        Timer calls = registry.getTimers().get(CALLS_METRIC);
-        Meter hits = registry.getMeters().get(HITS_METRIC);
+        Timer calls = registry.getTimers().get(CALLS_METRICID);
+        Meter hits = registry.getMeters().get(HITS_METRICID);
         @SuppressWarnings("unchecked")
-        Gauge<Double> gauge = (Gauge<Double>) registry.getGauges().get(CACHE_HITS_METRIC);
+        Gauge<Double> gauge = (Gauge<Double>) registry.getGauges().get(CACHE_HITS_METRICID);
 
         long count = 10 + Math.round(Math.random() * 10);
         for (int i = 0; i < count; i++) {

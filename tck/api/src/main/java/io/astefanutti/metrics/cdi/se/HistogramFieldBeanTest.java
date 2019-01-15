@@ -23,6 +23,7 @@ import static org.junit.Assert.assertThat;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Histogram;
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -38,6 +39,7 @@ import org.junit.runner.RunWith;
 public class HistogramFieldBeanTest {
 
     private final static String HISTOGRAM_NAME = MetricRegistry.name(HistogramFieldBean.class, "histogramName");
+    private final static MetricID HISTOGRAM_METRICID = new MetricID(HISTOGRAM_NAME);
 
     @Deployment
     static Archive<?> createTestArchive() {
@@ -57,14 +59,14 @@ public class HistogramFieldBeanTest {
     @Test
     @InSequence(1)
     public void histogramFieldRegistered() {
-        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(HISTOGRAM_NAME));
+        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(HISTOGRAM_METRICID));
     }
 
     @Test
     @InSequence(2)
     public void updateHistogramField() {
-        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(HISTOGRAM_NAME));
-        Histogram histogram = registry.getHistograms().get(HISTOGRAM_NAME);
+        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(HISTOGRAM_METRICID));
+        Histogram histogram = registry.getHistograms().get(HISTOGRAM_METRICID);
 
         // Call the update method and assert the histogram is up-to-date
         long value = Math.round(Math.random() * Long.MAX_VALUE);

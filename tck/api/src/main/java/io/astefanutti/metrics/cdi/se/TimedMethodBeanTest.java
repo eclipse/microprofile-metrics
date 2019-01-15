@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.inject.Inject;
 
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.Timer;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -43,6 +44,8 @@ public class TimedMethodBeanTest {
 
     private final static String TIMER_NAME = MetricRegistry.name(TimedMethodBean2.class, "timedMethod");
 
+    private final static MetricID TIMER_METRICID = new MetricID(TIMER_NAME);
+    
     private final static AtomicLong TIMER_COUNT = new AtomicLong();
 
     @Deployment
@@ -63,8 +66,8 @@ public class TimedMethodBeanTest {
     @Test
     @InSequence(1)
     public void timedMethodNotCalledYet() {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
-        Timer timer = registry.getTimers().get(TIMER_NAME);
+        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_METRICID));
+        Timer timer = registry.getTimers().get(TIMER_METRICID);
 
         // Make sure that the timer hasn't been called yet
         assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(TIMER_COUNT.get())));
@@ -73,8 +76,8 @@ public class TimedMethodBeanTest {
     @Test
     @InSequence(2)
     public void callTimedMethodOnce() {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
-        Timer timer = registry.getTimers().get(TIMER_NAME);
+        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_METRICID));
+        Timer timer = registry.getTimers().get(TIMER_METRICID);
 
         // Call the timed method and assert it's been timed
         bean.timedMethod();
@@ -86,8 +89,8 @@ public class TimedMethodBeanTest {
     @Test
     @InSequence(3)
     public void callSelfInvocationTimedMethodOnce() {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
-        Timer timer = registry.getTimers().get(TIMER_NAME);
+        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_METRICID));
+        Timer timer = registry.getTimers().get(TIMER_METRICID);
 
         // Call the timed method indirectly
         bean.selfInvocationTimedMethod();
@@ -103,11 +106,11 @@ public class TimedMethodBeanTest {
     @Test
     @InSequence(4)
     public void removeTimerFromRegistry() {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
-        Timer timer = registry.getTimers().get(TIMER_NAME);
+        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_METRICID));
+        Timer timer = registry.getTimers().get(TIMER_METRICID);
 
         // Remove the timer from metrics registry
-        registry.remove(TIMER_NAME);
+        registry.remove(TIMER_METRICID);
 
         try {
             // Call the timed method and assert an exception is thrown

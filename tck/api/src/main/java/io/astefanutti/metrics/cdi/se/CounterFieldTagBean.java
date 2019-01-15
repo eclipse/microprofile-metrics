@@ -1,7 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017, 2019 Contributors to the Eclipse Foundation
- *               2010-2013 Coda Hale, Yammer.com
+ * Copyright (c) 2019 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,23 +19,36 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  **********************************************************************/
-package org.eclipse.microprofile.metrics;
+package io.astefanutti.metrics.cdi.se;
 
-/**
- * A filter used to determine whether or not a metric should be reported, among other things.
- */
-public interface MetricFilter {
-    /**
-     * Matches all metrics, regardless of type or {@link MetricID}.
-     */
-    MetricFilter ALL = (metricID, metric) -> true;
+import org.eclipse.microprofile.metrics.Counter;
+import org.eclipse.microprofile.metrics.annotation.Metric;
 
-    /**
-     * Returns {@code true} if the metric matches the filter; {@code false} otherwise.
-     *
-     * @param metricID the metric's {@link MetricID}
-     * @param metric the metric
-     * @return {@code true} if the metric matches the filter
-     */
-    boolean matches(MetricID metricID, Metric metric);
+import javax.inject.Inject;
+
+public class CounterFieldTagBean {
+
+    @Inject
+    @Metric(name = "counterName")
+    private Counter counterOne;
+
+    @Inject
+    @Metric(name = "counterName", tags= {"number=two", "colour=red"})
+    private Counter counterTwo;
+    
+    @Inject
+    @Metric(name = "counterName", tags= {"number=three", "colour=blue"})
+    private Counter counterThree;
+
+    public void incrementOne(long n) {
+        counterOne.inc(n);
+    }
+    
+    public void incrementTwo(long n) {
+        counterTwo.inc(n);
+    }
+    
+    public void incrementThree(long n) {
+        counterThree.inc(n);
+    }
 }

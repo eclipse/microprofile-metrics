@@ -112,9 +112,9 @@ public class ReusableMetricsTest {
     Header acceptJson = new Header("Accept", APPLICATION_JSON);
 
     given().header(acceptJson).get("/metrics/application").then()
-            .assertThat().body("countMe2", equalTo(1))
-            .assertThat().body("'org.eclipse.microprofile.metrics.test.MetricAppBean2.meterMe2'.count", equalTo(1))
-            .assertThat().body("timeMe2.count", equalTo(1));
+            .assertThat().body("'countMe2{tier=integration}'", equalTo(1))
+            .assertThat().body("'org.eclipse.microprofile.metrics.test.MetricAppBean2.meterMe2'.'count{tier=integration}'", equalTo(1))
+            .assertThat().body("timeMe2.'count{tier=integration}'", equalTo(1));
 
 
   }
@@ -135,9 +135,9 @@ public class ReusableMetricsTest {
     Header acceptJson = new Header("Accept", APPLICATION_JSON);
 
     given().header(acceptJson).get("/metrics/application").then()
-    .assertThat().body("countMe2", equalTo(2))
-    .assertThat().body("'org.eclipse.microprofile.metrics.test.MetricAppBean2.meterMe2'.count", equalTo(2))
-    .assertThat().body("timeMe2.count", equalTo(2));
+    .assertThat().body("'countMe2{tier=integration}'", equalTo(2))
+    .assertThat().body("'org.eclipse.microprofile.metrics.test.MetricAppBean2.meterMe2'.'count{tier=integration}'", equalTo(2))
+    .assertThat().body("timeMe2.'count{tier=integration}'", equalTo(2));
 
   }
 
@@ -156,9 +156,9 @@ public class ReusableMetricsTest {
     Header acceptJson = new Header("Accept", APPLICATION_JSON);
 
     given().header(acceptJson).get("/metrics/application").then()
-    .assertThat().body("reusableHisto.count", equalTo(2))
-    .assertThat().body("reusableHisto.min", equalTo(1))
-    .assertThat().body("reusableHisto.max", equalTo(3));
+    .assertThat().body("reusableHisto.'count{tier=integration}'", equalTo(2))
+    .assertThat().body("reusableHisto.'min{tier=integration}'", equalTo(1))
+    .assertThat().body("reusableHisto.'max{tier=integration}'", equalTo(3));
 
   }
 

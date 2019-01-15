@@ -17,6 +17,7 @@
 // limitations under the License.
 //
 
+[[rest_endpoints]]
 == REST endpoints
 
 This section describes the REST-api, that monitoring agents would use to retrieve the collected metrics.
@@ -26,7 +27,38 @@ This section describes the REST-api, that monitoring agents would use to retriev
 
 * When using JSON format, the REST API will respond to GET requests with data formatted in a tree like fashion with sub-trees for the sub-resources.
 A sub-tree that does not contain data must be omitted.
-* A 'shadow tree' that responds to OPTIONS will provide the metadata.
+* A 'shadow tree' that responds to OPTIONS will provide the metadata and tags associated to a metric name.
+
+==== Translation rules for metric names
+
+The following rules apply only to GET requests:
+* The metric name in JSON is comprised of the metric name appended with the metric tags (if they exist).
+* The metric tags are represented by a comma separated list of key/value tag pairs surrounded by braces `{` and `}`
+
+The following apply to both GET and OPTION requests:
+* Each tag is a key-value-pair in the format of `<key>=<value>`. The list of tags must be sorted alphabetically.
+* If the metric name or tag value contains a special reserved JSON character, these characters must be escaped in the JSON response.
+
+
+[source]
+----
+{
+  "cars{colour=red,type=sedan}" : 12,
+  "cars{colour=blue,type=sedan}" : 9,
+  "cars{colour=yellow,type=sedan}" : 16
+}
+----
+
+If the metric has no tags, the braces `{}` must be omitted.
+
+For example,
+[source]
+----
+{
+  "metricWithoutTags": 192
+}
+----
+
 
 *REST-API Objects*
 
@@ -48,7 +80,7 @@ or
 [source]
 ----
 {
-  "hitCount": 45
+  "hitCount{type=yes}": 45
 }
 ----
 
@@ -117,7 +149,7 @@ The value of the counter must be equivalent to a call to the instance Counter's 
     "meanRate": 12.223,
     "oneMinRate": 12.563,
     "fiveMinRate": 12.364,
-    "fifteenMinRate": 12.126,
+    "fifteenMinRate": 12.126
   }
 }
 ----
@@ -220,7 +252,7 @@ The value of the counter must be equivalent to a call to the instance Counter's 
 
 
 Metadata is exposed in a tree-like fashion with sub-trees for the sub-resources mentioned previously.
-
+Tags from metrics associated with the metric name are also included.
 
 Example:
 
@@ -228,7 +260,7 @@ If `GET /metrics/base/fooVal` exposes:
 
 [source]
 ----
-{"fooVal": 12345}
+{"fooVal{app=webshop}": 12345}
 ----
 
 then `OPTIONS /metrics/base/fooVal` will expose:
@@ -242,7 +274,11 @@ then `OPTIONS /metrics/base/fooVal` will expose:
     "type": "gauge",
     "description": "The size of foo after each request",
     "displayName": "Size of foo",
-    "tags": "app=webshop"
+    "tags": [
+      [
+        "app=webshop"
+      ]
+    ]
   }
 }
 
@@ -254,8 +290,9 @@ If `GET /metrics/base` exposes multiple values like this:
 [source]
 ----
 {
-  "fooVal": 12345,
-  "barVal": 42
+  "fooVal{app=webshop}": 12345,
+  "barVal{app=webshop,component=backend}": 42,
+  "barVal{app=webshop,component=frontend}": 63
 }
 ----
 
@@ -270,12 +307,25 @@ then `OPTIONS /metrics/base` exposes:
     "type": "gauge",
     "description": "The average duration of foo requests during last 5 minutes",
     "displayName": "Duration of foo",
-    "tags": "app=webshop"
+    "tags": [
+      [
+        "app=webshop"
+      ]
+    ]
   },
   "barVal": {
     "unit": "megabytes",
     "type": "gauge",
-    "tags": "component=backend,app=webshop"
+    "tags": [
+      [
+        "app=webshop",
+        "component=backend"
+      ],
+      [
+        "app=webshop",
+        "component=frontend"
+      ]
+    ]
   }
 }
 ----
@@ -301,6 +351,8 @@ The above json example would look like this in OpenMetrics format
 base_foo_val_seconds{app="webshop"} 12.345  <3>
 # TYPE base_bar_val_bytes gauge <1>
 base_bar_val_bytes{component="backend", app="webshop"} 42000 <3>
+# TYPE base_bar_val_bytes gauge <1>
+base_bar_val_bytes{component="frontend", app="webshop"} 63000 <3>
 ----
 <1> Metric names are turned from camel case into snake_case.
 <2> The description goes into the HELP line
@@ -324,6 +376,15 @@ follow the pattern `[a-zA-Z_][a-zA-Z0-9_]*`.
 
 Metric tags are appended to the metric name in curly braces `{` and `}` and are separated by comma.
 Each tag is a key-value-pair in the format of `<key>="<value>"` (the quotes around the value are required).
+
+MicroProfile Metrics timers and histograms expose a Prometheus `summary` type which requires an additional `quantile` tag for certain metrics.
+The `quantile` tag must be included alongside the metrics tags within the curly braces `{` and `}`.
+
+The tag value can be any Unicode character but the following characters must be escaped:
+
+* Backslash (`\`) must be escaped as `\\` (as two characters: `\` and `\`)
+* Double-quotes (`"`) must be escaped as `\"` (as two characters: `\` and `"`)
+* Line feed (`\n`) must be escaped as `\n` (as two characters: `\` and `n`)
 
 [[OpenMetrics_units]]
 ==== Handling of units
@@ -387,7 +448,7 @@ Counters do not have a suffix for the unit.
 ----
 # TYPE application_visitors_total counter
 # HELP application_visitors_total The number of unique visitors
-application_visitors 80
+application_visitors_total 80
 ----
 
 ==== Meter OpenMetrics Text Format
@@ -548,4 +609,3 @@ In case of a secured endpoint, accessing `/metrics` without valid credentials mu
 A server SHOULD implement TLS encryption by default.
 
 It is allowed to ignore security for trusted origins (e.g. localhost)
-

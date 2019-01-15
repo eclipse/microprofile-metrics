@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Meter;
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -42,6 +43,7 @@ import org.junit.runner.RunWith;
 public class MeteredMethodBeanTest {
 
     private final static String METER_NAME = MetricRegistry.name(MeteredMethodBean1.class, "meteredMethod");
+    private final static MetricID METER_METRICID = new MetricID(METER_NAME);
 
     private final static AtomicLong METER_COUNT = new AtomicLong();
 
@@ -63,8 +65,8 @@ public class MeteredMethodBeanTest {
     @Test
     @InSequence(1)
     public void meteredMethodNotCalledYet() {
-        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(METER_NAME));
-        Meter meter = registry.getMeters().get(METER_NAME);
+        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(METER_METRICID));
+        Meter meter = registry.getMeters().get(METER_METRICID);
 
         // Make sure that the meter hasn't been marked yet
         assertThat("Meter count is incorrect", meter.getCount(), is(equalTo(METER_COUNT.get())));
@@ -73,8 +75,8 @@ public class MeteredMethodBeanTest {
     @Test
     @InSequence(2)
     public void callMeteredMethodOnce() {
-        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(METER_NAME));
-        Meter meter = registry.getMeters().get(METER_NAME);
+        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(METER_METRICID));
+        Meter meter = registry.getMeters().get(METER_METRICID);
 
         // Call the metered method and assert it's been marked
         bean.meteredMethod();
@@ -86,11 +88,11 @@ public class MeteredMethodBeanTest {
     @Test
     @InSequence(3)
     public void removeMeterFromRegistry() {
-        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(METER_NAME));
-        Meter meter = registry.getMeters().get(METER_NAME);
+        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(METER_METRICID));
+        Meter meter = registry.getMeters().get(METER_METRICID);
 
         // Remove the meter from metrics registry
-        registry.remove(METER_NAME);
+        registry.remove(METER_METRICID);
 
         try {
             // Call the metered method and assert an exception is thrown

@@ -24,6 +24,7 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.Timer;
+import org.eclipse.microprofile.metrics.MetricID;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -39,6 +40,7 @@ import org.junit.runner.RunWith;
 public class ApplicationScopedTimedMethodBeanTest {
 
     private final static String TIMER_NAME = MetricRegistry.name(ApplicationScopedTimedMethodBean.class, "applicationScopedTimedMethod");
+    private final static MetricID TIMER_METRICID = new MetricID(TIMER_NAME);
 
     @Deployment
     static Archive<?> createTestArchive() {
@@ -65,8 +67,8 @@ public class ApplicationScopedTimedMethodBeanTest {
     @Test
     @InSequence(1)
     public void timedMethodNotCalledYet() {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
-        Timer timer = registry.getTimers().get(TIMER_NAME);
+        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_METRICID));
+        Timer timer = registry.getTimers().get(TIMER_METRICID);
 
         // Make sure that the timer hasn't been called yet
         assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(0L)));
@@ -75,8 +77,8 @@ public class ApplicationScopedTimedMethodBeanTest {
     @Test
     @InSequence(2)
     public void callTimedMethodOnce() {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
-        Timer timer = registry.getTimers().get(TIMER_NAME);
+        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_METRICID));
+        Timer timer = registry.getTimers().get(TIMER_METRICID);
 
         // Call the timed method and assert it's been timed
         bean.applicationScopedTimedMethod();

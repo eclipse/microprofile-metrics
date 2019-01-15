@@ -22,7 +22,7 @@
   <metric multi="false" name="org.eclipse.microprofile.metrics.test.MetricAppBean.redCount" type="counter" unit="none"/>
   <metric multi="false" name="org.eclipse.microprofile.metrics.test.MetricAppBean.blue" type="counter" unit="none"/>
   <metric multi="false" name="greenCount" type="counter" unit="none"/>
-  <metric multi="false" name="purple" type="counter" unit="none"/>
+  <metric multi="false" name="purple" type="counter" unit="none" tags="app=myShop"/>
   <metric multi="false" name="jellybeanHistogram" type="histogram" unit="jellybeans"/>
   <metric multi="false" name="metricTest.test1.countMeA" type="counter" unit="none"/>
   <metric multi="false" name="metricTest.test1.countMeB" type="counter" unit="jellybean"/>

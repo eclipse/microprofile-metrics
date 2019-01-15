@@ -28,6 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Gauge;
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -53,11 +54,15 @@ public class GaugeTest {
 
     @Test
     public void testManualGauge() {
-        Assert.assertNull(metrics.getGauges().get("tck.gaugetest.gaugemanual"));
+        
+        String gaugeName = "tck.gaugetest.gaugemanual";
+        MetricID gaugeMetricID = new MetricID(gaugeName);
+        
+        Assert.assertNull(metrics.getGauges().get(gaugeMetricID));
         gaugeMe();
 
-        Assert.assertEquals(0, (metrics.getGauges().get("tck.gaugetest.gaugemanual").getValue()));
-        Assert.assertEquals(1, (metrics.getGauges().get("tck.gaugetest.gaugemanual").getValue()));
+        Assert.assertEquals(0, (metrics.getGauges().get(gaugeMetricID).getValue()));
+        Assert.assertEquals(1, (metrics.getGauges().get(gaugeMetricID).getValue()));
     }
 
     public void gaugeMe() {

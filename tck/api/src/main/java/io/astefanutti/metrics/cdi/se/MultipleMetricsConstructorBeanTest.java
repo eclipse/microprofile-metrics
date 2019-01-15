@@ -22,6 +22,7 @@ import static org.junit.Assert.assertThat;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -73,8 +74,11 @@ public class MultipleMetricsConstructorBeanTest {
         }
 
         // Make sure that the metrics have been called
-        assertThat("Counter count is incorrect", registry.getCounters().get(absoluteMetricName("counter")).getCount(), is(equalTo(count)));
-        assertThat("Meter count is incorrect", registry.getMeters().get(absoluteMetricName("meter")).getCount(), is(equalTo(count)));
-        assertThat("Timer count is incorrect", registry.getTimers().get(absoluteMetricName("timer")).getCount(), is(equalTo(count)));
+        assertThat("Counter count is incorrect", registry.getCounters()
+                .get(new MetricID(absoluteMetricName("counter"))).getCount(), is(equalTo(count)));
+        assertThat("Meter count is incorrect", registry.getMeters()
+                .get(new MetricID(absoluteMetricName("meter"))).getCount(), is(equalTo(count)));
+        assertThat("Timer count is incorrect", registry.getTimers()
+                .get(new MetricID(absoluteMetricName("timer"))).getCount(), is(equalTo(count)));
     }
 }
