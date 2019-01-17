@@ -124,6 +124,21 @@ The value of the counter must be equivalent to a call to the instance Counter's 
 }
 ----
 
+==== Concurrent Gauge JSON Format
+
+The value of the gauge must be equivalent to a call to the instance ConcurrentGauge's `getValue() / getMax() / getMin()`.
+
+.Example Gauge JSON GET Response
+[source, json]
+----
+{
+  "callCount": 48
+  "callCount_min": 4
+  "callCount_max": 50
+}
+----
+
+
 ==== Meter JSON Format
 
 `Meter` is a complex metric type comprised of multiple key/values. The format is specified by the table below.
@@ -450,6 +465,35 @@ Counters do not have a suffix for the unit.
 # HELP application_visitors_total The number of unique visitors
 application_visitors_total 80
 ----
+
+==== Concurrent Gauge OpenMetrics Text Format
+
+The values of the concurrent gauge must be the value of `getCount() / getMin() / getMax()`.
+The exposed metric names have suffixes as follows:
+
+|===
+| Value | Suffix
+
+| `getCount` |  _<none>_
+| `getMin` |  `_min`
+| `getMax` |  `_max`
+|===
+
+
+Concurrent gauges do not have a suffix for the unit.
+
+.Example OpenMetrics text format for a Concurrent Gauge
+[source, ruby]
+----
+# TYPE application_method_a_invocations gauge
+# HELP application_method_a_invocations The number of parallel invocations of visitorsTotal() #<1>
+application_method_a_invocations 80
+# TYPE application_method_a_invocations_min gauge
+application_method_a_invocations_min 20
+# TYPE application_method_a_invocations_max gauge
+application_method_a_invocations_max 100
+----
+<1> Note help is only emitted for the metric related to `getCount()`, but not for _min and _max.
 
 ==== Meter OpenMetrics Text Format
 

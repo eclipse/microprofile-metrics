@@ -141,7 +141,7 @@ public class MetadataBuilder {
     }
 
     /**
-     * @return
+     * @return An object implementing {@link Metadata} from the provided properties
      * @throws IllegalStateException when either name is null
      */
     public Metadata build() {

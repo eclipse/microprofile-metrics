@@ -77,13 +77,13 @@ public class MetricAppBean {
         counter.inc();
     }
 
-    @Counted(name = "metricTest.test1.countMeA", monotonic = true, absolute = true)
+    @Counted(name = "metricTest.test1.countMeA", absolute = true)
     public void countMeA() {
 
     }
 
-        
-    @Counted(name = "metricTest.test1.countMeB", monotonic = true, absolute = true, unit = "jellybean")
+
+    @Counted(name = "metricTest.test1.countMeB", absolute = true, unit = "jellybean")
     public long countMeB() {
         return 666666;
     }
@@ -114,7 +114,7 @@ public class MetricAppBean {
     public long gaugeMeB() {
         return 7777777;
     }
-    
+
     public void histogramMe() {
 
         Metadata metadata = Metadata.builder().withName("metricTest.test1.histogram")

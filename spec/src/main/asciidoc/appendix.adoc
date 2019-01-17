@@ -116,3 +116,21 @@ public class MetricRegistryFactory {
 }
 
 ----
+
+=== Migration hints
+
+[[migration-hint-to-20]]
+==== To version 2.0
+
+===== @Counted
+
+The '@Counted` annotation has changed as its previous usage was confusing and the OpenMetrics output was (partially) wrong.
+To migrate:
+
+* Replace `@Counted()` or `@Counted(monotonic=false)` with `@ConcurrentGauge`.
+OpenMetrics output will be labeled as gauge
+* Replace `@Counted(monotonic=true)` with `@Counted` (monotonic flag is gone)
+
+This change has also had an impact on the `Counter` interface to basically follow the above change:
+
+* Replace usages where `Counter.dec()` was called with `Gauge` or `ConcurrentGauge`

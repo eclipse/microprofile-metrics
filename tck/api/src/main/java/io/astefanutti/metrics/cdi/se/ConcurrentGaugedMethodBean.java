@@ -15,23 +15,18 @@
  */
 package io.astefanutti.metrics.cdi.se;
 
-import org.eclipse.microprofile.metrics.annotation.Counted;
+import java.util.concurrent.Callable;
+import org.eclipse.microprofile.metrics.annotation.ConcurrentGauge;
 
-@Counted(name = "countedClass")
-public class CountedClassBean {
+public class ConcurrentGaugedMethodBean<T> {
 
-    public void countedMethodOne() {
-    }
-
-    public void countedMethodTwo() {
-    }
-
-    protected void countedMethodProtected() {
-    }
-
-    void countedMethodPackagedPrivate() {
-    }
-
-    private void countedMethodPrivate() {
+    @ConcurrentGauge(name = "cGaugedMethod", absolute = true)
+    public T countedMethod(Callable<T> callable) {
+        try {
+            return callable.call();
+        }
+        catch (Exception cause) {
+            throw new RuntimeException(cause);
+        }
     }
 }

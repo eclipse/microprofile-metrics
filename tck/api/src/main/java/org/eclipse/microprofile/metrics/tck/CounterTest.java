@@ -66,17 +66,4 @@ public class CounterTest {
         Assert.assertEquals(5, count.getCount());
     }
 
-    @Test
-    @InSequence(4)
-    public void decrementTest() {
-        count.dec();
-        Assert.assertEquals(4, count.getCount());
-    }
-
-    @Test
-    @InSequence(5)
-    public void decrementLongTest() {
-        count.dec(4);
-        Assert.assertEquals(0, count.getCount());
-    }
 }

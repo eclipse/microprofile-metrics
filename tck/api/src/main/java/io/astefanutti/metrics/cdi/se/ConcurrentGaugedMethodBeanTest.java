@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright © 2013 Antonin Stefanutti (antonin.stefanutti@gmail.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +12,29 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ */
+/*
+ * ********************************************************************
+ *  Copyright (c) 2019 Contributors to the Eclipse Foundation
+ *
+ *  See the NOTICES file(s) distributed with this work for additional
+ *  information regarding copyright ownership.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *  SPDX-License-Identifier: Apache-2.0
+ * ********************************************************************
+ *
  */
 package io.astefanutti.metrics.cdi.se;
 
@@ -31,8 +54,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.inject.Inject;
 
-import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.MetricID;
+import org.eclipse.microprofile.metrics.ConcurrentGauge;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -46,10 +69,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
-public class CountedMethodBeanTest {
+public class ConcurrentGaugedMethodBeanTest {
 
-    private final static String COUNTER_NAME = "countedMethod";
-    private final static MetricID COUNTER_METRICID = new MetricID(COUNTER_NAME);
+    private final static String C_GAUGE_NAME = "cGaugedMethod";
+    private final static MetricID C_GAUGE_METRICID = new MetricID(C_GAUGE_NAME);
 
     private final static AtomicLong COUNTER_COUNT = new AtomicLong();
 
@@ -57,7 +80,7 @@ public class CountedMethodBeanTest {
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
             // Test bean
-            .addClass(CountedMethodBean.class)
+            .addClass(ConcurrentGaugedMethodBean.class)
             // Bean archive deployment descriptor
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
@@ -66,33 +89,33 @@ public class CountedMethodBeanTest {
     private MetricRegistry registry;
 
     @Inject
-    private CountedMethodBean<Long> bean;
+    private ConcurrentGaugedMethodBean<Long> bean;
 
     @Test
     @InSequence(1)
     public void countedMethodNotCalledYet() {
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_METRICID));
-        Counter counter = registry.getCounters().get(COUNTER_METRICID);
+        assertThat("Concurrent Gauges is not registered correctly", registry.getConcurrentGauges(), hasKey(C_GAUGE_METRICID));
+        ConcurrentGauge counter = registry.getConcurrentGauges().get(C_GAUGE_METRICID);
 
         // Make sure that the counter hasn't been called yet
-        assertThat("Counter count is incorrect", counter.getCount(), is(equalTo(COUNTER_COUNT.get())));
+        assertThat("Concurrent Gauges count is incorrect", counter.getCount(), is(equalTo(COUNTER_COUNT.get())));
     }
 
     @Test
     @InSequence(2)
-    public void countedMethodNotCalledYet(@Metric(name = "countedMethod", absolute = true) Counter instance) {
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_METRICID));
-        Counter counter = registry.getCounters().get(COUNTER_METRICID);
+    public void countedMethodNotCalledYet(@Metric(name = C_GAUGE_NAME, absolute = true) ConcurrentGauge instance) {
+        assertThat("Concurrent Gauges is not registered correctly", registry.getConcurrentGauges(), hasKey(C_GAUGE_METRICID));
+        ConcurrentGauge cGauge = registry.getConcurrentGauges().get(C_GAUGE_METRICID);
 
         // Make sure that the counter registered and the bean instance are the same
-        assertThat("Counter and bean instance are not equal", instance, is(equalTo(counter)));
+        assertThat("Concurrent Gauges and bean instance are not equal", instance, is(equalTo(cGauge)));
     }
 
     @Test
     @InSequence(3)
     public void callCountedMethodOnce() throws InterruptedException, TimeoutException {
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_METRICID));
-        Counter counter = registry.getCounters().get(COUNTER_METRICID);
+        assertThat("Concurrent Gauges is not registered correctly", registry.getConcurrentGauges(), hasKey(C_GAUGE_METRICID));
+        ConcurrentGauge counter = registry.getConcurrentGauges().get(C_GAUGE_METRICID);
 
         // Call the counted method, block and assert it's been counted
         final Exchanger<Long> exchanger = new Exchanger<>();
@@ -124,17 +147,19 @@ public class CountedMethodBeanTest {
 
         // Wait until the method is executing and make sure that the counter has been incremented
         exchanger.exchange(0L, 5L, TimeUnit.SECONDS);
-        assertThat("Counter count is incorrect", counter.getCount(), is(equalTo(COUNTER_COUNT.incrementAndGet())));
+        assertThat("Concurrent Gauges count is incorrect", counter.getCount(), is(equalTo(COUNTER_COUNT.incrementAndGet())));
 
         // Exchange the result and unblock the method execution
         Long random = 1 + Math.round(Math.random() * (Long.MAX_VALUE - 1));
         exchanger.exchange(random, 5L, TimeUnit.SECONDS);
 
         // Wait until the method has returned
-        assertThat("Counted method return value is incorrect", exchanger.exchange(0L), is(equalTo(random)));
+        assertThat("Concurrent Gauges method return value is incorrect", exchanger.exchange(0L), is(equalTo(random)));
 
         // Then make sure that the counter has been decremented
-        assertThat("Counter count is incorrect", counter.getCount(), is(equalTo(COUNTER_COUNT.decrementAndGet())));
+        assertThat("Concurrent Gauges count is incorrect", counter.getCount(), is(equalTo(COUNTER_COUNT.decrementAndGet())));
+        assertThat("Concurrent Gauges max is incorrect", counter.getMax(),
+                   is(equalTo(1)));
 
         // Finally make sure calling thread is returns correctly
         thread.join();
@@ -144,11 +169,11 @@ public class CountedMethodBeanTest {
     @Test
     @InSequence(4)
     public void removeCounterFromRegistry() {
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_METRICID));
-        Counter counter = registry.getCounters().get(COUNTER_METRICID);
+        assertThat("Concurrent Gauges is not registered correctly", registry.getConcurrentGauges(), hasKey(C_GAUGE_METRICID));
+        ConcurrentGauge counter = registry.getConcurrentGauges().get(C_GAUGE_METRICID);
 
         // Remove the counter from metrics registry
-        registry.remove(COUNTER_METRICID);
+        registry.remove(C_GAUGE_METRICID);
 
         try {
             // Call the counted method and assert an exception is thrown
@@ -161,9 +186,10 @@ public class CountedMethodBeanTest {
         }
         catch (Exception cause) {
             assertThat(cause, is(instanceOf(IllegalStateException.class)));
-            assertThat(cause.getMessage(), is(equalTo("No counter with name [" + COUNTER_NAME + "] found in registry [" + registry + "]")));
+            assertThat(cause.getMessage(),
+                       is(equalTo("No concurrent gauge with name [" + C_GAUGE_NAME + "] found in registry [" + registry + "]")));
             // Make sure that the counter hasn't been called
-            assertThat("Counter count is incorrect", counter.getCount(), is(equalTo(COUNTER_COUNT.get())));
+            assertThat("Concurrent Gauges count is incorrect", counter.getCount(), is(equalTo(COUNTER_COUNT.get())));
             return;
         }
 

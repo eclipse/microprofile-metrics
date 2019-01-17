@@ -21,7 +21,7 @@ import org.eclipse.microprofile.metrics.annotation.Timed;
 
 public class MultipleMetricsConstructorBean {
 
-    @Counted(name = "counter", monotonic = true)
+    @Counted(name = "counter")
     @Metered(name = "meter")
     @Timed(name = "timer")
     public MultipleMetricsConstructorBean() {
