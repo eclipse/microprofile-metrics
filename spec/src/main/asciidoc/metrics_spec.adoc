@@ -22,8 +22,8 @@
 :doctype: book
 :license: Apache License v2.0
 :source-highlighter: coderay
-:authors: Heiko W. Rupp, Raymond Lam, David Chan, Don Bourne, Antonin Stefanutti, Brennan Nichyporuk, Mike Croft, Werner Keil
-:email: hrupp@redhat.com, lamr@ca.ibm.com, chdavid@ca.ibm.com, dbourne@ca.ibm.com, antonin@stefanutti.fr, brennan.nichyporuk@gmail.com, mike.croft@payara.fish, werner@catmedia.us
+:authors: Heiko W. Rupp, Raymond Lam, David Chan, Don Bourne, Antonin Stefanutti, Brennan Nichyporuk, Mike Croft, Werner Keil, Jan Martiska
+:email: hrupp@redhat.com, lamr@ca.ibm.com, chdavid@ca.ibm.com, dbourne@ca.ibm.com, antonin@stefanutti.fr, brennan.nichyporuk@gmail.com, mike.croft@payara.fish, werner@catmedia.us, jmartisk@redhat.com
 ifdef::backend-pdf[]
 :pagenums:
 endif::[]

@@ -52,6 +52,12 @@
             <organization>Red Hat</organization>
             <organizationUrl>https://www.jboss.org</organizationUrl>
         </developer>
+        <developer>
+            <name>Jan Martiska</name>
+            <url>https://github.com/jmartisk</url>
+            <organization>Red Hat</organization>
+            <organizationUrl>https://www.jboss.org</organizationUrl>
+        </developer>
     </developers>
 
     <scm>
