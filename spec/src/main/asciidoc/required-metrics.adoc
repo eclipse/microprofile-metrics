@@ -66,11 +66,12 @@ Visit <<meta-data-def>> for the meaning of each key
 *GCCount*
 [cols="1,4"]
 |===
-|Name| gc.%s.count
+|Name| gc.count
 |DisplayName| Garbage Collection Count
 |Type| Counter
 |Unit| None
 |Multi| true
+|Tags| {name=%s}
 |Description|  Displays the total number of collections that have occurred. This attribute lists -1 if the collection count is undefined for this collector.
 |MBean| java.lang:type=GarbageCollector,name=%s/CollectionCount
 |Notes| There can be multiple garbage collectors active that are assigned to different memory pools. The %s should be substituted with the name of the garbage collector.
@@ -79,11 +80,12 @@ Visit <<meta-data-def>> for the meaning of each key
 *GCTime - Approximate accumulated collection elapsed time in ms*
 [cols="1,4"]
 |===
-|Name| gc.%s.time
+|Name| gc.time
 |DisplayName| Garbage Collection Time
 |Type| Gauge
 |Unit| Milliseconds
 |Multi| true
+|Tags| {name=%s}
 |Description| Displays the approximate accumulated collection elapsed time in milliseconds. This attribute displays -1 if the collection elapsed time is undefined for this collector. The Java virtual machine implementation may use a high resolution timer to measure the elapsed time. This attribute may display the same value even if the collection count has been incremented if the collection elapsed time is very short.
 |MBean| java.lang:type=GarbageCollector,name=%s/CollectionTime
 |Notes| There can be multiple garbage collectors active that are assigned to different memory pools. The %s should be substituted with the name of the garbage collector.
@@ -141,25 +143,27 @@ Visit <<meta-data-def>> for the meaning of each key
 *(Optional) ActiveThreads*
 [cols="1,4"]
 |===
-|Name| threadPool.%s.activeThreads
+|Name| threadpool.activeThreads
 |DisplayName| Active Threads
 |Type| Gauge
 |Unit| None
 |Multi| true
+|Tags| {pool=%s}
 |Description| Number of active threads that belong to a specific thread pool.
-Note: The %s should be substituted with the name of the thread pool. This is a vendor specific attribute/operation that is not defined in java.lang.
+|Notes| The %s should be substituted with the name of the thread pool. This is a vendor specific attribute/operation that is not defined in java.lang.
 |===
 
 *(Optional) PoolSize*
 [cols="1,4"]
 |===
-|Name| threadPool.%s.size
+|Name| threadpool.size
 |DisplayName| Thread Pool Size
 |Type| Gauge
 |Unit| None
 |Multi| true
+|Tags| {pool=%s}
 |Description| The size of a specific thread pool.
-Note: The %s should be substituted with the name of the thread pool. This is a vendor specific attribute/operation that is not defined in java.lang.
+|Notes| The %s should be substituted with the name of the thread pool. This is a vendor specific attribute/operation that is not defined in java.lang.
 |===
 
 === ClassLoading JVM Stats
