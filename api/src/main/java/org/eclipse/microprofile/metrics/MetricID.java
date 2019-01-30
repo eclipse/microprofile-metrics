@@ -171,6 +171,14 @@ public class MetricID implements Comparable<MetricID> {
         return Objects.hash(name, tags);
     }
 
+    @Override
+    public String toString() {
+        return "MetricID{" +
+            "name='" + name + '\'' +
+            ", tags=[" + getTagsAsString() +
+            "]}";
+    }
+
     /**
      * Add multiple {@link Tag} objects
      * This method will call {@link #addTag(Tag)} on each tag.
