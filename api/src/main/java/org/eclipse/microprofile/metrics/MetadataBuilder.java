@@ -23,8 +23,6 @@
  **********************************************************************/
 package org.eclipse.microprofile.metrics;
 
-import org.eclipse.microprofile.metrics.annotation.Counted;
-
 import java.util.Objects;
 
 /**
