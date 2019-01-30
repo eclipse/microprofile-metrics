@@ -42,6 +42,7 @@ The `Counted` interface lost the `dec()` methods.
 have been modified such that the 'tags' attribute is a list of nested lists which holds tags from different metrics that
  are associated with the metadata.
 ** Reserved characters in Prometheus format must be escaped.
+** The default value of the `reusable` attribute for metric objects created programmatically (not via annotations) is now `true`
 
 
 * Changes in 1.1

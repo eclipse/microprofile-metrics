@@ -139,8 +139,7 @@ If `false`, prepends the package name and class name before the given name. Defa
 `String displayName`:: Optional. A human readable display name for metadata.
 `String description`:: Optional. A description of the metric.
 `String unit`:: Unit of the metric. For `@Gauge` no default is provided. Check the `MetricUnits` class for a set of pre-defined units.
-`String[] tags`:: Optional. Array of Strings in the `<key>=<value>` format to supply special tags to a metric.
-`boolean reusable`:: Denotes if a metric with a certain name can be registered in more than one place. Does not apply to gauges.
+`boolean reusable`:: Denotes if a metric with a certain MetricID can be registered in more than one place. Does not apply to gauges.
 
 NOTE: Implementors are encouraged to issue warnings in the server log if metadata is missing. Implementors
 MAY stop the deployment of an application if Metadata is missing.
