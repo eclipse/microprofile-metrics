@@ -100,9 +100,6 @@ public class ConcurrentGaugedConstructorBeanTest {
         assertThat("Concurrent Gauge is not registered correctly", registry.getConcurrentGauges(), hasKey(COUNTER_METRICID));
         ConcurrentGauge concurrentGauge = registry.getConcurrentGauges().get(COUNTER_METRICID);
 
-        // Make sure that the counter has been called
-        assertThat("Concurrent gauge max is incorrect", concurrentGauge.getMax(), is(equalTo(count)));
-        assertThat("Concurrent gauge min is incorrect", concurrentGauge.getMin(), is(equalTo(0)));
-        assertThat("Concurrent gauge count is incorrect", concurrentGauge.getCount(), is(equalTo(0)));
+        assertThat("Concurrent gauge count is incorrect", concurrentGauge.getCount(), is(equalTo(0L)));
     }
 }
