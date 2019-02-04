@@ -91,7 +91,7 @@ public class ConcurrentGaugedClassBeanTest {
     @Test
     @InSequence(1)
     public void countedMethodsNotCalledYet() {
-        assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(COUNTER_METRICIDS)));
+        assertThat("Counters are not registered correctly", registry.getConcurrentGauges().keySet(), is(equalTo(COUNTER_METRICIDS)));
         // Make sure that the counters haven't been incremented
         assertThat("Concurrent Gauges max values are incorrect", registry.getConcurrentGauges().values(),
                    everyItem(Matchers.<ConcurrentGauge>hasProperty("max", equalTo(0L))));
@@ -100,7 +100,7 @@ public class ConcurrentGaugedClassBeanTest {
     @Test
     @InSequence(2)
     public void callCountedMethodsOnce() {
-        assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(COUNTER_METRICIDS)));
+        assertThat("Counters are not registered correctly", registry.getConcurrentGauges().keySet(), is(equalTo(COUNTER_METRICIDS)));
         // Call the counted methods and assert they're back to zero
         bean.countedMethodOne();
         bean.countedMethodTwo();
@@ -111,9 +111,5 @@ public class ConcurrentGaugedClassBeanTest {
         // Make sure that the counters are back to zero
         assertThat("Concurrent Gauges counts are incorrect", registry.getConcurrentGauges().values(),
                    everyItem(Matchers.<ConcurrentGauge>hasProperty("count", equalTo(0L))));
-
-        // Make sure that the max is one
-        assertThat("Concurrent Gauges counts are incorrect", registry.getConcurrentGauges().values(),
-                   everyItem(Matchers.<ConcurrentGauge>hasProperty("max", equalTo(1L))));
     }
 }
