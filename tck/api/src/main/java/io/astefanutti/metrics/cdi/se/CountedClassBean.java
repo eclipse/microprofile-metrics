@@ -17,17 +17,21 @@ package io.astefanutti.metrics.cdi.se;
 
 import org.eclipse.microprofile.metrics.annotation.Counted;
 
-import java.util.concurrent.Callable;
+@Counted(name = "countedClass")
+public class CountedClassBean {
 
-public class MonotonicCountedMethodBean<T> {
+    public void countedMethodOne() {
+    }
 
-    @Counted(name = "monotonicCountedMethod", absolute = true)
-    public T monotonicCountedMethod(Callable<T> callable) {
-        try {
-            return callable.call();
-        }
-        catch (Exception cause) {
-            throw new RuntimeException(cause);
-        }
+    public void countedMethodTwo() {
+    }
+
+    protected void countedMethodProtected() {
+    }
+
+    void countedMethodPackagedPrivate() {
+    }
+
+    private void countedMethodPrivate() {
     }
 }

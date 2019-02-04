@@ -46,9 +46,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
-public class MonotonicCountedMethodBeanTest {
+public class CountedMethodBeanTest {
 
-    private final static String COUNTER_NAME = "monotonicCountedMethod";
+    private final static String COUNTER_NAME = "countedMethod";
     private final static MetricID COUNTER_METRICID = new MetricID(COUNTER_NAME);
 
     private final static AtomicLong COUNTER_COUNT = new AtomicLong();
@@ -57,7 +57,7 @@ public class MonotonicCountedMethodBeanTest {
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
             // Test bean
-            .addClass(MonotonicCountedMethodBean.class)
+            .addClass(CountedMethodBean.class)
             // Bean archive deployment descriptor
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
@@ -66,7 +66,7 @@ public class MonotonicCountedMethodBeanTest {
     private MetricRegistry registry;
 
     @Inject
-    private MonotonicCountedMethodBean<Long> bean;
+    private CountedMethodBean<Long> bean;
 
     @Test
     @InSequence(1)
@@ -80,7 +80,7 @@ public class MonotonicCountedMethodBeanTest {
 
     @Test
     @InSequence(2)
-    public void countedMethodNotCalledYet(@Metric(name = "monotonicCountedMethod", absolute = true) Counter instance) {
+    public void countedMethodNotCalledYet(@Metric(name = "countedMethod", absolute = true) Counter instance) {
         assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_METRICID));
         Counter counter = registry.getCounters().get(COUNTER_METRICID);
 
@@ -100,7 +100,7 @@ public class MonotonicCountedMethodBeanTest {
             @Override
             public void run() {
                 try {
-                    exchanger.exchange(bean.monotonicCountedMethod(new Callable<Long>() {
+                    exchanger.exchange(bean.countedMethod(new Callable<Long>() {
                         @Override
                         public Long call() throws Exception {
                             exchanger.exchange(0L);
@@ -117,6 +117,7 @@ public class MonotonicCountedMethodBeanTest {
         thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
+                e.printStackTrace();
                 uncaught.incrementAndGet();
             }
         });
@@ -143,7 +144,7 @@ public class MonotonicCountedMethodBeanTest {
 
     @Test
     @InSequence(4)
-    public void removeMonotonicCounterFromRegistry() {
+    public void removeCounterFromRegistry() {
         assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_METRICID));
         Counter counter = registry.getCounters().get(COUNTER_METRICID);
 
@@ -152,7 +153,7 @@ public class MonotonicCountedMethodBeanTest {
 
         try {
             // Call the counted method and assert an exception is thrown
-            bean.monotonicCountedMethod(new Callable<Long>() {
+            bean.countedMethod(new Callable<Long>() {
                 @Override
                 public Long call() throws Exception {
                     return null;

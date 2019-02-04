@@ -44,21 +44,21 @@ import org.junit.runner.RunWith;
 import io.astefanutti.metrics.cdi.se.util.MetricsUtil;
 
 @RunWith(Arquillian.class)
-public class MonotonicCountedClassBeanTest {
+public class CountedClassBeanTest {
 
-    private static final String CONSTRUCTOR_NAME = "MonotonicCountedClassBean";
+    private static final String CONSTRUCTOR_NAME = "CountedClassBean";
 
-    private static final String CONSTRUCTOR_COUNTER_NAME = MetricsUtil.absoluteMetricName(MonotonicCountedClassBean.class, "monotonicCountedClass",
+    private static final String CONSTRUCTOR_COUNTER_NAME = MetricsUtil.absoluteMetricName(CountedClassBean.class, "countedClass",
             CONSTRUCTOR_NAME);
 
     private static final MetricID CONSTRUCTOR_METRICID = new MetricID(CONSTRUCTOR_COUNTER_NAME);
             
     private static final String[] METHOD_NAMES = { "countedMethodOne", "countedMethodTwo", "countedMethodProtected", "countedMethodPackagedPrivate" };
 
-    private static final Set<String> METHOD_COUNTER_NAMES = MetricsUtil.absoluteMetricNames(MonotonicCountedClassBean.class, "monotonicCountedClass",
+    private static final Set<String> METHOD_COUNTER_NAMES = MetricsUtil.absoluteMetricNames(CountedClassBean.class, "countedClass",
             METHOD_NAMES);
 
-    private static final Set<String> COUNTER_NAMES = MetricsUtil.absoluteMetricNames(MonotonicCountedClassBean.class, "monotonicCountedClass",
+    private static final Set<String> COUNTER_NAMES = MetricsUtil.absoluteMetricNames(CountedClassBean.class, "countedClass",
             METHOD_NAMES, CONSTRUCTOR_NAME);
 
     private static final Set<MetricID> COUNTER_METRICIDS = MetricsUtil.createMetricIDs(COUNTER_NAMES);
@@ -76,7 +76,7 @@ public class MonotonicCountedClassBeanTest {
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
                 // Test bean
-                .addClasses(MonotonicCountedClassBean.class, MetricsUtil.class)
+                .addClasses(CountedClassBean.class, MetricsUtil.class)
                 // Bean archive deployment descriptor
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
@@ -85,7 +85,7 @@ public class MonotonicCountedClassBeanTest {
     private MetricRegistry registry;
 
     @Inject
-    private MonotonicCountedClassBean bean;
+    private CountedClassBean bean;
 
     @Test
     @InSequence(1)
