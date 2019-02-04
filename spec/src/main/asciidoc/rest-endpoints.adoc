@@ -446,9 +446,9 @@ The value of the gauge must be the value of `getValue()` with appropriate naming
 .Example OpenMetrics text format for a Gauge in dollars.
 [source, ruby]
 ----
-# TYPE application:cost_dollars gauge
-# HELP application:cost_dollars The running cost of the server in dollars.
-application:cost_dollars 80
+# TYPE application_cost_dollars gauge
+# HELP application_cost_dollars The running cost of the server in dollars.
+application_cost_dollars 80
 ----
 
 ==== Counter OpenMetrics Text Format
