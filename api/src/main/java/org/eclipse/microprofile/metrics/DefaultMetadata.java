@@ -166,6 +166,18 @@ public class DefaultMetadata implements Metadata {
         sb.append(", type=").append(type);
         sb.append(", unit='").append(unit).append('\'');
         sb.append(", reusable=").append(reusable);
+        if(description != null) {
+            sb.append(", description='").append(description).append('\'');
+        }
+        else {
+            sb.append(", description=null");
+        }
+        if(displayName != null) {
+            sb.append(", displayName='").append(displayName).append('\'');
+        }
+        else {
+            sb.append(", displayName=null");
+        }
         sb.append('}');
         return sb.toString();
     }
