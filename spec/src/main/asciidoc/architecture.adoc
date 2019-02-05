@@ -123,14 +123,14 @@ Tags can be supplied in two ways:
 
 * At the level of a metric as described in <<app-metrics-api>>.
 * At the application server level by using https://github.com/eclipse/microprofile-config[MicroProfile Config] and
-setting a property of the name `MP_METRICS_TAGS`.
-This property translates to the environment variable `MP_METRICS_TAGS`.
-** Tag values set through `MP_METRICS_TAGS` MUST escape equal symbols `=` and commas `,` with a backslash `\`
+setting a configuration property of the name `mp.metrics.tags`. The implementation MUST make sure that an implementation of MicroProfile Config version at least 1.3 is available at runtime.
+If it is supplied as an environment variable rather than system property, it can be named `MP_METRICS_TAGS` and will be picked up too.
+** Tag values set through `mp.metrics.tags` MUST escape equal symbols `=` and commas `,` with a backslash `\`
 
-NOTE: The use of MicroProfile-Config is mandatory in MicroProfile-Metrics 1.1 even if it only serves to provide
+NOTE: The use of MicroProfile-Config is mandatory in MicroProfile-Metrics 2.0 even if it only serves to provide
 the global tags that existed already in Metrics 1.0. Future version of the spec will introduce more config options.
 
-.Set up global tags via environment
+.Set up global tags via environment variable
 [source,bash]
 ----
 export MP_METRICS_TAGS=app=shop,tier=integration,special=deli\=ver\,y
