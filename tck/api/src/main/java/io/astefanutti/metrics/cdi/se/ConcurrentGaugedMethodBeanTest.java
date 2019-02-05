@@ -158,8 +158,6 @@ public class ConcurrentGaugedMethodBeanTest {
 
         // Then make sure that the counter has been decremented
         assertThat("Concurrent Gauges count is incorrect", counter.getCount(), is(equalTo(COUNTER_COUNT.decrementAndGet())));
-        assertThat("Concurrent Gauges max is incorrect", counter.getMax(),
-                   is(equalTo(1)));
 
         // Finally make sure calling thread is returns correctly
         thread.join();
@@ -169,7 +167,7 @@ public class ConcurrentGaugedMethodBeanTest {
     @Test
     @InSequence(4)
     public void removeCounterFromRegistry() {
-        assertThat("Concurrent Gauges is not registered correctly", registry.getConcurrentGauges(), hasKey(C_GAUGE_METRICID));
+        assertThat("Concurrent Gauge is not registered correctly", registry.getConcurrentGauges(), hasKey(C_GAUGE_METRICID));
         ConcurrentGauge counter = registry.getConcurrentGauges().get(C_GAUGE_METRICID);
 
         // Remove the counter from metrics registry
@@ -187,7 +185,7 @@ public class ConcurrentGaugedMethodBeanTest {
         catch (Exception cause) {
             assertThat(cause, is(instanceOf(IllegalStateException.class)));
             assertThat(cause.getMessage(),
-                       is(equalTo("No concurrent gauge with name [" + C_GAUGE_NAME + "] found in registry [" + registry + "]")));
+                       is(equalTo("No concurrent gauge with metricID [" + C_GAUGE_METRICID + "] found in registry [" + registry + "]")));
             // Make sure that the counter hasn't been called
             assertThat("Concurrent Gauges count is incorrect", counter.getCount(), is(equalTo(COUNTER_COUNT.get())));
             return;
