@@ -165,8 +165,7 @@ Full minute is the minute from second 0 to just before second 0 on the next minu
 * description (optional): A human readable description of the metric.
 * displayName (optional): A human readable name of the metric for display purposes if the metric name is not
 human readable. This could e.g. be the case when the metric name is a uuid.
-* tags (optional): A list of `key=value` pairs, which are separated by comma. See also <<supplying_of_tags>>.
-* reusable (optional): If set to `true`, then it is allowed to register a metric multiple times under the same name.
+* reusable (optional): If set to `true`, then it is allowed to register a metric multiple times under the same <<metricid-data-def>>. 
 Note that all such instances must set `reusable` to `true`.
 Default is `true` for metrics created programmatically, `false` for metrics declared using annotations.
 See <<reusing_of_metrics>> for more details.
@@ -221,10 +220,11 @@ The implementation must throw an 'IllegalArgumentException' during a metric regi
 in the reuse of a metric where that metric was either previously declared not reusable or where the registration call itself
 declares the metric to not be reusable.
 
-Only metrics of the same type can be reused under the same name.
+Only metrics of the same type can be reused under the same MetricID.
 Trying to reuse a name for different types will result in an `IllegalArgumentException`.
+All metrics under the same name must also have exactly the same metadata.
 
-TIP: If you want to re-use a metric name, then you need to also explicitly set the `name` field OR set `absolute`
+TIP: If you want to re-use a MetricID, then you need to also explicitly set the `name` field OR set `absolute`
 to `true` and have multiple methods annotated as metric that have the same method name and tags.
 
 .Example of reused counters
