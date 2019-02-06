@@ -486,7 +486,7 @@ Concurrent gauges do not have a suffix for the unit.
 [source, ruby]
 ----
 # TYPE application_method_a_invocations gauge
-# HELP application_method_a_invocations The number of parallel invocations of visitorsTotal() #<1>
+# HELP application_method_a_invocations The number of parallel invocations of methodA() #<1>
 application_method_a_invocations 80
 # TYPE application_method_a_invocations_min gauge
 application_method_a_invocations_min 20
