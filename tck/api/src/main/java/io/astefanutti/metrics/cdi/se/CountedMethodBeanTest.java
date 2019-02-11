@@ -162,7 +162,7 @@ public class CountedMethodBeanTest {
         }
         catch (Exception cause) {
             assertThat(cause, is(Matchers.<Exception>instanceOf(IllegalStateException.class)));
-            assertThat(cause.getMessage(), is(equalTo("No counter with name [" + COUNTER_NAME + "] found in registry [" + registry + "]")));
+            assertThat(cause.getMessage(), is(equalTo("No counter with metricID [" + COUNTER_METRICID + "] found in registry [" + registry + "]")));
             // Make sure that the counter hasn't been called
             assertThat("Counter count is incorrect", counter.getCount(), is(equalTo(COUNTER_COUNT.get())));
             return;

@@ -111,7 +111,7 @@ public class TimedMethodBeanLookupTest {
         }
         catch (RuntimeException cause) {
             assertThat(cause, is(instanceOf(IllegalStateException.class)));
-            assertThat(cause.getMessage(), is(equalTo("No timer with name [" + TIMER_NAME + "] found in registry [" + registry + "]")));
+            assertThat(cause.getMessage(), is(equalTo("No timer with metricID [" + TIMER_METRICID + "] found in registry [" + registry + "]")));
             // Make sure that the timer hasn't been called
             assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(TIMER_COUNT.get())));
             return;

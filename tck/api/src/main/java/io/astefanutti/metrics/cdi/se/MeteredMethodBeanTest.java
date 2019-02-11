@@ -100,7 +100,7 @@ public class MeteredMethodBeanTest {
         }
         catch (RuntimeException cause) {
             assertThat(cause, is(instanceOf(IllegalStateException.class)));
-            assertThat(cause.getMessage(), is(equalTo("No meter with name [" + METER_NAME + "] found in registry [" + registry + "]")));
+            assertThat(cause.getMessage(), is(equalTo("No meter with metricID [" + METER_METRICID + "] found in registry [" + registry + "]")));
             // Make sure that the meter hasn't been marked
             assertThat("Meter count is incorrect", meter.getCount(), is(equalTo(METER_COUNT.get())));
             return;
