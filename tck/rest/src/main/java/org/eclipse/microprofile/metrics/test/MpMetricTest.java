@@ -327,10 +327,11 @@ public class MpMetricTest {
             if (line.startsWith("#")) {
                 continue;
             }
-            String[] tmp = line.split(" ");
-            assertEquals(tmp.length, 2);
-            assertFalse("Line has illegal chars " + line, tmp[0].matches("[-.]"));
-            assertFalse("Found __ in " + line, tmp[0].matches("__"));
+            String nameAndTagsPart = line.substring(0, line.lastIndexOf(" "));
+            String namePart = nameAndTagsPart.contains("{") ?
+                nameAndTagsPart.substring(0, nameAndTagsPart.lastIndexOf("{")) : nameAndTagsPart;
+            assertFalse("Name has illegal chars " + line, namePart.matches(".*[-.].*"));
+            assertFalse("Found __ in " + line, line.matches(".*__.*"));
         }
     }
 
