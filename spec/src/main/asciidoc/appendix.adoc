@@ -124,11 +124,11 @@ public class MetricRegistryFactory {
 
 ===== @Counted
 
-The '@Counted` annotation has changed as its previous usage was confusing and the OpenMetrics output was (partially) wrong.
+The `@Counted` annotation has changed. Users of the previous `@Counted` annotation were surprised to learn that by default counters were not monotonic. Also, Prometheus expects all counters to be monotonic.
 To migrate:
 
 * Replace `@Counted()` or `@Counted(monotonic=false)` with `@ConcurrentGauge`.
-OpenMetrics output will be labeled as gauge
+A set of gauges will be created in the OpenMetrics output for each `@ConcurrentGauge`.
 * Replace `@Counted(monotonic=true)` with `@Counted` (monotonic flag is gone)
 
 This change has also had an impact on the `Counter` interface to basically follow the above change:
