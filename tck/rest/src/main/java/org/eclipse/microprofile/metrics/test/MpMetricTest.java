@@ -47,6 +47,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +67,7 @@ import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -325,10 +327,11 @@ public class MpMetricTest {
             if (line.startsWith("#")) {
                 continue;
             }
-            String[] tmp = line.split(" ");
-            assertEquals(tmp.length, 2);
-            assertFalse("Line has illegal chars " + line, tmp[0].matches("[-.]"));
-            assertFalse("Found __ in " + line, tmp[0].matches("__"));
+            String nameAndTagsPart = line.substring(0, line.lastIndexOf(" "));
+            String namePart = nameAndTagsPart.contains("{") ?
+                nameAndTagsPart.substring(0, nameAndTagsPart.lastIndexOf("{")) : nameAndTagsPart;
+            assertFalse("Name has illegal chars " + line, namePart.matches(".*[-.].*"));
+            assertFalse("Found __ in " + line, line.matches(".*__.*"));
         }
     }
 
@@ -863,6 +866,78 @@ public class MpMetricTest {
         Header wantPrometheusFormat = new Header("Accept", TEXT_PLAIN);
         given().header(wantPrometheusFormat).get("/metrics/application").then().statusCode(200)
         .and().body(containsString("TYPE application_metric_test_test1_count_me_b_total counter"));
+    }
+
+    /**
+     * Check that there is at least one metric named gc.count and that they all contain
+     * expected tags (actually this is just 'name' for now).
+     */
+    @Test
+    @RunAsClient
+    @InSequence(43)
+    public void testGcCountMetrics() {
+        Header wantJson = new Header("Accept", APPLICATION_JSON);
+        JsonPath jsonPath = given().header(wantJson).get("/metrics/base").jsonPath();
+
+        Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
+        MiniMeta gcCountMetricMeta = baseNames.get("gc.count");
+        Set<String> expectedTags = gcCountMetricMeta.tags.keySet();
+
+        // obtain list of actual base metrics from the runtime and find all named gc.count
+        Map<String, Object> elements = jsonPath.getMap(".");
+        boolean found = false;
+        for (Map.Entry<String, Object> metricEntry : elements.entrySet()) {
+            if(metricEntry.getKey().startsWith("gc.count")) {
+                // We found a metric named gc.count. Now check that it contains all expected tags
+                for(String expectedTag : expectedTags) {
+                    assertThat("The metric should contain a " + expectedTag + " tag",
+                        metricEntry.getKey(), containsString(expectedTag + "="));
+                }
+                // check that the metric has a reasonable value - it should at least be numeric and not negative
+                Assert.assertTrue("gc.count value should be numeric",
+                    metricEntry.getValue() instanceof Number);
+                Assert.assertTrue("gc.count value should not be a negative number",
+                    (Integer)metricEntry.getValue() >= 0);
+                found = true;
+            }
+        }
+        Assert.assertTrue("At least one metric named gc.count is expected", found);
+    }
+
+    /**
+     * Check that there is at least one metric named gc.time and that they all contain
+     * expected tags (actually this is just 'name' for now).
+     */
+    @Test
+    @RunAsClient
+    @InSequence(44)
+    public void testGcTimeMetrics() {
+        Header wantJson = new Header("Accept", APPLICATION_JSON);
+        JsonPath jsonPath = given().header(wantJson).get("/metrics/base").jsonPath();
+
+        Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
+        MiniMeta gcTimeMetricMeta = baseNames.get("gc.time");
+        Set<String> expectedTags = gcTimeMetricMeta.tags.keySet();
+
+        // obtain list of actual base metrics from the runtime and find all named gc.time
+        Map<String, Object> elements = jsonPath.getMap(".");
+        boolean found = false;
+        for (Map.Entry<String, Object> metricEntry : elements.entrySet()) {
+            if(metricEntry.getKey().startsWith("gc.time")) {
+                // We found a metric named gc.time. Now check that it contains all expected tags
+                for(String expectedTag : expectedTags) {
+                    assertThat("The metric should contain a " + expectedTag + " tag",
+                        metricEntry.getKey(), containsString(expectedTag + "="));
+                }
+                // check that the metric has a reasonable value - it should at least be numeric and not negative
+                Assert.assertTrue("gc.time value should be numeric",
+                    metricEntry.getValue() instanceof Number);
+                Assert.assertTrue("gc.time value should not be a negative number",
+                    (Integer)metricEntry.getValue() >= 0);
+                found = true;
+            }
+        }
+        Assert.assertTrue("At least one metric named gc.time is expected", found);
     }
     
     /**
