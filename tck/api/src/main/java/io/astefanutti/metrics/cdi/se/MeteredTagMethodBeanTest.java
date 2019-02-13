@@ -36,6 +36,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -47,8 +48,8 @@ public class MeteredTagMethodBeanTest {
     private final static Tag NUMBER_ONE_TAG = new Tag("number", "one");
     private final static Tag NUMBER_TWO_TAG = new Tag("number", "two");
     
-    private final static MetricID METER_ONE_METRICID = new MetricID(METER_NAME, NUMBER_ONE_TAG);
-    private final static MetricID METER_TWO_METRICID = new MetricID(METER_NAME, NUMBER_TWO_TAG);
+    private static MetricID meterOneMID;
+    private static MetricID meterTwoMID;
 
 
     @Deployment
@@ -66,10 +67,25 @@ public class MeteredTagMethodBeanTest {
     @Inject
     private MeteredTagMethodBean bean;
 
+    @Before
+    public void instantiateTest() {
+        /*
+         * The MetricID relies on the MicroProfile Config API.
+         * Running a managed arquillian container will result
+         * with the MetricID being created in a client process
+         * that does not contain the MPConfig impl.
+         * 
+         * This will cause client instantiated MetricIDs to 
+         * throw an exception. (i.e the global MetricIDs)
+         */
+        meterOneMID = new MetricID(METER_NAME, NUMBER_ONE_TAG);
+        meterTwoMID = new MetricID(METER_NAME, NUMBER_TWO_TAG);
+    }
+    
     @Test
     @InSequence(1)
     public void meteredTagMethodRegistered() {
-        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(METER_ONE_METRICID));
-        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(METER_TWO_METRICID));
+        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(meterOneMID));
+        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(meterTwoMID));
     }
 }

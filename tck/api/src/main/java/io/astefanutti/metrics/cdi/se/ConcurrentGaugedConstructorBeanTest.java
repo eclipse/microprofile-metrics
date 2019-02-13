@@ -56,6 +56,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -63,7 +64,7 @@ import org.junit.runner.RunWith;
 public class ConcurrentGaugedConstructorBeanTest {
 
     private final static String COUNTER_NAME = MetricRegistry.name(ConcurrentGaugedConstructorBean.class, "cGaugedConstructor");
-    private final static MetricID COUNTER_METRICID = new MetricID(COUNTER_NAME);
+    private static MetricID counterMID;
 
     @Deployment
     static Archive<?> createTestArchive() {
@@ -89,6 +90,20 @@ public class ConcurrentGaugedConstructorBeanTest {
     }
     */
 
+    @Before
+    public void instantiateTest() {
+        /*
+         * The MetricID relies on the MicroProfile Config API.
+         * Running a managed arquillian container will result
+         * with the MetricID being created in a client process
+         * that does not contain the MPConfig impl.
+         * 
+         * This will cause client instantiated MetricIDs to 
+         * throw an exception. (i.e the global MetricIDs)
+         */
+        counterMID = new MetricID(COUNTER_NAME);
+    }
+    
     @Test
     @InSequence(1)
     public void countedConstructorCalled() {
@@ -97,8 +112,8 @@ public class ConcurrentGaugedConstructorBeanTest {
             instance.get();
         }
 
-        assertThat("Concurrent Gauge is not registered correctly", registry.getConcurrentGauges(), hasKey(COUNTER_METRICID));
-        ConcurrentGauge concurrentGauge = registry.getConcurrentGauges().get(COUNTER_METRICID);
+        assertThat("Concurrent Gauge is not registered correctly", registry.getConcurrentGauges(), hasKey(counterMID));
+        ConcurrentGauge concurrentGauge = registry.getConcurrentGauges().get(counterMID);
 
         assertThat("Concurrent gauge count is incorrect", concurrentGauge.getCount(), is(equalTo(0L)));
     }

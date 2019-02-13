@@ -41,7 +41,7 @@ public class GaugeMethodBeanTest {
 
     private final static String GAUGE_NAME = MetricRegistry.name(GaugeMethodBean.class, "gaugeMethod");
 
-    private final static MetricID GAUGE_METRICID = new MetricID(GAUGE_NAME);
+    private static MetricID gaugeMID;
     
     @Deployment
     public static Archive<?> createTestArchive() {
@@ -59,18 +59,28 @@ public class GaugeMethodBeanTest {
     private GaugeMethodBean bean;
 
     @Before
-    public void instantiateApplicationScopedBean() {
+    public void instantiateApplicationScopedBeanAndTest() {
         // Let's trigger the instantiation of the application scoped bean explicitly
         // as only a proxy gets injected otherwise
         bean.getGauge();
+        /*
+         * The MetricID relies on the MicroProfile Config API.
+         * Running a managed arquillian container will result
+         * with the MetricID being created in a client process
+         * that does not contain the MPConfig impl.
+         * 
+         * This will cause client instantiated MetricIDs to 
+         * throw an exception. (i.e the global MetricIDs)
+         */
+         gaugeMID = new MetricID(GAUGE_NAME);
     }
 
     @Test
     @InSequence(1)
     public void gaugeCalledWithDefaultValue() {
-        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(GAUGE_METRICID));
+        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(gaugeMID));
         @SuppressWarnings("unchecked")
-        Gauge<Long> gauge = registry.getGauges().get(GAUGE_METRICID);
+        Gauge<Long> gauge = registry.getGauges().get(gaugeMID);
 
         // Make sure that the gauge has the expected value
         assertThat("Gauge value is incorrect", gauge.getValue(), is(equalTo(0L)));
@@ -79,9 +89,9 @@ public class GaugeMethodBeanTest {
     @Test
     @InSequence(2)
     public void callGaugeAfterSetterCall() {
-        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(GAUGE_METRICID));
+        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(gaugeMID));
         @SuppressWarnings("unchecked")
-        Gauge<Long> gauge = registry.getGauges().get(GAUGE_METRICID);
+        Gauge<Long> gauge = registry.getGauges().get(gaugeMID);
 
         // Call the setter method and assert the gauge is up-to-date
         long value = Math.round(Math.random() * Long.MAX_VALUE);

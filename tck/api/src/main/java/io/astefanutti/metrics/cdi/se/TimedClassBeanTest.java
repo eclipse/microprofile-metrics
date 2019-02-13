@@ -51,7 +51,7 @@ public class TimedClassBeanTest {
 
     private static final String CONSTRUCTOR_TIMER_NAME = MetricsUtil.absoluteMetricName(TimedClassBean.class, "timedClass", CONSTRUCTOR_NAME);
 
-    private static final MetricID CONSTRUCTOR_METRICID = new MetricID(CONSTRUCTOR_TIMER_NAME);
+    private static MetricID constructorMID;
     
     private static final String[] METHOD_NAMES = { "timedMethodOne", "timedMethodTwo", "timedMethodProtected", "timedMethodPackagedPrivate" };
 
@@ -67,7 +67,7 @@ public class TimedClassBeanTest {
     private static final Set<String> TIMER_NAMES = MetricsUtil.absoluteMetricNames(TimedClassBean.class, "timedClass", METHOD_NAMES,
             CONSTRUCTOR_NAME);
             
-    private static final Set<MetricID> TIMER_METRICIDS = MetricsUtil.createMetricIDs(TIMER_NAMES);
+    private static Set<MetricID> timerMIDs;
 
     private static final AtomicLong METHOD_COUNT = new AtomicLong();
 
@@ -92,14 +92,25 @@ public class TimedClassBeanTest {
         // explicitly
         // as only a proxy gets injected otherwise
         bean.toString();
+        /*
+         * The MetricID relies on the MicroProfile Config API.
+         * Running a managed arquillian container will result
+         * with the MetricID being created in a client process
+         * that does not contain the MPConfig impl.
+         * 
+         * This will cause client instantiated MetricIDs to 
+         * throw an exception. (i.e the global MetricIDs)
+         */
+        constructorMID = new MetricID(CONSTRUCTOR_TIMER_NAME);
+        timerMIDs = MetricsUtil.createMetricIDs(TIMER_NAMES);
     }
 
     @Test
     @InSequence(1)
     public void timedMethodsNotCalledYet() {
-        assertThat("Timers are not registered correctly", registry.getTimers().keySet(), is(equalTo(TIMER_METRICIDS)));
+        assertThat("Timers are not registered correctly", registry.getTimers().keySet(), is(equalTo(timerMIDs)));
         
-        assertThat("Constructor timer count is incorrect", registry.getTimers().get(CONSTRUCTOR_METRICID).getCount(), is(equalTo(1L)));
+        assertThat("Constructor timer count is incorrect", registry.getTimers().get(constructorMID).getCount(), is(equalTo(1L)));
 
         // Make sure that the method timers haven't been timed yet
         assertThat("Method timer counts are incorrect", registry.getTimers(METHOD_TIMERS).values(),
@@ -109,9 +120,9 @@ public class TimedClassBeanTest {
     @Test
     @InSequence(2)
     public void callTimedMethodsOnce() {
-        assertThat("Timers are not registered correctly", registry.getTimers().keySet(), is(equalTo(TIMER_METRICIDS)));
+        assertThat("Timers are not registered correctly", registry.getTimers().keySet(), is(equalTo(timerMIDs)));
         
-        assertThat("Constructor timer count is incorrect", registry.getTimers().get(CONSTRUCTOR_METRICID).getCount(), is(equalTo(1L)));
+        assertThat("Constructor timer count is incorrect", registry.getTimers().get(constructorMID).getCount(), is(equalTo(1L)));
 
         // Call the timed methods and assert they've been timed
         bean.timedMethodOne();

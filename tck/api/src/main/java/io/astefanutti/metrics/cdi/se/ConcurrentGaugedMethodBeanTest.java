@@ -65,6 +65,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -72,7 +73,7 @@ import org.junit.runner.RunWith;
 public class ConcurrentGaugedMethodBeanTest {
 
     private final static String C_GAUGE_NAME = "cGaugedMethod";
-    private final static MetricID C_GAUGE_METRICID = new MetricID(C_GAUGE_NAME);
+    private static MetricID cGaugeMID;
 
     private final static AtomicLong COUNTER_COUNT = new AtomicLong();
 
@@ -91,11 +92,25 @@ public class ConcurrentGaugedMethodBeanTest {
     @Inject
     private ConcurrentGaugedMethodBean<Long> bean;
 
+    @Before
+    public void instantiateTest() {
+        /*
+         * The MetricID relies on the MicroProfile Config API.
+         * Running a managed arquillian container will result
+         * with the MetricID being created in a client process
+         * that does not contain the MPConfig impl.
+         * 
+         * This will cause client instantiated MetricIDs to 
+         * throw an exception. (i.e the global MetricIDs)
+         */
+        cGaugeMID = new MetricID(C_GAUGE_NAME);
+    }
+    
     @Test
     @InSequence(1)
     public void countedMethodNotCalledYet() {
-        assertThat("Concurrent Gauges is not registered correctly", registry.getConcurrentGauges(), hasKey(C_GAUGE_METRICID));
-        ConcurrentGauge counter = registry.getConcurrentGauges().get(C_GAUGE_METRICID);
+        assertThat("Concurrent Gauges is not registered correctly", registry.getConcurrentGauges(), hasKey(cGaugeMID));
+        ConcurrentGauge counter = registry.getConcurrentGauges().get(cGaugeMID);
 
         // Make sure that the counter hasn't been called yet
         assertThat("Concurrent Gauges count is incorrect", counter.getCount(), is(equalTo(COUNTER_COUNT.get())));
@@ -104,8 +119,8 @@ public class ConcurrentGaugedMethodBeanTest {
     @Test
     @InSequence(2)
     public void countedMethodNotCalledYet(@Metric(name = C_GAUGE_NAME, absolute = true) ConcurrentGauge instance) {
-        assertThat("Concurrent Gauges is not registered correctly", registry.getConcurrentGauges(), hasKey(C_GAUGE_METRICID));
-        ConcurrentGauge cGauge = registry.getConcurrentGauges().get(C_GAUGE_METRICID);
+        assertThat("Concurrent Gauges is not registered correctly", registry.getConcurrentGauges(), hasKey(cGaugeMID));
+        ConcurrentGauge cGauge = registry.getConcurrentGauges().get(cGaugeMID);
 
         // Make sure that the counter registered and the bean instance are the same
         assertThat("Concurrent Gauges and bean instance are not equal", instance, is(equalTo(cGauge)));
@@ -114,8 +129,8 @@ public class ConcurrentGaugedMethodBeanTest {
     @Test
     @InSequence(3)
     public void callCountedMethodOnce() throws InterruptedException, TimeoutException {
-        assertThat("Concurrent Gauges is not registered correctly", registry.getConcurrentGauges(), hasKey(C_GAUGE_METRICID));
-        ConcurrentGauge counter = registry.getConcurrentGauges().get(C_GAUGE_METRICID);
+        assertThat("Concurrent Gauges is not registered correctly", registry.getConcurrentGauges(), hasKey(cGaugeMID));
+        ConcurrentGauge counter = registry.getConcurrentGauges().get(cGaugeMID);
 
         // Call the counted method, block and assert it's been counted
         final Exchanger<Long> exchanger = new Exchanger<>();
@@ -167,11 +182,11 @@ public class ConcurrentGaugedMethodBeanTest {
     @Test
     @InSequence(4)
     public void removeCounterFromRegistry() {
-        assertThat("Concurrent Gauge is not registered correctly", registry.getConcurrentGauges(), hasKey(C_GAUGE_METRICID));
-        ConcurrentGauge counter = registry.getConcurrentGauges().get(C_GAUGE_METRICID);
+        assertThat("Concurrent Gauge is not registered correctly", registry.getConcurrentGauges(), hasKey(cGaugeMID));
+        ConcurrentGauge counter = registry.getConcurrentGauges().get(cGaugeMID);
 
         // Remove the counter from metrics registry
-        registry.remove(C_GAUGE_METRICID);
+        registry.remove(cGaugeMID);
 
         try {
             // Call the counted method and assert an exception is thrown

@@ -51,8 +51,8 @@ public class GaugeTagMethodBeanTest {
     private final static Tag NUMBER_ONE_TAG = new Tag("number", "one");
     private final static Tag NUMBER_TWO_TAG = new Tag("number", "two");
     
-    private final static MetricID GAUGE_ONE_METRICID = new MetricID(GAUGE_NAME, NUMBER_ONE_TAG);
-    private final static MetricID GAUGE_TWO_METRICID = new MetricID(GAUGE_NAME, NUMBER_TWO_TAG);
+    private static MetricID gaugeOneMID;
+    private static MetricID gaugeTwoMID;
     
     @Deployment
     public static Archive<?> createTestArchive() {
@@ -75,19 +75,30 @@ public class GaugeTagMethodBeanTest {
         // as only a proxy gets injected otherwise
         bean.getGaugeOne();
         bean.getGaugeTwo();
+        /*
+         * The MetricID relies on the MicroProfile Config API.
+         * Running a managed arquillian container will result
+         * with the MetricID being created in a client process
+         * that does not contain the MPConfig impl.
+         * 
+         * This will cause client instantiated MetricIDs to 
+         * throw an exception. (i.e the global MetricIDs)
+         */
+        gaugeOneMID = new MetricID(GAUGE_NAME, NUMBER_ONE_TAG);
+        gaugeTwoMID = new MetricID(GAUGE_NAME, NUMBER_TWO_TAG);
     }
 
     @Test
     @InSequence(1)
     public void gaugeTagCalledWithDefaultValue() {
-        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(GAUGE_ONE_METRICID));
-        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(GAUGE_TWO_METRICID));
+        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(gaugeOneMID));
+        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(gaugeTwoMID));
         
         @SuppressWarnings("unchecked")
-        Gauge<Long> gaugeOne = registry.getGauges().get(GAUGE_ONE_METRICID);
+        Gauge<Long> gaugeOne = registry.getGauges().get(gaugeOneMID);
 
         @SuppressWarnings("unchecked")
-        Gauge<Long> gaugeTwo = registry.getGauges().get(GAUGE_TWO_METRICID);
+        Gauge<Long> gaugeTwo = registry.getGauges().get(gaugeTwoMID);
         
         // Make sure that the gauge has the expected value
         assertThat("Gauge value is incorrect", gaugeOne.getValue(), is(equalTo(0L)));
@@ -97,14 +108,14 @@ public class GaugeTagMethodBeanTest {
     @Test
     @InSequence(2)
     public void callGaugeTagAfterSetterCall() {
-        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(GAUGE_ONE_METRICID));
-        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(GAUGE_TWO_METRICID));
+        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(gaugeOneMID));
+        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(gaugeTwoMID));
         
         @SuppressWarnings("unchecked")
-        Gauge<Long> gaugeOne = registry.getGauges().get(GAUGE_ONE_METRICID);
+        Gauge<Long> gaugeOne = registry.getGauges().get(gaugeOneMID);
 
         @SuppressWarnings("unchecked")
-        Gauge<Long> gaugeTwo = registry.getGauges().get(GAUGE_TWO_METRICID);
+        Gauge<Long> gaugeTwo = registry.getGauges().get(gaugeTwoMID);
 
         // Call the setter method and assert the gauge is up-to-date
         long value = Math.round(Math.random() * Long.MAX_VALUE);

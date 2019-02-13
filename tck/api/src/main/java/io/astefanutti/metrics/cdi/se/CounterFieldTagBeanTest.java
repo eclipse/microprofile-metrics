@@ -39,6 +39,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -53,9 +54,9 @@ public class CounterFieldTagBeanTest {
     private final static Tag COLOUR_RED_TAG = new Tag("colour", "red"); 
     private final static Tag COLOUR_BLUE_TAG = new Tag("colour", "blue"); 
         
-    private final static MetricID COUNTER_MID = new MetricID(COUNTER_NAME);
-    private final static MetricID COUNTER_TWO_MID = new MetricID(COUNTER_NAME, NUMBER_TWO_TAG, COLOUR_RED_TAG);
-    private final static MetricID COUNTER_THREE_MID = new MetricID(COUNTER_NAME, NUMBER_THREE_TAG, COLOUR_BLUE_TAG);
+    private static MetricID counterMID ;
+    private static MetricID counterTwoMID;
+    private static MetricID counterThreeMID;
 
     @Deployment
     public static Archive<?> createTestArchive() {
@@ -72,26 +73,42 @@ public class CounterFieldTagBeanTest {
     @Inject
     private CounterFieldTagBean bean;
 
+    @Before
+    public void instantiateTest() {
+        /*
+         * The MetricID relies on the MicroProfile Config API.
+         * Running a managed arquillian container will result
+         * with the MetricID being created in a client process
+         * that does not contain the MPConfig impl.
+         * 
+         * This will cause client instantiated MetricIDs to 
+         * throw an exception. (i.e the global MetricIDs)
+         */
+        counterMID = new MetricID(COUNTER_NAME);
+        counterTwoMID = new MetricID(COUNTER_NAME, NUMBER_TWO_TAG, COLOUR_RED_TAG);
+        counterThreeMID = new MetricID(COUNTER_NAME, NUMBER_THREE_TAG, COLOUR_BLUE_TAG);
+    }
+    
     @Test
     @InSequence(1)
     public void counterTagFieldsRegistered() {      
         
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_MID));
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_TWO_MID));
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_THREE_MID));
+        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterMID));
+        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterTwoMID));
+        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterThreeMID));
     }
 
     @Test
     @InSequence(2)
     public void incrementCounterTagFields() {
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_MID));
-        Counter counterOne = registry.getCounters().get(COUNTER_MID);
+        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterMID));
+        Counter counterOne = registry.getCounters().get(counterMID);
         
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_TWO_MID));
-        Counter counterTwo = registry.getCounters().get(COUNTER_TWO_MID);
+        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterTwoMID));
+        Counter counterTwo = registry.getCounters().get(counterTwoMID);
         
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_THREE_MID));
-        Counter counterThree = registry.getCounters().get(COUNTER_THREE_MID);
+        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterThreeMID));
+        Counter counterThree = registry.getCounters().get(counterThreeMID);
 
         // Call the increment method and assert the counter is up-to-date
         long value = Math.round(Math.random() * Long.MAX_VALUE);

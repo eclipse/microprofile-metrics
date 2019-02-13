@@ -38,6 +38,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -51,7 +52,7 @@ public class CountedClassBeanTest {
     private static final String CONSTRUCTOR_COUNTER_NAME = MetricsUtil.absoluteMetricName(CountedClassBean.class, "countedClass",
             CONSTRUCTOR_NAME);
 
-    private static final MetricID CONSTRUCTOR_METRICID = new MetricID(CONSTRUCTOR_COUNTER_NAME);
+    private static MetricID constructorMID;
             
     private static final String[] METHOD_NAMES = { "countedMethodOne", "countedMethodTwo", "countedMethodProtected", "countedMethodPackagedPrivate" };
 
@@ -61,7 +62,7 @@ public class CountedClassBeanTest {
     private static final Set<String> COUNTER_NAMES = MetricsUtil.absoluteMetricNames(CountedClassBean.class, "countedClass",
             METHOD_NAMES, CONSTRUCTOR_NAME);
 
-    private static final Set<MetricID> COUNTER_METRICIDS = MetricsUtil.createMetricIDs(COUNTER_NAMES);
+    private static Set<MetricID> counterMIDs;
             
     private static final MetricFilter METHOD_COUNTERS = new MetricFilter() {
         @Override
@@ -87,12 +88,27 @@ public class CountedClassBeanTest {
     @Inject
     private CountedClassBean bean;
 
+    @Before
+    public void instantiateTest() {
+        /*
+         * The MetricID relies on the MicroProfile Config API.
+         * Running a managed arquillian container will result
+         * with the MetricID being created in a client process
+         * that does not contain the MPConfig impl.
+         * 
+         * This will cause client instantiated MetricIDs to 
+         * throw an exception. (i.e the global MetricIDs)
+         */
+        constructorMID = new MetricID(CONSTRUCTOR_COUNTER_NAME);
+        counterMIDs = MetricsUtil.createMetricIDs(COUNTER_NAMES);
+    }
+    
     @Test
     @InSequence(1)
     public void countedMethodsNotCalledYet() {
-        assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(COUNTER_METRICIDS)));
+        assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(counterMIDs)));
 
-        assertThat("Constructor timer count is incorrect", registry.getCounters().get(CONSTRUCTOR_METRICID).getCount(),
+        assertThat("Constructor timer count is incorrect", registry.getCounters().get(constructorMID).getCount(),
                 is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
 
         // Make sure that the counters haven't been incremented
@@ -103,9 +119,9 @@ public class CountedClassBeanTest {
     @Test
     @InSequence(2)
     public void callCountedMethodsOnce() { 
-        assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(COUNTER_METRICIDS)));
+        assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(counterMIDs)));
         
-        assertThat("Constructor timer count is incorrect", registry.getCounters().get(CONSTRUCTOR_METRICID).getCount(),
+        assertThat("Constructor timer count is incorrect", registry.getCounters().get(constructorMID).getCount(),
                 is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
 
         // Call the counted methods and assert they've been incremented

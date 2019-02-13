@@ -32,6 +32,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -41,8 +42,8 @@ public class ConcreteExtendedTimedBeanTest {
     private final static String TIMED_NAME = MetricRegistry.name(ConcreteExtendedTimedBean.class, "timedMethod");
     private final static String EXTENDED_TIMED_NAME = MetricRegistry.name(ConcreteExtendedTimedBean.class, "anotherTimedMethod");
 
-    private final static MetricID TIMED_METRICID = new MetricID(TIMED_NAME);
-    private final static MetricID EXTENDED_TIMED_METRICID = new MetricID(EXTENDED_TIMED_NAME);
+    private static MetricID timedMID;
+    private static MetricID extendedTimedMID;
     
     @Deployment
     static Archive<?> createTestArchive() {
@@ -56,11 +57,27 @@ public class ConcreteExtendedTimedBeanTest {
     @Inject
     private ConcreteExtendedTimedBean bean;
 
+    @Before
+    public void instantiateTest() {
+        /*
+         * The MetricID relies on the MicroProfile Config API.
+         * Running a managed arquillian container will result
+         * with the MetricID being created in a client process
+         * that does not contain the MPConfig impl.
+         * 
+         * This will cause client instantiated MetricIDs to 
+         * throw an exception. (i.e the global MetricIDs)
+         */
+        timedMID = new MetricID(TIMED_NAME);
+        extendedTimedMID = new MetricID(EXTENDED_TIMED_NAME);
+    }
+
+    
     @Test
     @InSequence(1)
     public void timedMethodNotCalledYet(MetricRegistry registry) {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMED_METRICID));
-        Timer timer = registry.getTimers().get(TIMED_METRICID);
+        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timedMID));
+        Timer timer = registry.getTimers().get(timedMID);
 
         // Make sure that the timer hasn't been called yet
         assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(0L)));
@@ -69,8 +86,8 @@ public class ConcreteExtendedTimedBeanTest {
     @Test
     @InSequence(2)
     public void extendedTimedMethodNotCalledYet(MetricRegistry registry) {
-        assertThat("Timer is not registered correctly on the methods on the abstract class", registry.getTimers(), hasKey(EXTENDED_TIMED_METRICID));
-        Timer timer = registry.getTimers().get(EXTENDED_TIMED_METRICID);
+        assertThat("Timer is not registered correctly on the methods on the abstract class", registry.getTimers(), hasKey(extendedTimedMID));
+        Timer timer = registry.getTimers().get(extendedTimedMID);
 
         // Make sure that the timer hasn't been called yet
         assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(0L)));
@@ -79,8 +96,8 @@ public class ConcreteExtendedTimedBeanTest {
     @Test
     @InSequence(3)
     public void callTimedMethodOnce(MetricRegistry registry) {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMED_METRICID));
-        Timer timer = registry.getTimers().get(TIMED_METRICID);
+        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timedMID));
+        Timer timer = registry.getTimers().get(timedMID);
 
         // Call the timed method and assert it's been timed
         bean.timedMethod();
@@ -92,8 +109,8 @@ public class ConcreteExtendedTimedBeanTest {
     @Test
     @InSequence(4)
     public void callExtendedTimedMethodOnce(MetricRegistry registry) {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(EXTENDED_TIMED_METRICID));
-        Timer timer = registry.getTimers().get(EXTENDED_TIMED_METRICID);
+        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(extendedTimedMID));
+        Timer timer = registry.getTimers().get(extendedTimedMID);
 
         // Call the timed method and assert it's been timed
         bean.anotherTimedMethod();

@@ -41,6 +41,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -52,8 +53,8 @@ public class CountedMethodTagBeanTest {
     private final static Tag NUMBER_ONE_TAG = new Tag("number", "one");
     private final static Tag NUMBER_TWO_TAG = new Tag("number", "two");
 
-    private final static MetricID COUNTER_ONE_MID = new MetricID(COUNTER_NAME, NUMBER_ONE_TAG);    
-    private final static MetricID COUNTER_TWO_MID = new MetricID(COUNTER_NAME, NUMBER_TWO_TAG);
+    private static MetricID counterOneMID;   
+    private static MetricID counterTwoMID;
 
     
     @Deployment
@@ -71,22 +72,37 @@ public class CountedMethodTagBeanTest {
     @Inject
     private CountedMethodTagBean bean;
 
+    @Before
+    public void instantiateTest() {
+        /*
+         * The MetricID relies on the MicroProfile Config API.
+         * Running a managed arquillian container will result
+         * with the MetricID being created in a client process
+         * that does not contain the MPConfig impl.
+         * 
+         * This will cause client instantiated MetricIDs to 
+         * throw an exception. (i.e the global MetricIDs)
+         */
+        counterOneMID = new MetricID(COUNTER_NAME, NUMBER_ONE_TAG);
+        counterTwoMID = new MetricID(COUNTER_NAME, NUMBER_TWO_TAG);
+    }
+    
     @Test
     @InSequence(1)
     public void counterTagMethodsRegistered() {
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_ONE_MID));
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_TWO_MID));
+        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterOneMID));
+        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterTwoMID));
     }
     
     @Test
     @InSequence(2)
     public void countedTagMethodNotCalledYet(@Metric(name = "countedMethod", absolute = true, tags = {"number=one"}) Counter instanceOne,
                                              @Metric(name = "countedMethod", absolute = true, tags = {"number=two"}) Counter instanceTwo) {
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_ONE_MID));
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_TWO_MID));
+        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterOneMID));
+        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterTwoMID));
         
-        Counter counterOne = registry.getCounters().get(COUNTER_ONE_MID);
-        Counter counterTwo = registry.getCounters().get(COUNTER_TWO_MID);
+        Counter counterOne = registry.getCounters().get(counterOneMID);
+        Counter counterTwo = registry.getCounters().get(counterTwoMID);
         
         // Make sure that the counter registered and the bean instance are the same
         assertThat("Counter and bean instance are not equal", instanceOne, is(equalTo(counterOne)));

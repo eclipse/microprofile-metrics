@@ -40,7 +40,7 @@ import org.junit.runner.RunWith;
 public class ApplicationScopedTimedMethodBeanTest {
 
     private final static String TIMER_NAME = MetricRegistry.name(ApplicationScopedTimedMethodBean.class, "applicationScopedTimedMethod");
-    private final static MetricID TIMER_METRICID = new MetricID(TIMER_NAME);
+    private static MetricID timerMID;
 
     @Deployment
     static Archive<?> createTestArchive() {
@@ -58,17 +58,27 @@ public class ApplicationScopedTimedMethodBeanTest {
     private ApplicationScopedTimedMethodBean bean;
 
     @Before
-    public void instantiateApplicationScopedBean() {
+    public void instantiateApplicationScopedBeanAndTests() {
         // Let's trigger the instantiation of the application scoped bean explicitly
         // as only a proxy gets injected otherwise
         bean.toString();
+        /*
+         * The MetricID relies on the MicroProfile Config API.
+         * Running a managed arquillian container will result
+         * with the MetricID being created in a client process
+         * that does not contain the MPConfig impl.
+         * 
+         * This will cause client instantiated MetricIDs to 
+         * throw an exception. (i.e the global MetricIDs)
+         */
+        timerMID = new MetricID(TIMER_NAME);
     }
 
     @Test
     @InSequence(1)
     public void timedMethodNotCalledYet() {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_METRICID));
-        Timer timer = registry.getTimers().get(TIMER_METRICID);
+        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timerMID));
+        Timer timer = registry.getTimers().get(timerMID);
 
         // Make sure that the timer hasn't been called yet
         assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(0L)));
@@ -77,8 +87,8 @@ public class ApplicationScopedTimedMethodBeanTest {
     @Test
     @InSequence(2)
     public void callTimedMethodOnce() {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_METRICID));
-        Timer timer = registry.getTimers().get(TIMER_METRICID);
+        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timerMID));
+        Timer timer = registry.getTimers().get(timerMID);
 
         // Call the timed method and assert it's been timed
         bean.applicationScopedTimedMethod();

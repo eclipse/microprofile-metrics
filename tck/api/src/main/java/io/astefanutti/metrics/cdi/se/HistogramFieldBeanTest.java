@@ -32,6 +32,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -39,7 +40,7 @@ import org.junit.runner.RunWith;
 public class HistogramFieldBeanTest {
 
     private final static String HISTOGRAM_NAME = MetricRegistry.name(HistogramFieldBean.class, "histogramName");
-    private final static MetricID HISTOGRAM_METRICID = new MetricID(HISTOGRAM_NAME);
+    private static MetricID histogramMID;
 
     @Deployment
     static Archive<?> createTestArchive() {
@@ -56,17 +57,31 @@ public class HistogramFieldBeanTest {
     @Inject
     private HistogramFieldBean bean;
 
+    @Before
+    public void instantiateTest() {
+        /*
+         * The MetricID relies on the MicroProfile Config API.
+         * Running a managed arquillian container will result
+         * with the MetricID being created in a client process
+         * that does not contain the MPConfig impl.
+         * 
+         * This will cause client instantiated MetricIDs to 
+         * throw an exception. (i.e the global MetricIDs)
+         */
+        histogramMID = new MetricID(HISTOGRAM_NAME);
+    }
+    
     @Test
     @InSequence(1)
     public void histogramFieldRegistered() {
-        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(HISTOGRAM_METRICID));
+        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(histogramMID));
     }
 
     @Test
     @InSequence(2)
     public void updateHistogramField() {
-        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(HISTOGRAM_METRICID));
-        Histogram histogram = registry.getHistograms().get(HISTOGRAM_METRICID);
+        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(histogramMID));
+        Histogram histogram = registry.getHistograms().get(histogramMID);
 
         // Call the update method and assert the histogram is up-to-date
         long value = Math.round(Math.random() * Long.MAX_VALUE);
