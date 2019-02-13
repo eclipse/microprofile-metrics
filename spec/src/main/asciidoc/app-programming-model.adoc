@@ -65,6 +65,7 @@ The implementation must throw an `IllegalArgumentException` if such a mismatch i
 * The implementation must flag and reject metrics upon registration if the metadata information being registered is not equivalent to the metadata information that has already been registered under the given metric name (if it already exists).
 ** All metrics of a given metric name must be associated with the same metadata information
 ** The implementation must throw an `IllegalArgumentException` when the metric is rejected.
+* The implementation must throw an `IllegalStateException` if an annotated metric is invoked, but the metric no longer exists in the MetricRegistry. This applies to the following annotations : @Timed, @Counted, @ConcurrentGauge, @Metered
 
 
 === Base Package
@@ -196,6 +197,8 @@ The implementation must support the following annotation targets:
 NOTE: This annotation has changed in MicroProfile Metrics 2.0: Counters now always increase monotonically upon invocation.
 The old behaviour pre 2.0 can now be achieved with `@ConcurrentGauge`.
 
+If the metric no longer exists in the `MetricRegistry` when this annotation is invoked then an IllegalStateException will be thrown.
+
 The following lists the behavior for each annotation target.
 
 ===== CONSTRUCTOR
@@ -253,6 +256,7 @@ The implementation must support the following annotation targets:
   * `METHOD`
   * `TYPE`
 
+If the metric no longer exists in the `MetricRegistry` when this annotation is invoked then an IllegalStateException will be thrown.
 
 The following lists the behavior for each annotation target.
 
@@ -333,6 +337,8 @@ The implementation must support the following annotation targets:
   * `METHOD`
   * `TYPE`
 
+If the metric no longer exists in the `MetricRegistry` when this annotation is invoked then an IllegalStateException will be thrown.
+
 The following lists the behavior for each annotation target.
 
 ===== CONSTRUCTOR
@@ -383,6 +389,8 @@ The implementation must support the following annotation targets:
   * `CONSTRUCTOR`
   * `METHOD`
   * `TYPE`
+
+If the metric no longer exists in the `MetricRegistry` when this annotation is invoked then an IllegalStateException will be thrown.
 
 The following lists the behavior for each annotation target.
 
