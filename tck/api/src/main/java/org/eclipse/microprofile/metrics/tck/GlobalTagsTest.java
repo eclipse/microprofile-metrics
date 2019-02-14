@@ -39,10 +39,9 @@ import org.junit.runner.RunWith;
 import javax.inject.Inject;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 /**
- * Test for obtaining global tags from MP_METRICS_TAGS env variable or system property.
+ * Test for obtaining global tags from MP_METRICS_TAGS env variable.
  */
 @RunWith(Arquillian.class)
 public class GlobalTagsTest {
@@ -73,35 +72,6 @@ public class GlobalTagsTest {
         Metadata actualMetadata = registry.getMetadata().get("mycounter");
         assertEquals("value1", actualMetadata.getTags().get("key1"));
         assertEquals("integration", actualMetadata.getTags().get("tier"));
-    }
-
-    /**
-     * Setting a system property MP_METRICS_TAGS should override the env variable, so the 'tier=integration' tag should not appear.
-     */
-    @Test
-    public void fromSystemProperty() {
-        String previousValue = System.setProperty("MP_METRICS_TAGS", "key1=value1,key2=value2");
-        try {
-            Metadata metadata = new Metadata("mycounter", MetricType.COUNTER);
-            metadata.addTags("key3=value3");
-
-            registry.counter(metadata);
-
-            Metadata actualMetadata = registry.getMetadata().get("mycounter");
-            assertEquals("value3", actualMetadata.getTags().get("key3"));
-            assertEquals("value2", actualMetadata.getTags().get("key2"));
-            assertEquals("value1", actualMetadata.getTags().get("key1"));
-            assertNull(actualMetadata.getTags().get("tier"));
-        }
-        finally {
-            // revert MP_METRICS_TAGS to previous state
-            if (previousValue != null) {
-                System.setProperty("MP_METRICS_TAGS", previousValue);
-            }
-            else {
-                System.clearProperty("MP_METRICS_TAGS");
-            }
-        }
     }
 
 }
