@@ -42,7 +42,7 @@ import javax.inject.Inject;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
 /**
- * Test for obtaining global tags from MP_METRICS_TAGS env variable or mp.metrics.tags system property.
+ * Test for obtaining global tags from MP_METRICS_TAGS env variable.
  */
 @RunWith(Arquillian.class)
 public class GlobalTagsTest {
@@ -71,32 +71,6 @@ public class GlobalTagsTest {
             new Tag("foo", "bar"),
             new Tag("tier", "integration")
         ));
-    }
-
-    /**
-     * Setting a system property mp.metrics.tags should override the MP_METRICS_TAGS env variable.
-     */
-    @Test
-    public void fromSystemProperty() {
-        String previousValue = System.setProperty("mp.metrics.tags", "key1=value1,key2=value2");
-        try {
-            registry.counter("mycounter", new Tag("key3", "value3"));
-            final MetricID actualMetricId = registry.getCounters().keySet().stream().filter(id -> id.getName().equals("mycounter")).findAny().get();
-            Assert.assertThat(actualMetricId.getTagsAsList(), containsInAnyOrder(
-                new Tag("key1", "value1"),
-                new Tag("key2", "value2"),
-                new Tag("key3", "value3")
-            ));
-        }
-        finally {
-            // revert mp.metrics.tags to previous state
-            if (previousValue != null) {
-                System.setProperty("mp.metrics.tags", previousValue);
-            }
-            else {
-                System.clearProperty("mp.metrics.tags");
-            }
-        }
     }
 
 }
