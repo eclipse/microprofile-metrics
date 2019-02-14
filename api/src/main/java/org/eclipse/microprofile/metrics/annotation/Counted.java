@@ -71,8 +71,9 @@ import org.eclipse.microprofile.metrics.MetricUnits;
  * To get the old @Counted(monotonic=false) behavior, see @{@link ConcurrentGauge}
  * </p>
  * 
- * @throws IllegalStateException If the constructor/method is invoked, but the metric does
- *  not exist in the MetricRegistry.
+ * This annotation will throw an IllegalStateException If the constructor/method is invoked, but the metric does
+ * not exist in the MetricRegistry
+ * 
  */
 @Inherited
 @Documented

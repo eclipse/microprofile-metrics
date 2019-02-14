@@ -197,7 +197,7 @@ The implementation must support the following annotation targets:
 NOTE: This annotation has changed in MicroProfile Metrics 2.0: Counters now always increase monotonically upon invocation.
 The old behaviour pre 2.0 can now be achieved with `@ConcurrentGauge`.
 
-If the metric no longer exists in the `MetricRegistry` when this annotation is invoked then an `IllegalStateException` will be thrown.
+If the metric no longer exists in the `MetricRegistry` when this annotation element is invoked then an `IllegalStateException` will be thrown.
 
 The following lists the behavior for each annotation target.
 
@@ -256,7 +256,7 @@ The implementation must support the following annotation targets:
   * `METHOD`
   * `TYPE`
 
-If the metric no longer exists in the `MetricRegistry` when this annotation is invoked then an `IllegalStateException` will be thrown.
+If the metric no longer exists in the `MetricRegistry` when this annotation element is invoked then an `IllegalStateException` will be thrown.
 
 The following lists the behavior for each annotation target.
 
@@ -337,7 +337,7 @@ The implementation must support the following annotation targets:
   * `METHOD`
   * `TYPE`
 
-If the metric no longer exists in the `MetricRegistry` when this annotation is invoked then an `IllegalStateException` will be thrown.
+If the metric no longer exists in the `MetricRegistry` when this annotation element is invoked then an `IllegalStateException` will be thrown.
 
 The following lists the behavior for each annotation target.
 
@@ -390,7 +390,7 @@ The implementation must support the following annotation targets:
   * `METHOD`
   * `TYPE`
 
-If the metric no longer exists in the `MetricRegistry` when this annotation is invoked then an `IllegalStateException` will be thrown.
+If the metric no longer exists in the `MetricRegistry` when this annotation element is invoked then an `IllegalStateException` will be thrown.
 
 The following lists the behavior for each annotation target.
 
