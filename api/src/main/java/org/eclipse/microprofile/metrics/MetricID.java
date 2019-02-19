@@ -23,6 +23,8 @@
  **********************************************************************/
 package org.eclipse.microprofile.metrics;
 
+import org.eclipse.microprofile.config.ConfigProvider;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -30,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -65,7 +68,7 @@ import java.util.stream.Stream;
  */
 public class MetricID implements Comparable<MetricID> {
 
-    public static final String GLOBAL_TAGS_VARIABLE = "MP_METRICS_TAGS";
+    public static final String GLOBAL_TAGS_VARIABLE = "mp.metrics.tags";
 
     private static final String GLOBAL_TAG_MALFORMED_EXCEPTION = "Malformed list of Global Tags. Tag names "
                                                                 + "must match the following regex [a-zA-Z_][a-zA-Z0-9_]*."
@@ -109,8 +112,8 @@ public class MetricID implements Comparable<MetricID> {
      */
     public MetricID(String name, Tag... tags) {
         this.name = name;
-        String globalTagsFromEnv = System.getenv(GLOBAL_TAGS_VARIABLE);
-        parseGlobalTags(globalTagsFromEnv);
+        Optional<String> globalTags = ConfigProvider.getConfig().getOptionalValue(GLOBAL_TAGS_VARIABLE, String.class);
+        globalTags.ifPresent(this::parseGlobalTags);
         addTags(tags);
     }
 
