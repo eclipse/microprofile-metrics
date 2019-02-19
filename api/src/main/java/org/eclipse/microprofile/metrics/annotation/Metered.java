@@ -63,8 +63,8 @@ import org.eclipse.microprofile.metrics.MetricUnits;
  * A meter for the defining class will be created for each of the constructors/methods.
  * Each time a constructor/method is invoked, the respective meter will be marked.
  * 
- * This annotation will throw an IllegalStateException If the constructor/method is invoked, but the metric does
- * not exist in the MetricRegistry
+ * This annotation will throw an IllegalStateException if the constructor/method is invoked, but the metric no
+ * longer exists in the MetricRegistry.
  * 
  */
 @Inherited
