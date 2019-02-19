@@ -24,6 +24,7 @@
 package io.astefanutti.metrics.cdi.se;
 
 import io.astefanutti.metrics.cdi.se.util.ControlledInvocation;
+import io.astefanutti.metrics.cdi.se.util.BeanWithControlledInvocation;
 import io.astefanutti.metrics.cdi.se.util.TimeUtil;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
@@ -50,6 +51,9 @@ public class ConcurrentGaugeFunctionalTest {
         return ShrinkWrap.create(JavaArchive.class)
             .addClass(ConcurrentGaugeFunctionalTest.class)
             .addClass(ConcurrentGaugeFunctionalBean.class)
+            .addClass(BeanWithControlledInvocation.class)
+            .addClass(ControlledInvocation.class)
+            .addClass(TimeUtil.class)
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
