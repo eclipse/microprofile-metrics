@@ -184,8 +184,6 @@ public class ConcurrentGaugedMethodBeanTest {
         }
         catch (Exception cause) {
             assertThat(cause, is(instanceOf(IllegalStateException.class)));
-            assertThat(cause.getMessage(),
-                       is(equalTo("No concurrent gauge with metricID [" + C_GAUGE_METRICID + "] found in registry [" + registry + "]")));
             // Make sure that the counter hasn't been called
             assertThat("Concurrent Gauges count is incorrect", counter.getCount(), is(equalTo(COUNTER_COUNT.get())));
             return;
