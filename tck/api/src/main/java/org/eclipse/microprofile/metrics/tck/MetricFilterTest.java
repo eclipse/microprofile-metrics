@@ -23,18 +23,19 @@
 
 package org.eclipse.microprofile.metrics.tck;
 
-import javax.inject.Inject;
-
 import org.eclipse.microprofile.metrics.Metric;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricFilter;
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+@RunWith(Arquillian.class)
 public class MetricFilterTest {
 
     @Deployment
@@ -42,8 +43,7 @@ public class MetricFilterTest {
         return ShrinkWrap.create(WebArchive.class).addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
-    @Inject
-    private Metric metric;
+    private Metric metric = new Metric () { };
 
     @Test
     public void theAllFilterMatchesAllMetrics() throws Exception {

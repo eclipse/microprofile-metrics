@@ -39,6 +39,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -50,8 +51,8 @@ public class HistogramTagFieldBeanTest {
     private final static Tag NUMBER_ONE_TAG = new Tag("number", "one");
     private final static Tag NUMBER_TWO_TAG = new Tag("number", "two");
     
-    private final static MetricID HISTOGRAM_ONE_METRICID = new MetricID(HISTOGRAM_NAME, NUMBER_ONE_TAG);
-    private final static MetricID HISTOGRAM_TWO_METRICID = new MetricID(HISTOGRAM_NAME, NUMBER_TWO_TAG);
+    private static MetricID histogramOneMID;
+    private static MetricID histogramTwoMID;
     
     @Deployment
     static Archive<?> createTestArchive() {
@@ -68,21 +69,36 @@ public class HistogramTagFieldBeanTest {
     @Inject
     private HistogramTagFieldBean bean;
 
+    @Before
+    public void instantiateTest() {
+        /*
+         * The MetricID relies on the MicroProfile Config API.
+         * Running a managed arquillian container will result
+         * with the MetricID being created in a client process
+         * that does not contain the MPConfig impl.
+         * 
+         * This will cause client instantiated MetricIDs to 
+         * throw an exception. (i.e the global MetricIDs)
+         */
+        histogramOneMID = new MetricID(HISTOGRAM_NAME, NUMBER_ONE_TAG);
+        histogramTwoMID = new MetricID(HISTOGRAM_NAME, NUMBER_TWO_TAG);
+    }
+    
     @Test
     @InSequence(1)
     public void histogramTagFieldRegistered() {
-        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(HISTOGRAM_ONE_METRICID));
-        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(HISTOGRAM_TWO_METRICID));
+        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(histogramOneMID));
+        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(histogramTwoMID));
     }
     
     @Test
     @InSequence(2)
     public void updateHistogramTagField() {
-        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(HISTOGRAM_ONE_METRICID));
-        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(HISTOGRAM_TWO_METRICID));
+        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(histogramOneMID));
+        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(histogramTwoMID));
         
-        Histogram histogramOne = registry.getHistograms().get(HISTOGRAM_ONE_METRICID);
-        Histogram histogramTwo = registry.getHistograms().get(HISTOGRAM_TWO_METRICID);
+        Histogram histogramOne = registry.getHistograms().get(histogramOneMID);
+        Histogram histogramTwo = registry.getHistograms().get(histogramTwoMID);
         
         // Call the update method and assert the histogram is up-to-date
         long value = Math.round(Math.random() * Long.MAX_VALUE);

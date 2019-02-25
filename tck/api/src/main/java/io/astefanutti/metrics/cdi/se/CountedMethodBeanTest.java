@@ -43,13 +43,14 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
 public class CountedMethodBeanTest {
 
     private final static String COUNTER_NAME = "countedMethod";
-    private final static MetricID COUNTER_METRICID = new MetricID(COUNTER_NAME);
+    private static MetricID counterMetricID; //new MetricID(COUNTER_NAME);
 
     private final static AtomicLong COUNTER_COUNT = new AtomicLong();
 
@@ -68,11 +69,25 @@ public class CountedMethodBeanTest {
     @Inject
     private CountedMethodBean<Long> bean;
 
+    @Before
+    public void instantiateTest() {
+        /*
+         * The MetricID relies on the MicroProfile Config API.
+         * Running a managed arquillian container will result
+         * with the MetricID being created in a client process
+         * that does not contain the MPConfig impl.
+         * 
+         * This will cause client instantiated MetricIDs to 
+         * throw an exception. (i.e the global MetricIDs)
+         */
+        counterMetricID = new MetricID(COUNTER_NAME);
+    }
+
     @Test
     @InSequence(1)
     public void countedMethodNotCalledYet() {
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_METRICID));
-        Counter counter = registry.getCounters().get(COUNTER_METRICID);
+        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterMetricID));
+        Counter counter = registry.getCounters().get(counterMetricID);
 
         // Make sure that the counter hasn't been called yet
         assertThat("Counter count is incorrect", counter.getCount(), is(equalTo(COUNTER_COUNT.get())));
@@ -81,8 +96,8 @@ public class CountedMethodBeanTest {
     @Test
     @InSequence(2)
     public void countedMethodNotCalledYet(@Metric(name = "countedMethod", absolute = true) Counter instance) {
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_METRICID));
-        Counter counter = registry.getCounters().get(COUNTER_METRICID);
+        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterMetricID));
+        Counter counter = registry.getCounters().get(counterMetricID);
 
         // Make sure that the counter registered and the bean instance are the same
         assertThat("Counter and bean instance are not equal", instance, is(equalTo(counter)));
@@ -91,8 +106,8 @@ public class CountedMethodBeanTest {
     @Test
     @InSequence(3)
     public void callCountedMethodOnce() throws InterruptedException, TimeoutException {
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_METRICID));
-        Counter counter = registry.getCounters().get(COUNTER_METRICID);
+        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterMetricID));
+        Counter counter = registry.getCounters().get(counterMetricID);
 
         // Call the counted method, block and assert it's been counted
         final Exchanger<Long> exchanger = new Exchanger<>();
@@ -145,11 +160,11 @@ public class CountedMethodBeanTest {
     @Test
     @InSequence(4)
     public void removeCounterFromRegistry() {
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_METRICID));
-        Counter counter = registry.getCounters().get(COUNTER_METRICID);
+        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterMetricID));
+        Counter counter = registry.getCounters().get(counterMetricID);
 
         // Remove the counter from metrics registry
-        registry.remove(COUNTER_METRICID);
+        registry.remove(counterMetricID);
 
         try {
             // Call the counted method and assert an exception is thrown

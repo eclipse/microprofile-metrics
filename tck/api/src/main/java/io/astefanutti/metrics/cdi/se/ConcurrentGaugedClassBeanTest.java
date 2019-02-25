@@ -58,6 +58,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -71,7 +72,7 @@ public class ConcurrentGaugedClassBeanTest {
     private static final Set<String> C_GAUGED_NAMES = MetricsUtil.absoluteMetricNames(ConcurrentGaugedClassBean.class, "cGaugedClass", METHOD_NAMES,
                                                                                       CONSTRUCTOR_NAME);
 
-    private static final Set<MetricID> COUNTER_METRICIDS = MetricsUtil.createMetricIDs(C_GAUGED_NAMES);
+    private static Set<MetricID> counterMIDs;
 
     @Deployment
     static Archive<?> createTestArchive() {
@@ -88,10 +89,24 @@ public class ConcurrentGaugedClassBeanTest {
     @Inject
     private ConcurrentGaugedClassBean bean;
 
+    @Before
+    public void instantiateTest() {
+        /*
+         * The MetricID relies on the MicroProfile Config API.
+         * Running a managed arquillian container will result
+         * with the MetricID being created in a client process
+         * that does not contain the MPConfig impl.
+         * 
+         * This will cause client instantiated MetricIDs to 
+         * throw an exception. (i.e the global MetricIDs)
+         */
+        counterMIDs = MetricsUtil.createMetricIDs(C_GAUGED_NAMES);
+    }
+    
     @Test
     @InSequence(1)
     public void countedMethodsNotCalledYet() {
-        assertThat("Counters are not registered correctly", registry.getConcurrentGauges().keySet(), is(equalTo(COUNTER_METRICIDS)));
+        assertThat("Counters are not registered correctly", registry.getConcurrentGauges().keySet(), is(equalTo(counterMIDs)));
         // Make sure that the counters haven't been incremented
         assertThat("Concurrent Gauges max values are incorrect", registry.getConcurrentGauges().values(),
                    everyItem(Matchers.<ConcurrentGauge>hasProperty("max", equalTo(0L))));
@@ -100,7 +115,7 @@ public class ConcurrentGaugedClassBeanTest {
     @Test
     @InSequence(2)
     public void callCountedMethodsOnce() {
-        assertThat("Counters are not registered correctly", registry.getConcurrentGauges().keySet(), is(equalTo(COUNTER_METRICIDS)));
+        assertThat("Counters are not registered correctly", registry.getConcurrentGauges().keySet(), is(equalTo(counterMIDs)));
         // Call the counted methods and assert they're back to zero
         bean.countedMethodOne();
         bean.countedMethodTwo();

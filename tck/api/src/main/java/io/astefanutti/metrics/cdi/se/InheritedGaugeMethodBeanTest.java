@@ -44,8 +44,8 @@ public class InheritedGaugeMethodBeanTest {
     private final static String PARENT_GAUGE_NAME = MetricRegistry.name(InheritedParentGaugeMethodBean.class, "inheritedParentGaugeMethod");
     private final static String CHILD_GAUGE_NAME = MetricRegistry.name(InheritedChildGaugeMethodBean.class, "inheritedChildGaugeMethod");
     
-    private final static MetricID PARENT_METRICID = new MetricID(PARENT_GAUGE_NAME);
-    private final static MetricID CHILD_METRICID = new MetricID(CHILD_GAUGE_NAME);
+    private static MetricID parentMID;
+    private static MetricID childMID;
     
     @Deployment
     public static Archive<?> createTestArchive() {
@@ -72,17 +72,29 @@ public class InheritedGaugeMethodBeanTest {
         // as only a proxy gets injected otherwise
         pBean.getGauge();
         bean.getChildGauge();
+        
+        /*
+         * The MetricID relies on the MicroProfile Config API.
+         * Running a managed arquillian container will result
+         * with the MetricID being created in a client process
+         * that does not contain the MPConfig impl.
+         * 
+         * This will cause client instantiated MetricIDs to 
+         * throw an exception. (i.e the global MetricIDs)
+         */
+        parentMID = new MetricID(PARENT_GAUGE_NAME);
+        childMID = new MetricID(CHILD_GAUGE_NAME);
     }
 
     @Test
     @InSequence(1)
     public void gaugesCalledWithDefaultValues() {
-        assertThat("Gauges are not registered correctly", registry.getGauges(), allOf(hasKey(PARENT_METRICID), hasKey(CHILD_METRICID)));
+        assertThat("Gauges are not registered correctly", registry.getGauges(), allOf(hasKey(parentMID), hasKey(childMID)));
 
         @SuppressWarnings("unchecked")
-        Gauge<Long> parentGauge = registry.getGauges().get(PARENT_METRICID);
+        Gauge<Long> parentGauge = registry.getGauges().get(parentMID);
         @SuppressWarnings("unchecked")
-        Gauge<Long> childGauge = registry.getGauges().get(CHILD_METRICID);
+        Gauge<Long> childGauge = registry.getGauges().get(childMID);
 
         // Make sure that the gauge has the expected value
         assertThat("Gauge values are incorrect", Arrays.asList(parentGauge.getValue(), childGauge.getValue()), contains(0L, 0L));
@@ -91,11 +103,11 @@ public class InheritedGaugeMethodBeanTest {
     @Test
     @InSequence(2)
     public void callGaugesAfterSetterCalls() {
-        assertThat("Gauges are not registered correctly", registry.getGauges(), allOf(hasKey(PARENT_METRICID), hasKey(CHILD_METRICID)));
+        assertThat("Gauges are not registered correctly", registry.getGauges(), allOf(hasKey(parentMID), hasKey(childMID)));
         @SuppressWarnings("unchecked")
-        Gauge<Long> parentGauge = registry.getGauges().get(PARENT_METRICID);
+        Gauge<Long> parentGauge = registry.getGauges().get(parentMID);
         @SuppressWarnings("unchecked")
-        Gauge<Long> childGauge = registry.getGauges().get(CHILD_METRICID);
+        Gauge<Long> childGauge = registry.getGauges().get(childMID);
 
         // Call the setter methods and assert the gauges are up-to-date
         long parentValue = Math.round(Math.random() * Long.MAX_VALUE);

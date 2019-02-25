@@ -35,6 +35,8 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import static org.junit.Assert.assertThat;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -48,8 +50,8 @@ public class TimerTagFieldBeanTest {
     private final static Tag NUMBER_ONE_TAG = new Tag("number", "one");
     private final static Tag NUMBER_TWO_TAG = new Tag("number", "two");
     
-    private final static MetricID TIMER_ONE_METRICID = new MetricID(TIMER_NAME, NUMBER_ONE_TAG);
-    private final static MetricID TIMER_TWO_METRICID = new MetricID(TIMER_NAME, NUMBER_TWO_TAG);
+    private static MetricID timerOneMID;
+    private static MetricID timerTwoMID;
 
     @Deployment
     static Archive<?> createTestArchive() {
@@ -66,9 +68,25 @@ public class TimerTagFieldBeanTest {
     @Inject
     private TimerTagFieldBean bean;
     
+    @Before
+    public void instantiateTest() {
+        /*
+         * The MetricID relies on the MicroProfile Config API.
+         * Running a managed arquillian container will result
+         * with the MetricID being created in a client process
+         * that does not contain the MPConfig impl.
+         * 
+         * This will cause client instantiated MetricIDs to 
+         * throw an exception. (i.e the global MetricIDs)
+         */
+        timerOneMID = new MetricID(TIMER_NAME, NUMBER_ONE_TAG);
+        timerTwoMID = new MetricID(TIMER_NAME, NUMBER_TWO_TAG);
+
+    }
+    
     @Test
     public void timersTagFieldRegistered() {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_ONE_METRICID));
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_TWO_METRICID));
+        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timerOneMID));
+        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timerTwoMID));
     }
 }

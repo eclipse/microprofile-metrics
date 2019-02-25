@@ -38,6 +38,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -50,7 +51,7 @@ public class MeteredClassBeanTest {
 
     private static final String CONSTRUCTOR_METER_NAME = MetricsUtil.absoluteMetricName(MeteredClassBean.class, "meteredClass", CONSTRUCTOR_NAME);
     
-    private static final MetricID CONSTRUCTOR_METRICID = new MetricID(CONSTRUCTOR_METER_NAME);
+    private static MetricID constructorMID;
 
     private static final String[] METHOD_NAMES = { "meteredMethodOne", "meteredMethodTwo", "meteredMethodProtected", "meteredMethodPackagedPrivate" };
 
@@ -66,7 +67,7 @@ public class MeteredClassBeanTest {
     private static final Set<String> METER_NAMES = MetricsUtil.absoluteMetricNames(MeteredClassBean.class, "meteredClass", METHOD_NAMES,
             CONSTRUCTOR_NAME);
 
-    private static final Set<MetricID> METER_METRICIDS = MetricsUtil.createMetricIDs(METER_NAMES);
+    private static Set<MetricID> meterMIDs;
             
     private final static AtomicLong CONSTRUCTOR_COUNT = new AtomicLong();
 
@@ -80,6 +81,21 @@ public class MeteredClassBeanTest {
                 // Bean archive deployment descriptor
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
+    
+    @Before
+    public void instantiateTest() {
+        /*
+         * The MetricID relies on the MicroProfile Config API.
+         * Running a managed arquillian container will result
+         * with the MetricID being created in a client process
+         * that does not contain the MPConfig impl.
+         * 
+         * This will cause client instantiated MetricIDs to 
+         * throw an exception. (i.e the global MetricIDs)
+         */
+        constructorMID = new MetricID(CONSTRUCTOR_METER_NAME);
+        meterMIDs = MetricsUtil.createMetricIDs(METER_NAMES);
+    }
 
     @Inject
     private MetricRegistry registry;
@@ -90,10 +106,10 @@ public class MeteredClassBeanTest {
     @Test
     @InSequence(1)
     public void meteredMethodsNotCalledYet() {
-        assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(METER_METRICIDS)));
+        assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(meterMIDs)));
 
         
-        assertThat("Constructor meter count is incorrect", registry.getMeters().get(CONSTRUCTOR_METRICID).getCount(), 
+        assertThat("Constructor meter count is incorrect", registry.getMeters().get(constructorMID).getCount(), 
                 is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
 
         // Make sure that the method meters haven't been marked yet
@@ -105,9 +121,9 @@ public class MeteredClassBeanTest {
     @Test
     @InSequence(2)
     public void callMeteredMethodsOnce() {        
-        assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(METER_METRICIDS)));
+        assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(meterMIDs)));
         
-        assertThat("Constructor meter count is incorrect", registry.getMeters().get(CONSTRUCTOR_METRICID).getCount(),
+        assertThat("Constructor meter count is incorrect", registry.getMeters().get(constructorMID).getCount(),
                 is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
 
         // Call the metered methods and assert they've been marked
