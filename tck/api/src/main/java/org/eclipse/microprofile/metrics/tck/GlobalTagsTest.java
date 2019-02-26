@@ -23,6 +23,9 @@
 
 package org.eclipse.microprofile.metrics.tck;
 
+import org.eclipse.microprofile.config.Config;
+import org.eclipse.microprofile.config.spi.ConfigProviderResolver;
+import org.eclipse.microprofile.config.spi.ConfigSource;
 import org.eclipse.microprofile.metrics.MetricFilter;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
@@ -38,6 +41,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
+import java.util.Collections;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
@@ -71,6 +76,40 @@ public class GlobalTagsTest {
             new Tag("foo", "bar"),
             new Tag("tier", "integration")
         ));
+    }
+
+    @Test
+    public void customConfigSource() {
+        ConfigSource s = new ConfigSource() {
+            @Override
+            public Map<String, String> getProperties() {
+                return Collections.singletonMap("mp.metrics.tags", "foo=baz");
+            }
+
+            @Override
+            public String getValue(String propertyName) {
+                return propertyName.equals("mp.metrics.tags") ? "foo=baz" : null;
+            }
+
+            @Override
+            public String getName() {
+                return "Custom config source";
+            }
+        };
+        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+        Config config = ConfigProviderResolver.instance().getBuilder().withSources(s).build();
+        try {
+            ConfigProviderResolver.instance().registerConfig(config, tccl);
+            registry.counter("mycounter");
+            MetricID actualMetricId = registry.getCounters().keySet().stream()
+                .filter(id -> id.getName().equals("mycounter")).findAny().get();
+            Assert.assertThat(actualMetricId.getTagsAsList(), containsInAnyOrder(
+                new Tag("foo", "baz")
+            ));
+        }
+        finally {
+            ConfigProviderResolver.instance().releaseConfig(config);
+        }
     }
 
 }
