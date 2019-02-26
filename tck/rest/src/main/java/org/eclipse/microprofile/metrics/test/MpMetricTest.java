@@ -306,11 +306,21 @@ public class MpMetricTest {
                 continue; // We don't deal with them here
             }
             Map<String, Object> fromServer = elements.get(item.name);
-            assertNotNull("Got no data for " + item.name + " from the server", fromServer);
+            assertNotNull("Got no data for metric " + item.name + " from the server", fromServer);
             assertEquals("expected " + item.type + " but got "
-                    + fromServer.get("type") + " for " + item.name, item.type, fromServer.get("type"));
+                    + fromServer.get("type") + " for type of metric " + item.name, item.type, fromServer.get("type"));
             assertEquals("expected " + item.unit + " but got "
-                    + fromServer.get("unit") + " for " + item.name, item.unit, fromServer.get("unit"));
+                    + fromServer.get("unit") + " for unit of metric " + item.name, item.unit, fromServer.get("unit"));
+            if(item.description != null && !item.description.isEmpty()) {
+                assertEquals("expected " + item.description + " but got "
+                    + fromServer.get("description") + " for description of metric " + item.name,
+                    item.description, fromServer.get("description"));
+            }
+            if(item.displayName != null && !item.displayName.isEmpty()) {
+                assertEquals("expected " + item.displayName + " but got "
+                        + fromServer.get("displayName") + " for displayName of " + item.name,
+                    item.displayName, fromServer.get("displayName"));
+            }
         }
     }
 
@@ -989,6 +999,8 @@ public class MpMetricTest {
           mm.name = metric.getAttribute("name");
           mm.type = metric.getAttribute("type");
           mm.unit = metric.getAttribute("unit");
+          mm.description = metric.getAttribute("description");
+          mm.displayName = metric.getAttribute("display-name");
           mm.optional = Boolean.parseBoolean(metric.getAttribute("optional"));
           String tags = metric.getAttribute("tags");
           if (!(tags == null || tags.length() == 0)){
@@ -1008,6 +1020,8 @@ public class MpMetricTest {
         private String name;
         private String type;
         private String unit;
+        private String description;
+        private String displayName;
         private boolean multi;
         private boolean optional;
         private Map<String, String> tags = new TreeMap<>();
@@ -1059,7 +1073,9 @@ public class MpMetricTest {
             sb.append(", type='").append(type).append('\'');
             sb.append(", unit='").append(unit).append('\'');
             sb.append(", multi=").append(multi);
-            sb.append(", optional =").append(optional);
+            sb.append(", optional=").append(optional);
+            sb.append(", description=").append(description);
+            sb.append(", display-name=").append(displayName);
             sb.append('}');
             return sb.toString();
         }
