@@ -191,7 +191,7 @@ public class MpMetricTest {
     @InSequence(5)
     public void testBase() {
         given().header("Accept", APPLICATION_JSON).when().get("/metrics/base").then().statusCode(200).and()
-                .contentType(MpMetricTest.APPLICATION_JSON).and().body(containsString("thread.max.count{tier=integration}"));
+                .contentType(MpMetricTest.APPLICATION_JSON).and().body(containsString("thread.max.count;tier=integration"));
     }
 
     @Test
@@ -210,7 +210,7 @@ public class MpMetricTest {
         Header wantJson = new Header("Accept", APPLICATION_JSON);
 
         given().header(wantJson).when().get("/metrics/base/thread.max.count").then().statusCode(200).and()
-                .contentType(MpMetricTest.APPLICATION_JSON).and().body(containsString("thread.max.count{tier=integration}"));
+                .contentType(MpMetricTest.APPLICATION_JSON).and().body(containsString("thread.max.count;tier=integration"));
     }
 
     @Test
@@ -430,6 +430,10 @@ public class MpMetricTest {
         metricAppBean.gaugeMe();
         metricAppBean.gaugeMeA();
         metricAppBean.gaugeMeB();
+        metricAppBean.gaugeMeTagged();
+        metricAppBean.gaugeMeTaggedOne();
+        metricAppBean.gaugeMeTaggedTwo();
+        
         metricAppBean.histogramMe();
 
         metricAppBean.meterMe();
@@ -439,7 +443,7 @@ public class MpMetricTest {
         metricAppBean.timeMeA();
 
     }
-
+    
     @Test
     @RunAsClient
     @InSequence(18)
@@ -448,79 +452,79 @@ public class MpMetricTest {
 
         given().header(wantJson).get("/metrics/application").then().statusCode(200)
 
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.redCount{tier=integration}'", equalTo(0))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.redCount;tier=integration'", equalTo(0))
 
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.blue{tier=integration}'", equalTo(0))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.blue;tier=integration'", equalTo(0))
 
-                .body("'greenCount{tier=integration}'", equalTo(0))
+                .body("'greenCount;tier=integration'", equalTo(0))
 
-                .body("'purple{app=myShop,tier=integration}'", equalTo(0))
+                .body("'purple;app=myShop;tier=integration'", equalTo(0))
 
-                .body("'metricTest.test1.count{tier=integration}'", equalTo(1))
+                .body("'metricTest.test1.count;tier=integration'", equalTo(1))
 
-                .body("'metricTest.test1.countMeA{tier=integration}'", equalTo(1))
-                .body("'metricTest.test1.countMeB{tier=integration}'", equalTo(1))
+                .body("'metricTest.test1.countMeA;tier=integration'", equalTo(1))
+                .body("'metricTest.test1.countMeB;tier=integration'", equalTo(1))
 
-                .body("'metricTest.test1.gauge{tier=integration}'", equalTo(19))
+                .body("'metricTest.test1.gauge;tier=integration'", equalTo(19))
 
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeA{tier=integration}'", equalTo(1000))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeB{tier=integration}'", equalTo(7777777))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeA;tier=integration'", equalTo(1000))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeB;tier=integration'", equalTo(7777777))
 
-                .body("'metricTest.test1.histogram'.'count{tier=integration}'", equalTo(1000))
-                .body("'metricTest.test1.histogram'.'max{tier=integration}'", equalTo(999))
-                .body("'metricTest.test1.histogram'.'mean{tier=integration}'", closeTo(499.5))
-                .body("'metricTest.test1.histogram'.'min{tier=integration}'", equalTo(0))
-                .body("'metricTest.test1.histogram'.'p50{tier=integration}'", closeTo(499.0))
-                .body("'metricTest.test1.histogram'.'p75{tier=integration}'", closeTo(749))
-                .body("'metricTest.test1.histogram'.'p95{tier=integration}'", closeTo(949))
-                .body("'metricTest.test1.histogram'.'p98{tier=integration}'", closeTo(979))
-                .body("'metricTest.test1.histogram'.'p99{tier=integration}'", closeTo(989))
-                .body("'metricTest.test1.histogram'.'p999{tier=integration}'", closeTo(998))
-                .body("'metricTest.test1.histogram'", hasKey("stddev{tier=integration}"))
+                .body("'metricTest.test1.histogram'.'count;tier=integration'", equalTo(1000))
+                .body("'metricTest.test1.histogram'.'max;tier=integration'", equalTo(999))
+                .body("'metricTest.test1.histogram'.'mean;tier=integration'", closeTo(499.5))
+                .body("'metricTest.test1.histogram'.'min;tier=integration'", equalTo(0))
+                .body("'metricTest.test1.histogram'.'p50;tier=integration'", closeTo(499.0))
+                .body("'metricTest.test1.histogram'.'p75;tier=integration'", closeTo(749))
+                .body("'metricTest.test1.histogram'.'p95;tier=integration'", closeTo(949))
+                .body("'metricTest.test1.histogram'.'p98;tier=integration'", closeTo(979))
+                .body("'metricTest.test1.histogram'.'p99;tier=integration'", closeTo(989))
+                .body("'metricTest.test1.histogram'.'p999;tier=integration'", closeTo(998))
+                .body("'metricTest.test1.histogram'", hasKey("stddev;tier=integration"))
 
-                .body("'metricTest.test1.meter'.'count{tier=integration}'", equalTo(1))
-                .body("'metricTest.test1.meter'", hasKey("fifteenMinRate{tier=integration}"))
-                .body("'metricTest.test1.meter'", hasKey("fiveMinRate{tier=integration}"))
-                .body("'metricTest.test1.meter'", hasKey("meanRate{tier=integration}"))
-                .body("'metricTest.test1.meter'", hasKey("oneMinRate{tier=integration}"))
+                .body("'metricTest.test1.meter'.'count;tier=integration'", equalTo(1))
+                .body("'metricTest.test1.meter'", hasKey("fifteenMinRate;tier=integration"))
+                .body("'metricTest.test1.meter'", hasKey("fiveMinRate;tier=integration"))
+                .body("'metricTest.test1.meter'", hasKey("meanRate;tier=integration"))
+                .body("'metricTest.test1.meter'", hasKey("oneMinRate;tier=integration"))
 
-                .body("'meterMeA'.'count{tier=integration}'", equalTo(1))
-                .body("meterMeA", hasKey("fifteenMinRate{tier=integration}"))
-                .body("meterMeA", hasKey("fiveMinRate{tier=integration}"))
-                .body("meterMeA", hasKey("meanRate{tier=integration}"))
-                .body("meterMeA", hasKey("oneMinRate{tier=integration}"))
+                .body("'meterMeA'.'count;tier=integration'", equalTo(1))
+                .body("'meterMeA'", hasKey("fifteenMinRate;tier=integration"))
+                .body("'meterMeA'", hasKey("fiveMinRate;tier=integration"))
+                .body("'meterMeA'", hasKey("meanRate;tier=integration"))
+                .body("'meterMeA'", hasKey("oneMinRate;tier=integration"))
 
-                .body("'metricTest.test1.timer'.'count{tier=integration}'", equalTo(1))
-                .body("'metricTest.test1.timer'", hasKey("fifteenMinRate{tier=integration}"))
-                .body("'metricTest.test1.timer'", hasKey("fiveMinRate{tier=integration}"))
-                .body("'metricTest.test1.timer'", hasKey("meanRate{tier=integration}"))
-                .body("'metricTest.test1.timer'", hasKey("oneMinRate{tier=integration}"))
-                .body("'metricTest.test1.timer'", hasKey("max{tier=integration}"))
-                .body("'metricTest.test1.timer'", hasKey("mean{tier=integration}"))
-                .body("'metricTest.test1.timer'", hasKey("min{tier=integration}"))
-                .body("'metricTest.test1.timer'", hasKey("p50{tier=integration}"))
-                .body("'metricTest.test1.timer'", hasKey("p75{tier=integration}"))
-                .body("'metricTest.test1.timer'", hasKey("p95{tier=integration}"))
-                .body("'metricTest.test1.timer'", hasKey("p98{tier=integration}"))
-                .body("'metricTest.test1.timer'", hasKey("p99{tier=integration}"))
-                .body("'metricTest.test1.timer'", hasKey("p999{tier=integration}"))
-                .body("'metricTest.test1.timer'", hasKey("stddev{tier=integration}"))
+                .body("'metricTest.test1.timer'.'count;tier=integration'", equalTo(1))
+                .body("'metricTest.test1.timer'", hasKey("fifteenMinRate;tier=integration"))
+                .body("'metricTest.test1.timer'", hasKey("fiveMinRate;tier=integration"))
+                .body("'metricTest.test1.timer'", hasKey("meanRate;tier=integration"))
+                .body("'metricTest.test1.timer'", hasKey("oneMinRate;tier=integration"))
+                .body("'metricTest.test1.timer'", hasKey("max;tier=integration"))
+                .body("'metricTest.test1.timer'", hasKey("mean;tier=integration"))
+                .body("'metricTest.test1.timer'", hasKey("min;tier=integration"))
+                .body("'metricTest.test1.timer'", hasKey("p50;tier=integration"))
+                .body("'metricTest.test1.timer'", hasKey("p75;tier=integration"))
+                .body("'metricTest.test1.timer'", hasKey("p95;tier=integration"))
+                .body("'metricTest.test1.timer'", hasKey("p98;tier=integration"))
+                .body("'metricTest.test1.timer'", hasKey("p99;tier=integration"))
+                .body("'metricTest.test1.timer'", hasKey("p999;tier=integration"))
+                .body("'metricTest.test1.timer'", hasKey("stddev;tier=integration"))
 
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'.'count{tier=integration}'", equalTo(1))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("fifteenMinRate{tier=integration}"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("fiveMinRate{tier=integration}"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("meanRate{tier=integration}"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("oneMinRate{tier=integration}"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("max{tier=integration}"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("mean{tier=integration}"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("min{tier=integration}"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p50{tier=integration}"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p75{tier=integration}"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p95{tier=integration}"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p98{tier=integration}"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p99{tier=integration}"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p999{tier=integration}"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("stddev{tier=integration}"));
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'.'count;tier=integration'", equalTo(1))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("fifteenMinRate;tier=integration"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("fiveMinRate;tier=integration"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("meanRate;tier=integration"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("oneMinRate;tier=integration"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("max;tier=integration"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("mean;tier=integration"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("min;tier=integration"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p50;tier=integration"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p75;tier=integration"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p95;tier=integration"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p98;tier=integration"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p99;tier=integration"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p999;tier=integration"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("stddev;tier=integration"));
     }
 
     @Test
@@ -951,6 +955,162 @@ public class MpMetricTest {
     }
     
     /**
+     * Test that multi-dimensional metrics are represented properly
+     * in JSON.
+     */
+    @Test
+    @RunAsClient
+    @InSequence(45)
+    public void testMultipleTaggedMetricsJSON() {
+        Header wantJson = new Header("Accept", APPLICATION_JSON);
+
+        /*
+         * This test's primary objective is to ensure that the format is correct.
+         */
+        
+        given().header(wantJson).get("/metrics/application").then().statusCode(200)
+                //counters
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.taggedCounter;tier=integration'", equalTo(0))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.taggedCounter;number=one;tier=integration'", equalTo(0))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.taggedCounter;number=two;tier=integration'", equalTo(0))
+                         
+                //ConcurrentGauge - ;number=one;tier=integration
+                .body("'taggedConcurrentGauge;number=one;tier=integration'", equalTo(0)) 
+                .body("'taggedConcurrentGauge_min;number=one;tier=integration'", equalTo(0))
+                .body("'taggedConcurrentGauge_max;number=one;tier=integration'", equalTo(0))
+                //ConcurrentGauge - ;number=two;tier=integration
+                .body("'taggedConcurrentGauge;number=two;tier=integration'", equalTo(0)) 
+                .body("'taggedConcurrentGauge_min;number=two;tier=integration'", equalTo(0))
+                .body("'taggedConcurrentGauge_max;number=two;tier=integration'", equalTo(0))
+                
+                //Gauge
+                .body("'taggedGauge;number=one;tier=integration'", equalTo(1000))
+                .body("'taggedGauge;number=two;tier=integration'", equalTo(1000))
+                
+                //histogram - ;tier=integration
+                .body("'taggedHistogram'.'count;tier=integration'", equalTo(0))
+                .body("'taggedHistogram'", hasKey("max;tier=integration"))
+                .body("'taggedHistogram'", hasKey("mean;tier=integration"))
+                .body("'taggedHistogram'", hasKey("min;tier=integration"))
+                .body("'taggedHistogram'", hasKey("p50;tier=integration"))
+                .body("'taggedHistogram'", hasKey("p75;tier=integration"))
+                .body("'taggedHistogram'", hasKey("p95;tier=integration"))
+                .body("'taggedHistogram'", hasKey("p98;tier=integration"))
+                .body("'taggedHistogram'", hasKey("p99;tier=integration"))
+                .body("'taggedHistogram'", hasKey("p999;tier=integration"))
+                .body("'taggedHistogram'", hasKey("stddev;tier=integration"))
+                
+                //histogram - ;number=one;tier=integration
+                .body("'taggedHistogram'.'count;number=one;tier=integration'", equalTo(0))
+                .body("'taggedHistogram'", hasKey("max;number=one;tier=integration"))
+                .body("'taggedHistogram'", hasKey("mean;number=one;tier=integration"))
+                .body("'taggedHistogram'", hasKey("min;number=one;tier=integration"))
+                .body("'taggedHistogram'", hasKey("p50;number=one;tier=integration"))
+                .body("'taggedHistogram'", hasKey("p75;number=one;tier=integration"))
+                .body("'taggedHistogram'", hasKey("p95;number=one;tier=integration"))
+                .body("'taggedHistogram'", hasKey("p98;number=one;tier=integration"))
+                .body("'taggedHistogram'", hasKey("p99;number=one;tier=integration"))
+                .body("'taggedHistogram'", hasKey("p999;number=one;tier=integration"))
+                .body("'taggedHistogram'", hasKey("stddev;number=one;tier=integration"))
+                
+                 //histogram - ;number=two;tier=integration
+                .body("'taggedHistogram'.'count;number=two;tier=integration'", equalTo(0))
+                .body("'taggedHistogram'", hasKey("max;number=two;tier=integration"))
+                .body("'taggedHistogram'", hasKey("mean;number=two;tier=integration"))
+                .body("'taggedHistogram'", hasKey("min;number=two;tier=integration"))
+                .body("'taggedHistogram'", hasKey("p50;number=two;tier=integration"))
+                .body("'taggedHistogram'", hasKey("p75;number=two;tier=integration"))
+                .body("'taggedHistogram'", hasKey("p95;number=two;tier=integration"))
+                .body("'taggedHistogram'", hasKey("p98;number=two;tier=integration"))
+                .body("'taggedHistogram'", hasKey("p99;number=two;tier=integration"))
+                .body("'taggedHistogram'", hasKey("p999;number=two;tier=integration"))
+                .body("'taggedHistogram'", hasKey("stddev;number=two;tier=integration"))
+        
+                //timer - ;tier=integration
+                .body("'taggedTimer'.'count;tier=integration'", equalTo(0))
+                .body("'taggedTimer'", hasKey("fifteenMinRate;tier=integration"))
+                .body("'taggedTimer'", hasKey("fiveMinRate;tier=integration"))
+                .body("'taggedTimer'", hasKey("meanRate;tier=integration"))
+                .body("'taggedTimer'", hasKey("oneMinRate;tier=integration"))
+                .body("'taggedTimer'", hasKey("max;tier=integration"))
+                .body("'taggedTimer'", hasKey("mean;tier=integration"))
+                .body("'taggedTimer'", hasKey("min;tier=integration"))
+                .body("'taggedTimer'", hasKey("p50;tier=integration"))
+                .body("'taggedTimer'", hasKey("p75;tier=integration"))
+                .body("'taggedTimer'", hasKey("p95;tier=integration"))
+                .body("'taggedTimer'", hasKey("p98;tier=integration"))
+                .body("'taggedTimer'", hasKey("p99;tier=integration"))
+                .body("'taggedTimer'", hasKey("p999;tier=integration"))
+                .body("'taggedTimer'", hasKey("stddev;tier=integration"))
+                //timer - ;number=one;tier=integration
+                .body("'taggedTimer'.'count;number=one;tier=integration'", equalTo(0))
+                .body("'taggedTimer'", hasKey("fifteenMinRate;number=one;tier=integration"))
+                .body("'taggedTimer'", hasKey("fiveMinRate;number=one;tier=integration"))
+                .body("'taggedTimer'", hasKey("meanRate;number=one;tier=integration"))
+                .body("'taggedTimer'", hasKey("oneMinRate;number=one;tier=integration"))
+                .body("'taggedTimer'", hasKey("max;number=one;tier=integration"))
+                .body("'taggedTimer'", hasKey("mean;number=one;tier=integration"))
+                .body("'taggedTimer'", hasKey("min;number=one;tier=integration"))
+                .body("'taggedTimer'", hasKey("p50;number=one;tier=integration"))
+                .body("'taggedTimer'", hasKey("p75;number=one;tier=integration"))
+                .body("'taggedTimer'", hasKey("p95;number=one;tier=integration"))
+                .body("'taggedTimer'", hasKey("p98;number=one;tier=integration"))
+                .body("'taggedTimer'", hasKey("p99;number=one;tier=integration"))
+                .body("'taggedTimer'", hasKey("p999;number=one;tier=integration"))
+                .body("'taggedTimer'", hasKey("stddev;number=one;tier=integration"))
+                //timer - ;number=two;tier=integration
+                .body("'taggedTimer'.'count;number=two;tier=integration'", equalTo(0))
+                .body("'taggedTimer'", hasKey("fifteenMinRate;number=two;tier=integration"))
+                .body("'taggedTimer'", hasKey("fiveMinRate;number=two;tier=integration"))
+                .body("'taggedTimer'", hasKey("meanRate;number=two;tier=integration"))
+                .body("'taggedTimer'", hasKey("oneMinRate;number=two;tier=integration"))
+                .body("'taggedTimer'", hasKey("max;number=two;tier=integration"))
+                .body("'taggedTimer'", hasKey("mean;number=two;tier=integration"))
+                .body("'taggedTimer'", hasKey("min;number=two;tier=integration"))
+                .body("'taggedTimer'", hasKey("p50;number=two;tier=integration"))
+                .body("'taggedTimer'", hasKey("p75;number=two;tier=integration"))
+                .body("'taggedTimer'", hasKey("p95;number=two;tier=integration"))
+                .body("'taggedTimer'", hasKey("p98;number=two;tier=integration"))
+                .body("'taggedTimer'", hasKey("p99;number=two;tier=integration"))
+                .body("'taggedTimer'", hasKey("p999;number=two;tier=integration"))
+                .body("'taggedTimer'", hasKey("stddev;number=two;tier=integration"))
+        
+                //Meter - ;tier=integration
+                .body("'taggedMeter'.'count;tier=integration'", equalTo(0))
+                .body("'taggedMeter'", hasKey("fifteenMinRate;tier=integration"))
+                .body("'taggedMeter'", hasKey("fiveMinRate;tier=integration"))
+                .body("'taggedMeter'", hasKey("meanRate;tier=integration"))
+                .body("'taggedMeter'", hasKey("oneMinRate;tier=integration"))
+                //Meter - ;number=one;tier=integration
+                .body("'taggedMeter'.'count;number=one;tier=integration'", equalTo(0))
+                .body("'taggedMeter'", hasKey("fifteenMinRate;number=one;tier=integration"))
+                .body("'taggedMeter'", hasKey("fiveMinRate;number=one;tier=integration"))
+                .body("'taggedMeter'", hasKey("meanRate;number=one;tier=integration"))
+                .body("'taggedMeter'", hasKey("oneMinRate;number=one;tier=integration"))
+                //Meter - ;number=two;tier=integration
+                .body("'taggedMeter'.'count;number=two;tier=integration'", equalTo(0))
+                .body("'taggedMeter'", hasKey("fifteenMinRate;number=two;tier=integration"))
+                .body("'taggedMeter'", hasKey("fiveMinRate;number=two;tier=integration"))
+                .body("'taggedMeter'", hasKey("meanRate;number=two;tier=integration"))
+                .body("'taggedMeter'", hasKey("oneMinRate;number=two;tier=integration"));
+                
+    }
+    
+    /**
+     * Test that semicolons `;` in tag values are translated to underscores `_`
+     * in the JSON output
+     */
+    @Test
+    @RunAsClient
+    @InSequence(46)
+    public void testTranslateSemiColonToUnderScoreJSON() {
+        Header wantJson = new Header("Accept", APPLICATION_JSON);
+        given().header(wantJson).get("/metrics/application").then().statusCode(200)
+            .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.semiColonTaggedCounter;"
+                    + "scTag=semi_colons_are_bad;tier=integration'", equalTo(0));
+    }
+    
+    /**
      * Checks that the value is within tolerance of the expected value
      *
      * Note: The JSON parser only returns float for earlier versions of restassured,
@@ -1043,7 +1203,7 @@ public class MpMetricTest {
         }
         
         String toJSONName() {
-            return name + "{" + tags.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(",")) + "}";
+            return name + ";" + tags.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(";"));
         }
 
         private String getBaseUnitAsPrometheusString(String unit) {
