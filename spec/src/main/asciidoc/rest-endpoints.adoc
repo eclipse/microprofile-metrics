@@ -36,7 +36,7 @@ The following rules apply only to GET requests:
 * Tags are appended to the leaf element of the metric's JSON tree with a semicolon `;`.
 * The metric tags are represented by a semicolon `;` separated list of key/value tag pairs.
 * Tagged metrics that contain sub-resources that are registered under the same metric name will share the root element (i.e the metric name).
-* Metrics with tag values containing a semicolon `;` will be converted to underscores `_`
+* Metrics with tag values containing semicolons `;` will have their semicolons `;` converted to underscores `_`.
 
 For example:
 [source, json]
@@ -328,7 +328,7 @@ The value of the gauge must be equivalent to a call to the instance ConcurrentGa
 
 
 Metadata is exposed in a tree-like fashion with sub-trees for the sub-resources mentioned previously.
-Tags from metrics associated with the metric name are also included. The 'tags' attribute is a list of nested lists which hold tags from different metrics that are associated with the metadata.
+Tags from metrics associated with the metric name are also included. The 'tags' attribute is an array of nested arrays which hold tags from different metrics that are associated with the metadata.
 
 Example:
 
