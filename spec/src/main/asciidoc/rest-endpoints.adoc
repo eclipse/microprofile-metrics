@@ -34,16 +34,16 @@ A sub-tree that does not contain data must be omitted.
 The following rules apply only to GET requests:
 
 * Tags are appended to the leaf element of the metric's JSON tree with a semicolon `;`.
-* The metric tags are represented by a semicolon `;` separated list of key/value tag pairs.
-* Tagged metrics that contain sub-resources that are registered under the same metric name will share the root element (i.e the metric name).
-* Metrics with tag values containing semicolons `;` will have their semicolons `;` converted to underscores `_`.
+* For metrics with tags, the metric name must be appended with a semicolon `; followed by a semicolon-separated list of tag key/value pairs.
+* For compound metrics (those with child JSON attributes) with tags, only the "leaf" metric names are decorated with tags.
+* Semicolons `; present in tag values must be converted to underscores `_` in JSON output.
 
 For example:
 [source, json]
 ----
 {
  "carsCounter;colour=red" : 0,
- "carsCounter;colour=blue" : 0,
+ "carsCounter;colour=blue;car=sedan" : 0,
  "carsMeter": {
     "count;colour=red" : 0,
     "meanRate;colour=red" : 0,
@@ -61,7 +61,7 @@ For example:
 
 The following apply to both GET and OPTION requests:
 
-* Each tag is a key-value-pair in the format of `<key>=<value>`. The list of tags must be sorted alphabetically.
+* Each tag is a key-value-pair in the format of `<key>=<value>`. The list of tags must be sorted alphabetically by key name.
 * If the metric name or tag value contains a special reserved JSON character, these characters must be escaped in the JSON response.
 
 
@@ -125,8 +125,8 @@ The value of the gauge must be equivalent to a call to the instance Gauge's `get
 ----
 {
   "responsePercentage": 48.45632,
-  "responsePercentage;tag=two": 26.23654,
-  "responsePercentage;app=webapp;tag=three": 29.24554
+  "responsePercentage;servlet=two": 26.23654,
+  "responsePercentage;app=webapp;servlet=three": 29.24554
 }
 ----
 
@@ -139,8 +139,8 @@ The value of the counter must be equivalent to a call to the instance Counter's 
 ----
 {
   "hitCount": 45,
-  "hitCount;tag=two": 3,
-  "hitCount;app=webapp;tag=three": 4
+  "hitCount;servlet=two": 3,
+  "hitCount;app=webapp;servlet=three": 4
 }
 ----
 
@@ -243,17 +243,17 @@ The value of the gauge must be equivalent to a call to the instance ConcurrentGa
     "p98":26.0,
     "p99":26.0,
     "p999":26.0,
-    "count;tag=two":2,
-    "min;tag=two":-1624,
-    "max;tag=two":26,
-    "mean;tag=two":-799.0,
-    "stddev;tag=two":825.0,
-    "p50;tag=two":26.0,
-    "p75;tag=two":26.0,
-    "p95;tag=two":26.0,
-    "p98;tag=two":26.0,
-    "p99;tag=two":26.0,
-    "p999;tag=two":26.0
+    "count;servlet=two":2,
+    "min;servlet=two":-1624,
+    "max;servlet=two":26,
+    "mean;servlet=two":-799.0,
+    "stddev;servlet=two":825.0,
+    "p50;servlet=two":26.0,
+    "p75;servlet=two":26.0,
+    "p95;servlet=two":26.0,
+    "p98;servlet=two":26.0,
+    "p99;servlet=two":26.0,
+    "p999;servlet=two":26.0
   }
 }
 ----
@@ -305,21 +305,21 @@ The value of the gauge must be equivalent to a call to the instance ConcurrentGa
     "p98":2706543.0,
     "p99":5608694.0,
     "p999":5608694.0,
-    "count;tag=two": 29382,
-    "meanRate;tag=two":12.185627192860734,
-    "oneMinRate;tag=two": 12.563,
-    "fiveMinRate;tag=two": 12.364,
-    "fifteenMinRate;tag=two": 12.126,
-    "min;tag=two":169916,
-    "max;tag=two":5608694,
-    "mean;tag=two":415041.00024926325,
-    "stddev;tag=two":652907.9633011606,
-    "p50;tag=two":293324.0,
-    "p75;tag=two":344914.0,
-    "p95;tag=two":543647.0,
-    "p98;tag=two":2706543.0,
-    "p99;tag=two":5608694.0,
-    "p999;tag=two":5608694.0
+    "count;servlet=two": 29382,
+    "meanRate;servlet=two":12.185627192860734,
+    "oneMinRate;servlet=two": 12.563,
+    "fiveMinRate;servlet=two": 12.364,
+    "fifteenMinRate;servlet=two": 12.126,
+    "min;servlet=two":169916,
+    "max;servlet=two":5608694,
+    "mean;servlet=two":415041.00024926325,
+    "stddev;servlet=two":652907.9633011606,
+    "p50;servlet=two":293324.0,
+    "p75;servlet=two":344914.0,
+    "p95;servlet=two":543647.0,
+    "p98;servlet=two":2706543.0,
+    "p99;servlet=two":5608694.0,
+    "p999;servlet=two":5608694.0
   }
 }
 ----
@@ -537,7 +537,7 @@ The exposed metric names have suffixes as follows:
 |===
 | Value | Suffix
 
-| `getCount` |  _<none>_
+| `getCount` |  `_current`
 | `getMin` |  `_min`
 | `getMax` |  `_max`
 |===
@@ -550,7 +550,7 @@ Concurrent gauges do not have a suffix for the unit.
 ----
 # TYPE application_method_a_invocations gauge
 # HELP application_method_a_invocations The number of parallel invocations of methodA() #<1>
-application_method_a_invocations 80
+application_method_a_invocations_current 80
 # TYPE application_method_a_invocations_min gauge
 application_method_a_invocations_min 20
 # TYPE application_method_a_invocations_max gauge
