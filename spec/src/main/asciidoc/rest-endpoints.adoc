@@ -152,12 +152,14 @@ The value of the gauge must be equivalent to a call to the instance ConcurrentGa
 [source, json]
 ----
 {
-  "callCount": 48,
-  "callCount_min": 4,
-  "callCount_max": 50,
-  "callCount;app=backend": 23,
-  "callCount_min;app=backend": 1,
-  "callCount_max;app=backend":29
+  "callCount": {
+      "current" : 48,
+      "min": 4,
+      "max": 50,
+      "current;app=backend" : 23,
+      "min;app=backend": 1,
+      "max;app=backend": 29
+  }
 }
 ----
 

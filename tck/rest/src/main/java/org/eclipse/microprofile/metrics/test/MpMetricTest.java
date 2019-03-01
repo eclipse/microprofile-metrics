@@ -975,13 +975,13 @@ public class MpMetricTest {
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.taggedCounter;number=two;tier=integration'", equalTo(0))
                          
                 //ConcurrentGauge - ;number=one;tier=integration
-                .body("'taggedConcurrentGauge;number=one;tier=integration'", equalTo(0)) 
-                .body("'taggedConcurrentGauge_min;number=one;tier=integration'", equalTo(0))
-                .body("'taggedConcurrentGauge_max;number=one;tier=integration'", equalTo(0))
+                .body("'taggedConcurrentGauge'.'current;number=one;tier=integration'", equalTo(0)) 
+                .body("'taggedConcurrentGauge'.'min;number=one;tier=integration'", equalTo(0))
+                .body("'taggedConcurrentGauge'.'max;number=one;tier=integration'", equalTo(0))
                 //ConcurrentGauge - ;number=two;tier=integration
-                .body("'taggedConcurrentGauge;number=two;tier=integration'", equalTo(0)) 
-                .body("'taggedConcurrentGauge_min;number=two;tier=integration'", equalTo(0))
-                .body("'taggedConcurrentGauge_max;number=two;tier=integration'", equalTo(0))
+                .body("'taggedConcurrentGauge'.'current;number=two;tier=integration'", equalTo(0)) 
+                .body("'taggedConcurrentGauge'.'min;number=two;tier=integration'", equalTo(0))
+                .body("'taggedConcurrentGauge'.'max;number=two;tier=integration'", equalTo(0))
                 
                 //Gauge
                 .body("'taggedGauge;number=one;tier=integration'", equalTo(1000))
