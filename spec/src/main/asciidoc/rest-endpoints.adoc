@@ -29,30 +29,46 @@ This section describes the REST-api, that monitoring agents would use to retriev
 A sub-tree that does not contain data must be omitted.
 * A 'shadow tree' that responds to OPTIONS will provide the metadata and tags associated to a metric name.
 
-==== Translation rules for metric names
+==== Translation rules for metric names and handling of tags
 
 The following rules apply only to GET requests:
-* The metric name in JSON is comprised of the metric name appended with the metric tags (if they exist).
-* The metric tags are represented by a comma separated list of key/value tag pairs surrounded by braces `{` and `}`
 
-The following apply to both GET and OPTION requests:
-* Each tag is a key-value-pair in the format of `<key>=<value>`. The list of tags must be sorted alphabetically.
-* If the metric name or tag value contains a special reserved JSON character, these characters must be escaped in the JSON response.
+* Tags are appended to the leaf element of the metric's JSON tree with a semicolon `;`.
+* For metrics with tags, the metric name must be appended with a semicolon `; followed by a semicolon-separated list of tag key/value pairs.
+* For compound metrics (those with child JSON attributes) with tags, only the "leaf" metric names are decorated with tags.
+* Semicolons `; present in tag values must be converted to underscores `_` in JSON output.
 
-
-[source]
+For example:
+[source, json]
 ----
 {
-  "cars{colour=red,type=sedan}" : 12,
-  "cars{colour=blue,type=sedan}" : 9,
-  "cars{colour=yellow,type=sedan}" : 16
+ "carsCounter;colour=red" : 0,
+ "carsCounter;colour=blue;car=sedan" : 0,
+ "carsMeter": {
+    "count;colour=red" : 0,
+    "meanRate;colour=red" : 0,
+    "oneMinRate;colour=red" : 0,
+    "fiveMinRate;colour=red" : 0,
+    "fifteenMinRate;colour=red" : 0,
+    "count;colour=blue" : 0,
+    "meanRate;colour=blue" : 0,
+    "oneMinRate;colour=blue" : 0,
+    "fiveMinRate;colour=blue" : 0,
+    "fifteenMinRate;colour=blue" : 0
+ }
 }
 ----
 
-If the metric has no tags, the braces `{}` must be omitted.
+The following apply to both GET and OPTION requests:
+
+* Each tag is a key-value-pair in the format of `<key>=<value>`. The list of tags must be sorted alphabetically by key name.
+* If the metric name or tag value contains a special reserved JSON character, these characters must be escaped in the JSON response.
+
+
+If the metric has no tags, the semicolon `;` must be omitted.
 
 For example,
-[source]
+[source, json]
 ----
 {
   "metricWithoutTags": 192
@@ -64,7 +80,7 @@ For example,
 
 API-objects MAY include one or more metrics as in
 
-[source]
+[source, json]
 ----
 {
   "thread.count" : 33,
@@ -77,16 +93,16 @@ API-objects MAY include one or more metrics as in
 
 or
 
-[source]
+[source, json]
 ----
 {
-  "hitCount{type=yes}": 45
+  "hitCount;type=yes": 45
 }
 ----
 
 In case `/metrics` is requested, then the data for the scopes are wrapped in the scope name:
 
-[source]
+[source, json]
 ----
 {
   "application": {
@@ -108,7 +124,9 @@ The value of the gauge must be equivalent to a call to the instance Gauge's `get
 [source, json]
 ----
 {
-  "responsePercentage": 48.45632
+  "responsePercentage": 48.45632,
+  "responsePercentage;servlet=two": 26.23654,
+  "responsePercentage;app=webapp;servlet=three": 29.24554
 }
 ----
 
@@ -120,7 +138,9 @@ The value of the counter must be equivalent to a call to the instance Counter's 
 [source, json]
 ----
 {
-  "hitCount": 45
+  "hitCount": 45,
+  "hitCount;servlet=two": 3,
+  "hitCount;app=webapp;servlet=three": 4
 }
 ----
 
@@ -132,9 +152,14 @@ The value of the gauge must be equivalent to a call to the instance ConcurrentGa
 [source, json]
 ----
 {
-  "callCount": 48
-  "callCount_min": 4
-  "callCount_max": 50
+  "callCount": {
+      "current" : 48,
+      "min": 4,
+      "max": 50,
+      "current;app=backend" : 23,
+      "min;app=backend": 1,
+      "max;app=backend": 29
+  }
 }
 ----
 
@@ -164,7 +189,17 @@ The value of the gauge must be equivalent to a call to the instance ConcurrentGa
     "meanRate": 12.223,
     "oneMinRate": 12.563,
     "fiveMinRate": 12.364,
-    "fifteenMinRate": 12.126
+    "fifteenMinRate": 12.126,
+    "count;servlet=one": 29382,
+    "meanRate;servlet=one": 12.223,
+    "oneMinRate;servlet=one": 12.563,
+    "fiveMinRate;servlet=one": 12.364,
+    "fifteenMinRate;servlet=one": 12.126,
+    "count;servlet=two": 29382,
+    "meanRate;servlet=two": 12.223,
+    "oneMinRate;servlet=two": 12.563,
+    "fiveMinRate;servlet=two": 12.364,
+    "fifteenMinRate;servlet=two": 12.126
   }
 }
 ----
@@ -207,7 +242,18 @@ The value of the gauge must be equivalent to a call to the instance ConcurrentGa
     "p95":26.0,
     "p98":26.0,
     "p99":26.0,
-    "p999":26.0
+    "p999":26.0,
+    "count;servlet=two":2,
+    "min;servlet=two":-1624,
+    "max;servlet=two":26,
+    "mean;servlet=two":-799.0,
+    "stddev;servlet=two":825.0,
+    "p50;servlet=two":26.0,
+    "p75;servlet=two":26.0,
+    "p95;servlet=two":26.0,
+    "p98;servlet=two":26.0,
+    "p99;servlet=two":26.0,
+    "p999;servlet=two":26.0
   }
 }
 ----
@@ -258,7 +304,22 @@ The value of the gauge must be equivalent to a call to the instance ConcurrentGa
     "p95":543647.0,
     "p98":2706543.0,
     "p99":5608694.0,
-    "p999":5608694.0
+    "p999":5608694.0,
+    "count;servlet=two": 29382,
+    "meanRate;servlet=two":12.185627192860734,
+    "oneMinRate;servlet=two": 12.563,
+    "fiveMinRate;servlet=two": 12.364,
+    "fifteenMinRate;servlet=two": 12.126,
+    "min;servlet=two":169916,
+    "max;servlet=two":5608694,
+    "mean;servlet=two":415041.00024926325,
+    "stddev;servlet=two":652907.9633011606,
+    "p50;servlet=two":293324.0,
+    "p75;servlet=two":344914.0,
+    "p95;servlet=two":543647.0,
+    "p98;servlet=two":2706543.0,
+    "p99;servlet=two":5608694.0,
+    "p999;servlet=two":5608694.0
   }
 }
 ----
@@ -267,7 +328,7 @@ The value of the gauge must be equivalent to a call to the instance ConcurrentGa
 
 
 Metadata is exposed in a tree-like fashion with sub-trees for the sub-resources mentioned previously.
-Tags from metrics associated with the metric name are also included.
+Tags from metrics associated with the metric name are also included. The 'tags' attribute is an array of nested arrays which hold tags from different metrics that are associated with the metadata.
 
 Example:
 
@@ -275,7 +336,9 @@ If `GET /metrics/base/fooVal` exposes:
 
 [source]
 ----
-{"fooVal{app=webshop}": 12345}
+{
+  "fooVal;app=webshop": 12345
+}
 ----
 
 then `OPTIONS /metrics/base/fooVal` will expose:
@@ -305,9 +368,9 @@ If `GET /metrics/base` exposes multiple values like this:
 [source]
 ----
 {
-  "fooVal{app=webshop}": 12345,
-  "barVal{app=webshop,component=backend}": 42,
-  "barVal{app=webshop,component=frontend}": 63
+  "fooVal;app=webshop": 12345,
+  "barVal;app=webshop;component=backend": 42,
+  "barVal;app=webshop;component=frontend": 63
 }
 ----
 
@@ -474,7 +537,7 @@ The exposed metric names have suffixes as follows:
 |===
 | Value | Suffix
 
-| `getCount` |  _<none>_
+| `getCount` |  `_current`
 | `getMin` |  `_min`
 | `getMax` |  `_max`
 |===
@@ -487,7 +550,7 @@ Concurrent gauges do not have a suffix for the unit.
 ----
 # TYPE application_method_a_invocations gauge
 # HELP application_method_a_invocations The number of parallel invocations of methodA() #<1>
-application_method_a_invocations 80
+application_method_a_invocations_current 80
 # TYPE application_method_a_invocations_min gauge
 application_method_a_invocations_min 20
 # TYPE application_method_a_invocations_max gauge

@@ -33,6 +33,7 @@ import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.MetricType;
 import org.eclipse.microprofile.metrics.MetricUnits;
 import org.eclipse.microprofile.metrics.Timer;
+import org.eclipse.microprofile.metrics.annotation.ConcurrentGauge;
 import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.Metered;
 import org.eclipse.microprofile.metrics.annotation.Metric;
@@ -53,6 +54,95 @@ public class MetricAppBean {
     @Metric(name = "blue")
     private Counter blueCount;
 
+    public static final String TAGGED_COUNTER = "taggedCounter";
+    public static final String TAGGED_HISTOGRAM = "taggedHistogram";
+    public static final String TAGGED_TIMER = "taggedTimer";
+    public static final String TAGGED_METER = "taggedMeter";
+    public static final String TAGGED_GAUGE = "taggedGauge";
+    public static final String TAGGED_CONCURRENTGAUGE = "taggedConcurrentGauge";
+    
+    
+    @Inject
+    @Metric(name = "semiColonTaggedCounter", tags = {"scTag=semi;colons;are;bad"})
+    private Counter semiColonTaggedCounter;
+    
+    @Inject
+    @Metric(name = TAGGED_COUNTER)
+    private Counter counterNoTag;
+    
+    @Inject
+    @Metric(name = TAGGED_COUNTER, tags= {"number=one"})
+    private Counter counterNumberOneTag;
+    
+    @Inject
+    @Metric(name = TAGGED_COUNTER, tags= {"number=two"})
+    private Counter counterNumberTwoTag;
+    
+    @Inject
+    @Metric(name = TAGGED_HISTOGRAM, absolute = true, unit = "marshmellow")
+    private Histogram histogramNoTag;
+    
+    @Inject
+    @Metric(name = TAGGED_HISTOGRAM, absolute = true, unit = "marshmellow", tags= {"number=one"})
+    private Histogram histogramOneTag;
+    
+    @Inject
+    @Metric(name = TAGGED_HISTOGRAM, absolute = true, unit = "marshmellow", tags= {"number=two"})
+    private Histogram histogramTwoTag;
+    
+    @Inject
+    @Metric(name = TAGGED_TIMER, absolute = true)
+    private Timer timerNoTag;
+    
+    @Inject
+    @Metric(name = TAGGED_TIMER, absolute = true, tags= {"number=one"})
+    private Timer timerOneTag;
+    
+    @Inject
+    @Metric(name = TAGGED_TIMER, absolute = true, tags= {"number=two"})
+    private Timer timerTwoTag;
+    
+    
+    @Inject
+    @Metric(name = TAGGED_METER, absolute = true)
+    private Meter meterNoTag;
+    
+    @Inject
+    @Metric(name = TAGGED_METER, absolute = true, tags= {"number=one"})
+    private Meter meterOneTag;
+    
+    @Inject
+    @Metric(name = TAGGED_METER, absolute = true, tags= {"number=two"})
+    private Meter meterTwoTag;
+    
+    @org.eclipse.microprofile.metrics.annotation.Gauge(name = TAGGED_GAUGE,
+            absolute = true,unit = MetricUnits.NONE)
+    public long gaugeMeTagged() {
+        return 1000L;
+    }
+    
+    @org.eclipse.microprofile.metrics.annotation.Gauge(name = TAGGED_GAUGE,
+            absolute = true,unit = MetricUnits.NONE, tags= {"number=one"})
+    public long gaugeMeTaggedOne() {
+        return 1000L;
+    }
+    
+    @org.eclipse.microprofile.metrics.annotation.Gauge(name = TAGGED_GAUGE,
+            absolute = true,unit = MetricUnits.NONE, tags= {"number=two"})
+    public long gaugeMeTaggedTwo() {
+        return 1000L;
+    }
+     
+    @ConcurrentGauge(name = TAGGED_CONCURRENTGAUGE, absolute = true, tags= {"number=one"})
+    public void concurrentGaugeMeTaggedOne() {
+
+    }
+
+    @ConcurrentGauge(name = TAGGED_CONCURRENTGAUGE, absolute = true, tags= {"number=two"})
+    public void concurrentGaugeMeTaggedTwo() {
+
+    }
+    
     @Inject
     @Metric(absolute = true)
     private Counter greenCount;
@@ -89,7 +179,6 @@ public class MetricAppBean {
     public void countMeA() {
 
     }
-
 
     @Counted(name = "metricTest.test1.countMeB", absolute = true, unit = "jellybean")
     public long countMeB() {
