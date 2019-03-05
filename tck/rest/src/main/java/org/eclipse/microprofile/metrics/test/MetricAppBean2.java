@@ -30,7 +30,6 @@ import org.eclipse.microprofile.metrics.Histogram;
 import org.eclipse.microprofile.metrics.Metadata;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.MetricType;
-import org.eclipse.microprofile.metrics.annotation.ConcurrentGauge;
 import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.Metered;
 import org.eclipse.microprofile.metrics.annotation.Timed;
@@ -67,11 +66,6 @@ public class MetricAppBean2 {
     }
     @Timed(absolute = true, reusable = true, name = "timeMe2")
     public void timeMeB() {
-
-    }
-
-    @ConcurrentGauge
-    public void concGaugeMeA() {
 
     }
 

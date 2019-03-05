@@ -132,7 +132,12 @@ public class MetricAppBean {
     public long gaugeMeTaggedTwo() {
         return 1000L;
     }
-     
+    
+    @ConcurrentGauge(absolute = true)
+    public void concGaugeMeA() {
+
+    }
+    
     @ConcurrentGauge(name = TAGGED_CONCURRENTGAUGE, absolute = true, tags= {"number=one"})
     public void concurrentGaugeMeTaggedOne() {
 
