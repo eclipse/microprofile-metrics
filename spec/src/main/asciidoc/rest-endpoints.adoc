@@ -548,8 +548,8 @@ Concurrent gauges do not have a suffix for the unit.
 .Example OpenMetrics text format for a Concurrent Gauge
 [source, ruby]
 ----
-# TYPE application_method_a_invocations gauge
-# HELP application_method_a_invocations The number of parallel invocations of methodA() #<1>
+# TYPE application_method_a_invocations_current gauge
+# HELP application_method_a_invocations_current The number of parallel invocations of methodA() #<1>
 application_method_a_invocations_current 80
 # TYPE application_method_a_invocations_min gauge
 application_method_a_invocations_min 20
