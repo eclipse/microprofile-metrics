@@ -441,6 +441,8 @@ public class MpMetricTest {
 
         metricAppBean.timeMe();
         metricAppBean.timeMeA();
+        
+        metricAppBean.concGaugeMeA();
 
     }
     
@@ -1109,6 +1111,21 @@ public class MpMetricTest {
             .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.semiColonTaggedCounter;"
                     + "scTag=semi_colons_are_bad;tier=integration'", equalTo(0));
     }
+    
+    
+    @Test
+    @RunAsClient
+    @InSequence(47)
+    public void testApplicationConcurrentGaugePrometheus() {
+
+        given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/concGaugeMeA")
+            .then().statusCode(200)
+            .and()
+            .body(containsString("conc_gauge_me_a_current"))
+            .body(containsString("conc_gauge_me_a_min"))
+            .body(containsString("conc_gauge_me_a_max"));
+    }
+    
     
     /**
      * Checks that the value is within tolerance of the expected value
