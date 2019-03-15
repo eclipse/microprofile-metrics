@@ -98,7 +98,7 @@ Visit <<meta-data-def>> for the meaning of each key
 |DisplayName| JVM Uptime
 |Type| Gauge
 |Unit| Milliseconds
-|Description| Displays the start time of the Java virtual machine in milliseconds. This attribute displays the approximate time when the Java virtual machine started.
+|Description| Displays the time from the start of the Java virtual machine in milliseconds.
 |MBean| java.lang:type=Runtime/Uptime
 |Notes| Also from JSR 77
 |===
