@@ -244,6 +244,7 @@ public class CounterBean {
 }
 ----
 
+[[ConcurrentGaugeDef]]
 ==== @ConcurrentGauge
 An annotation for marking a method, constructor, or type as a parallel invocation counted.
 The semantics is such that upon entering a marked item, the parallel count is increased by one and upon
