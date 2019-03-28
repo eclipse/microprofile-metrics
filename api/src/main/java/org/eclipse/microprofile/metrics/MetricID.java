@@ -70,6 +70,9 @@ public class MetricID implements Comparable<MetricID> {
 
     public static final String GLOBAL_TAGS_VARIABLE = "mp.metrics.tags";
 
+    public static final String APPLICATION_NAME_VARIABLE = "mp.metrics.appName";
+    public static final String APPLICATION_NAME_TAG = "_app";
+
     private static final String GLOBAL_TAG_MALFORMED_EXCEPTION = "Malformed list of Global Tags. Tag names "
                                                                 + "must match the following regex [a-zA-Z_][a-zA-Z0-9_]*."
                                                                 + " Global Tag values must not be empty."
@@ -114,6 +117,15 @@ public class MetricID implements Comparable<MetricID> {
         this.name = name;
         Optional<String> globalTags = ConfigProvider.getConfig().getOptionalValue(GLOBAL_TAGS_VARIABLE, String.class);
         globalTags.ifPresent(this::parseGlobalTags);
+
+        // for application servers with multiple applications deployed, distinguish metrics from different applications by adding the "_app" tag
+        Optional<String> applicationName = ConfigProvider.getConfig().getOptionalValue(APPLICATION_NAME_VARIABLE, String.class);
+        applicationName.ifPresent(appName -> {
+            if(!appName.isEmpty()) {
+                addTag(new Tag(APPLICATION_NAME_TAG, appName));
+            }
+        });
+
         addTags(tags);
     }
 

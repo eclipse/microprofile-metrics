@@ -49,6 +49,7 @@ JSON format for OPTIONS requests have been modified such that the 'tags' attribu
 ** icon:bolt[role="red"]  Some base metrics' names have changed because they now use tags to distinguish metrics for multiple JVM objects. For example, 
 each existing garbage collector now has its own `gc.count` metric with the name of the garbage collector being in a tag. Names
 of some base metrics in the OpenMetrics output are also affected by the removal of conversion from camelCase to snake_case.
+** Added a set of recommendations how application servers with multiple deployed applications should behave if they support MP Metrics.
 
 * Changes in 1.1
 ** Improved TCK
