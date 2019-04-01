@@ -43,6 +43,7 @@ have been modified such that the 'tags' attribute is a list of nested lists whic
  are associated with the metadata.
 ** Reserved characters in Prometheus format must be escaped.
 ** The default value of the `reusable` attribute for metric objects created programmatically (not via annotations) is now `true`
+** No longer required to convert camelCase to snake_case for OpenMetrics output
 
 
 * Changes in 1.1
