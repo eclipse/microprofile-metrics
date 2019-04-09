@@ -424,17 +424,16 @@ The above json example would look like this in OpenMetrics format
 .Example of OpenMetrics output
 [source]
 ----
-# TYPE base_foo_val_seconds gauge   <1>
-# HELP base_foo_val_seconds The average duration of foo requests during last 5 minutes <2>
-base_foo_val_seconds{app="webshop"} 12.345  <3>
-# TYPE base_bar_val_bytes gauge <1>
-base_bar_val_bytes{component="backend", app="webshop"} 42000 <3>
-# TYPE base_bar_val_bytes gauge <1>
-base_bar_val_bytes{component="frontend", app="webshop"} 63000 <3>
+# TYPE base_fooVal_seconds gauge
+# HELP base_fooVal_seconds The average duration of foo requests during last 5 minutes <1>
+base_fooVal_seconds{app="webshop"} 12.345  <2>
+# TYPE base_barVal_bytes gauge
+base_barVal_bytes{component="backend", app="webshop"} 42000 <2>
+# TYPE base_barVal_bytes gauge
+base_barVal_bytes{component="frontend", app="webshop"} 63000 <2>
 ----
-<1> Metric names are turned from camel case into snake_case.
-<2> The description goes into the HELP line
-<3> Metric names gets the base unit of the family appended with `_` and defined labels. Values are scaled accordingly. See <<OpenMetrics_units>>
+<1> The description goes into the HELP line
+<2> Metric names gets the base unit of the family appended with `_` and defined labels. Values are scaled accordingly. See <<OpenMetrics_units>>
 
 ==== Translation rules for metric names
 
@@ -445,7 +444,6 @@ follow the pattern `[a-zA-Z_][a-zA-Z0-9_]*`.
 * Characters that do not fall in above category are translated to underscore (`_`).
 * Scope is always specified at the start of the metric name.
 * Scope and name are separated by underscore (`_`).
-* camelCase is translated to camel_case
 * Double underscore is translated to single underscore
 * The unit is appended to the name, separated by underscore. See <<OpenMetrics_units>>
 

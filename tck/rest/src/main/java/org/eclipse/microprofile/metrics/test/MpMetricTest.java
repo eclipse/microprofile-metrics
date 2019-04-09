@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017, 2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2019 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -596,14 +596,15 @@ public class MpMetricTest {
     @InSequence(23)
     public void testApplicationMeterUnitPrometheus() {
 
+        String prefix = "meterMeA_";
         given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/meterMeA")
             .then().statusCode(200)
             .and()
-            .body(containsString("meter_me_a_total"))
-            .body(containsString("meter_me_a_rate_per_second"))
-            .body(containsString("meter_me_a_one_min_rate_per_second"))
-            .body(containsString("meter_me_a_five_min_rate_per_second"))
-            .body(containsString("meter_me_a_fifteen_min_rate_per_second"));
+            .body(containsString(prefix + "total"))
+            .body(containsString(prefix + "rate_per_second"))
+            .body(containsString(prefix + "one_min_rate_per_second"))
+            .body(containsString(prefix + "five_min_rate_per_second"))
+            .body(containsString(prefix + "fifteen_min_rate_per_second"));
     }
 
     @Test
@@ -611,7 +612,7 @@ public class MpMetricTest {
     @InSequence(24)
     public void testApplicationTimerUnitPrometheus() {
 
-        String prefix = "org_eclipse_microprofile_metrics_test_metric_app_bean_time_me_a_";
+        String prefix = "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_";
         given().header("Accept", TEXT_PLAIN)
             .when()
               .get("/metrics/application/org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA")
@@ -641,7 +642,7 @@ public class MpMetricTest {
     @InSequence(25)
     public void testApplicationHistogramUnitBytesPrometheus() {
 
-        String prefix = "metric_test_test1_histogram_";
+        String prefix = "metricTest_test1_histogram_";
 
         given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/metricTest.test1.histogram")
             .then().statusCode(200)
@@ -666,7 +667,7 @@ public class MpMetricTest {
     @InSequence(26)
     public void testApplicationHistogramUnitNonePrometheus() {
 
-        String prefix = "metric_test_test1_histogram2";
+        String prefix = "metricTest_test1_histogram2";
 
         given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/metricTest.test1.histogram2")
             .then().statusCode(200)
@@ -705,8 +706,8 @@ public class MpMetricTest {
         Header wantPrometheusFormat = new Header("Accept", TEXT_PLAIN);
         given().header(wantPrometheusFormat).get("/metrics/application").then().statusCode(200)
         .and().body(containsString(
-            "TYPE application_org_eclipse_microprofile_metrics_test_metric_app_bean_gauge_me_a_bytes gauge"))
-        .and().body(containsString("TYPE application_metric_test_test1_gauge_bytes gauge"));
+            "TYPE application_org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeA_bytes gauge"))
+        .and().body(containsString("TYPE application_metricTest_test1_gauge_bytes gauge"));
 
 
     }
@@ -728,7 +729,7 @@ public class MpMetricTest {
     @InSequence(30)
     public void testNonStandardUnitsPrometheus() {
 
-        String prefix = "jellybean_histogram_";
+        String prefix = "jellybeanHistogram_";
 
         Header wantPrometheusFormat = new Header("Accept", TEXT_PLAIN);
         given().header(wantPrometheusFormat).get("/metrics/application/jellybeanHistogram").then().statusCode(200)
@@ -872,7 +873,7 @@ public class MpMetricTest {
     public void testCustomUnitAppendToGaugeName() {
         Header wantPrometheusFormat = new Header("Accept", TEXT_PLAIN);
         given().header(wantPrometheusFormat).get("/metrics/application").then().statusCode(200)
-        .and().body(containsString("TYPE application_org_eclipse_microprofile_metrics_test_metric_app_bean_gauge_me_b_hands gauge"));
+        .and().body(containsString("TYPE application_org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeB_hands gauge"));
     }
 
     @Test
@@ -881,7 +882,7 @@ public class MpMetricTest {
     public void testNoCustomUnitForCounter() {
         Header wantPrometheusFormat = new Header("Accept", TEXT_PLAIN);
         given().header(wantPrometheusFormat).get("/metrics/application").then().statusCode(200)
-        .and().body(containsString("TYPE application_metric_test_test1_count_me_b_total counter"));
+        .and().body(containsString("TYPE application_metricTest_test1_countMeB_total counter"));
     }
 
     /**
@@ -1121,9 +1122,9 @@ public class MpMetricTest {
         given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/concGaugeMeA")
             .then().statusCode(200)
             .and()
-            .body(containsString("conc_gauge_me_a_current"))
-            .body(containsString("conc_gauge_me_a_min"))
-            .body(containsString("conc_gauge_me_a_max"));
+            .body(containsString("concGaugeMeA_current"))
+            .body(containsString("concGaugeMeA_min"))
+            .body(containsString("concGaugeMeA_max"));
     }
     
     
@@ -1209,7 +1210,6 @@ public class MpMetricTest {
         
         String toPromString() {
             String out = name.replace('-', '_').replace('.', '_').replace(' ', '_');
-            out = out.replaceAll("(.)(\\p{Upper})", "$1_$2").toLowerCase();
             if (!unit.equals("none")) {
                 out = out + "_" + getBaseUnitAsPrometheusString(unit);
             }
