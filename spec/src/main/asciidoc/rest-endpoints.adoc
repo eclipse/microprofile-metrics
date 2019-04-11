@@ -23,6 +23,7 @@
 This section describes the REST-api, that monitoring agents would use to retrieve the collected metrics.
 (Java-) methods mentioned refer to the respective Objects in the Java API. See also <<app-metrics-api>>
 
+[[json-format-def]]
 === JSON format
 
 * When using JSON format, the REST API will respond to GET requests with data formatted in a tree like fashion with sub-trees for the sub-resources.

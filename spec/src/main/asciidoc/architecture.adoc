@@ -110,7 +110,7 @@ carCount{type=coupe,colour=blue}
 ----
 
 For portability reasons, the key name for the tag must match the regex `[a-zA-Z_][a-zA-Z0-9_]*` (Ascii alphabet, numbers and underscore).
-If an illegal character is used, the implementation must throw an IllegalArgumentException.
+If an illegal character is used, the implementation must throw an `IllegalArgumentException`.
 If a duplicate tag is used, the last occurrence of the tag is used.
 
 The tag value may contain any UTF-8 encoded character.
@@ -165,7 +165,7 @@ Full minute is the minute from second 0 to just before second 0 on the next minu
 * description (optional): A human readable description of the metric.
 * displayName (optional): A human readable name of the metric for display purposes if the metric name is not
 human readable. This could e.g. be the case when the metric name is a uuid.
-* reusable (optional): If set to `true`, then it is allowed to register a metric multiple times under the same <<metricid-data-def>>. 
+* reusable (optional): If set to `true`, then it is allowed to register a metric multiple times under the same <<metricid-data-def>>.
 Note that all such instances must set `reusable` to `true`.
 Default is `true` for metrics created programmatically, `false` for metrics declared using annotations.
 See <<reusing_of_metrics>> for more details.
