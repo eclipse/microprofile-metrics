@@ -28,7 +28,6 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +36,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -67,7 +67,8 @@ public class MultipleBeanInstancesTest {
     public void getInstances() {
         instance1 = bean.get();
         instance2 = bean.get();
-        Assert.assertNotEquals(instance1, instance2);
+        assertFalse("CDI container should return two different bean instances",
+            instance1.equals(instance2));
     }
 
     @Test
