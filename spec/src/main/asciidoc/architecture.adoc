@@ -239,6 +239,21 @@ to `true` and have multiple methods annotated as metric that have the same metho
 
 In the above examples both `countMeA()` and `countMeB()` will share a single Counter with registered name `countMe` and the same tags in application scope.
 
+[[cdi_scopes]]
+==== Metrics and CDI scopes
+
+All metric types except gauges support being declared using annotations in CDI beans which use such scope that there will be multiple instances of the bean created 
+over the lifecycle of the application. If multiple instances of the bean with a metric exist, usages of the metric will be merged together, so for example,
+calls to a method annotated with `@Counted` will increase the value of the same counter no matter which bean instance is the one where the counted method
+is being invoked. Concurrent gauges will watch the number of parallel invocations of a method even if the invocations are on different instances.
+
+The only exception from this are gauges (not concurrent gauges), which don't support multiple instances of the underlying bean to be created,
+because in that case it would not be clear which instance should be used for obtaining the gauge value. For this reason,
+gauges should only be used with beans that create only one instance, in CDI terms this means `@ApplicationScoped` and `@Singleton` beans. 
+The implementation may employ validation checks that throw an error eagerly when it is detected that there is a `@Gauge` on a bean 
+that will probably have multiple instances.
+ 
+
 [[rest-api]]
 === Exposing metrics via REST API
 
