@@ -274,7 +274,7 @@ public class MetricAppBean {
 
     /**
      * We create a few metrics with names that are outside the
-     * characters that prometheus allows which is [a-zA-Z0-9_]
+     * characters that OpenMetrics allows which is [a-zA-Z0-9_]
      */
     public void createPromMetrics() {
 

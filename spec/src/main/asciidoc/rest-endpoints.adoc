@@ -454,7 +454,7 @@ follow the pattern `[a-zA-Z_][a-zA-Z0-9_]*`.
 Metric tags are appended to the metric name in curly braces `{` and `}` and are separated by comma.
 Each tag is a key-value-pair in the format of `<key>="<value>"` (the quotes around the value are required).
 
-MicroProfile Metrics timers and histograms expose a Prometheus `summary` type which requires an additional `quantile` tag for certain metrics.
+MicroProfile Metrics timers and histograms expose an OpenMetrics `summary` type which requires an additional `quantile` tag for certain metrics.
 The `quantile` tag must be included alongside the metrics tags within the curly braces `{` and `}`.
 
 The tag value can be any Unicode character but the following characters must be escaped:
@@ -479,7 +479,7 @@ The metric name and values for `Gauge` and `Histogram` are converted to the "bas
 - If the `unit` is specified and is not defined in the `MetricUnits` class, the value is not scaled but the `unit` is still appended to the metric name delimited by underscores (`_`).
 
 
-Unit families and their base units are described under https://prometheus.io/docs/practices/naming/#base-units[Prometheus metric names, Base units].
+Unit families and their base units are described under https://prometheus.io/docs/practices/naming/#base-units[OpenMetrics metric names, Base units].
 
 Families and OpenMetrics base units are:
 
