@@ -41,7 +41,7 @@ The `Counted` interface lost the `dec()` methods.
 ** icon:bolt[role="red"] <<json-format-def,JSON output format>> for GET requests now appends tags along with the metric in `metricName;tag=value;tag=value` format.
 JSON format for OPTIONS requests have been modified such that the 'tags' attribute is a list of nested lists which holds tags from different metrics that
  are associated with the metadata.
-** Openmetrics format - formerly called Prometheus format
+** OpenMetrics format - formerly called Prometheus format
 *** Reserved characters in OpenMetrics format must be escaped.
 *** icon:bolt[role="red"] In OpenMetrics output format, the separator between scope and metric name is now a `_` instead of a `:`.
 *** icon:bolt[role="red"] Metric names with camelCase are no longer converted to snake_case for OpenMetrics output.

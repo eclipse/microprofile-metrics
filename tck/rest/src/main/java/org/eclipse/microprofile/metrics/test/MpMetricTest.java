@@ -197,7 +197,7 @@ public class MpMetricTest {
     @Test
     @RunAsClient
     @InSequence(6)
-    public void testBasePrometheus() {
+    public void testBaseOpenMetrics() {
         given().header("Accept", TEXT_PLAIN).when().get("/metrics/base").then().statusCode(200).and()
                 .contentType(TEXT_PLAIN).and().body(containsString("# TYPE base_thread_max_count_total"),
                         containsString("base_thread_max_count_total{tier=\"integration\"}"));
@@ -243,7 +243,7 @@ public class MpMetricTest {
     @Test
     @RunAsClient
     @InSequence(9)
-    public void testBaseAttributePrometheus() {
+    public void testBaseAttributeOpenMetrics() {
         given().header("Accept", TEXT_PLAIN).when().get("/metrics/base/thread.max.count").then().statusCode(200).and()
                 .contentType(TEXT_PLAIN).and().body(containsString("# TYPE base_thread_max_count_total"),
                         containsString("base_thread_max_count_total{tier=\"integration\"}"));
@@ -327,10 +327,10 @@ public class MpMetricTest {
     @Test
     @RunAsClient
     @InSequence(13)
-    public void testPrometheusFormatNoBadChars() {
-        Header wantPrometheusFormat = new Header("Accept", TEXT_PLAIN);
+    public void testOpenMetricsFormatNoBadChars() {
+        Header wantOpenMetricsFormat = new Header("Accept", TEXT_PLAIN);
 
-        String data = given().header(wantPrometheusFormat).get("/metrics/base").asString();
+        String data = given().header(wantOpenMetricsFormat).get("/metrics/base").asString();
 
         String[] lines = data.split("\n");
         for (String line : lines) {
@@ -346,16 +346,16 @@ public class MpMetricTest {
     }
 
     /*
-     * Technically Prometheus has no metadata call and this is included inline
+     * Technically OpenMetrics has no metadata call and this is included inline
      * in the response.
      */
     @Test
     @RunAsClient
     @InSequence(14)
-    public void testBaseMetadataSingluarItemsPrometheus() {
-        Header wantPrometheusFormat = new Header("Accept", TEXT_PLAIN);
+    public void testBaseMetadataSingluarItemsOpenMetrics() {
+        Header wantOpenMetricsFormat = new Header("Accept", TEXT_PLAIN);
 
-        String data = given().header(wantPrometheusFormat).get("/metrics/base").asString();
+        String data = given().header(wantOpenMetricsFormat).get("/metrics/base").asString();
 
         String[] lines = data.split("\n");
 
@@ -582,7 +582,7 @@ public class MpMetricTest {
     @Test
     @RunAsClient
     @InSequence(22)
-    public void testApplicationTagPrometheus() {
+    public void testApplicationTagOpenMetrics() {
 
         given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/purple")
             .then().statusCode(200)
@@ -594,7 +594,7 @@ public class MpMetricTest {
     @Test
     @RunAsClient
     @InSequence(23)
-    public void testApplicationMeterUnitPrometheus() {
+    public void testApplicationMeterUnitOpenMetrics() {
 
         String prefix = "meterMeA_";
         given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/meterMeA")
@@ -610,7 +610,7 @@ public class MpMetricTest {
     @Test
     @RunAsClient
     @InSequence(24)
-    public void testApplicationTimerUnitPrometheus() {
+    public void testApplicationTimerUnitOpenMetrics() {
 
         String prefix = "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_";
         given().header("Accept", TEXT_PLAIN)
@@ -640,7 +640,7 @@ public class MpMetricTest {
     @Test
     @RunAsClient
     @InSequence(25)
-    public void testApplicationHistogramUnitBytesPrometheus() {
+    public void testApplicationHistogramUnitBytesOpenMetrics() {
 
         String prefix = "metricTest_test1_histogram_";
 
@@ -665,7 +665,7 @@ public class MpMetricTest {
     @Test
     @RunAsClient
     @InSequence(26)
-    public void testApplicationHistogramUnitNonePrometheus() {
+    public void testApplicationHistogramUnitNoneOpenMetrics() {
 
         String prefix = "metricTest_test1_histogram2";
 
@@ -690,7 +690,7 @@ public class MpMetricTest {
     @Test
     @RunAsClient
     @InSequence(27)
-    public void testPrometheus406ForOptions() {
+    public void testOpenMetrics406ForOptions() {
         given()
             .header("Accept", TEXT_PLAIN)
         .when()
@@ -703,8 +703,8 @@ public class MpMetricTest {
     @RunAsClient
     @InSequence(28)
     public void testConvertingToBaseUnit() {
-        Header wantPrometheusFormat = new Header("Accept", TEXT_PLAIN);
-        given().header(wantPrometheusFormat).get("/metrics/application").then().statusCode(200)
+        Header wantOpenMetricsFormat = new Header("Accept", TEXT_PLAIN);
+        given().header(wantOpenMetricsFormat).get("/metrics/application").then().statusCode(200)
         .and().body(containsString(
             "TYPE application_org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeA_bytes gauge"))
         .and().body(containsString("TYPE application_metricTest_test1_gauge_bytes gauge"));
@@ -727,12 +727,12 @@ public class MpMetricTest {
     @Test
     @RunAsClient
     @InSequence(30)
-    public void testNonStandardUnitsPrometheus() {
+    public void testNonStandardUnitsOpenMetrics() {
 
         String prefix = "jellybeanHistogram_";
 
-        Header wantPrometheusFormat = new Header("Accept", TEXT_PLAIN);
-        given().header(wantPrometheusFormat).get("/metrics/application/jellybeanHistogram").then().statusCode(200)
+        Header wantOpenMetricsFormat = new Header("Accept", TEXT_PLAIN);
+        given().header(wantOpenMetricsFormat).get("/metrics/application/jellybeanHistogram").then().statusCode(200)
         .and()
         .body(containsString(prefix + "jellybeans_count"))
         .body(containsString("# TYPE application_" + prefix + "jellybeans summary"))
@@ -871,8 +871,8 @@ public class MpMetricTest {
     @RunAsClient
     @InSequence(41)
     public void testCustomUnitAppendToGaugeName() {
-        Header wantPrometheusFormat = new Header("Accept", TEXT_PLAIN);
-        given().header(wantPrometheusFormat).get("/metrics/application").then().statusCode(200)
+        Header wantOpenMetricsFormat = new Header("Accept", TEXT_PLAIN);
+        given().header(wantOpenMetricsFormat).get("/metrics/application").then().statusCode(200)
         .and().body(containsString("TYPE application_org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeB_hands gauge"));
     }
 
@@ -880,8 +880,8 @@ public class MpMetricTest {
     @RunAsClient
     @InSequence(42)
     public void testNoCustomUnitForCounter() {
-        Header wantPrometheusFormat = new Header("Accept", TEXT_PLAIN);
-        given().header(wantPrometheusFormat).get("/metrics/application").then().statusCode(200)
+        Header wantOpenMetricsFormat = new Header("Accept", TEXT_PLAIN);
+        given().header(wantOpenMetricsFormat).get("/metrics/application").then().statusCode(200)
         .and().body(containsString("TYPE application_metricTest_test1_countMeB_total counter"));
     }
 
@@ -1117,7 +1117,7 @@ public class MpMetricTest {
     @Test
     @RunAsClient
     @InSequence(47)
-    public void testApplicationConcurrentGaugePrometheus() {
+    public void testApplicationConcurrentGaugeOpenMetrics() {
 
         given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/concGaugeMeA")
             .then().statusCode(200)
@@ -1211,7 +1211,7 @@ public class MpMetricTest {
         String toPromString() {
             String out = name.replace('-', '_').replace('.', '_').replace(' ', '_');
             if (!unit.equals("none")) {
-                out = out + "_" + getBaseUnitAsPrometheusString(unit);
+                out = out + "_" + getBaseUnitAsOpenMetricsString(unit);
             }
             out = out.replace("__", "_");
             out = out.replace(":_", ":");
@@ -1223,7 +1223,7 @@ public class MpMetricTest {
             return name + ";" + tags.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(";"));
         }
 
-        private String getBaseUnitAsPrometheusString(String unit) {
+        private String getBaseUnitAsOpenMetricsString(String unit) {
             String out;
             switch (unit) {
             case "milliseconds":
