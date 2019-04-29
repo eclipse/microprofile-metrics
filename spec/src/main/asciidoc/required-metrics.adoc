@@ -26,6 +26,9 @@ These metrics are exposed under `/metrics/base`.
 The following is a list of required and optional base metrics. All metrics are singletons and have `Multi:` set to `false` unless otherwise stated.
 Visit <<meta-data-def>> for the meaning of each key
 
+NOTE: Although vendors are required to implement these base metrics, some virtual machines can not provide them.
+Vendors should either use other metrics that are close enough as substitute or not fill these base metrics at all.
+
 
 === General JVM Stats
 
