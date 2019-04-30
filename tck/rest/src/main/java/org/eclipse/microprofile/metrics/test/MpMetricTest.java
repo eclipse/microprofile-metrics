@@ -225,7 +225,7 @@ public class MpMetricTest {
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).and().contentType(TEXT_PLAIN).and()
-            .body(containsString("# TYPE base_thread_max_count_total"), containsString("base_thread_max_count_total{tier=\"integration\"}"));
+            .body(containsString("# TYPE base_thread_max_count"), containsString("base_thread_max_count{tier=\"integration\"}"));
     }
 
     @Test
@@ -282,8 +282,8 @@ public class MpMetricTest {
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).and()
-        .contentType(TEXT_PLAIN).and().body(containsString("# TYPE base_thread_max_count_total"),
-                containsString("base_thread_max_count_total{tier=\"integration\"}"));
+        .contentType(TEXT_PLAIN).and().body(containsString("# TYPE base_thread_max_count"),
+                containsString("base_thread_max_count{tier=\"integration\"}"));
     }
 
     @Test
@@ -436,7 +436,7 @@ public class MpMetricTest {
         Map<String, Object> elements = jsonPath.getMap(".");
         for (String name : elements.keySet()) {
             if (name.startsWith("gc.")) {
-                assertTrue(name.endsWith(".count") || name.endsWith(".time"));
+                assertTrue(name.endsWith(".total") || name.endsWith(".time"));
                 count++;
             }
         }
@@ -957,7 +957,7 @@ public class MpMetricTest {
     }
 
     /**
-     * Check that there is at least one metric named gc.count and that they all contain
+     * Check that there is at least one metric named gc.total and that they all contain
      * expected tags (actually this is just 'name' for now).
      */
     @Test
@@ -968,28 +968,28 @@ public class MpMetricTest {
         JsonPath jsonPath = given().header(wantJson).get("/metrics/base").jsonPath();
 
         Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
-        MiniMeta gcCountMetricMeta = baseNames.get("gc.count");
+        MiniMeta gcCountMetricMeta = baseNames.get("gc.total");
         Set<String> expectedTags = gcCountMetricMeta.tags.keySet();
 
-        // obtain list of actual base metrics from the runtime and find all named gc.count
+        // obtain list of actual base metrics from the runtime and find all named gc.total
         Map<String, Object> elements = jsonPath.getMap(".");
         boolean found = false;
         for (Map.Entry<String, Object> metricEntry : elements.entrySet()) {
-            if(metricEntry.getKey().startsWith("gc.count")) {
-                // We found a metric named gc.count. Now check that it contains all expected tags
+            if(metricEntry.getKey().startsWith("gc.total")) {
+                // We found a metric named gc.total. Now check that it contains all expected tags
                 for(String expectedTag : expectedTags) {
                     assertThat("The metric should contain a " + expectedTag + " tag",
                         metricEntry.getKey(), containsString(expectedTag + "="));
                 }
                 // check that the metric has a reasonable value - it should at least be numeric and not negative
-                Assert.assertTrue("gc.count value should be numeric",
+                Assert.assertTrue("gc.total value should be numeric",
                     metricEntry.getValue() instanceof Number);
-                Assert.assertTrue("gc.count value should not be a negative number",
+                Assert.assertTrue("gc.total value should not be a negative number",
                     (Integer)metricEntry.getValue() >= 0);
                 found = true;
             }
         }
-        Assert.assertTrue("At least one metric named gc.count is expected", found);
+        Assert.assertTrue("At least one metric named gc.total is expected", found);
     }
 
     /**
