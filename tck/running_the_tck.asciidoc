@@ -121,6 +121,10 @@ If you use Apache Maven, then the tests are run via the `maven-surefire-plugin` 
 ----
 Note: Be sure to set up your Arquillian.xml as required for your server under test.
 
+If the implementation does not support all base metrics as described in the specification because
+they are not available in the used JVM, it is possible to skip the tests related to base metrics
+by adding the system property `skip.base.metric.tests=true` to the surefire process.
+
 == Running the TCK
 
 To run the TCK, ensure that the above dependencies are installed, and run the following command:
