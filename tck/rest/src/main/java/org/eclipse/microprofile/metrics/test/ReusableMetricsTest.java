@@ -55,8 +55,9 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public class ReusableMetricsTest {
 
-  private static final String JSON_APP_LABEL_REGEX = "_app=[A-Za-z0-9]*;"; 
-    
+  private static final String JSON_APP_LABEL_REGEX = ";_app=[/A-Za-z0-9]+([;\\\"]?)"; 
+  private static final String JSON_APP_LABEL_REGEXS_SUB = "$1";   
+  
   private static final String APPLICATION_JSON = "application/json";
   private static final String DEFAULT_PROTOCOL = "http";
   private static final String DEFAULT_HOST = "localhost";
@@ -119,7 +120,7 @@ public class ReusableMetricsTest {
         Header acceptJson = new Header("Accept", APPLICATION_JSON);
         
         Response resp = given().header(acceptJson).get("/metrics/application");
-        JsonPath filteredJSONPath = new JsonPath(resp.jsonPath().prettify().replaceAll(JSON_APP_LABEL_REGEX, ""));
+        JsonPath filteredJSONPath = new JsonPath(resp.jsonPath().prettify().replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB));
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
         responseBuilder.setBody(filteredJSONPath.prettify());
@@ -148,7 +149,7 @@ public class ReusableMetricsTest {
     Header acceptJson = new Header("Accept", APPLICATION_JSON);
 
     Response resp = given().header(acceptJson).get("/metrics/application");
-    JsonPath filteredJSONPath = new JsonPath(resp.jsonPath().prettify().replaceAll(JSON_APP_LABEL_REGEX, ""));
+    JsonPath filteredJSONPath = new JsonPath(resp.jsonPath().prettify().replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB));
     ResponseBuilder responseBuilder = new ResponseBuilder();
     responseBuilder.clone(resp);
     responseBuilder.setBody(filteredJSONPath.prettify());
@@ -177,7 +178,7 @@ public class ReusableMetricsTest {
     Header acceptJson = new Header("Accept", APPLICATION_JSON);
 
     Response resp = given().header(acceptJson).get("/metrics/application");
-    JsonPath filteredJSONPath = new JsonPath(resp.jsonPath().prettify().replaceAll(JSON_APP_LABEL_REGEX, ""));
+    JsonPath filteredJSONPath = new JsonPath(resp.jsonPath().prettify().replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB));
     ResponseBuilder responseBuilder = new ResponseBuilder();
     responseBuilder.clone(resp);
     responseBuilder.setBody(filteredJSONPath.prettify());

@@ -90,14 +90,24 @@ public class MpMetricTest {
     private static final String APPLICATION_JSON = "application/json";
     private static final String TEXT_PLAIN = "text/plain";
     
-    private static final String JSON_APP_LABEL_REGEX = "_app=[A-Za-z0-9]*;"; 
-    private static final String OPENMETRICS_APP_LABEL_REGEX = "_app=\"[A-Za-z0-9]*\",";
+    private static final String JSON_APP_LABEL_REGEX = ";_app=[/A-Za-z0-9]+([;\\\"]?)"; 
+    private static final String JSON_APP_LABEL_REGEXS_SUB = "$1";
+    
+    private static final String OPENMETRICS_APP_LABEL_REGEX = "_app=\"[/A-Za-z0-9]+\"";
 
     private static final String DEFAULT_PROTOCOL = "http";
     private static final String DEFAULT_HOST = "localhost";
     private static final int DEFAULT_PORT = 8080;
 
     public static final double TOLERANCE = 0.025;
+
+    private static String filterOutAppLabelJSON(String responseBody){
+        return responseBody.replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB);
+    }
+
+    private static String  filterOutAppLabelOpenMetrics(String responseBody) {
+        return responseBody.replaceAll(OPENMETRICS_APP_LABEL_REGEX, "").replaceAll("\\{,", "{").replaceAll(",\\}", "}");
+    }
 
     @Inject
     private MetricAppBean metricAppBean;
@@ -195,7 +205,7 @@ public class MpMetricTest {
     @InSequence(5)
     public void testBase() {
         Response resp = given().header("Accept", APPLICATION_JSON).get("/metrics/base");
-        JsonPath filteredJSONPath = new JsonPath(resp.jsonPath().prettify().replaceAll(JSON_APP_LABEL_REGEX, ""));
+        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
         responseBuilder.setBody(filteredJSONPath.prettify());
@@ -212,7 +222,7 @@ public class MpMetricTest {
         Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics/base");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
-        responseBuilder.setBody(resp.getBody().asString().replaceAll(OPENMETRICS_APP_LABEL_REGEX, ""));
+        responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).and().contentType(TEXT_PLAIN).and()
             .body(containsString("# TYPE base_thread_max_count_total"), containsString("base_thread_max_count_total{tier=\"integration\"}"));
@@ -225,7 +235,7 @@ public class MpMetricTest {
         Header wantJson = new Header("Accept", APPLICATION_JSON);
         
         Response resp = given().header(wantJson).get("/metrics/base/thread.max.count");
-        JsonPath filteredJSONPath = new JsonPath(resp.jsonPath().prettify().replaceAll(JSON_APP_LABEL_REGEX, ""));
+        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
         responseBuilder.setBody(filteredJSONPath.prettify());
@@ -241,7 +251,7 @@ public class MpMetricTest {
         Header wantJson = new Header("Accept", APPLICATION_JSON);
 
         JsonPath jsonPath = given().header(wantJson).get("/metrics/base").jsonPath();
-        JsonPath filteredJSONPath = new JsonPath(jsonPath.prettify().replaceAll(JSON_APP_LABEL_REGEX, ""));
+        JsonPath filteredJSONPath = new JsonPath(jsonPath.prettify().replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB));
         
         Map<String, Object> elements = filteredJSONPath.getMap(".");
         
@@ -269,7 +279,7 @@ public class MpMetricTest {
         Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics/base/thread.max.count");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
-        responseBuilder.setBody(resp.getBody().asString().replaceAll(OPENMETRICS_APP_LABEL_REGEX, ""));
+        responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).and()
         .contentType(TEXT_PLAIN).and().body(containsString("# TYPE base_thread_max_count_total"),
@@ -480,7 +490,7 @@ public class MpMetricTest {
         Header wantJson = new Header("Accept", APPLICATION_JSON);
         
         Response resp = given().header(wantJson).get("/metrics/application");
-        JsonPath filteredJSONPath = new JsonPath(resp.jsonPath().prettify().replaceAll(JSON_APP_LABEL_REGEX, ""));
+        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
         responseBuilder.setBody(filteredJSONPath.prettify());
@@ -651,7 +661,7 @@ public class MpMetricTest {
         Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics/application/org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
-        responseBuilder.setBody(resp.getBody().asString().replaceAll(OPENMETRICS_APP_LABEL_REGEX, ""));
+        responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
                 
         resp.then().statusCode(200)
@@ -685,7 +695,7 @@ public class MpMetricTest {
         Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics/application/metricTest.test1.histogram");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
-        responseBuilder.setBody(resp.getBody().asString().replaceAll(OPENMETRICS_APP_LABEL_REGEX, ""));
+        responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         
         resp.then().statusCode(200)
@@ -715,7 +725,7 @@ public class MpMetricTest {
         Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics/application/metricTest.test1.histogram2");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
-        responseBuilder.setBody(resp.getBody().asString().replaceAll(OPENMETRICS_APP_LABEL_REGEX, ""));
+        responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         
         resp.then().statusCode(200)
@@ -783,7 +793,7 @@ public class MpMetricTest {
         Response resp = given().header(wantOpenMetricsFormat).get("/metrics/application/jellybeanHistogram");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
-        responseBuilder.setBody(resp.getBody().asString().replaceAll(OPENMETRICS_APP_LABEL_REGEX, ""));
+        responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         
         
@@ -1029,7 +1039,7 @@ public class MpMetricTest {
         Header wantJson = new Header("Accept", APPLICATION_JSON);
         
         Response resp = given().header(wantJson).get("/metrics/application");
-        JsonPath filteredJSONPath = new JsonPath(resp.jsonPath().prettify().replaceAll(JSON_APP_LABEL_REGEX, ""));
+        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
         responseBuilder.setBody(filteredJSONPath.prettify());
@@ -1177,7 +1187,7 @@ public class MpMetricTest {
     public void testTranslateSemiColonToUnderScoreJSON() {
         Header wantJson = new Header("Accept", APPLICATION_JSON);
         Response resp = given().header(wantJson).get("/metrics/application");
-        JsonPath filteredJSONPath = new JsonPath(resp.jsonPath().prettify().replaceAll(JSON_APP_LABEL_REGEX, ""));
+        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
         responseBuilder.setBody(filteredJSONPath.prettify());
