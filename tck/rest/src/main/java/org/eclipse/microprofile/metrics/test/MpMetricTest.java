@@ -69,6 +69,7 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -180,6 +181,7 @@ public class MpMetricTest {
     @RunAsClient
     @InSequence(4)
     public void testListsAllJson() {
+        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
         Header acceptHeader = new Header("Accept", APPLICATION_JSON);
 
         Map response = given().header(acceptHeader).when().get("/metrics").as(Map.class);
@@ -204,6 +206,7 @@ public class MpMetricTest {
     @RunAsClient
     @InSequence(5)
     public void testBase() {
+        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
         Response resp = given().header("Accept", APPLICATION_JSON).get("/metrics/base");
         JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
         ResponseBuilder responseBuilder = new ResponseBuilder();
@@ -219,6 +222,7 @@ public class MpMetricTest {
     @RunAsClient
     @InSequence(6)
     public void testBaseOpenMetrics() {
+        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
         Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics/base");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
@@ -232,6 +236,7 @@ public class MpMetricTest {
     @RunAsClient
     @InSequence(7)
     public void testBaseAttributeJson() {
+        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
         Header wantJson = new Header("Accept", APPLICATION_JSON);
         
         Response resp = given().header(wantJson).get("/metrics/base/thread.max.count");
@@ -248,6 +253,7 @@ public class MpMetricTest {
     @RunAsClient
     @InSequence(8)
     public void testBaseSingularMetricsPresent() {
+        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
         Header wantJson = new Header("Accept", APPLICATION_JSON);
 
         JsonPath jsonPath = given().header(wantJson).get("/metrics/base").jsonPath();
@@ -275,7 +281,8 @@ public class MpMetricTest {
     @Test
     @RunAsClient
     @InSequence(9)
-    public void testBaseAttributeOpenMetrics() {    
+    public void testBaseAttributeOpenMetrics() {
+        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
         Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics/base/thread.max.count");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
@@ -290,6 +297,7 @@ public class MpMetricTest {
     @RunAsClient
     @InSequence(10)
     public void testBaseMetadata() {
+        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
         Header wantJson = new Header("Accept", APPLICATION_JSON);
 
         given().header(wantJson).options("/metrics/base").then().statusCode(200).and()
@@ -301,6 +309,7 @@ public class MpMetricTest {
     @RunAsClient
     @InSequence(11)
     public void testBaseMetadataSingluarItems() {
+        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
         Header wantJson = new Header("Accept", APPLICATION_JSON);
 
         JsonPath jsonPath = given().header(wantJson).options("/metrics/base").jsonPath();
@@ -325,6 +334,7 @@ public class MpMetricTest {
     @RunAsClient
     @InSequence(12)
     public void testBaseMetadataTypeAndUnit() {
+        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
         Header wantJson = new Header("Accept", APPLICATION_JSON);
 
         JsonPath jsonPath = given().header(wantJson).options("/metrics/base").jsonPath();
@@ -365,6 +375,7 @@ public class MpMetricTest {
     @RunAsClient
     @InSequence(13)
     public void testOpenMetricsFormatNoBadChars() {
+        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
         Header wantOpenMetricsFormat = new Header("Accept", TEXT_PLAIN);
 
         String data = given().header(wantOpenMetricsFormat).get("/metrics/base").asString();
@@ -390,6 +401,7 @@ public class MpMetricTest {
     @RunAsClient
     @InSequence(14)
     public void testBaseMetadataSingluarItemsOpenMetrics() {
+        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
         Header wantOpenMetricsFormat = new Header("Accept", TEXT_PLAIN);
 
         String data = given().header(wantOpenMetricsFormat).get("/metrics/base").asString();
@@ -428,6 +440,7 @@ public class MpMetricTest {
     @RunAsClient
     @InSequence(15)
     public void testBaseMetadataGarbageCollection() {
+        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
         Header wantJson = new Header("Accept", APPLICATION_JSON);
 
         JsonPath jsonPath = given().header(wantJson).options("/metrics/base").jsonPath();
@@ -817,6 +830,7 @@ public class MpMetricTest {
     @RunAsClient
     @InSequence(31)
     public void testOptionalBaseMetrics() {
+        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
         Header wantJson = new Header("Accept", APPLICATION_JSON);
 
         JsonPath jsonPath = given().header(wantJson).options("/metrics/base").jsonPath();
@@ -964,6 +978,7 @@ public class MpMetricTest {
     @RunAsClient
     @InSequence(43)
     public void testGcCountMetrics() {
+        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
         Header wantJson = new Header("Accept", APPLICATION_JSON);
         JsonPath jsonPath = given().header(wantJson).get("/metrics/base").jsonPath();
 
@@ -1000,6 +1015,7 @@ public class MpMetricTest {
     @RunAsClient
     @InSequence(44)
     public void testGcTimeMetrics() {
+        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
         Header wantJson = new Header("Accept", APPLICATION_JSON);
         JsonPath jsonPath = given().header(wantJson).get("/metrics/base").jsonPath();
 
