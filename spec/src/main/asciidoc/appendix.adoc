@@ -133,9 +133,9 @@ A set of gauges will be created in the OpenMetrics output for each `@ConcurrentG
 
 This change has also had an impact on the `Counter` interface to basically follow the above change:
 
-* Replace usages where `Counter.dec()` was called with `Gauge` or `ConcurrentGauge`
+* Modify code which uses `Counter.dec()` to use a `Gauge` or `ConcurrentGauge`.
 
-Some base metrics' types have changed from Counter to Gauge since Counters must now count monotonically.  Update code or dashboards that use the following metrics:
+Some base metrics' types have changed from `Counter` to `Gauge` since counters must now count monotonically.  Update code or dashboards that use the following metrics:
 
 * thread.count
 * thread.daemon.count
