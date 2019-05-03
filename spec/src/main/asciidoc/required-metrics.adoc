@@ -69,7 +69,7 @@ Vendors should either use other metrics that are close enough as substitute or n
 *GCCount*
 [cols="1,4"]
 |===
-|Name| gc.count
+|Name| gc.total
 |DisplayName| Garbage Collection Count
 |Type| Counter
 |Unit| None
@@ -113,7 +113,7 @@ Vendors should either use other metrics that are close enough as substitute or n
 |===
 |Name| thread.count
 |DisplayName| Thread Count
-|Type| Counter
+|Type| Gauge
 |Unit| None
 |Description| Displays the current number of live threads including both daemon and non-daemon threads
 |MBean| java.lang:type=Threading/ThreadCount
@@ -124,7 +124,7 @@ Vendors should either use other metrics that are close enough as substitute or n
 |===
 |Name| thread.daemon.count
 |DisplayName| Daemon Thread Count
-|Type| Counter
+|Type| Gauge
 |Unit| None
 |Description| Displays the current number of live daemon threads.
 |MBean| java.lang:type=Threading/DaemonThreadCount
@@ -135,7 +135,7 @@ Vendors should either use other metrics that are close enough as substitute or n
 |===
 |Name| thread.max.count
 |DisplayName| Peak Thread Count
-|Type| Counter
+|Type| Gauge
 |Unit| None
 |Description| Displays the peak live thread count since the Java virtual machine started or peak was reset. This includes daemon and non-daemon threads.
 |MBean| java.lang:type=Threading/PeakThreadCount
@@ -174,18 +174,18 @@ Vendors should either use other metrics that are close enough as substitute or n
 *LoadedClassCount*
 [cols="1,4"]
 |===
-|Name| classloader.currentLoadedClass.count
+|Name| classloader.loadedClasses.count
 |DisplayName| Current Loaded Class Count
-|Type| Counter
+|Type| Gauge
 |Unit| None
 |Description| Displays the number of classes that are currently loaded in the Java virtual machine.
 |MBean| java.lang:type=ClassLoading/LoadedClassCount
 |===
 
-*TotalLoadedClassLoaded*
+*TotalLoadedClassCount*
 [cols="1,4"]
 |===
-|Name| classloader.totalLoadedClass.count
+|Name| classloader.loadedClasses.total
 |DisplayName| Total Loaded Class Count
 |Type| Counter
 |Unit| None
@@ -196,7 +196,7 @@ Vendors should either use other metrics that are close enough as substitute or n
 *UnloadedClassCount*
 [cols="1,4"]
 |===
-|Name| classloader.totalUnloadedClass.count
+|Name| classloader.unloadedClasses.total
 |DisplayName| Total Unloaded Class Count
 |Type| Counter
 |Unit| None
