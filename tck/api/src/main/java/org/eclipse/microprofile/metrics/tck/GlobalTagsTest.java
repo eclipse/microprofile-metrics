@@ -41,7 +41,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
+
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -72,7 +75,10 @@ public class GlobalTagsTest {
     public void fromEnvVariable() {
         registry.counter("mycounter", new Tag("foo", "bar"));
         final MetricID actualMetricId = registry.getCounters().keySet().stream().filter(id -> id.getName().equals("mycounter")).findAny().get();
-        Assert.assertThat(actualMetricId.getTagsAsList(), containsInAnyOrder(
+        List<Tag> filterList = new ArrayList<Tag>(actualMetricId.getTagsAsList());
+        //Must filter out `_app` tags 
+        filterList.removeIf( tag -> tag.getTagName().equals("_app"));
+        Assert.assertThat(filterList, containsInAnyOrder(
             new Tag("foo", "bar"),
             new Tag("tier", "integration")
         ));

@@ -28,9 +28,14 @@ import static org.hamcrest.Matchers.equalTo;
 import static com.jayway.restassured.RestAssured.given;
 
 import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.builder.ResponseBuilder;
+import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Header;
+import com.jayway.restassured.response.Response;
+
 import java.net.MalformedURLException;
 import java.net.URL;
+
 import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -50,6 +55,9 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public class ReusableMetricsTest {
 
+  private static final String JSON_APP_LABEL_REGEX = ";_app=[/A-Za-z0-9]+([;\\\"]?)"; 
+  private static final String JSON_APP_LABEL_REGEXS_SUB = "$1";   
+  
   private static final String APPLICATION_JSON = "application/json";
   private static final String DEFAULT_PROTOCOL = "http";
   private static final String DEFAULT_HOST = "localhost";
@@ -86,7 +94,7 @@ public class ReusableMetricsTest {
         }
 
     }
-
+    
   @Deployment
   public static WebArchive createDeployment() {
       WebArchive jar = ShrinkWrap.create(WebArchive.class).addClass(MetricAppBean2.class)
@@ -103,19 +111,25 @@ public class ReusableMetricsTest {
     metricAppBean.meterMeA();
     metricAppBean.timeMeA();
   }
-
+  
   @Test
   @RunAsClient
   @InSequence(2)
-  public void testSharedCounter() {
+    public void testSharedCounter() {
 
-    Header acceptJson = new Header("Accept", APPLICATION_JSON);
-
-    given().header(acceptJson).get("/metrics/application").then()
-            .assertThat().body("'countMe2;tier=integration'", equalTo(1))
-            .assertThat().body("'org.eclipse.microprofile.metrics.test.MetricAppBean2.meterMe2'.'count;tier=integration'", equalTo(1))
-            .assertThat().body("'timeMe2'.'count;tier=integration'", equalTo(1));
-
+        Header acceptJson = new Header("Accept", APPLICATION_JSON);
+        
+        Response resp = given().header(acceptJson).get("/metrics/application");
+        JsonPath filteredJSONPath = new JsonPath(resp.jsonPath().prettify().replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB));
+        ResponseBuilder responseBuilder = new ResponseBuilder();
+        responseBuilder.clone(resp);
+        responseBuilder.setBody(filteredJSONPath.prettify());
+        resp = responseBuilder.build();
+        
+        resp.then()
+                .assertThat().body("'countMe2;tier=integration'", equalTo(1))
+                .assertThat().body("'org.eclipse.microprofile.metrics.test.MetricAppBean2.meterMe2'.'count;tier=integration'", equalTo(1))
+                .assertThat().body("'timeMe2'.'count;tier=integration'", equalTo(1));
 
   }
 
@@ -134,10 +148,18 @@ public class ReusableMetricsTest {
 
     Header acceptJson = new Header("Accept", APPLICATION_JSON);
 
-    given().header(acceptJson).get("/metrics/application").then()
+    Response resp = given().header(acceptJson).get("/metrics/application");
+    JsonPath filteredJSONPath = new JsonPath(resp.jsonPath().prettify().replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB));
+    ResponseBuilder responseBuilder = new ResponseBuilder();
+    responseBuilder.clone(resp);
+    responseBuilder.setBody(filteredJSONPath.prettify());
+    resp = responseBuilder.build();
+    
+    resp.then()
     .assertThat().body("'countMe2;tier=integration'", equalTo(2))
     .assertThat().body("'org.eclipse.microprofile.metrics.test.MetricAppBean2.meterMe2'.'count;tier=integration'", equalTo(2))
     .assertThat().body("'timeMe2'.'count;tier=integration'", equalTo(2));
+    
 
   }
 
@@ -155,7 +177,14 @@ public class ReusableMetricsTest {
 
     Header acceptJson = new Header("Accept", APPLICATION_JSON);
 
-    given().header(acceptJson).get("/metrics/application").then()
+    Response resp = given().header(acceptJson).get("/metrics/application");
+    JsonPath filteredJSONPath = new JsonPath(resp.jsonPath().prettify().replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB));
+    ResponseBuilder responseBuilder = new ResponseBuilder();
+    responseBuilder.clone(resp);
+    responseBuilder.setBody(filteredJSONPath.prettify());
+    resp = responseBuilder.build();
+    
+    resp.then()
     .assertThat().body("'reusableHisto'.'count;tier=integration'", equalTo(2))
     .assertThat().body("'reusableHisto'.'min;tier=integration'", equalTo(1))
     .assertThat().body("'reusableHisto'.'max;tier=integration'", equalTo(3));
