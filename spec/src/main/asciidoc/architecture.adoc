@@ -127,9 +127,6 @@ setting a configuration property of the name `mp.metrics.tags`. The implementati
 If it is supplied as an environment variable rather than system property, it can be named `MP_METRICS_TAGS` and will be picked up too.
 ** Tag values set through `mp.metrics.tags` MUST escape equal symbols `=` and commas `,` with a backslash `\`
 
-NOTE: The use of MicroProfile-Config is mandatory in MicroProfile-Metrics 2.0 even if it only serves to provide
-the global tags that existed already in Metrics 1.0. Future version of the spec will introduce more config options.
-
 .Set up global tags via environment variable
 [source,bash]
 ----
@@ -137,6 +134,10 @@ export MP_METRICS_TAGS=app=shop,tier=integration,special=deli\=ver\,y
 ----
 
 Global tags and tags registered with the metric are included in the output returned from the REST API.
+
+NOTE: In application servers with multiple applications deployed, there is one reserved tag name: `_app`, which serves for
+distinguishing metrics from different applications and must not be used for any other purpose. For details,
+ see section <<app-servers>>.
 
 [[meta-data-def]]
 ==== Metadata
@@ -295,3 +296,49 @@ The API MUST NOT return a 500 Internal Server Error code to represent a non-exis
 
 NOTE: The implementation must return a 406 response code if the request's HTTP Accept header for an OPTIONS request
 does not match `application/json`.
+
+[[app-servers]]
+=== Usage of MicroProfile Metrics in application servers with multiple applications
+Even though multi-app servers are generally outside the scope of MicroProfile, this section describes recommendations
+how such application servers should behave if they want to support MicroProfile Metrics.
+
+Metrics from all applications and scopes should be available under a single REST endpoint ending with `/metrics` similarly as
+in case of single-application deployments (microservices).
+
+To help distinguish between metrics pertaining to each deployed application,
+a tag named `_app` should be appended to each metric. Its value should be equal to the context root of the web application to which the metric belongs.
+For example, if a deployment is available under the `/cars` context root, each metric created by this deployment will contain an additional
+tag named `_app` with a value of `/cars`. If the application server allows using metrics in JAR deployments, which have no web context,
+the name of the JAR archive (including the `.jar` suffix) should be used. If such JAR is a module of an EAR application, the value of the `_app` tag should be
+`ear_name#jar_name`.
+
+This is an example JSON output from an application server that has applications under `/app1` and `/app2`, both of which have a counter metric
+named `requestCount`:
+
+----
+{
+  "requestCount;_app=/app1" : 198,
+  "requestCount;_app=/app2" : 320
+}
+----
+
+The value of the `_app` tag should be passed by the application server to the application via a MicroProfile Config property named `mp.metrics.appName`.
+It should be possible to override this value by bundling the file `META-INF/microprofile-config.properties` within the application archive
+and setting a custom value for the property `mp.metrics.appName` inside it.
+
+It is allowed for application servers to choose to not add the `_app` tag at all, but in that case, metrics from two applications on
+one server can clash as no differentiator (by application) is given.
+
+There should be a single `MetricRegistry` instance shared between all applications to prevent unexpected clashes when merging the contents
+of different registries while responding to metric export requests. It is up to the application server whether it will allow sharing
+of metrics between different applications (for example, if there's a reusable metric in one application, another might want to reuse it).
+
+==== Implementation notes:
+Constructors of the `MetricID` class from the API code already handle adding the `_app` tag automatically
+when they detect that there is a property named `mp.metrics.appName` available from the `org.eclipse.microprofile.config.Config` instance
+available in the current context. If no such property exists or if the value is empty, no tag will be appended.
+
+Generally, the responsibility of the application server implementation will be to append a property `mp.metrics.appName` to the
+`org.eclipse.microprofile.config.Config` instance of each application during deployment time, its value being the web context root of the application
+or the JAR name. This can be achieved for example by adding a custom `ConfigSource` with an ordinal less than 100, because
+the `ConfigSource` that reads properties `META-INF/microprofile-config.properties` has an ordinal of 100, and this needs to have higher priority.

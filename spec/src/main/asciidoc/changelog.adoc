@@ -46,9 +46,12 @@ JSON format for OPTIONS requests have been modified such that the 'tags' attribu
 *** icon:bolt[role="red"] In OpenMetrics output format, the separator between scope and metric name is now a `_` instead of a `:`.
 *** icon:bolt[role="red"] Metric names with camelCase are no longer converted to snake_case for OpenMetrics output.
 *** icon:bolt[role="red"] The default value of the `reusable` attribute for metric objects created programmatically (not via annotations) is now `true`
-** icon:bolt[role="red"]  Some base metrics' names have changed because they now use tags to distinguish metrics for multiple JVM objects. For example, 
-each existing garbage collector now has its own `gc.count` metric with the name of the garbage collector being in a tag. Names
+** icon:bolt[role="red"] Some base metrics' names have changed to follow the convention of ending the name of accumulating counters with `total`.
+** icon:bolt[role="red"] Some base metrics' types have changed from Counter to Gauge since Counters must now count monotonically.
+** icon:bolt[role="red"] Some base metrics' names have changed because they now use tags to distinguish metrics for multiple JVM objects. For example, 
+each existing garbage collector now has its own `gc.total` metric with the name of the garbage collector being in a tag. Names
 of some base metrics in the OpenMetrics output are also affected by the removal of conversion from camelCase to snake_case.
+** Added a set of recommendations how application servers with multiple deployed applications should behave if they support MP Metrics.
 
 * Changes in 1.1
 ** Improved TCK

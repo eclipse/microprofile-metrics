@@ -38,6 +38,7 @@ import static org.junit.Assert.assertFalse;
 
 import com.jayway.restassured.response.Header;
 import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.builder.ResponseBuilder;
 import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
 import java.io.IOException;
@@ -89,12 +90,25 @@ public class MpMetricTest {
 
     private static final String APPLICATION_JSON = "application/json";
     private static final String TEXT_PLAIN = "text/plain";
+    
+    private static final String JSON_APP_LABEL_REGEX = ";_app=[/A-Za-z0-9]+([;\\\"]?)"; 
+    private static final String JSON_APP_LABEL_REGEXS_SUB = "$1";
+    
+    private static final String OPENMETRICS_APP_LABEL_REGEX = "_app=\"[/A-Za-z0-9]+\"";
 
     private static final String DEFAULT_PROTOCOL = "http";
     private static final String DEFAULT_HOST = "localhost";
     private static final int DEFAULT_PORT = 8080;
 
     public static final double TOLERANCE = 0.025;
+
+    private static String filterOutAppLabelJSON(String responseBody){
+        return responseBody.replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB);
+    }
+
+    private static String  filterOutAppLabelOpenMetrics(String responseBody) {
+        return responseBody.replaceAll(OPENMETRICS_APP_LABEL_REGEX, "").replaceAll("\\{,", "{").replaceAll(",\\}", "}");
+    }
 
     @Inject
     private MetricAppBean metricAppBean;
@@ -193,8 +207,15 @@ public class MpMetricTest {
     @InSequence(5)
     public void testBase() {
         Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        given().header("Accept", APPLICATION_JSON).when().get("/metrics/base").then().statusCode(200).and()
-                .contentType(MpMetricTest.APPLICATION_JSON).and().body(containsString("thread.max.count;tier=integration"));
+        Response resp = given().header("Accept", APPLICATION_JSON).get("/metrics/base");
+        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
+        ResponseBuilder responseBuilder = new ResponseBuilder();
+        responseBuilder.clone(resp);
+        responseBuilder.setBody(filteredJSONPath.prettify());
+        resp = responseBuilder.build();
+        
+        resp.then().statusCode(200).and()
+            .contentType(MpMetricTest.APPLICATION_JSON).and().body(containsString("thread.max.count;tier=integration"));        
     }
 
     @Test
@@ -202,9 +223,13 @@ public class MpMetricTest {
     @InSequence(6)
     public void testBaseOpenMetrics() {
         Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        given().header("Accept", TEXT_PLAIN).when().get("/metrics/base").then().statusCode(200).and()
-                .contentType(TEXT_PLAIN).and().body(containsString("# TYPE base_thread_max_count_total"),
-                        containsString("base_thread_max_count_total{tier=\"integration\"}"));
+        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics/base");
+        ResponseBuilder responseBuilder = new ResponseBuilder();
+        responseBuilder.clone(resp);
+        responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
+        resp = responseBuilder.build();
+        resp.then().statusCode(200).and().contentType(TEXT_PLAIN).and()
+            .body(containsString("# TYPE base_thread_max_count_total"), containsString("base_thread_max_count_total{tier=\"integration\"}"));
     }
 
     @Test
@@ -213,8 +238,14 @@ public class MpMetricTest {
     public void testBaseAttributeJson() {
         Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
         Header wantJson = new Header("Accept", APPLICATION_JSON);
-
-        given().header(wantJson).when().get("/metrics/base/thread.max.count").then().statusCode(200).and()
+        
+        Response resp = given().header(wantJson).get("/metrics/base/thread.max.count");
+        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
+        ResponseBuilder responseBuilder = new ResponseBuilder();
+        responseBuilder.clone(resp);
+        responseBuilder.setBody(filteredJSONPath.prettify());
+        resp = responseBuilder.build();
+        resp.then().statusCode(200).and()
                 .contentType(MpMetricTest.APPLICATION_JSON).and().body(containsString("thread.max.count;tier=integration"));
     }
 
@@ -226,8 +257,9 @@ public class MpMetricTest {
         Header wantJson = new Header("Accept", APPLICATION_JSON);
 
         JsonPath jsonPath = given().header(wantJson).get("/metrics/base").jsonPath();
-
-        Map<String, Object> elements = jsonPath.getMap(".");
+        JsonPath filteredJSONPath = new JsonPath(jsonPath.prettify().replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB));
+        
+        Map<String, Object> elements = filteredJSONPath.getMap(".");
         
         List<String> missing = new ArrayList<>();
 
@@ -251,9 +283,14 @@ public class MpMetricTest {
     @InSequence(9)
     public void testBaseAttributeOpenMetrics() {
         Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        given().header("Accept", TEXT_PLAIN).when().get("/metrics/base/thread.max.count").then().statusCode(200).and()
-                .contentType(TEXT_PLAIN).and().body(containsString("# TYPE base_thread_max_count_total"),
-                        containsString("base_thread_max_count_total{tier=\"integration\"}"));
+        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics/base/thread.max.count");
+        ResponseBuilder responseBuilder = new ResponseBuilder();
+        responseBuilder.clone(resp);
+        responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
+        resp = responseBuilder.build();
+        resp.then().statusCode(200).and()
+        .contentType(TEXT_PLAIN).and().body(containsString("# TYPE base_thread_max_count_total"),
+                containsString("base_thread_max_count_total{tier=\"integration\"}"));
     }
 
     @Test
@@ -464,8 +501,15 @@ public class MpMetricTest {
     @InSequence(18)
     public void testApplicationMetricsJSON() {
         Header wantJson = new Header("Accept", APPLICATION_JSON);
+        
+        Response resp = given().header(wantJson).get("/metrics/application");
+        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
+        ResponseBuilder responseBuilder = new ResponseBuilder();
+        responseBuilder.clone(resp);
+        responseBuilder.setBody(filteredJSONPath.prettify());
+        resp = responseBuilder.build();
 
-        given().header(wantJson).get("/metrics/application").then().statusCode(200)
+        resp.then().statusCode(200)
 
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.redCount;tier=integration'", equalTo(0))
 
@@ -626,10 +670,14 @@ public class MpMetricTest {
     public void testApplicationTimerUnitOpenMetrics() {
 
         String prefix = "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_";
-        given().header("Accept", TEXT_PLAIN)
-            .when()
-              .get("/metrics/application/org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA")
-            .then().statusCode(200)
+        
+        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics/application/org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA");
+        ResponseBuilder responseBuilder = new ResponseBuilder();
+        responseBuilder.clone(resp);
+        responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
+        resp = responseBuilder.build();
+                
+        resp.then().statusCode(200)
             .and()
             .body(containsString("# TYPE application_" + prefix + "seconds summary"))
             .body(containsString(prefix + "seconds_count"))
@@ -657,8 +705,13 @@ public class MpMetricTest {
 
         String prefix = "metricTest_test1_histogram_";
 
-        given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/metricTest.test1.histogram")
-            .then().statusCode(200)
+        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics/application/metricTest.test1.histogram");
+        ResponseBuilder responseBuilder = new ResponseBuilder();
+        responseBuilder.clone(resp);
+        responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
+        resp = responseBuilder.build();
+        
+        resp.then().statusCode(200)
             .and()
             .body(containsString(prefix + "bytes_count"))
             .body(containsString("# TYPE application_" + prefix + "bytes summary"))
@@ -682,8 +735,13 @@ public class MpMetricTest {
 
         String prefix = "metricTest_test1_histogram2";
 
-        given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/metricTest.test1.histogram2")
-            .then().statusCode(200)
+        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics/application/metricTest.test1.histogram2");
+        ResponseBuilder responseBuilder = new ResponseBuilder();
+        responseBuilder.clone(resp);
+        responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
+        resp = responseBuilder.build();
+        
+        resp.then().statusCode(200)
             .and()
             .body(containsString(prefix + "_count"))
             .body(containsString("# TYPE application_" + prefix + " summary"))
@@ -743,9 +801,16 @@ public class MpMetricTest {
     public void testNonStandardUnitsOpenMetrics() {
 
         String prefix = "jellybeanHistogram_";
-
         Header wantOpenMetricsFormat = new Header("Accept", TEXT_PLAIN);
-        given().header(wantOpenMetricsFormat).get("/metrics/application/jellybeanHistogram").then().statusCode(200)
+        
+        Response resp = given().header(wantOpenMetricsFormat).get("/metrics/application/jellybeanHistogram");
+        ResponseBuilder responseBuilder = new ResponseBuilder();
+        responseBuilder.clone(resp);
+        responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
+        resp = responseBuilder.build();
+        
+        
+        resp.then().statusCode(200)
         .and()
         .body(containsString(prefix + "jellybeans_count"))
         .body(containsString("# TYPE application_" + prefix + "jellybeans summary"))
@@ -791,7 +856,13 @@ public class MpMetricTest {
     @Test
     @InSequence(32)
     public void testGlobalTagsViaConfig() {
-        assertEquals(metricAppBean.getGlobalTags(), "tier=integration");
+        /*
+         * Test modified to check that it contains tier=integration
+         * due to the possibility of vendor's implementation either
+         * providing an _app tag. Or not.
+         */
+        boolean expectedTag = metricAppBean.getGlobalTags().contains("tier=integration");
+        assertEquals(expectedTag, true);
     }
 
     @Test
@@ -982,12 +1053,19 @@ public class MpMetricTest {
     @InSequence(45)
     public void testMultipleTaggedMetricsJSON() {
         Header wantJson = new Header("Accept", APPLICATION_JSON);
-
+        
+        Response resp = given().header(wantJson).get("/metrics/application");
+        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
+        ResponseBuilder responseBuilder = new ResponseBuilder();
+        responseBuilder.clone(resp);
+        responseBuilder.setBody(filteredJSONPath.prettify());
+        resp = responseBuilder.build();
+        
         /*
          * This test's primary objective is to ensure that the format is correct.
          */
         
-        given().header(wantJson).get("/metrics/application").then().statusCode(200)
+        resp.then().statusCode(200)
                 //counters
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.taggedCounter;tier=integration'", equalTo(0))
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.taggedCounter;number=one;tier=integration'", equalTo(0))
@@ -1124,7 +1202,14 @@ public class MpMetricTest {
     @InSequence(46)
     public void testTranslateSemiColonToUnderScoreJSON() {
         Header wantJson = new Header("Accept", APPLICATION_JSON);
-        given().header(wantJson).get("/metrics/application").then().statusCode(200)
+        Response resp = given().header(wantJson).get("/metrics/application");
+        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
+        ResponseBuilder responseBuilder = new ResponseBuilder();
+        responseBuilder.clone(resp);
+        responseBuilder.setBody(filteredJSONPath.prettify());
+        resp = responseBuilder.build();
+        
+        resp.then().statusCode(200)
             .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.semiColonTaggedCounter;"
                     + "scTag=semi_colons_are_bad;tier=integration'", equalTo(0));
     }
