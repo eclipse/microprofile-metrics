@@ -85,8 +85,8 @@ Examples for vendor specific data could be metrics like:
 Vendor specific metrics are not supposed to be portable between different implementations
 of MicroProfile servers, even if they are compliant with the same version of this specification.
 
-[[supplying_of_tags]]
-==== Supplying of Tags
+[[metric_tags]]
+==== Tags
 
 Tags (or labels) play an important role in modern microservices and microservice scheduling systems (like e.g. Kubernetes).
 Application code can run on any node and can be re-scheduled to a different node at any time. Each container in such
@@ -94,7 +94,7 @@ an environment gets its own ID; when the container is stopped and a new one star
 different id. The classical mapping of host/node and application runtime on it, therefore no longer works.
 
 Tags have taken over the role to, for example, identify an application (`app=myShop`), the tier inside the application
-(`tier=database` or `tier=app_server`) and also the node/container id. Aggregation of metrics can then work over label
+(`tier=database` or `tier=app_server`) and also the node/container id. Metric value aggregation can then work over label
 queries (Give me the API hit count for `app=myShop && tier=app_server`).
 
 In MicroProfile Metrics, tags add an additional dimension to metrics that share a common basis. For example, a metric named
@@ -169,7 +169,7 @@ human readable. This could e.g. be the case when the metric name is a uuid.
 * reusable (optional): If set to `true`, then it is allowed to register a metric multiple times under the same <<metricid-data-def>>.
 Note that all such instances must set `reusable` to `true`.
 Default is `true` for metrics created programmatically, `false` for metrics declared using annotations.
-See <<reusing_of_metrics>> for more details.
+See <<reusing_metrics>> for more details.
 
 Metadata must not change over the lifetime of a process (i.e. it is not allowed
 to return the units as seconds in one retrieval and as hours in a subsequent one).
@@ -201,13 +201,13 @@ The MetricID consists of the metric's name and tags (if supplied). This is used 
 The MetricID:
 
 * name: The name of the metric.
-* tags (optional): A list of Tag objects. See also <<supplying_of_tags>>.
+* tags (optional): A list of Tag objects. See also <<metric_tags>>.
 
-[[reusing_of_metrics]]
-==== Reusing of Metrics
+[[reusing_metrics]]
+==== Reusing Metrics
 
 For metrics declared using annotations, by default it is not allowed to register more than one metric under a certain name and tags combination in a scope. This is done
-to prevent hard to spot copy & paste errors, where for example all methods of a Jax-Rs class are marked with
+to prevent hard to spot copy & paste errors, where for example all methods of a JAX-RS class are marked with
 `@Timed(name="myApp", absolute=true)`.
 
 If this behaviour is required, then it is possible to mark all such instances as _reusable_ by passing
@@ -243,10 +243,7 @@ In the above examples both `countMeA()` and `countMeB()` will share a single Cou
 [[cdi_scopes]]
 ==== Metrics and CDI scopes
 
-All metric types except gauges support being declared using annotations in CDI beans which use such scope that there will be multiple instances of the bean created 
-over the lifecycle of the application. If multiple instances of the bean with a metric exist, usages of the metric will be merged together, so for example,
-calls to a method annotated with `@Counted` will increase the value of the same counter no matter which bean instance is the one where the counted method
-is being invoked. Concurrent gauges will watch the number of parallel invocations of a method even if the invocations are on different instances.
+Depending on CDI bean scope, there may be multiple instances of the CDI bean created over the lifecycle of an application.  Metrics, other than gauges, declared using annotations on CDI beans may therefore also have multiple instances. In these cases, where multiple metric instances exist corresponding to the instances of the CDI bean, updates to the value of the metric will be combined. For example, calls to a method annotated with `@Counted` will increase the value of the same counter no matter which bean instance is the one where the counted method is being invoked. Concurrent gauges will watch the number of parallel invocations of a method even if the invocations are on different instances.
 
 The only exception from this are gauges (not concurrent gauges), which don't support multiple instances of the underlying bean to be created,
 because in that case it would not be clear which instance should be used for obtaining the gauge value. For this reason,
@@ -263,7 +260,7 @@ Data is exposed via REST over HTTP under the `/metrics` base path in two differe
 * JSON format - used when the HTTP Accept header best matches `application/json`.
 * OpenMetrics text format - used when the HTTP Accept header best matches `text/plain` or when Accept header would equally
 accept both `text/plain` and `application/json` and there is no other higher precedence format.
-This format is also returned when no media type is requested (i.E. no Accept header is provided in the request)
+This format is also returned when no media type is requested (i.e. no Accept header is provided in the request)
 
 NOTE: Implementations and/or future versions of this specification may allow for more export formats that are triggered
 by their specific media type.

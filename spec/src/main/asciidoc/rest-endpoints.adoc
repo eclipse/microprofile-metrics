@@ -34,10 +34,10 @@ A sub-tree that does not contain data must be omitted.
 
 The following rules apply only to GET requests:
 
-* Tags are appended to the leaf element of the metric's JSON tree with a semicolon `;`.
-* For metrics with tags, the metric name must be appended with a semicolon `; followed by a semicolon-separated list of tag key/value pairs.
+* Tags are appended to the leaf element of the metric's JSON tree.
+* For metrics with tags, the metric name must be appended with a semicolon `;` followed by a semicolon-separated list of tag key/value pairs.
 * For compound metrics (those with child JSON attributes) with tags, only the "leaf" metric names are decorated with tags.
-* Semicolons `; present in tag values must be converted to underscores `_` in JSON output.
+* Semicolons `;` present in tag values must be converted to underscores `_` in JSON output.
 
 For example:
 [source, json]
@@ -127,7 +127,7 @@ The value of the gauge must be equivalent to a call to the instance Gauge's `get
 {
   "responsePercentage": 48.45632,
   "responsePercentage;servlet=two": 26.23654,
-  "responsePercentage;app=webapp;servlet=three": 29.24554
+  "responsePercentage;store=webshop;servlet=three": 29.24554
 }
 ----
 
@@ -141,15 +141,25 @@ The value of the counter must be equivalent to a call to the instance Counter's 
 {
   "hitCount": 45,
   "hitCount;servlet=two": 3,
-  "hitCount;app=webapp;servlet=three": 4
+  "hitCount;store=webshop;servlet=three": 4
 }
 ----
 
 ==== Concurrent Gauge JSON Format
 
-The value of the gauge must be equivalent to a call to the instance ConcurrentGauge's `getValue() / getMax() / getMin()`.
+`ConcurrentGauge` is a complex metric type comprised of multiple key/values. The format is specified by the table below.
 
-.Example Gauge JSON GET Response
+.JSON mapping for a ConcurrentGauge metric
+[cols="1,4"]
+|===
+| JSON Key | Value (Equivalent ConcurrentGauge method)
+
+| `current` | `getValue()`
+| `min` | `getMin()`
+| `max` | `getMax()`
+|===
+
+.Example ConcurrentGauge JSON GET Response
 [source, json]
 ----
 {
@@ -157,9 +167,9 @@ The value of the gauge must be equivalent to a call to the instance ConcurrentGa
       "current" : 48,
       "min": 4,
       "max": 50,
-      "current;app=backend" : 23,
-      "min;app=backend": 1,
-      "max;app=backend": 29
+      "current;component=backend" : 23,
+      "min;component=backend": 1,
+      "max;component=backend": 29
   }
 }
 ----
@@ -338,7 +348,7 @@ If `GET /metrics/base/fooVal` exposes:
 [source]
 ----
 {
-  "fooVal;app=webshop": 12345
+  "fooVal;store=webshop": 12345
 }
 ----
 
@@ -355,7 +365,7 @@ then `OPTIONS /metrics/base/fooVal` will expose:
     "displayName": "Size of foo",
     "tags": [
       [
-        "app=webshop"
+        "store=webshop"
       ]
     ]
   }
@@ -369,9 +379,9 @@ If `GET /metrics/base` exposes multiple values like this:
 [source]
 ----
 {
-  "fooVal;app=webshop": 12345,
-  "barVal;app=webshop;component=backend": 42,
-  "barVal;app=webshop;component=frontend": 63
+  "fooVal;store=webshop": 12345,
+  "barVal;store=webshop;component=backend": 42,
+  "barVal;store=webshop;component=frontend": 63
 }
 ----
 
@@ -388,7 +398,7 @@ then `OPTIONS /metrics/base` exposes:
     "displayName": "Duration of foo",
     "tags": [
       [
-        "app=webshop"
+        "store=webshop"
       ]
     ]
   },
@@ -397,11 +407,11 @@ then `OPTIONS /metrics/base` exposes:
     "type": "gauge",
     "tags": [
       [
-        "app=webshop",
+        "store=webshop",
         "component=backend"
       ],
       [
-        "app=webshop",
+        "store=webshop",
         "component=frontend"
       ]
     ]
@@ -427,11 +437,11 @@ The above json example would look like this in OpenMetrics format
 ----
 # TYPE base_fooVal_seconds gauge
 # HELP base_fooVal_seconds The average duration of foo requests during last 5 minutes <1>
-base_fooVal_seconds{app="webshop"} 12.345  <2>
+base_fooVal_seconds{store="webshop"} 12.345  <2>
 # TYPE base_barVal_bytes gauge
-base_barVal_bytes{component="backend", app="webshop"} 42000 <2>
+base_barVal_bytes{component="backend", store="webshop"} 42000 <2>
 # TYPE base_barVal_bytes gauge
-base_barVal_bytes{component="frontend", app="webshop"} 63000 <2>
+base_barVal_bytes{component="frontend", store="webshop"} 63000 <2>
 ----
 <1> The description goes into the HELP line
 <2> Metric names gets the base unit of the family appended with `_` and defined labels. Values are scaled accordingly. See <<OpenMetrics_units>>
@@ -530,17 +540,17 @@ application_visitors_total 80
 
 ==== Concurrent Gauge OpenMetrics Text Format
 
-The values of the concurrent gauge must be the value of `getCount() / getMin() / getMax()`.
-The exposed metric names have suffixes as follows:
+`ConcurrentGauge` is a complex metric type comprised of multiple key/values. Each key will require a suffix to be appended to the metric name. The format is specified by the table below.
 
+.OpenMetrics text mapping for a ConcurrentGauge metric
+[cols="2,1,2,1"]
 |===
-| Value | Suffix
+| Suffix{label}   | TYPE    | Value (Meter method)     | Units
 
-| `getCount` |  `_current`
-| `getMin` |  `_min`
-| `getMax` |  `_max`
+| `current`       | Gauge   | `getCount()`             | N/A
+| `min`           | Gauge   | `getMin()`               | N/A
+| `max`           | Gauge   | `getMax()`               | N/A
 |===
-
 
 Concurrent gauges do not have a suffix for the unit.
 
