@@ -69,7 +69,6 @@ planning and pro-active discovery of issues (e.g. disk usage growing without bou
 Metrics can also help those scheduling systems decide when to scale the application
 to run on more or fewer machines.
 
-include::changelog.adoc[]
 
 include::architecture.adoc[]
 
@@ -80,3 +79,5 @@ include::required-metrics.adoc[]
 include::app-programming-model.adoc[]
 
 include::appendix.adoc[]
+
+include::changelog.adoc[]
