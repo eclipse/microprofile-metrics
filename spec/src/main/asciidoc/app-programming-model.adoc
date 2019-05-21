@@ -17,7 +17,7 @@
 // limitations under the License.
 //
 
-[[app-metrics-model]]
+[[app-programming-model]]
 == Application Metrics Programming Model
 
 MicroProfile Metrics provides a way to register Application-specific metrics to allow applications to expose metrics in
