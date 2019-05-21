@@ -17,14 +17,14 @@
 // limitations under the License.
 //
 
-[[app-metrics-api]]
+[[app-metrics-model]]
 == Application Metrics Programming Model
 
 MicroProfile Metrics provides a way to register Application-specific metrics to allow applications to expose metrics in
-the _application_ scope (see <<scopes>> for the description of scopes).
+the _application_ scope (see <<architecture#scopes>> for the description of scopes).
 
 Metrics and their metadata are added to a _Metric Registry_ upon definition and can afterwards have their values set
-and retrieved via the Java-API and also be exposed via the REST-API (see <<rest-api>>).
+and retrieved via the Java-API and also be exposed via the REST-API (see <<architecture#rest-api>>).
 
 TIP: Implementors of this specification can use the Java API to also expose metrics for _base_ and _vendor_ scope by
 using the respective Metric Registry.
@@ -53,7 +53,7 @@ Metrics along with their metadata in the _application_ MetricsRegistry.
 * The implementation must watch the annotated objects and update internal data structures when the values of the
 annotated objects change.
 * The implementation must expose the values of the objects registered in the MetricsRegistry via REST-API as described
-in <<rest-api>>.
+in <<architecture#rest-api>>.
 * Metrics registered via non-annotations API need their values be set via updates from the application code.
 * The implementation must flag duplicate metrics upon registration and reject the duplicate unless the metric
 is explicitly marked as reusable upon first registration and in all subsequent registrations.
@@ -61,7 +61,7 @@ is explicitly marked as reusable upon first registration and in all subsequent r
 ** The implementation must throw an `IllegalArgumentException` when the metric is rejected.
 ** It is not allowed to reuse a metric (name) for metrics of different types.
 The implementation must throw an `IllegalArgumentException` if such a mismatch is detected.
-** See <<architecture#reusing_of_metrics,reusing of metrics>> for more details.
+** See <<architecture#reusing_metrics,reusing of metrics>> for more details.
 * The implementation must flag and reject metrics upon registration if the metadata information being registered is not equivalent to the metadata information that has already been registered under the given metric name (if it already exists).
 ** All metrics of a given metric name must be associated with the same metadata information
 ** The implementation must throw an `IllegalArgumentException` when the metric is rejected.
@@ -78,7 +78,7 @@ The `org.eclipse.microprofile.metrics` package was influenced by the Drop Wizard
 
 Implementors can consult this project for implementation ideas.
 
-See <<references>> for more information.
+See <<appendix#references>> for more information.
 ====
 
 [[api-annotations]]
@@ -103,7 +103,7 @@ The `org.eclipse.microprofile.metrics.annotation` package was influenced by the 
 
 Implementors can consult this project for implementation ideas.
 
-See <<references>> for more information.
+See <<appendix#references>> for more information.
 ====
 The following Annotations exist, see below for common fields:
 
@@ -132,7 +132,7 @@ The following Annotations exist, see below for common fields:
 ==== Fields
 
 All annotations (Except `RegistryType`) have the following fields that correspond to the metadata fields described
-in <<meta-data-def>>.
+in <<architecture#meta-data-def>>.
 
 `String name`:: Optional. Sets the name of the metric. If not explicitly given the name of the annotated object is used.
 `boolean absolute`:: If `true`, uses the given name as the absolute name of the metric.
@@ -519,7 +519,7 @@ When metrics are registered using annotations, the metrics are registered in the
 When injected, the `@RegistryType` is used as a qualifier to selectively inject either the `APPLICATION`, `BASE`, or `VENDOR` registry.
 If no qualifier is used, the default `MetricRegistry` returned is the `APPLICATION` registry.
 
-Implementations may choose to use a Factory class to produce the injectable `MetricRegistry` bean via CDI. See <<metric-registry-factory>>. Note: The factory would be an internal class and not exposed to the application.
+Implementations may choose to use a Factory class to produce the injectable `MetricRegistry` bean via CDI. See <<appendix#metric-registry-factory>>. Note: The factory would be an internal class and not exposed to the application.
 
 ==== @RegistryType
 The `@RegistryType` can be used to retrieve the `MetricRegistry` for a specific scope.
@@ -546,7 +546,7 @@ MetricRegistry metricRegistry;
 ----
 
 ==== Base Metric Registry
-The implementation must produce the _base_ `MetricRegistry` when the `RegistryType` is `BASE`. The _base_ `MetricRegistry` must contain the required metrics specified in <<required-metrics>>.
+The implementation must produce the _base_ `MetricRegistry` when the `RegistryType` is `BASE`. The _base_ `MetricRegistry` must contain the required metrics specified in <<required-metrics#required-metrics>>.
 
 .Example of the application injecting the base registry
 [source, java]
@@ -571,7 +571,7 @@ MetricRegistry vendorRegistry;
 ==== Metadata
 
 Metadata is used in MicroProfile-Metrics to provide immutable information about a Metric at registration time.
-<<meta-data-def,Metadata>> in the architecture section describes this further.
+<<architecture#meta-data-def,Metadata>> in the architecture section describes this further.
 
 Therefore `Metadata` is an interface to construct an immutable metadata object.
 The object can be built via a `MetadataBuilder` with a fluent api.

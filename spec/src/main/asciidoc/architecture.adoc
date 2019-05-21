@@ -17,15 +17,16 @@
 // limitations under the License.
 //
 
+[[architecture]]
 == Architecture
 
 
 This chapter describes the architectural overview of how metrics are setup, stored and exposed for consumption.
 This chapter also lists the various scopes of metrics.
 
-See section <<required-metrics>> for more information regarding metrics that are required for each vendor.
+See section <<required-metrics#required-metrics>> for more information regarding metrics that are required for each vendor.
 
-See section <<app-metrics-api>> for more information regarding the application metrics programming model.
+See section <<app-metrics-model#app-metrics-model>> for more information regarding the application metrics programming model.
 
 [[metrics-setup]]
 === Metrics Setup
@@ -48,11 +49,11 @@ with other specifications of MicroProfile.
 
 Required base metrics describe a set of metrics that all MicroProfile-compliant servers have to provide.
 Each vendor can implement the set-up of the metrics in the _base_ scope in a vendor-specific way.
-The metrics can be hard coded into the server or read from a configuration file or supplied via the Java-API described in <<app-metrics-api>>.
+The metrics can be hard coded into the server or read from a configuration file or supplied via the Java-API described in <<app-metrics-model#app-metrics-model>>.
 The Appendix shows a possible data format for such a configuration.
 The configuration and set up of the _base_ scope is thus an implementation detail and is not expected to be portable across vendors.
 
-Section <<required-metrics>> lists the required metrics. This list also includes a few items marked as optional.
+Section <<required-metrics#required-metrics>> lists the required metrics. This list also includes a few items marked as optional.
 These are listed here as they are dependent on the underlying JVM and not the server and thus fit better in _base_ scope
 than the _vendor_ one.
 
@@ -66,7 +67,7 @@ portable to other implementations of the MicroProfile. That means that an applic
 specification which exposes metrics, can expose the same metrics on a different compliant server
 without change.
 
-Details of this Java API are described in <<app-metrics-api>>.
+Details of this Java API are described in <<app-metrics-model#app-metrics-model>>.
 
 Application specific metrics are exposed under `/metrics/application`.
 
@@ -117,11 +118,11 @@ The tag value may contain any UTF-8 encoded character.
 
 NOTE: The REST endpoints provided by MicroProfile Metrics have different reserved characters based on the format.
 The characters are only escaped as needed when exposed through the REST endpoints.
-See <<rest_endpoints>> for more information on the reserved characters.
+See <<rest_endpoints#rest_endpoints>> for more information on the reserved characters.
 
 Tags can be supplied in two ways:
 
-* At the level of a metric as described in <<app-metrics-api>>.
+* At the level of a metric as described in <<app-metrics-model#app-metrics-model>>.
 * At the application server level by using https://github.com/eclipse/microprofile-config[MicroProfile Config] and
 setting a configuration property of the name `mp.metrics.tags`. The implementation MUST make sure that an implementation of MicroProfile Config version at least 1.3 is available at runtime.
 If it is supplied as an environment variable rather than system property, it can be named `MP_METRICS_TAGS` and will be picked up too.
@@ -187,7 +188,7 @@ The `MetricRegistry` stores the metrics and metadata information.
 There is one `MetricRegistry` instance for each of the scopes listed in <<scopes>>.
 
 Metrics can be added to or retrieved from the registry either using the `@Metric` annotation
-(see <<api-annotations, Metrics Annotations>>) or using the `MetricRegistry` object directly.
+(see <<app-metrics-model#api-annotations, Metrics Annotations>>) or using the `MetricRegistry` object directly.
 
 A metric is uniquely identified by the `MetricRegistry` if the `MetricID` associated with the metric is unique. That is to say, there are no other metrics with the same combination of metric name and tags. However, all metrics of the same name must be of the same type otherwise an `IllegalArgumentException` will be thrown. This exception will be thrown during registration.
 

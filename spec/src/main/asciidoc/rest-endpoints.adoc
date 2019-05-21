@@ -21,7 +21,7 @@
 == REST endpoints
 
 This section describes the REST-api, that monitoring agents would use to retrieve the collected metrics.
-(Java-) methods mentioned refer to the respective Objects in the Java API. See also <<app-metrics-api>>
+(Java-) methods mentioned refer to the respective Objects in the Java API. See also <<app-metrics-model#app-metrics-model>>
 
 [[json-format-def]]
 === JSON format
