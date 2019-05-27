@@ -583,7 +583,6 @@ Metadata m = Metadata.builder()
     .withName("myMeter")
     .withDescription("Example meter")
     .withType(MetricType.METER)
-    .addTag("colour=blue")
     .build();
 
 Meter me = new MyMeterImpl();
