@@ -853,7 +853,7 @@ public class MpMetricTest {
     }
 
 
-   // @Test
+    @Test
     @InSequence(32)
     public void testGlobalTagsViaConfig() {
         /*
