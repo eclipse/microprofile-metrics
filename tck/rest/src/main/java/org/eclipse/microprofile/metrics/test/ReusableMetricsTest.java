@@ -55,7 +55,7 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public class ReusableMetricsTest {
 
-  private static final String JSON_APP_LABEL_REGEX = ";_app=[/A-Za-z0-9]+([;\\\"]?)"; 
+  private static final String JSON_APP_LABEL_REGEX = ";_app=[-/A-Za-z0-9]+([;\\\"]?)"; 
   private static final String JSON_APP_LABEL_REGEXS_SUB = "$1";   
   
   private static final String APPLICATION_JSON = "application/json";
