@@ -66,6 +66,7 @@ The implementation must throw an `IllegalArgumentException` if such a mismatch i
 ** All metrics of a given metric name must be associated with the same metadata information
 ** The implementation must throw an `IllegalArgumentException` when the metric is rejected.
 * The implementation must throw an `IllegalStateException` if an annotated metric is invoked, but the metric no longer exists in the MetricRegistry. This applies to the following annotations : @Timed, @Counted, @ConcurrentGauge, @Metered
+* The implementation must make sure that metric registries are thread-safe, in other words, concurrent calls to methods of `MetricRegistry` must not leave the registry in an inconsistent state.
 
 
 === Base Package

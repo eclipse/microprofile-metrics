@@ -23,6 +23,9 @@
 
 Changes marked with icon:bolt[role="red"] are breaking changes relative to previous versions of the spec.
 
+* Changes in 2.1
+** Clarified that metric registry implementations are required to be thread-safe.
+
 * Changes in 2.0
 ** icon:bolt[role="red"] Refactoring of Counters, as the old `@Counted` was misleading in practice.
 *** Counters via `@Counted` are now always monotonic, the `monotonic` attribute is gone.
