@@ -24,14 +24,8 @@
 
 package org.eclipse.microprofile.metrics.test;
 
+import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
-import static com.jayway.restassured.RestAssured.given;
-
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.builder.ResponseBuilder;
-import com.jayway.restassured.path.json.JsonPath;
-import com.jayway.restassured.response.Header;
-import com.jayway.restassured.response.Response;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -48,6 +42,12 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import io.restassured.RestAssured;
+import io.restassured.builder.ResponseBuilder;
+import io.restassured.http.Header;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
 
 /**
  * @author Heiko W. Rupp
