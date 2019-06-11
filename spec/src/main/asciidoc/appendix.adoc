@@ -17,6 +17,7 @@
 // limitations under the License.
 //
 
+[#appendix]
 == Appendix
 
 === Alternatives considered

@@ -30,18 +30,18 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 ** icon:bolt[role="red"] Refactoring of Counters, as the old `@Counted` was misleading in practice.
 *** Counters via `@Counted` are now always monotonic, the `monotonic` attribute is gone.
 The `Counted` interface lost the `dec()` methods.
-*** Former non-monotonic counters are now <<ConcurrentGaugeDef,`@ConcurrentGauge`>> and also in the output reported as gauges.
-*** See <<migration-hint-to-20, Migration hints>> about migration of applications using MicroProfile Metrics.
+*** Former non-monotonic counters are now <<app-programming-model#ConcurrentGaugeDef,`@ConcurrentGauge`>> and also in the output reported as gauges.
+*** See <<appendix#migration-hint-to-20, Migration hints>> about migration of applications using MicroProfile Metrics.
 ** Removed unnecessary `@InterceptorBinding` annotation from `org.eclipse.microprofile.metrics.annotation.Metric`.
 ** icon:bolt[role="red"] Removed deprecated `org.eclipse.microprofile.metrics.MetricRegistry.register(String name, Metric, Metadata)`
-** icon:bolt[role="red"]  `Metadata` is now immutable and built via a <<pgm-metadata,`MetadataBuilder`>>.
+** icon:bolt[role="red"]  `Metadata` is now immutable and built via a <<app-programming-model#pgm-metadata,`MetadataBuilder`>>.
 ** Introduced a Tag object which represents a singular tag key/value pair.
-** icon:bolt[role="red"] Metrics are now uniquely identified by a <<metricid-data-def,MetricID>> (combination of the metric's name and tags).
+** icon:bolt[role="red"] Metrics are now uniquely identified by a <<architecture#metricid-data-def,MetricID>> (combination of the metric's name and tags).
 ** MetricFilter modified to filter with MetricID instead of name
 ** The 'Metadata' is mapped to a unique metric name in the `MetricRegistry` and this relationship is immutable.
 ** Tag key names for labels are restricted to match the regex `[a-zA-Z_][a-zA-Z0-9_]*`.
 ** Tag values defined through MP_METRICS_TAGS must escape equal signs `=` and commas `,` with a backslash `\`.
-** icon:bolt[role="red"] <<json-format-def,JSON output format>> for GET requests now appends tags along with the metric in `metricName;tag=value;tag=value` format.
+** icon:bolt[role="red"] <<rest-endpoints#json-format-def,JSON output format>> for GET requests now appends tags along with the metric in `metricName;tag=value;tag=value` format.
 JSON format for OPTIONS requests have been modified such that the 'tags' attribute is a list of nested lists which holds tags from different metrics that
  are associated with the metadata.
 ** OpenMetrics format - formerly called Prometheus format
@@ -63,4 +63,4 @@ Use `org.eclipse.microprofile.metrics.MetricRegistry.register(Metadata, Metric)`
 already has a field for the name.
 ** Global tags are now supplied via the means of MicroProfile Config (the env variable is still valid).
 ** Annotations and `Metadata` can now have a flag `reusable` that indicates that the metric name can be registered
-more than once. Default is `false` as in Metrics 1.0. See <<reusing_of_metrics>>.
+more than once. Default is `false` as in Metrics 1.0. See <<architecture#reusing_metrics>>.
