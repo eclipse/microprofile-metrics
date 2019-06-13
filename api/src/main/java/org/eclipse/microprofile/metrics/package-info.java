@@ -36,10 +36,10 @@
  *
  * <h2>Adding Metrics</h2>
  * <p>
- * MicroProfile Metrics provides 5 different metric types that can be used to
+ * MicroProfile Metrics provides 6 different metric types that can be used to
  * instrument an application. Developers can create an accompanying
  * {@link org.eclipse.microprofile.metrics.Metadata Metadata} object to supply
- * the metric's name, description, display name, tags, and units. Once the
+ * the metric's name, description, display name, and units. Once the
  * metric and the metadata are registered against the application
  * {@link org.eclipse.microprofile.metrics.MetricRegistry MetricRegistry}, the
  * metrics will be available in the REST endpoints.
@@ -59,7 +59,22 @@
  * </code>
  * </pre>
  *
- * {@link org.eclipse.microprofile.metrics.Counter Gauge} is used to provide the
+ * <p>
+ * {@link org.eclipse.microprofile.metrics.ConcurrentGauge ConcurrentGauge} is used
+ * to monitor the number of concurrent invocations of a component.
+ * <p>
+ * Example usage:
+ *
+ * <pre>
+ * <code>
+ *     ConcurrentGauge cgauge = metricRegistry.concurrentGauge(metadata);
+ *     cgauge.inc();
+ *     // .. a block of code that can be executed by multiple threads at the same time
+ *     cgauge.dec();
+ * </code>
+ * </pre>
+ *
+ * {@link org.eclipse.microprofile.metrics.Gauge Gauge} is used to provide the
  * immediate measurement of a value.
  * <p>
  * Example usage:
