@@ -574,7 +574,7 @@ Metadata is used in MicroProfile-Metrics to provide immutable information about 
 <<meta-data-def,Metadata>> in the architecture section describes this further.
 
 Therefore `Metadata` is an interface to construct an immutable metadata object.
-The object can be built via a `MetadataBuilder` with a fluent api.
+The object can be built via a `MetadataBuilder` with a fluent API.
 
 .Example of constucting a `Metadata` object for a Meter and registering it in Application scope
 [source, java]
@@ -586,7 +586,7 @@ Metadata m = Metadata.builder()
     .build();
 
 Meter me = new MyMeterImpl();
-metricRegistry.register(m, me);
+metricRegistry.register(m, me, new Tag("colour","blue"));
 ----
 
 A default implementation `DefaultMetadata` is provided in the API for convenience.
