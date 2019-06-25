@@ -55,6 +55,8 @@ import javax.interceptor.InterceptorBinding;
  * </code></pre>
  * A gauge with the fully qualified class name + {@code value} will be created which uses the
  * annotated field value as its value.
+ *
+ * The annotated method/field must be of a numeric type (extend {@link java.lang.Number}).
  */
 @InterceptorBinding
 @Retention(RetentionPolicy.RUNTIME)

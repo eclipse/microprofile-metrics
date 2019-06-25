@@ -25,6 +25,7 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 
 * Changes in 2.1
 ** Clarified that metric registry implementations are required to be thread-safe.
+** Clarified in the API code that Gauges must return values that extend `java.lang.Number`.
 
 * Changes in 2.0
 ** icon:bolt[role="red"] Refactoring of Counters, as the old `@Counted` was misleading in practice.

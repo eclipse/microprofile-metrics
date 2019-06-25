@@ -36,10 +36,10 @@ package org.eclipse.microprofile.metrics;
  * };
  * </code></pre>
  *
- * @param <T> the type of the metric's value
+ * @param <T> the type of the metric's value. Must be numeric.
  */
 @FunctionalInterface
-public interface Gauge<T> extends Metric {
+public interface Gauge<T extends Number> extends Metric {
     /**
      * Returns the metric's current value.
      *
