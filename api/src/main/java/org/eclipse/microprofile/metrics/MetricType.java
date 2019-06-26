@@ -104,18 +104,18 @@ public enum MetricType {
   }
 
   /**
-   * Convert the metric class type into an enum
-   * @param in The metric class type
-   * @return the matching Enum
-   * @throws IllegalArgumentException if in is not a valid enum value
+   * Convert the metric Java class into a MetricType
+   * @param in The metric class
+   * @return the matching MetricType value
+   * @throws IllegalArgumentException if in is not a valid metric class
    */
   public static MetricType from(Class<?> in) {
     EnumSet<MetricType> enumSet = EnumSet.allOf(MetricType.class);
     for (MetricType u : enumSet) {
-      if (u.classtype != null && u.classtype.equals(in)) {
+      if (u.classtype != null && u.classtype.isAssignableFrom(in)) {
         return u;
       }
     }
-    return MetricType.INVALID;
+    throw new IllegalArgumentException(in + " is not a valid metric type");
   }
 }
