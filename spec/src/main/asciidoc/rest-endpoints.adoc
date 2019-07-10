@@ -117,6 +117,9 @@ In case `/metrics` is requested, then the data for the scopes are wrapped in the
 }
 ----
 
+If there is a scope that contains no metrics, then it can be either present with an empty object 
+as its value, or it can be omitted completely.
+                                        
 ==== Gauge JSON Format
 
 The value of the gauge must be equivalent to a call to the instance Gauge's `getValue()`.
