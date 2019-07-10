@@ -195,12 +195,6 @@ public class MpMetricTest {
           Map applicationData = (Map) response.get("application");
           assertThat(applicationData.size(), greaterThan(0));
         }
-
-        // There may be vendor metrics, so check if the key exists and bail if it has no data
-        if (response.containsKey("vendor")) {
-          Map vendorData = (Map) response.get("vendor");
-          assertThat(vendorData.size(), greaterThan(0));
-        }
     }
 
     @Test
