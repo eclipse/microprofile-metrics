@@ -16,7 +16,6 @@
 package io.astefanutti.metrics.cdi.se;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -101,6 +100,6 @@ public class MultipleMetricsMethodBeanTest {
         // Let's call the gauge at the end as Weld is intercepting the gauge
         // invocation while OWB not
         assertThat("Gauge value is incorrect", registry.getGauges()
-                .get(new MetricID(absoluteMetricName("gauge"))).getValue(), hasToString((equalTo("value"))));
+                .get(new MetricID(absoluteMetricName("gauge"))).getValue(), is(equalTo(1234L)));
     }
 }
