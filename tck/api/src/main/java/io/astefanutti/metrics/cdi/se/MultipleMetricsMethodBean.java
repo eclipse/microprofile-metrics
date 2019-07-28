@@ -27,10 +27,11 @@ import javax.enterprise.context.ApplicationScoped;
 public class MultipleMetricsMethodBean {
 
     @Counted(name = "counter")
-    @Gauge(name = "gauge", unit=MetricUnits.NONE)
+    @Gauge(name = "gauge", unit = MetricUnits.NONE)
     @Metered(name = "meter")
     @Timed(name = "timer")
-    public String metricsMethod() {
-        return "value";
+    public Long metricsMethod() {
+        return 1234L;
     }
+
 }
