@@ -121,7 +121,7 @@ public class MetadataBuilder {
     }
 
     /**
-     * Sets the reusable to {@link Boolean#TRUE}
+     * Sets the reusability flag to {@link Boolean#TRUE}
      *
      * @return the builder instance
      */
@@ -131,7 +131,18 @@ public class MetadataBuilder {
     }
 
     /**
-     * Sets the reusable to {@link Boolean#FALSE}
+     * Sets the reusability flag to the desired boolean value
+     *
+     * @param value the value of the reusability flag
+     * @return the builder instance
+     */
+    public MetadataBuilder reusable(boolean value) {
+        this.reusable = value;
+        return this;
+    }
+
+    /**
+     * Sets the reusability flag to {@link Boolean#FALSE}
      *
      * @return the builder instance
      */
