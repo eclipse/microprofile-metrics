@@ -23,6 +23,7 @@
  **********************************************************************/
 package org.eclipse.microprofile.metrics;
 
+import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
 
 import java.util.ArrayList;
@@ -115,11 +116,12 @@ public class MetricID implements Comparable<MetricID> {
      */
     public MetricID(String name, Tag... tags) {
         this.name = name;
-        Optional<String> globalTags = ConfigProvider.getConfig().getOptionalValue(GLOBAL_TAGS_VARIABLE, String.class);
+        Config config = ConfigProvider.getConfig();
+        Optional<String> globalTags = config.getOptionalValue(GLOBAL_TAGS_VARIABLE, String.class);
         globalTags.ifPresent(this::parseGlobalTags);
 
         // for application servers with multiple applications deployed, distinguish metrics from different applications by adding the "_app" tag
-        Optional<String> applicationName = ConfigProvider.getConfig().getOptionalValue(APPLICATION_NAME_VARIABLE, String.class);
+        Optional<String> applicationName = config.getOptionalValue(APPLICATION_NAME_VARIABLE, String.class);
         applicationName.ifPresent(appName -> {
             if(!appName.isEmpty()) {
                 addTag(new Tag(APPLICATION_NAME_TAG, appName));
