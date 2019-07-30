@@ -1,7 +1,7 @@
 /*
  **********************************************************************
- * Copyright (c) 2018 Contributors to the Eclipse Foundation
- *               2018 IBM Corporation and others
+ * Copyright (c) 2018, 2019 Contributors to the Eclipse Foundation
+ *               2018, 2019 IBM Corporation and others
  *               and other contributors as indicated by the @author tags.
  *
  * See the NOTICES file(s) distributed with this work for additional
@@ -24,6 +24,7 @@
 package org.eclipse.microprofile.metrics;
 
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * Tag represents a singular metric tag key and value pair.
@@ -56,6 +57,10 @@ public class Tag {
      * </p>
      */
     private final String tagValue;
+    /**
+     * Pattern that matches regex [a-zA-Z_][a-zA-Z0-9_]*
+     */
+    private static final Pattern PATTERN = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_]*");
 
     /**
      * Constructs the Tag object with the given tag name and tag value
@@ -67,7 +72,7 @@ public class Tag {
     public Tag(String tagName, String tagValue) throws IllegalArgumentException {
         if (tagName == null ||
             tagValue == null ||
-            !tagName.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {
+            !PATTERN.matcher(tagName).matches()) {
             throw new IllegalArgumentException("Invalid Tag name. Tag names must match the following regex [a-zA-Z_][a-zA-Z0-9_]*");
         }
         this.tagName = tagName;
