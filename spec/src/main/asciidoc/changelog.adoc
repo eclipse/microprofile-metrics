@@ -28,6 +28,7 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 ** Clarified in the API code that Gauges must return values that extend `java.lang.Number`.
 ** Clarified that implementations can, for JSON export of scopes containing no metrics, omit them, or that they can be present with an empty value. 
 ** TCKs are updated to use RestAssured 4.0
+** Added the `reusable(boolean)` method for MetadataBuilder 
 
 * Changes in 2.0
 ** icon:bolt[role="red"] Refactoring of Counters, as the old `@Counted` was misleading in practice.
