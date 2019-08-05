@@ -31,6 +31,7 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 ** Added the `reusable(boolean)` method for MetadataBuilder 
 ** Explicitly excluded the transitive dependency on `javax.el-api` from the build of the specification. It wasn't actually used anywhere in the build so there should be no impact. 
 Implementations can still support the Expression Language if they choose to.  
+** Added some text to the specification about programmatic creation of metrics (without annotations)
 
 * Changes in 2.0
 ** icon:bolt[role="red"] Refactoring of Counters, as the old `@Counted` was misleading in practice.

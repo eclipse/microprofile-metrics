@@ -29,9 +29,13 @@ and retrieved via the Java-API and also be exposed via the REST-API (see <<archi
 TIP: Implementors of this specification can use the Java API to also expose metrics for _base_ and _vendor_ scope by
 using the respective Metric Registry.
 
-In order to make setting the values easier, Annotations are made available.
+There are two options for registering metrics. The easier one is using annotations - the metrics declared
+by annotations will be automatically added to the registry when the application starts. In some cases, however,
+for example when the full list of required metrics is not known in advance, or when it is too large, it
+might be necessary to interact with the registry programmatically and create new metrics dynamically at runtime.
+Both approaches can also be combined.
 
-.Example set-up of a Gauge metric.  No unit is given, so `MetricUnits.NONE` is used, an explicit name is provided
+.Example set-up of a Gauge metric by an annotation.  No unit is given, so `MetricUnits.NONE` is used, an explicit name is provided
 [source,java]
 ----
 @Gauge(unit = MetricUnits.NONE, name = "queueSize")
@@ -40,11 +44,13 @@ public int getQueueSize() {
 }
 ----
 
-NOTE: The programming API follows Dropwizard Metrics 3.2.3 API, but with local changes.
+- NOTE: The programming API was inspired by Dropwizard Metrics 3.2.3 API, with some changes.
 It is expected that many existing DropWizard Metrics based applications can easily be
-ported over by exchanging the package names.
+ported over by switching the package names.
 
-It will be possible to use the non-annotations API, but using the annotations will generally be easier for developers.
+- NOTE: There are no hard limits on the number of metrics, but it is often not a good practice to 
+create a huge number of metrics, because the downstream time series databases
+that need to store the metrics may not deal well with this amount of data.
 
 === Responsibility of the MicroProfile Metrics implementation
 
@@ -509,6 +515,69 @@ public void init(@Metric(name="instances") Counter instances) {
     instances.inc();
 }
 ----
+
+=== Registering metrics dynamically
+In addition to declaring metrics via annotations, it is possible to dynamically (un)register metrics by 
+calling methods of a `MetricRegistry` object. While using annotations is generally the preferred approach,
+registering metrics dynamically can be useful in some cases, for example, when the final list of metrics is not known in 
+advance (when the application is being coded), or when there are too many similar metrics and 
+it would be more practical to register them in a `for` loop than to introduce 
+lots of annotations in the code. The two approaches can also be combined if necessary.
+
+==== List of methods of the MetricRegistry related to registering new metrics
+[cols="1,1"]
+|===
+|Method | Description
+
+|`counter(String name)` | Counter with given name and no tags
+|`counter(String name, Tag... tags)` | Counter with given name and tags
+|`counter(Metadata metadata)` | Counter from given `Metadata` object
+|`counter(Metadata metadata, Tag... tags)` | Counter from given `Metadata` object with given tags
+|`concurrentGauge(String name)` | Concurrent gauge with given name and no tags
+|`concurrentGauge(String name, Tag... tags)` | Concurrent gauge with given name and tags
+|`concurrentGauge(Metadata metadata)` | Concurrent gauge from given `Metadata` object
+|`concurrentGauge(Metadata metadata, Tag... tags)` | Concurrent gauge from given `Metadata` object with given tags
+|`histogram(String name)` | Histogram with given name and no tags
+|`histogram(String name, Tag... tags)` | Histogram with given name and tags
+|`histogram(Metadata metadata)` | Histogram from given `Metadata` object
+|`histogram(Metadata metadata, Tag... tags)` | Histogram from given `Metadata` object with given tags
+|`meter(String name)` | Meter with given name and no tags
+|`meter(String name, Tag... tags)` | Meter with given name and tags
+|`meter(Metadata metadata)` | Meter from given `Metadata` object 
+|`meter(Metadata metadata, Tag... tags)` | Meter from given `Metadata` object with given tags
+|`timer(String name)` | Timer with Timer name and no tags
+|`timer(String name, Tag... tags)` | Timer with given name and tags
+|`timer(Metadata metadata)` | Timer from given `Metadata` object
+|`timer(Metadata metadata, Tag... tags)` | Timer from given `Metadata` object with given tags
+|`register(String name, T metric)` | Registers the given metric instance under the given name 
+|`register(Metadata metadata, T metric)` | Registers the given metric instance using the given metadata object
+|`register(Metadata metadata, T metric, Tag... tags)` | Registers the given metric instance using the given metadata object and given tags
+|===
+
+All metrics in the table above, except the variants of `register`, exhibit the _get-or-create_ semantics, 
+so if a compatible metric with the same `MetricID` already exists, the existing one is returned. "Compatible"
+in this context means that the type and all specified metadata must be equal - else an exception is thrown.
+If a metric exists under the same name but with different tags, the newly created metric must have 
+all of its metadata equal to the existing metric's metadata.
+
+The `register` method variants exhibit the _create_ semantics, that means, if a metric with the same `MetricID` 
+already exists, an exception is thrown. If a metric exists under the same name but with different tags, 
+the newly created metric must have all of its metadata equal to the existing metric's metadata.
+
+=== Unregistering metrics
+
+While the general recommendation is that metrics live for the whole lifecycle of the application, 
+it is still possible to dynamically remove metrics from metric registries at runtime.
+
+==== List of methods of the MetricRegistry related to removing metrics
+[cols="1,1"]
+|===
+|Method | Description
+
+|`remove(String name)` | Removes all metrics with the given name
+|`remove(MetricID metricID)` | Removes the metric with the given `MetricID`, if it exists 
+|`remove(MetricFilter filter)` | Removes all metrics that are accepted by the given `MetricFilter` instance
+|===
 
 [[metric-registries]]
 === Metric Registries
