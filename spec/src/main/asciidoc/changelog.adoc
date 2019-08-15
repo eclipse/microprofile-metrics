@@ -29,6 +29,8 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 ** Clarified that implementations can, for JSON export of scopes containing no metrics, omit them, or that they can be present with an empty value. 
 ** TCKs are updated to use RestAssured 4.0
 ** Added the `reusable(boolean)` method for MetadataBuilder 
+** Explicitly excluded the transitive dependency on `javax.el-api` from the build of the specification. It wasn't actually used anywhere in the build so there should be no impact. 
+Implementations can still support the Expression Language if they choose to.  
 
 * Changes in 2.0
 ** icon:bolt[role="red"] Refactoring of Counters, as the old `@Counted` was misleading in practice.
