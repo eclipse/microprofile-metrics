@@ -95,7 +95,7 @@ public class CountedMethodBeanTest {
 
     @Test
     @InSequence(2)
-    public void countedMethodNotCalledYet(@Metric(name = "countedMethod", absolute = true) Counter instance) {
+    public void metricInjectionIntoTest(@Metric(name = "countedMethod", absolute = true) Counter instance) {
         assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterMetricID));
         Counter counter = registry.getCounters().get(counterMetricID);
 
