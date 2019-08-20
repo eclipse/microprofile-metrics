@@ -118,7 +118,7 @@ public class ConcurrentGaugedMethodBeanTest {
 
     @Test
     @InSequence(2)
-    public void countedMethodNotCalledYet(@Metric(name = C_GAUGE_NAME, absolute = true) ConcurrentGauge instance) {
+    public void metricInjectionIntoTest(@Metric(name = C_GAUGE_NAME, absolute = true) ConcurrentGauge instance) {
         assertThat("Concurrent Gauges is not registered correctly", registry.getConcurrentGauges(), hasKey(cGaugeMID));
         ConcurrentGauge cGauge = registry.getConcurrentGauges().get(cGaugeMID);
 
