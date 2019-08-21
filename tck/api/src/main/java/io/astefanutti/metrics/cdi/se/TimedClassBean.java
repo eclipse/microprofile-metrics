@@ -37,4 +37,9 @@ public class TimedClassBean {
 
     private void timedMethodPrivate() {
     }
+
+    @Override
+    public String toString() {
+        return "TimedClassBean{}";
+    }
 }

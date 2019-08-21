@@ -59,4 +59,9 @@ public class MetricProducerMethodBean {
     Counter notRegisteredMetric(MetricRegistry registry, InjectionPoint ip) {
         return registry.counter("not_registered_metric");
     }
+
+    @Override
+    public String toString() {
+        return "MetricProducerMethodBean";
+    }
 }

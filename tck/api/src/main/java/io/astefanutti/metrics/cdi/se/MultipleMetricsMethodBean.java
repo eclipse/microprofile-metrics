@@ -33,4 +33,10 @@ public class MultipleMetricsMethodBean {
     public String metricsMethod() {
         return "value";
     }
+
+    @Override
+    public String toString() {
+        return "MultipleMetricsMethodBean{}";
+    }
+
 }
