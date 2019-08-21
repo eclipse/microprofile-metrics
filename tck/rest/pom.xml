@@ -81,6 +81,12 @@
             <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
             <version>${version.shrinkwrap}</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jsoup</groupId>
+                    <artifactId>jsoup</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
