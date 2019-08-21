@@ -34,4 +34,8 @@ public class MultipleMetricsMethodBean {
         return 1234L;
     }
 
+    @Override
+    public String toString() {
+        return "MultipleMetricsMethodBean{}";
+    }
 }

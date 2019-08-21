@@ -25,4 +25,10 @@ public class ApplicationScopedTimedMethodBean {
     @Timed
     public void applicationScopedTimedMethod() {
     }
+
+    @Override
+    public String toString() {
+        return "ApplicationScopedTimedMethodBean{}";
+    }
+
 }
