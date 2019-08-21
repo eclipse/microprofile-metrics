@@ -20,6 +20,7 @@ import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -52,7 +53,7 @@ public class TimedClassBeanTest {
     private static final String CONSTRUCTOR_TIMER_NAME = MetricsUtil.absoluteMetricName(TimedClassBean.class, "timedClass", CONSTRUCTOR_NAME);
 
     private static MetricID constructorMID;
-    
+
     private static final String[] METHOD_NAMES = { "timedMethodOne", "timedMethodTwo", "timedMethodProtected", "timedMethodPackagedPrivate" };
 
     private static final Set<String> METHOD_TIMER_NAMES = MetricsUtil.absoluteMetricNames(TimedClassBean.class, "timedClass", METHOD_NAMES);
@@ -68,6 +69,10 @@ public class TimedClassBeanTest {
             CONSTRUCTOR_NAME);
             
     private static Set<MetricID> timerMIDs;
+
+    // toString is overridden just to be able to trigger instantiation of the bean by calling it
+    // it's otherwise irrelevant to the test, but it will also get a metric for itself
+    private static Set<MetricID> timerMIDsIncludingToString;
 
     private static final AtomicLong METHOD_COUNT = new AtomicLong();
 
@@ -103,12 +108,17 @@ public class TimedClassBeanTest {
          */
         constructorMID = new MetricID(CONSTRUCTOR_TIMER_NAME);
         timerMIDs = MetricsUtil.createMetricIDs(TIMER_NAMES);
+
+        timerMIDsIncludingToString = new HashSet<>();
+        timerMIDsIncludingToString.addAll(timerMIDs);
+        timerMIDsIncludingToString.addAll(MetricsUtil.createMetricIDs(
+            MetricsUtil.absoluteMetricNames(TimedClassBean.class, "timedClass", new String[] {"toString"})));
     }
 
     @Test
     @InSequence(1)
     public void timedMethodsNotCalledYet() {
-        assertThat("Timers are not registered correctly", registry.getTimers().keySet(), is(equalTo(timerMIDs)));
+        assertThat("Timers are not registered correctly", registry.getTimers().keySet(), is(equalTo(timerMIDsIncludingToString)));
         
         assertThat("Constructor timer count is incorrect", registry.getTimers().get(constructorMID).getCount(), is(equalTo(1L)));
 
@@ -120,7 +130,7 @@ public class TimedClassBeanTest {
     @Test
     @InSequence(2)
     public void callTimedMethodsOnce() {
-        assertThat("Timers are not registered correctly", registry.getTimers().keySet(), is(equalTo(timerMIDs)));
+        assertThat("Timers are not registered correctly", registry.getTimers().keySet(), is(equalTo(timerMIDsIncludingToString)));
         
         assertThat("Constructor timer count is incorrect", registry.getTimers().get(constructorMID).getCount(), is(equalTo(1L)));
 

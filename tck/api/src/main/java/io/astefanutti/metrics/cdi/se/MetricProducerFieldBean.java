@@ -67,4 +67,9 @@ public class MetricProducerFieldBean {
             return count;
         }
     }
+
+    @Override
+    public String toString() {
+        return "MetricProducerFieldBean{}";
+    }
 }
