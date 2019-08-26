@@ -17,6 +17,7 @@ package io.astefanutti.metrics.cdi.se;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -69,8 +70,6 @@ public class MeteredClassBeanTest {
 
     private static Set<MetricID> meterMIDs;
             
-    private final static AtomicLong CONSTRUCTOR_COUNT = new AtomicLong();
-
     private final static AtomicLong METHOD_COUNT = new AtomicLong();
 
     @Deployment
@@ -108,10 +107,6 @@ public class MeteredClassBeanTest {
     public void meteredMethodsNotCalledYet() {
         assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(meterMIDs)));
 
-        
-        assertThat("Constructor meter count is incorrect", registry.getMeters().get(constructorMID).getCount(), 
-                is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
-
         // Make sure that the method meters haven't been marked yet
         assertThat("Method meter counts are incorrect", registry.getMeters(METHOD_METERS).values(), 
                 everyItem(Matchers.<Meter>hasProperty("count", equalTo(METHOD_COUNT.get()))));
@@ -123,9 +118,6 @@ public class MeteredClassBeanTest {
     public void callMeteredMethodsOnce() {        
         assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(meterMIDs)));
         
-        assertThat("Constructor meter count is incorrect", registry.getMeters().get(constructorMID).getCount(),
-                is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
-
         // Call the metered methods and assert they've been marked
         bean.meteredMethodOne();
         bean.meteredMethodTwo();
@@ -136,5 +128,8 @@ public class MeteredClassBeanTest {
         // Make sure that the method meters have been marked
         assertThat("Method meter counts are incorrect", registry.getMeters(METHOD_METERS).values(),
                 everyItem(Matchers.<Meter> hasProperty("count", equalTo(METHOD_COUNT.incrementAndGet()))));
+
+        assertThat("Constructor's metric should be incremented at least once",
+            registry.getMeters().get(constructorMID).getCount(), is(greaterThanOrEqualTo(1L)));
     }
 }
