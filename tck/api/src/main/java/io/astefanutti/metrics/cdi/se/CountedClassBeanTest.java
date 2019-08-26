@@ -17,11 +17,11 @@ package io.astefanutti.metrics.cdi.se;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
 
 import javax.inject.Inject;
 
@@ -71,8 +71,6 @@ public class CountedClassBeanTest {
         }
     };
 
-    private static final AtomicLong CONSTRUCTOR_COUNT = new AtomicLong();
-
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
@@ -108,9 +106,6 @@ public class CountedClassBeanTest {
     public void countedMethodsNotCalledYet() {
         assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(counterMIDs)));
 
-        assertThat("Constructor timer count is incorrect", registry.getCounters().get(constructorMID).getCount(),
-                is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
-
         // Make sure that the counters haven't been incremented
         assertThat("Method counter counts are incorrect", registry.getCounters(METHOD_COUNTERS).values(),
                 everyItem(Matchers.<Counter> hasProperty("count", equalTo(0L))));
@@ -120,9 +115,6 @@ public class CountedClassBeanTest {
     @InSequence(2)
     public void callCountedMethodsOnce() { 
         assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(counterMIDs)));
-        
-        assertThat("Constructor timer count is incorrect", registry.getCounters().get(constructorMID).getCount(),
-                is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
 
         // Call the counted methods and assert they've been incremented
         bean.countedMethodOne();
@@ -134,5 +126,8 @@ public class CountedClassBeanTest {
         // Make sure that the counters have been incremented
         assertThat("Method counter counts are incorrect", registry.getCounters(METHOD_COUNTERS).values(),
                 everyItem(Matchers.<Counter> hasProperty("count", equalTo(1L))));
+
+        assertThat("Constructor's metric should be incremented at least once",
+            registry.getCounters().get(constructorMID).getCount(), is(greaterThanOrEqualTo(1L)));
     }
 }
