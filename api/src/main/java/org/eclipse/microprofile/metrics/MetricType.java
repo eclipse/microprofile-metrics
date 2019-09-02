@@ -87,15 +87,16 @@ public enum MetricType {
     return type;
   }
 
-  /**
+  private static final EnumSet<MetricType> METRIC_TYPES = EnumSet.allOf(MetricType.class);
+
+    /**
    * Convert the string representation into an enum
    * @param in the String representation
    * @return the matching Enum
    * @throws IllegalArgumentException if in is not a valid enum value
    */
   public static MetricType from(String in) {
-    EnumSet<MetricType> enumSet = EnumSet.allOf(MetricType.class);
-    for (MetricType u : enumSet) {
+    for (MetricType u : METRIC_TYPES) {
       if (u.type.equals(in)) {
         return u;
       }
@@ -110,8 +111,7 @@ public enum MetricType {
    * @throws IllegalArgumentException if in is not a valid metric class
    */
   public static MetricType from(Class<?> in) {
-    EnumSet<MetricType> enumSet = EnumSet.allOf(MetricType.class);
-    for (MetricType u : enumSet) {
+    for (MetricType u : METRIC_TYPES) {
       if (u.classtype != null && u.classtype.isAssignableFrom(in)) {
         return u;
       }
