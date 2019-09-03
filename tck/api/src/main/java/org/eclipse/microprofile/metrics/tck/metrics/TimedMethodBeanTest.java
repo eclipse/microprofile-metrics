@@ -103,23 +103,6 @@ public class TimedMethodBeanTest {
 
     @Test
     @InSequence(3)
-    public void callSelfInvocationTimedMethodOnce() {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timerMID));
-        Timer timer = registry.getTimers().get(timerMID);
-
-        // Call the timed method indirectly
-        bean.selfInvocationTimedMethod();
-
-        // It appears that neither Weld nor OWB support interception of self-invocation bean,
-        // which is not that surprising given the use of proxies.
-        // Neither the CDI nor Java Interceptors specifications make that point explicit though
-        // document like http://docs.jboss.org/webbeans/spec/PDR/html/interceptors.html is stating
-        // that self-invocations are considered to be business method invocations.
-        assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(TIMER_COUNT.get())));
-    }
-
-    @Test
-    @InSequence(4)
     public void removeTimerFromRegistry() {
         assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timerMID));
         Timer timer = registry.getTimers().get(timerMID);
