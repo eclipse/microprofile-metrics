@@ -223,7 +223,7 @@ public CounterBean() {
 
 ===== METHOD
 
-When a method is annotated, the implementation must register a counter for the method using the <<annotated-naming-convention>>.
+When a non-private method is annotated, the implementation must register a counter for the method using the <<annotated-naming-convention>>.
 The counter is increased by one when the method is invoked.
 
 .Example of an annotated method
@@ -236,7 +236,7 @@ public void run() {
 
 ===== TYPE
 When a type/class is annotated, the implementation must register a counter for each of the constructors
-and methods using the <<annotated-naming-convention>>.
+and non-private methods using the <<annotated-naming-convention>>.
 The counters are increased by one when the corresponding constructor/method is invoked.
 
 .Example of an annotated type/class
@@ -283,7 +283,7 @@ public CounterBean() {
 
 ===== METHOD
 
-When a method is annotated, the implementation must register gauges, representing the current,
+When a non-private method is annotated, the implementation must register gauges, representing the current,
 previous minute maximum, and previous minute minimum values for the method using the <<annotated-naming-convention>>.
 
 .Example of an annotated method
@@ -296,7 +296,7 @@ public void run() {
 
 ===== TYPE
 When a type/class is annotated, the implementation must register gauges, representing the current,
-previous minute maximum, and previous minute minimum values for each of the constructors and methods
+previous minute maximum, and previous minute minimum values for each of the constructors and non-private methods
 using the <<annotated-naming-convention>>.
 
 .Example of an annotated type/class
@@ -323,7 +323,7 @@ The following lists the behavior for each annotation target.
 
 ===== METHOD
 
-When a method is annotated, the implementation must register a gauge for the method using the <<annotated-naming-convention>>. The gauge value and type is equal to the annotated method return value and type.
+When a non-private method is annotated, the implementation must register a gauge for the method using the <<annotated-naming-convention>>. The gauge value and type is equal to the annotated method return value and type.
 
 .Example of an annotated method
 [source, java]
@@ -363,7 +363,7 @@ public MeteredBean() {
 
 ===== METHOD
 
-When a method is annotated, the implementation must register a meter for the method using the <<annotated-naming-convention>>. The meter is marked each time the method is invoked.
+When a non-private method is annotated, the implementation must register a meter for the method using the <<annotated-naming-convention>>. The meter is marked each time the method is invoked.
 
 .Example of an annotated method
 [source, java]
@@ -374,7 +374,7 @@ public void run() {
 ----
 
 ===== TYPE
-When a type/class is annotated, the implementation must register a meter for each of the constructors and methods using the <<annotated-naming-convention>>. The meters are marked each time the corresponding constructor/method is invoked.
+When a type/class is annotated, the implementation must register a meter for each of the constructors and non-private methods using the <<annotated-naming-convention>>. The meters are marked each time the corresponding constructor/method is invoked.
 
 .Example of an annotated type/class
 [source, java]
@@ -416,7 +416,7 @@ public TimedBean() {
 
 ===== METHOD
 
-When a method is annotated, the implementation must register a timer for the method using the <<annotated-naming-convention>>. Each time the method is invoked, the execution will be timed.
+When a non-private method is annotated, the implementation must register a timer for the method using the <<annotated-naming-convention>>. Each time the method is invoked, the execution will be timed.
 
 .Example of an annotated method
 [source, java]
@@ -427,7 +427,7 @@ public void run() {
 ----
 
 ===== TYPE
-When a type/class is annotated, the implementation must register a timer for each of the constructors and methods using the <<annotated-naming-convention>>. Each time a constructor/method is invoked, the execution will be timed with the corresponding timer.
+When a type/class is annotated, the implementation must register a timer for each of the constructors and non-private methods using the <<annotated-naming-convention>>. Each time a constructor/method is invoked, the execution will be timed with the corresponding timer.
 
 .Example of an annotated type/class
 [source, java]
