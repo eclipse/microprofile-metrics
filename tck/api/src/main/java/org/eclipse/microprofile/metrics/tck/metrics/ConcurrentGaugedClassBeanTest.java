@@ -41,10 +41,14 @@ package org.eclipse.microprofile.metrics.tck.metrics;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import org.eclipse.microprofile.metrics.tck.util.MetricsUtil;
+
+import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.metrics.MetricID;
@@ -102,13 +106,25 @@ public class ConcurrentGaugedClassBeanTest {
          */
         counterMIDs = MetricsUtil.createMetricIDs(C_GAUGED_NAMES);
     }
-    
+
     @Test
     @InSequence(1)
     public void countedMethodsNotCalledYet() {
-        assertThat("Concurrent Gauges are not registered correctly", registry.getConcurrentGauges().keySet(), is(equalTo(counterMIDs)));
-        assertThat("Concurrent Gauges max values should be zero", registry.getConcurrentGauges().values(),
-                   everyItem(Matchers.<ConcurrentGauge>hasProperty("max", equalTo(0L))));
+        final SortedMap<MetricID, ConcurrentGauge> concurrentGauges = registry.getConcurrentGauges();
+        assertThat("Concurrent Gauges are not registered correctly", concurrentGauges.keySet(), is(equalTo(counterMIDs)));
+
+
+        MetricID constructorMetricID = new MetricID(MetricsUtil.absoluteMetricName(ConcurrentGaugedClassBean.class, CONSTRUCTOR_NAME));
+        for (Map.Entry<MetricID, ConcurrentGauge> entry : concurrentGauges.entrySet()) {
+            // make sure the max values are zero, with the exception of the constructor, where it could potentially be 1
+            if(!entry.getKey().equals(constructorMetricID)) {
+                assertEquals("Max value of metric " + entry.getKey().toString() + " should be 0", 0, entry.getValue().getMax());
+            }
+            // make sure the min values are zero
+            assertEquals("Min value of metric " + entry.getKey().toString() + " should be 0", 0, entry.getValue().getMin());
+            // make sure the current counts are zero
+            assertEquals("Current count of metric " + entry.getKey().toString() + " should be 0", 0, entry.getValue().getCount());
+        }
     }
 
     @Test
