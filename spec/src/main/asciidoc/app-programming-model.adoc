@@ -516,6 +516,7 @@ public void init(@Metric(name="instances") Counter instances) {
 }
 ----
 
+
 === Registering metrics dynamically
 In addition to declaring metrics via annotations, it is possible to dynamically (un)register metrics by 
 calling methods of a `MetricRegistry` object. While using annotations is generally the preferred approach,
@@ -646,7 +647,7 @@ Metadata is used in MicroProfile-Metrics to provide immutable information about 
 Therefore `Metadata` is an interface to construct an immutable metadata object.
 The object can be built via a `MetadataBuilder` with a fluent API.
 
-.Example of constucting a `Metadata` object for a Meter and registering it in Application scope
+.Example of constructing a `Metadata` object for a Meter and registering it in Application scope
 [source, java]
 ----
 Metadata m = Metadata.builder()
@@ -660,3 +661,57 @@ metricRegistry.register(m, me, new Tag("colour","blue"));
 ----
 
 A default implementation `DefaultMetadata` is provided in the API for convenience.
+
+=== Using the NamedMetadata annotation
+Because all metrics under the same name are required to have the same metadata, it could get cumbersome for developers
+who want to declare many metrics with the same name via annotations - if the metrics declare any other metadata
+apart from the name, developers have to repeat the exact same metadata in all the annotations. To prevent the need
+for such duplication, the `@NamedMetadata` annotation was introduced.
+
+The `@NamedMetadata` annotations serves as a single point of declaration for a global metadata definition that can be shared
+by multiple metrics. Metrics that reference the same metadata definition can be registered under same name. 
+This annotation can be placed on any application class so that it can be found by the implementation during deployment time.  
+This class may or may not by itself contain any metrics that reference this named metadata definition.
+
+Example:
+```
+@NamedMetadata(name="transactions-metadata", 
+    metricName="transactions", 
+    type=MetricType.COUNTER, 
+    description="Number of transactions")
+public class Foo {
+}
+
+public class TransactionSupport {
+   
+    @Counted(metadata="transactions-metadata", tags={"outcome=committed"})
+    public void commit(Transaction transaction) {
+        // commit a transaction
+    }
+
+    @Counted(metadata="transactions-metadata", tags={"outcome=rolled_back"})
+    public void rollback(Transaction transaction) {
+        // roll back a transaction
+    }
+}
+```
+
+For an application where these declarations are detected, two metrics will be created under the name `transactions`, 
+one with a tag `outcome=committed`, the other with `outcome=rolled_back`. They will share the same description even 
+though the developer didn't have to repeat the same description in both the `@Counted` annotations.
+
+Parameters of the `@NamedMetadata` annotation are:
+
+  * `name`: (Required) This is the name of the named metadata object - regular metric annotations will reference the metadata by its name. 
+  * `metricName`: (Required) This is the name that will be applied to all metrics that reference this named metadata definition. 
+  * `type`: (Required) The metric type to which the definition will be applicable.
+  * `displayName`, `description`, `unit`, `reusable`: These are the regular components of a metadata object. 
+Metrics created from this named metadata definition will have these values applied. All of them are optional.
+
+Rules for usage:
+
+  * If an application contains multiple `@NamedMetadata` annotations with the same `name` value (name of the definition), it must be treated as a deployment error.
+  * If an application contains multiple `@NamedMetadata` annotations with the same `metricName` value (name of the metric), it must be treated as a deployment error.
+  * If a metric annotation (`@Counted`, `@Gauge`, `@Metered`, `@Timed`, `@ConcurrentGauge`) contains a value for the `metadata` parameter, it must not provide any other parameters except the optional `tags`. If it does, this must be treated as a deployment error.
+  * If any `@NamedMetadata` annotation declares `type=GAUGE` and `reusable=true` at the same time, it must be treated as a deployment error.
+  * If a metric annotation declares a `metadata` parameter but no `@NamedMetadata` annotation with the same `name` value was found, it must be treated as a deployment error. 

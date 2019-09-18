@@ -70,10 +70,10 @@ import org.eclipse.microprofile.metrics.MetricUnits;
  * <b>Note:</b> the default behaviour has changed in MicroProfile Metrics 2.0.
  * To get the old @Counted(monotonic=false) behavior, see @{@link ConcurrentGauge}
  * </p>
- * 
+ *
  * This annotation will throw an IllegalStateException if the constructor/method is invoked, but the metric no
  * longer exists in the MetricRegistry.
- * 
+ *
  */
 @Inherited
 @Documented
@@ -81,7 +81,6 @@ import org.eclipse.microprofile.metrics.MetricUnits;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 public @interface Counted {
-
     /**
      * @return The name of the counter.
      */
@@ -138,5 +137,14 @@ public @interface Counted {
      */
     @Nonbinding
     boolean reusable() default false;
+
+    /**
+     * Denotes the name of a named metadata definition that should be linked to this metric.
+     * If this is specified, then the fields displayName, description, unit and reusable
+     * must NOT be specified.
+     * @since Metrics 2.3
+     */
+    @Nonbinding
+    String metadata() default "";
 
 }

@@ -52,7 +52,7 @@ import org.eclipse.microprofile.metrics.MetricUnits;
  *     {@literal @}Metric(name="hitPercentage")
  *     {@literal @}ApplicationScoped
  *     Gauge&lt;Double&gt; hitPercentage = new Gauge&lt;Double&gt;() {
- * 
+ *
  *       {@literal @}Override
  *       public Double getValue() {
  *           return hits / total;
@@ -73,7 +73,7 @@ public @interface Metric {
     /**
      * @return The tags of the metric. Each {@code String} tag must be in the form of 'key=value'. If the input is empty or does
      * not contain a '=' sign, the entry is ignored.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
@@ -88,27 +88,36 @@ public @interface Metric {
 
     /**
      * @return The display name of the metric.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String displayName() default "";
-    
+
     /**
      * @return The description of the metric.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String description() default "";
-    
+
     /**
      * @return The unit of the metric. By default, the value is {@link MetricUnits#NONE}.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      * @see org.eclipse.microprofile.metrics.MetricUnits
      */
     @Nonbinding
     String unit() default MetricUnits.NONE;
+
+    /**
+     * Denotes the name of a named metadata definition that should be linked to this metric.
+     * If this is specified, then the fields displayName, description, unit and reusable
+     * must NOT be specified.
+     * @since Metrics 2.3
+     */
+    @Nonbinding
+    String metadata() default "";
 
 }

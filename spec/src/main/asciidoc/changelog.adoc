@@ -24,6 +24,8 @@
 Changes marked with icon:bolt[role="red"] are breaking changes relative to previous versions of the spec.
 
 * Changes in 2.3
+** Introduced the `@NamedMetadata` annotation that allows declaring a shared metadata definition that can be referenced by regular metric annotations.
+** The `@Gauge` annotation no longer requires a value for the `unit`. It now defaults to `MetricUnits.NONE`.
 ** The API code no longer requires a correctly configured MP Config implementation to be available at runtime, so it is possible to slim down deployments if MP Config is not necessary 
 ** Added ProcessCpuTime as a new optional base metric.
 ** Added `withOptional*` methods to the `MetadataBuilder`, they don't fail when null values are passed to them

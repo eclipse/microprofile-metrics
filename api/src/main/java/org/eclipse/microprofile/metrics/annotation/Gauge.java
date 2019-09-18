@@ -22,6 +22,8 @@
  **********************************************************************/
 package org.eclipse.microprofile.metrics.annotation;
 
+import org.eclipse.microprofile.metrics.MetricUnits;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -33,7 +35,7 @@ import javax.interceptor.InterceptorBinding;
 /**
  * An annotation for marking a method or field as a gauge.
  * The metric will be registered in the application MetricRegistry.
- * 
+ *
  * <p>
  * Given a method annotated with {@literal @}Gauge like this:
  * </p>
@@ -45,7 +47,7 @@ import javax.interceptor.InterceptorBinding;
  * </code></pre>
  * A gauge with the fully qualified class name + {@code queueSize} will be created which uses the
  * annotated method's return value as its value.
- * 
+ *
  * <p>
  * Given a field annotated with {@literal @}Gauge like this:
  * </p>
@@ -70,7 +72,7 @@ public @interface Gauge {
     /**
      * @return The tags of the gauge. Each {@code String} tag must be in the form of 'key=value'. If the input is empty or does
      * not contain a '=' sign, the entry is ignored.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
@@ -82,32 +84,41 @@ public @interface Gauge {
      */
     @Nonbinding
     boolean absolute() default false;
-    
-    
+
+
     /**
      * @return The display name of the gauge.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String displayName() default "";
-    
+
     /**
      * @return The description of the gauge.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String description() default "";
-    
-    
+
+
     /**
-     * @return (Required) The unit of the gauge.
-     * 
+     * @return The unit of the gauge.
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      * @see org.eclipse.microprofile.metrics.MetricUnits
      */
     @Nonbinding
-    String unit();
+    String unit() default MetricUnits.NONE;
+
+    /**
+     * Denotes the name of a named metadata definition that should be linked to this metric.
+     * If this is specified, then the fields displayName, description, unit and reusable
+     * must NOT be specified.
+     * @since Metrics 2.3
+     */
+    @Nonbinding
+    String metadata() default "";
 
 }
