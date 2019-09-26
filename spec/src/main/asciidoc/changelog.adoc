@@ -22,6 +22,7 @@
 == Major changes to previous versions
 
 Changes marked with icon:bolt[role="red"] are breaking changes relative to previous versions of the spec.
+
 * Changes in 2.2
 ** Added ProcessCpuTime as a new optional base metric.
 
