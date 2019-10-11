@@ -25,6 +25,7 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 
 * Changes in 2.2
 ** Added ProcessCpuTime as a new optional base metric.
+** Added the `MetricID.getTagsAsArray()` method to the API.
 
 * Changes in 2.1
 ** Clarified that metric registry implementations are required to be thread-safe.
