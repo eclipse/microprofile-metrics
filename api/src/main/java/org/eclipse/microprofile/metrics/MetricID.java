@@ -124,7 +124,7 @@ public class MetricID implements Comparable<MetricID> {
         Optional<String> applicationName = config.getOptionalValue(APPLICATION_NAME_VARIABLE, String.class);
         applicationName.ifPresent(appName -> {
             if(!appName.isEmpty()) {
-                addTag(new Tag(APPLICATION_NAME_TAG, appName));
+                this.tags.put(APPLICATION_NAME_TAG, appName);
             }
         });
 
