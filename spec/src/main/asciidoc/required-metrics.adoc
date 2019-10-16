@@ -240,3 +240,14 @@ Vendors should either use other metrics that are close enough as substitute or n
 Note: This is a vendor specific attribute/operation that is not defined in java.lang
 |===
 
+*(Optional) ProcessCpuTime*
+[cols="1,4"]
+|===
+|Name| cpu.processCpuTime
+|DisplayName| Process CPU Time
+|Type| Gauge
+|Unit| Nanoseconds
+|Description| Displays the CPU time used by the process on which the Java virtual machine is running in nanoseconds.
+|MBean| java.lang:type=OperatingSystem (com.sun.management.UnixOperatingSystemMXBean for Oracle Java, similar one exists for IBM Java: com.ibm.lang.management.ExtendedOperatingSystem)
+Note: This is a vendor specific attribute/operation that is not defined in java.lang
+|===
