@@ -116,17 +116,22 @@ public class MetricID implements Comparable<MetricID> {
      */
     public MetricID(String name, Tag... tags) {
         this.name = name;
-        Config config = ConfigProvider.getConfig();
-        Optional<String> globalTags = config.getOptionalValue(GLOBAL_TAGS_VARIABLE, String.class);
-        globalTags.ifPresent(this::parseGlobalTags);
+        try {
+            Config config = ConfigProvider.getConfig();
+            Optional<String> globalTags = config.getOptionalValue(GLOBAL_TAGS_VARIABLE, String.class);
+            globalTags.ifPresent(this::parseGlobalTags);
 
-        // for application servers with multiple applications deployed, distinguish metrics from different applications by adding the "_app" tag
-        Optional<String> applicationName = config.getOptionalValue(APPLICATION_NAME_VARIABLE, String.class);
-        applicationName.ifPresent(appName -> {
-            if(!appName.isEmpty()) {
-                this.tags.put(APPLICATION_NAME_TAG, appName);
-            }
-        });
+            // for application servers with multiple applications deployed, distinguish metrics from different applications by adding the "_app" tag
+            Optional<String> applicationName = config.getOptionalValue(APPLICATION_NAME_VARIABLE, String.class);
+            applicationName.ifPresent(appName -> {
+                if (!appName.isEmpty()) {
+                    addTag(new Tag(APPLICATION_NAME_TAG, appName));
+                }
+            });
+        }
+        catch(NoClassDefFoundError | IllegalStateException | ExceptionInInitializerError e) {
+            // MP Config is probably not available, so just go on
+        }
 
         addTags(tags);
     }
@@ -315,7 +320,7 @@ public class MetricID implements Comparable<MetricID> {
                     compareVal = thisEntry.getKey().compareTo(otherEntry.getKey());
                     if (compareVal != 0) {
                         return compareVal;
-                    } 
+                    }
                     else {
                         compareVal = thisEntry.getValue().compareTo(otherEntry.getValue());
                         if (compareVal != 0) {
