@@ -34,4 +34,6 @@
   <metric multi="true" name="gc.time" type="gauge" unit="milliseconds" tags="name=*"/>
   <metric multi="false" name="optional.metric" type="histogram" unit="milliseconds" optional="true"/>
   <metric multi="false" name="cpu.systemLoadAverage" type="gauge" unit="none" optional="true"/>
+  <metric multi="false" name="cpu.processCpuLoad" type="gauge" unit="percent" optional="true"/>
+  <metric multi="false" name="cpu.processCpuTime" type="gauge" unit="nanoseconds" optional="true"/>
 </config>
