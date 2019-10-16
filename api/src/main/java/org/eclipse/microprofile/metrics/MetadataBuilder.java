@@ -61,7 +61,7 @@ public class MetadataBuilder {
     }
 
     /**
-     * Sets the name
+     * Sets the name. Does not accept null.
      *
      * @param name the name
      * @return the builder instance
@@ -73,7 +73,7 @@ public class MetadataBuilder {
     }
 
     /**
-     * Sets the displayName
+     * Sets the displayName. Does not accept null.
      *
      * @param displayName the displayName
      * @return the builder instance
@@ -85,7 +85,18 @@ public class MetadataBuilder {
     }
 
     /**
-     * Sets the description
+     * Sets the displayName. Does accept null.
+     *
+     * @param displayName the displayName
+     * @return the builder instance
+     */
+    public MetadataBuilder withOptionalDisplayName(String displayName) {
+        this.displayName = displayName;
+        return this;
+    }
+
+    /**
+     * Sets the description. Does not accept null.
      *
      * @param description the name
      * @return the builder instance
@@ -97,9 +108,20 @@ public class MetadataBuilder {
     }
 
     /**
-     * Sets the type
+     * Sets the description. Does accept null.
      *
-     * @param type the name
+     * @param description the name
+     * @return the builder instance
+     */
+    public MetadataBuilder withOptionalDescription(String description) {
+        this.description = description;
+        return this;
+    }
+
+    /**
+     * Sets the type. Does not accept null.
+     *
+     * @param type the type
      * @return the builder instance
      * @throws NullPointerException when type is null
      */
@@ -109,14 +131,36 @@ public class MetadataBuilder {
     }
 
     /**
-     * Sets the unit
+     * Sets the type. Does accept null.
      *
-     * @param unit the name
+     * @param type the type
+     * @return the builder instance
+     */
+    public MetadataBuilder withOptionalType(MetricType type) {
+        this.type = type;
+        return this;
+    }
+
+    /**
+     * Sets the unit. Does not accept null.
+     *
+     * @param unit the unit
      * @return the builder instance
      * @throws NullPointerException when unit is null
      */
     public MetadataBuilder withUnit(String unit) {
         this.unit = Objects.requireNonNull(unit, "unit is required");
+        return this;
+    }
+
+    /**
+     * Sets the unit. Does accept null.
+     *
+     * @param unit the unit
+     * @return the builder instance
+     */
+    public MetadataBuilder withOptionalUnit(String unit) {
+        this.unit = unit;
         return this;
     }
 
