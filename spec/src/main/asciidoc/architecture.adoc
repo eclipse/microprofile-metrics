@@ -245,9 +245,10 @@ In the above examples both `countMeA()` and `countMeB()` will share a single Cou
 ==== Metrics and CDI scopes
 
 Depending on CDI bean scope, there may be multiple instances of the CDI bean created over the lifecycle of an application.
-Metrics, other than gauges, declared using annotations on CDI beans may therefore also have multiple instances.
-In these cases, where multiple metric instances exist corresponding to the instances of the CDI bean, updates to the value of the metric will be combined.
-For example, calls to a method annotated with `@Counted` will increase the value of the same counter no matter which bean instance is the one where the counted method is being invoked.
+In these cases, where multiple bean instances exist, only one instance of the corresponding metric will be created (per annotated method), and updates
+to that metric will be combined from all related invocations regardless of the bean instance where the invocation happens. 
+For example, calls to a method annotated with `@Counted` will increase the value of the same counter no matter which bean 
+instance is the one where the counted method is being invoked.
 Concurrent gauges will watch the number of parallel invocations of a method even if the invocations are on different instances.
 
 The only exception from this are gauges (not concurrent gauges), which don't support multiple instances of the underlying bean to be created,
