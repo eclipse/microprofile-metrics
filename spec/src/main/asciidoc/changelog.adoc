@@ -27,7 +27,7 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 ** Added ProcessCpuTime as a new optional base metric.
 
 * Changes in 2.1
-** Added ProcessCpuTime as a new optional base metric.
+** (2.1.1) Added ProcessCpuTime as a new optional base metric.
 ** Clarified that metric registry implementations are required to be thread-safe.
 ** Clarified in the API code that Gauges must return values that extend `java.lang.Number`.
 ** Clarified that implementations can, for JSON export of scopes containing no metrics, omit them, or that they can be present with an empty value.
@@ -39,7 +39,7 @@ Implementations can still support the Expression Language if they choose to.
 ** Added some text to the specification about programmatic creation of metrics (without annotations)
 
 * Changes in 2.0
-** Added ProcessCpuTime as a new optional base metric.
+** (2.0.3) Added ProcessCpuTime as a new optional base metric.
 ** icon:bolt[role="red"] Refactoring of Counters, as the old `@Counted` was misleading in practice.
 *** Counters via `@Counted` are now always monotonic, the `monotonic` attribute is gone.
 The `Counted` interface lost the `dec()` methods.
