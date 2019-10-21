@@ -27,6 +27,7 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 ** Clarified that metric registry implementations are required to be thread-safe.
 
 * Changes in 2.0
+** (2.0.3) Added ProcessCpuTime as a new optional base metric.
 ** icon:bolt[role="red"] Refactoring of Counters, as the old `@Counted` was misleading in practice.
 *** Counters via `@Counted` are now always monotonic, the `monotonic` attribute is gone.
 The `Counted` interface lost the `dec()` methods.
