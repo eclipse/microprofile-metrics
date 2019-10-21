@@ -124,7 +124,7 @@ public class MetricID implements Comparable<MetricID> {
         Optional<String> applicationName = config.getOptionalValue(APPLICATION_NAME_VARIABLE, String.class);
         applicationName.ifPresent(appName -> {
             if(!appName.isEmpty()) {
-                addTag(new Tag(APPLICATION_NAME_TAG, appName));
+                this.tags.put(APPLICATION_NAME_TAG, appName);
             }
         });
 
@@ -164,9 +164,24 @@ public class MetricID implements Comparable<MetricID> {
      * @return a a list of Tag objects
      */
     public List<Tag> getTagsAsList() {
-        List<Tag> list = new ArrayList<Tag>();
+        List<Tag> list = new ArrayList<>();
         this.tags.forEach((key, value) -> list.add(new Tag(key, value)));
         return Collections.unmodifiableList(list);
+    }
+
+    /**
+     * Gets the list of tags as an array of {@link Tag} objects.
+     *
+     * @return An array of tags
+     */
+    public Tag[] getTagsAsArray() {
+        Tag[] result = new Tag[tags.size()];
+        int i = 0;
+        for (Entry<String, String> entry : tags.entrySet()) {
+            result[i] = new Tag(entry.getKey(), entry.getValue());
+            i++;
+        }
+        return result;
     }
 
     /** {@inheritDoc} */
