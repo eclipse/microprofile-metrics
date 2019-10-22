@@ -23,6 +23,9 @@
 
 Changes marked with icon:bolt[role="red"] are breaking changes relative to previous versions of the spec.
 
+* Changes in 2.2
+** Reverted a problematic change from 2.1 where Gauges were required to return subclasses of `java.lang.Number` 
+
 * Changes in 2.1
 ** Clarified that metric registry implementations are required to be thread-safe.
 ** Clarified in the API code that Gauges must return values that extend `java.lang.Number`.
