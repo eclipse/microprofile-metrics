@@ -132,5 +132,5 @@
  * </code>
  * </pre>
  */
-@org.osgi.annotation.versioning.Version("2.1")
+@org.osgi.annotation.versioning.Version("2.3")
 package org.eclipse.microprofile.metrics;
