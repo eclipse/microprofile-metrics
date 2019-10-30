@@ -19,6 +19,9 @@
 
 = Eclipse Microprofile Metrics
 
+[red]*NOTE: The 2.1 branch is discontinued and should not be used, there will be no more 2.1.x update releases.
+2.2 release was put out to fix an API incompatibility issue between 2.0 and 2.1* 
+
 This specification aims at providing a unified way for Microprofile servers to
 export Monitoring data ("Telemetry") to management agents and also a unified
 Java API, that all (application) programmers can use to expose their telemetry
