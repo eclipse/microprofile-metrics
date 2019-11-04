@@ -25,6 +25,7 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 
 * Changes in 2.2
 ** Reverted a problematic change from 2.1 where Gauges were required to return subclasses of `java.lang.Number` 
+** (2.2.1) Added ProcessCpuTime as a new optional base metric.
 
 * Changes in 2.1
 ** Clarified that metric registry implementations are required to be thread-safe.
