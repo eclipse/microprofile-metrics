@@ -76,7 +76,7 @@ public class GlobalTagsTest {
         registry.counter("mycounter", new Tag("foo", "bar"));
         final MetricID actualMetricId = registry.getCounters().keySet().stream().filter(id -> id.getName().equals("mycounter")).findAny().get();
         List<Tag> filterList = new ArrayList<Tag>(actualMetricId.getTagsAsList());
-        //Must filter out `_app` tags 
+        //Must filter out `_app` tags
         filterList.removeIf( tag -> tag.getTagName().equals("_app"));
         Assert.assertThat(filterList, containsInAnyOrder(
             new Tag("foo", "bar"),
@@ -102,19 +102,28 @@ public class GlobalTagsTest {
                 return "Custom config source";
             }
         };
-        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         Config config = ConfigProviderResolver.instance().getBuilder().withSources(s).build();
-        try {
-            ConfigProviderResolver.instance().registerConfig(config, tccl);
+        doWithConfig(config, () -> {
             registry.counter("mycounter");
             MetricID actualMetricId = registry.getCounters().keySet().stream()
                 .filter(id -> id.getName().equals("mycounter")).findAny().get();
             Assert.assertThat(actualMetricId.getTagsAsList(), containsInAnyOrder(
                 new Tag("foo", "baz")
             ));
+        });
+    }
+
+    public static void doWithConfig(Config config, Runnable runnable) {
+        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+        Config originalConfig = ConfigProviderResolver.instance().getConfig();
+        try {
+            ConfigProviderResolver.instance().releaseConfig(originalConfig);
+            ConfigProviderResolver.instance().registerConfig(config, tccl);
+            runnable.run();
         }
         finally {
             ConfigProviderResolver.instance().releaseConfig(config);
+            ConfigProviderResolver.instance().registerConfig(originalConfig, tccl);
         }
     }
 
