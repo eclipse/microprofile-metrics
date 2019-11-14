@@ -49,12 +49,14 @@ import java.util.stream.Stream;
  * {@code Name}: (Required) The name of the metric.
  * </li>
  * <li>
- * {@code Tags}: (Optional) The tags (represented by {@link Tag} objects) of the metric
- * which is augmented by global tags (if available). The tag name must match the
- * regex `[a-zA-Z_][a-zA-Z0-9_]*` (Ascii alphabet, numbers and underscore). The tag value
- * may contain any UTF-8 encoded character. Global tags can be set by passing
- * the list of tags in an environment variable {@code MP_METRICS_TAGS}. Tag values set
- * through `MP_METRICS_TAGS` MUST escape equal symbols `=` and commas `,` with a backslash `\`
+ * {@code Tags}: (Optional) The tags (represented by {@link Tag} objects)
+ * of the metric which is augmented by global tags (if available). The tag name
+ * must match the regex `[a-zA-Z_][a-zA-Z0-9_]*` (Ascii alphabet, numbers and
+ * underscore). The tag value may contain any UTF-8 encoded character. Global
+ * tags can be set by passing the list of tags in an environment variable
+ * {@code MP_METRICS_TAGS} or a system property {@code mp.metrics.tags}. Tag
+ * values set through `MP_METRICS_TAGS` or `mp.metrics.tags` MUST escape equal
+ * symbols `=` and commas `,` with a backslash `\`
  *
  * For example, the following can be used to set the global tags:
  *
