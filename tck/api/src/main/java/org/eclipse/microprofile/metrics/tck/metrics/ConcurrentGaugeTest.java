@@ -31,7 +31,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,8 +40,9 @@ import org.junit.runner.RunWith;
 public class ConcurrentGaugeTest {
 
     @Deployment
-    public static JavaArchive createDeployment() {
-        return ShrinkWrap.create(JavaArchive.class).addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+    public static WebArchive createDeployment() {
+        return ShrinkWrap.create(WebArchive.class)
+                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
