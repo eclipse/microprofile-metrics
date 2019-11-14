@@ -123,7 +123,6 @@ public class GlobalTagsTest {
         }
         finally {
             ConfigProviderResolver.instance().releaseConfig(config);
-            ConfigProviderResolver.instance().registerConfig(originalConfig, tccl);
         }
     }
 
