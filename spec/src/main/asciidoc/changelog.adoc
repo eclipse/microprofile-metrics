@@ -29,6 +29,7 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 ** Added `withOptional*` methods to the `MetadataBuilder`, they don't fail when null values are passed to them
 ** Added the `MetricID.getTagsAsArray()` method to the API.
 ** Added the method `MetricType.fromClassName`
+** Improved TCK - Use WebArchive for deployment
 
 * Changes in 2.2
 ** Reverted a problematic change from 2.1 where Gauges were required to return subclasses of `java.lang.Number` 
