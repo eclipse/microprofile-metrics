@@ -32,7 +32,9 @@
 
         <checkstyle.version>2.17</checkstyle.version>
         <checkstyle.methodNameFormat>^_?[a-z][a-zA-Z0-9]*$</checkstyle.methodNameFormat>
-        <cdi-version>1.2</cdi-version>
+
+        <jakarta-cdi-version>2.0.2</jakarta-cdi-version>
+
         <autorelease>false</autorelease>
     </properties>
 
@@ -96,9 +98,23 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>javax.enterprise</groupId>
-                <artifactId>cdi-api</artifactId>
-                <version>${cdi-version}</version>
+                <groupId>jakarta.enterprise</groupId>
+                <artifactId>jakarta.enterprise.cdi-api</artifactId>
+                <version>${jakarta-cdi-version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>jakarta.el</groupId>
+                        <artifactId>jakarta.el-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>jakarta.annotation</groupId>
+                        <artifactId>jakarta.annotation-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>jakarta.ejb</groupId>
+                        <artifactId>jakarta.ejb-api</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.jboss.arquillian</groupId>
