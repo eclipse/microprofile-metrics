@@ -461,6 +461,71 @@ public abstract class MetricRegistry {
     public abstract Timer timer(Metadata metadata, Tag... tags);
 
     /**
+     * Return the {@link SimpleTimer} registered under the {@link MetricID} with this name and with no tags; or create
+     * and register a new {@link SimpleTimer} if none is registered.
+     *
+     * If a {@link SimpleTimer} was created, a {@link Metadata} object will be registered with the name
+     * and type. If a {@link Metadata} object is already registered with this metric name then that
+     * {@link Metadata} will be used.
+     *
+     * @param name the name of the metric
+     * @return a new or pre-existing {@link SimpleTimer}
+     * 
+     * @since 2.3
+     */
+    public abstract SimpleTimer simpleTimer(String name);
+
+    /**
+     * Return the {@link SimpleTimer} registered under the {@link MetricID} with this name and with the provided {@link Tag}s;
+     * or create and register a new {@link SimpleTimer} if none is registered.
+     *
+     * If a {@link SimpleTimer} was created, a {@link Metadata} object will be registered with the name
+     * and type. If a {@link Metadata} object is already registered with this metric name then that
+     * {@link Metadata} will be used.
+     *
+     *
+     * @param name the name of the metric
+     * @param tags the tags of the metric
+     * @return a new or pre-existing {@link SimpleTimer}
+     *
+     * @since 2.3
+     */
+    public abstract SimpleTimer simpleTimer(String name, Tag... tags);
+
+    /**
+     * Return the {@link SimpleTimer} registered under the the {@link MetricID} with the {@link Metadata}'s name and
+     * with no tags; or create and register a new {@link SimpleTimer} if none is registered. If a {@link SimpleTimer} was
+     * created, the provided {@link Metadata} object will be registered.
+     * <p>
+     * Note: During retrieval or creation, if a {@link Metadata} object is already registered under this metric
+     * name and is not equal to the provided {@link Metadata} object then an exception will be thrown.
+     * </p>
+     *
+     * @param metadata the name of the metric
+     * @return a new or pre-existing {@link SimpleTimer}
+     * 
+     * @since 2.3
+     */
+    public abstract SimpleTimer simpleTimer(Metadata metadata);
+
+    /**
+     * Return the {@link SimpleTimer} registered under the the {@link MetricID} with the {@link Metadata}'s name and
+     * with the provided {@link Tag}s; or create and register a new {@link SimpleTimer} if none is registered.
+     * If a {@link SimpleTimer} was created, the provided {@link Metadata} object will be registered.
+     * <p>
+     * Note: During retrieval or creation, if a {@link Metadata} object is already registered under this metric
+     * name and is not equal to the provided {@link Metadata} object then an exception will be thrown.
+     * </p>
+     *
+     * @param metadata the name of the metric
+     * @param tags the tags of the metric
+     * @return a new or pre-existing {@link SimpleTimer}
+     *
+     * @since 2.3
+     */
+    public abstract SimpleTimer simpleTimer(Metadata metadata, Tag... tags);
+    
+    /**
      * Removes all metrics with the given name.
      *
      * @param name the name of the metric
@@ -591,6 +656,21 @@ public abstract class MetricRegistry {
      * @return all the timers in the registry
      */
     public abstract SortedMap<MetricID, Timer> getTimers(MetricFilter filter);
+
+    /**
+     * Returns a map of all the simple timers in the registry and their {@link MetricID}s.
+     *
+     * @return all the timers in the registry
+     */
+    public abstract SortedMap<MetricID, SimpleTimer> getSimpleTimers();
+
+    /**
+     * Returns a map of all the simple timers in the registry and their {@link MetricID}s which match the given filter.
+     *
+     * @param filter the metric filter to match
+     * @return all the timers in the registry
+     */
+    public abstract SortedMap<MetricID, SimpleTimer> getSimpleTimers(MetricFilter filter);
 
     /**
      * Returns a map of all the metrics in the registry and their {@link MetricID}s.

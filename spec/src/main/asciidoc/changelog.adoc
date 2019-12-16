@@ -31,6 +31,7 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 ** Added the `MetricID.getTagsAsArray()` method to the API.
 ** Added the method `MetricType.fromClassName`
 ** Improved TCK - Use WebArchive for deployment
+** Introduce the simple timer (`@SimplyTimed`) metric.
 
 * Changes in 2.2
 ** Reverted a problematic change from 2.1 where Gauges were required to return subclasses of `java.lang.Number` 
@@ -46,6 +47,7 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 ** Explicitly excluded the transitive dependency on `javax.el-api` from the build of the specification. It wasn't actually used anywhere in the build so there should be no impact. 
 Implementations can still support the Expression Language if they choose to.  
 ** Added some text to the specification about programmatic creation of metrics (without annotations)
+
 
 * Changes in 2.0
 ** (2.0.3) Added ProcessCpuTime as a new optional base metric.

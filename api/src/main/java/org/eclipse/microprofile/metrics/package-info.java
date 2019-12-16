@@ -131,6 +131,22 @@
  *     context.close();
  * </code>
  * </pre>
+ *
+ * {@link org.eclipse.microprofile.metrics.SimpleTimer SimpleTimer} is used to measure the
+ * duration of an event.
+ * <p>
+ * Example usage:
+ *
+ * <pre>
+ * <code>
+ *     SimpleTimer simpleTimer = metricRegistry.simpleTimer(metadata);
+ *     SimpleTimer.Context context = simpleTimer.time();
+ *
+ *     ... // code that will be timed
+ *
+ *     context.close();
+ * </code>
+ * </pre>
  */
 @org.osgi.annotation.versioning.Version("2.3")
 package org.eclipse.microprofile.metrics;

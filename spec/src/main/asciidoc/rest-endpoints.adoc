@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2018 Contributors to the Eclipse Foundation
+// Copyright (c) 2016-2019 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -334,6 +334,30 @@ The value of the counter must be equivalent to a call to the instance Counter's 
     "p98;servlet=two":2706543.0,
     "p99;servlet=two":5608694.0,
     "p999;servlet=two":5608694.0
+  }
+}
+----
+
+==== Simple Timer JSON Format
+
+`Simple Timer` is a complex metric type comprised of multiple key/values. The format is specified by the table below.
+
+.JSON mapping for a Simple Timer metric
+[cols="1,4"]
+|===
+| JSON Key | Value (Equivalent SimpleTimer method)
+
+| `count`       | `getCount()`
+| `elapsedTime` | `getElapsedTime()`
+|===
+
+.Example Simple Timer JSON GET Response
+[source, json]
+----
+{
+  "simple_responseTime": {
+    "count": 1,
+    "elapsedTime": 12300000000
   }
 }
 ----
@@ -717,6 +741,33 @@ application_response_time_seconds{quantile="0.98"} 0.002706543
 application_response_time_seconds{quantile="0.99"} 0.005608694
 application_response_time_seconds{quantile="0.999"} 0.005608694
 ----
+
+
+==== Simple Timer OpenMetrics Text Format
+
+`Simple Timer` is a complex metric type comprised of multiple key/values. Each key will require a suffix to be appended to the metric name. The format is specified by the table below.
+
+.OpenMetrics text mapping for a SimpleTimer metric
+[cols="2,1,2,1"]
+|===
+| Suffix{label}                   | TYPE    | Value (SimpleTimer method)                | Units
+| `total`                         | Counter | `getCount()`                              | N/A
+| `elapsedTime_seconds`           | Gauge   | `getElapsedTime()`                        | SECONDS^1^
+|===
+
+^1^ The implementation is expected to convert the result returned by the `SimpleTimer` into seconds
+
+.Example OpenMetrics text format for a SimpleTimer
+[source, ruby]
+----
+# TYPE application_response_time_total counter
+# HELP application_response_time_total The number of calls to this REST endpoint #(1)
+application_response_time_total 12
+# TYPE application_response_time_elapsedTime_seconds gauge
+application_response_time_elapsedTime_seconds  12.3
+----
+
+<1> Note help is only emitted for the metric related to `getCount()`, but not for elapsedTime.
 
 === Security
 
