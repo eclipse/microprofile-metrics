@@ -487,6 +487,9 @@ public class MpMetricTest {
         metricAppBean.timeMe();
         metricAppBean.timeMeA();
         
+        metricAppBean.simpleTimeMe();
+        metricAppBean.simpleTimeMeA();
+        
         metricAppBean.concGaugeMeA();
 
     }
@@ -578,7 +581,13 @@ public class MpMetricTest {
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p98;tier=integration"))
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p99;tier=integration"))
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p999;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("stddev;tier=integration"));
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("stddev;tier=integration"))
+                
+                .body("'metricTest.test1.simpleTimer'.'count;tier=integration'", equalTo(1))
+                .body("'metricTest.test1.simpleTimer'", hasKey("elapsedTime;tier=integration"))
+                
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA'.'count;tier=integration'", equalTo(1))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA'", hasKey("elapsedTime;tier=integration"));
     }
 
     @Test
@@ -1167,6 +1176,18 @@ public class MpMetricTest {
                 .body("'taggedTimer'", hasKey("p999;number=two;tier=integration"))
                 .body("'taggedTimer'", hasKey("stddev;number=two;tier=integration"))
         
+                
+                //SimpleTimer - ;tier=integration
+                .body("'taggedSimpleTimer'.'count;tier=integration'", equalTo(0))
+                .body("'taggedSimpleTimer'", hasKey("elapsedTime;tier=integration"))
+                //SimpleTimer - ;number=one;tier=integration
+                .body("'taggedSimpleTimer'.'count;number=one;tier=integration'", equalTo(0))
+                .body("'taggedSimpleTimer'", hasKey("elapsedTime;number=one;tier=integration"))
+                //SimpleTimer - ;number=two;tier=integration
+                .body("'taggedSimpleTimer'.'count;number=two;tier=integration'", equalTo(0))
+                .body("'taggedSimpleTimer'", hasKey("elapsedTime;number=two;tier=integration"))
+                
+                
                 //Meter - ;tier=integration
                 .body("'taggedMeter'.'count;tier=integration'", equalTo(0))
                 .body("'taggedMeter'", hasKey("fifteenMinRate;tier=integration"))
@@ -1221,6 +1242,28 @@ public class MpMetricTest {
             .body(containsString("concGaugeMeA_current"))
             .body(containsString("concGaugeMeA_min"))
             .body(containsString("concGaugeMeA_max"));
+    }
+    
+    @Test
+    @RunAsClient
+    @InSequence(48)
+    public void testApplicationSimpleTimerUnitOpenMetrics() {
+
+        String prefix = "org_eclipse_microprofile_metrics_test_MetricAppBean_simpleTimeMeA_";
+        
+        Response resp = given().header("Accept", TEXT_PLAIN).
+                get("/metrics/application/org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA");
+        ResponseBuilder responseBuilder = new ResponseBuilder();
+        responseBuilder.clone(resp);
+        responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
+        resp = responseBuilder.build();
+                
+        resp.then().statusCode(200)
+            .and()
+            .body(containsString("# TYPE application_" + prefix + "total counter"))
+            .body(containsString(prefix + "total"))
+            .body(containsString(prefix + "elapsedTime_seconds"))
+        ;
     }
     
     

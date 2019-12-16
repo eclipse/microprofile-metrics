@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017, 2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2019 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -48,7 +48,7 @@
  * <p>
  * MicroProfile Metrics provides interceptor bindings which can be used to
  * instrument an application: {@literal @}Counted, {@literal @}Gauge,
- * {@literal @}Metered, {@literal @}Timed and {@literal @}ConcurrentGauge.
+ * {@literal @}Metered, {@literal @}Timed, {@literal @}SimplyTimed and {@literal @}ConcurrentGauge.
  * <p>
  * An example using {@literal @}Counted,
  *

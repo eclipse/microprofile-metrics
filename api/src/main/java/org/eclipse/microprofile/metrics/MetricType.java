@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017-18 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2019 Contributors to the Eclipse Foundation
  *               2017 Red Hat, Inc. and/or its affiliates
  *               and other contributors as indicated by the @author tags.
  *
@@ -67,6 +67,11 @@ public enum MetricType {
      * statistics, plus throughput statistics
      */
     TIMER("timer", Timer.class),
+
+    /**
+     * A simple timer aggregates timing durations
+     */
+    SIMPLETIMER("simple timer", SimpleTimer.class),
 
     /**
      * Invalid - Placeholder

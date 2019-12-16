@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2019 Contributors to the Eclipse Foundation
  *               2012 Ryan W Tenney (ryan@10e.us)
  *
  * See the NOTICES file(s) distributed with this work for additional
@@ -43,7 +43,7 @@ import org.eclipse.microprofile.metrics.MetricUnits;
  * </code></pre>
  * A meter of the field's type will be created and injected into managed objects.
  * It will be up to the user to interact with the metric. This annotation
- * can be used on fields of type Meter, Timer, Counter, and Histogram.
+ * can be used on fields of type Meter, Timer, SimpleTimer, Counter, and Histogram.
  * <p>
  * This may also be used to register a metric.
  * </p>

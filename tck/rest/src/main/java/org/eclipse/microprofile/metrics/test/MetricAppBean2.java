@@ -1,6 +1,6 @@
 /*
  * ********************************************************************
- *  Copyright (c) 2017 Contributors to the Eclipse Foundation
+ *  Copyright (c) 2017, 2019 Contributors to the Eclipse Foundation
  *
  *  See the NOTICES file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -32,6 +32,7 @@ import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.MetricType;
 import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.Metered;
+import org.eclipse.microprofile.metrics.annotation.SimplyTimed;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
 @ApplicationScoped
@@ -66,6 +67,15 @@ public class MetricAppBean2 {
     }
     @Timed(absolute = true, reusable = true, name = "timeMe2")
     public void timeMeB() {
+
+    }
+    
+    @SimplyTimed(absolute = true, reusable = true, name = "simplyTimeMe2")
+    public void simplyTimeMeA() {
+
+    }
+    @SimplyTimed(absolute = true, reusable = true, name = "simplyTimeMe2")
+    public void simplyTimeMeB() {
 
     }
 

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2018 Contributors to the Eclipse Foundation
+// Copyright (c) 2016-2019 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -71,7 +71,7 @@ The implementation must throw an `IllegalArgumentException` if such a mismatch i
 * The implementation must flag and reject metrics upon registration if the metadata information being registered is not equivalent to the metadata information that has already been registered under the given metric name (if it already exists).
 ** All metrics of a given metric name must be associated with the same metadata information
 ** The implementation must throw an `IllegalArgumentException` when the metric is rejected.
-* The implementation must throw an `IllegalStateException` if an annotated metric is invoked, but the metric no longer exists in the MetricRegistry. This applies to the following annotations : @Timed, @Counted, @ConcurrentGauge, @Metered
+* The implementation must throw an `IllegalStateException` if an annotated metric is invoked, but the metric no longer exists in the MetricRegistry. This applies to the following annotations : @Timed, @SimplyTimed, @Counted, @ConcurrentGauge, @Metered
 * The implementation must make sure that metric registries are thread-safe, in other words, concurrent calls to methods of `MetricRegistry` must not leave the registry in an inconsistent state.
 
 
@@ -125,6 +125,7 @@ The following Annotations exist, see below for common fields:
 |@Metric  | M, F, P | An annotation that contains the metadata information when requesting a metric to be injected or produced. This annotation can be used on fields
     of type `Meter`, `Timer`, `Counter`, and `Histogram`. For `Gauge`, the `@Metric` annotation can only be used on producer methods/fields. | MetricUnits.NONE
 |@Timed   | M, C, T | Denotes a timer, which tracks duration of the annotated object. | MetricUnits.NANOSECONDS
+|@SimplyTimed   | M, C, T | Denotes a simple timer, which tracks duration and invocations of the annotated object. | MetricUnits.NANOSECONDS
 |===
 (C=Constructor, F=Field, M=Method, P=Parameter, T=Type)
 
@@ -388,9 +389,63 @@ public class MeteredBean {
 }
 ----
 
+==== @SimplyTimed
+An annotation for marking a constructor or method of an annotated object as simply timed.
+The metric of type SimpleTimer tracks how frequently the annotated object is invoked, and tracks how long it took the invocations to complete.
+
+The implementation must support the following annotation targets:
+
+  * `CONSTRUCTOR`
+  * `METHOD`
+  * `TYPE`
+
+If the metric no longer exists in the `MetricRegistry` when the annotated element is invoked then an `IllegalStateException` will be thrown.
+
+The following lists the behavior for each annotation target.
+
+===== CONSTRUCTOR
+
+When a constructor is annotated, the implementation must register a simple timer for the constructor using the <<annotated-naming-convention>>. Each time the constructor is invoked, the execution will be timed.
+
+.Example of an annotated constructor
+[source, java]
+----
+@SimplyTimed
+public SimplyTimedBean() {
+}
+----
+
+===== METHOD
+
+When a non-private method is annotated, the implementation must register a simple timer for the method using the <<annotated-naming-convention>>. Each time the method is invoked, the execution will be timed.
+
+.Example of an annotated method
+[source, java]
+----
+@SimplyTimed
+public void run() {
+}
+----
+
+===== TYPE
+When a type/class is annotated, the implementation must register a simple timer for each of the constructors and non-private methods using the <<annotated-naming-convention>>. Each time a constructor/method is invoked, the execution will be timed with the corresponding simple timer.
+
+.Example of an annotated type/class
+[source, java]
+----
+@SimplyTimed
+public class SimplyTimedBean {
+
+  public void simplyTimedMethod1() {}
+  public void simplyTimedMethod2() {}
+
+}
+----
+
+
 ==== @Timed
 An annotation for marking a constructor or method of an annotated object as timed.
-The metric of type Timer tracks how frequently the annotated object is invoked, and tracks how long it took the invocations to complete.
+The metric of type Timer tracks how frequently the annotated object is invoked, and tracks how long it took the invocations to complete. The data is aggregated to calculate duration statistics and throughput statistics.
 
 The implementation must support the following annotation targets:
 
@@ -545,10 +600,14 @@ lots of annotations in the code. The two approaches can also be combined if nece
 |`meter(String name, Tag... tags)` | Meter with given name and tags
 |`meter(Metadata metadata)` | Meter from given `Metadata` object 
 |`meter(Metadata metadata, Tag... tags)` | Meter from given `Metadata` object with given tags
-|`timer(String name)` | Timer with Timer name and no tags
+|`timer(String name)` | Timer with given name and no tags
 |`timer(String name, Tag... tags)` | Timer with given name and tags
 |`timer(Metadata metadata)` | Timer from given `Metadata` object
 |`timer(Metadata metadata, Tag... tags)` | Timer from given `Metadata` object with given tags
+|`simpleTimer(String name)` | SimpleTimer with given name and no tags
+|`simpleTimer(String name, Tag... tags)` | SimpleTimer with given name and tags
+|`simpleTimer(Metadata metadata)` | SimpleTimer from given `Metadata` object
+|`simpleTimer(Metadata metadata, Tag... tags)` | SimpleTimer from given `Metadata` object with given tags
 |`register(String name, T metric)` | Registers the given metric instance under the given name 
 |`register(Metadata metadata, T metric)` | Registers the given metric instance using the given metadata object
 |`register(Metadata metadata, T metric, Tag... tags)` | Registers the given metric instance using the given metadata object and given tags
