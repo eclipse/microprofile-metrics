@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2019 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -24,6 +24,7 @@ package org.eclipse.microprofile.metrics.tck;
 
 import javax.inject.Inject;
 
+import org.eclipse.microprofile.metrics.ConcurrentGauge;
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.Histogram;
 import org.eclipse.microprofile.metrics.Metadata;
@@ -31,6 +32,7 @@ import org.eclipse.microprofile.metrics.Meter;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.MetricType;
+import org.eclipse.microprofile.metrics.SimpleTimer;
 import org.eclipse.microprofile.metrics.Tag;
 import org.eclipse.microprofile.metrics.Timer;
 import org.eclipse.microprofile.metrics.annotation.Metric;
@@ -59,6 +61,12 @@ public class MetricRegistryTest {
 
     @Inject
     private Timer timerTemp;
+    
+    @Inject
+    private SimpleTimer simpleTimerTemp;
+    
+    @Inject
+    private ConcurrentGauge concurrentGaugeTemp;
 
     @Inject
     private Meter meterTemp;
@@ -89,6 +97,12 @@ public class MetricRegistryTest {
 
         metrics.register("regTimerTemp", timerTemp);
         Assert.assertTrue(metrics.getTimers().containsKey(new MetricID("regTimerTemp")));
+        
+        metrics.register("regSimpleTimerTemp", simpleTimerTemp);
+        Assert.assertTrue(metrics.getSimpleTimers().containsKey(new MetricID("regSimpleTimerTemp")));
+        
+        metrics.register("regConcurrentGaugeTemp", concurrentGaugeTemp);
+        Assert.assertTrue(metrics.getConcurrentGauges().containsKey(new MetricID("regConcurrentGaugeTemp")));
 
         metrics.register("regMeterTemp", meterTemp);
         Assert.assertTrue(metrics.getMeters().containsKey(new MetricID("regMeterTemp")));

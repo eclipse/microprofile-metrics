@@ -28,11 +28,13 @@ import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
 
+import org.eclipse.microprofile.metrics.ConcurrentGauge;
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.Histogram;
 import org.eclipse.microprofile.metrics.Meter;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
+import org.eclipse.microprofile.metrics.SimpleTimer;
 import org.eclipse.microprofile.metrics.Timer;
 import org.eclipse.microprofile.metrics.Tag;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -185,5 +187,53 @@ public class TagsTest {
         assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(histogramColourMID));
         assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(histogramRedMID));
         assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(histogramBlueMID));
+    }
+    
+    @Test
+    @InSequence(7)
+    public void simpleTimerTagsTest() {
+        
+        Tag tagEarth = new Tag("planet", "earth");
+        Tag tagRed = new Tag("colour", "red");
+        Tag tagBlue = new Tag("colour", "blue");
+        
+        String simpleTimerName = "org.eclipse.microprofile.metrics.tck.TagTest.simpleTimerColour";
+        
+        SimpleTimer simpleTimerColour = registry.simpleTimer(simpleTimerName);
+        SimpleTimer simpleTimerRed = registry.simpleTimer(simpleTimerName,tagEarth,tagRed);
+        SimpleTimer simpleTimerBlue = registry.simpleTimer(simpleTimerName,tagEarth,tagBlue);
+        
+        MetricID simpleTimerColourMID = new MetricID(simpleTimerName);
+        MetricID simpleTimerRedMID = new MetricID(simpleTimerName, tagEarth,tagRed);
+        MetricID simpleTimerBlueMID = new MetricID(simpleTimerName, tagEarth,tagBlue);
+        
+        //check multi-dimensional metrics are registered
+        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimers(), hasKey(simpleTimerColourMID));
+        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimers(), hasKey(simpleTimerRedMID));
+        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimers(), hasKey(simpleTimerBlueMID));
+    }
+    
+    @Test
+    @InSequence(8)
+    public void concurrentGuageTagsTest() {
+        
+        Tag tagEarth = new Tag("planet", "earth");
+        Tag tagRed = new Tag("colour", "red");
+        Tag tagBlue = new Tag("colour", "blue");
+        
+        String concurrentGaugeName = "org.eclipse.microprofile.metrics.tck.TagTest.concurrentGaugeColour";
+        
+        ConcurrentGauge concurrentGaugeColour = registry.concurrentGauge(concurrentGaugeName);
+        ConcurrentGauge concurrentGaugeRed = registry.concurrentGauge(concurrentGaugeName,tagEarth,tagRed);
+        ConcurrentGauge concurrentGaugeBlue = registry.concurrentGauge(concurrentGaugeName,tagEarth,tagBlue);
+        
+        MetricID concurrentGaugeColourMID = new MetricID(concurrentGaugeName);
+        MetricID concurrentGaugeRedMID = new MetricID(concurrentGaugeName, tagEarth,tagRed);
+        MetricID concurrentGaugeBlueMID = new MetricID(concurrentGaugeName, tagEarth,tagBlue);
+        
+        //check multi-dimensional metrics are registered
+        assertThat("ConcurrentGauge is not registered correctly", registry.getConcurrentGauges(), hasKey(concurrentGaugeColourMID));
+        assertThat("ConcurrentGauge is not registered correctly", registry.getConcurrentGauges(), hasKey(concurrentGaugeRedMID));
+        assertThat("ConcurrentGauge is not registered correctly", registry.getConcurrentGauges(), hasKey(concurrentGaugeBlueMID));
     }
 }

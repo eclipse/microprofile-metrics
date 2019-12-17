@@ -71,7 +71,7 @@ public enum MetricType {
     /**
      * A simple timer aggregates timing durations
      */
-    SIMPLETIMER("simple timer", SimpleTimer.class),
+    SIMPLE_TIMER("simple timer", SimpleTimer.class),
 
     /**
      * Invalid - Placeholder
