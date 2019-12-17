@@ -57,7 +57,7 @@ that need to store the metrics may not deal well with this amount of data.
 * The implementation must scan the application at deploy time for <<api-annotations>> and register the
 Metrics along with their metadata in the _application_ MetricsRegistry.
 * The implementation must watch the annotated objects and update internal data structures when the values of the
-annotated objects change.
+annotated objects change. The value of a `Gauge` is recomputed each time a client requests the value. 
 * The implementation must expose the values of the objects registered in the MetricsRegistry via REST-API as described
 in <<architecture#rest-api>>.
 * Metrics registered via non-annotations API need their values be set via updates from the application code.
