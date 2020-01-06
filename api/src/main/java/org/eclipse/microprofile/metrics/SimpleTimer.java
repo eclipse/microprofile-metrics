@@ -1,6 +1,6 @@
 /*
  * ********************************************************************
- *  Copyright (c) 2019 Contributors to the Eclipse Foundation
+ *  Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  *  See the NOTICES file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -89,7 +89,7 @@ public interface SimpleTimer extends Metric, Counting {
     Context time();
 
     /**
-     * Returns the elapsed time duration
+     * Returns the total elapsed timing durations of all completed timing events that are recorded with {@link update(long, TimeUnit)}.
      * 
      * @return the elapsed time duration
      */

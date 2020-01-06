@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2018 Contributors to the Eclipse Foundation
+// Copyright (c) 2016, 2020 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -24,7 +24,7 @@
 Changes marked with icon:bolt[role="red"] are breaking changes relative to previous versions of the spec.
 
 * Changes in 2.3
-** Introduce the simple timer (`@SimplyTimed`) metric.
+** Introduced the simple timer (`@SimplyTimed`) metric.
 ** The API code no longer requires a correctly configured MP Config implementation to be available at runtime, so it is possible to slim down deployments if MP Config is not necessary 
 ** Added ProcessCpuTime as a new optional base metric.
 ** Added `withOptional*` methods to the `MetadataBuilder`, they don't fail when null values are passed to them
