@@ -1,7 +1,7 @@
 /*
  **********************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
- *               2010-2013 Coda Hale, Yammer.com
+ * Copyright (c) 2017, 2020 Contributors to the Eclipse Foundation
+ *               2010, 2013 Coda Hale, Yammer.com
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -31,6 +31,9 @@ import java.util.concurrent.TimeUnit;
  * A timer metric which aggregates timing durations and provides duration statistics, plus
  * throughput statistics via {@link Meter}.
  * 
+ * See {@link SimpleTimer} for a lightweight alternative that only tracks elapsed time
+ * duration and count.
+ *
  * The timer measures duration in nanoseconds.
  */
 public interface Timer extends Metered, Sampling {

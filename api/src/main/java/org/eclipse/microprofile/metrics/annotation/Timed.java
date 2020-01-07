@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2020 Contributors to the Eclipse Foundation
  *               2010-2013 Coda Hale, Yammer.com
  *
  * See the NOTICES file(s) distributed with this work for additional
@@ -36,7 +36,12 @@ import org.eclipse.microprofile.metrics.MetricUnits;
 
 /**
  * An annotation for marking a method, constructor, or class as timed.
- * The metric will be registered in the application MetricRegistry.
+ * The underlying {@link org.eclipse.microprofile.metrics.Timer Timer}
+ * metric aggregates timing durations and provides duration statistics,
+ * plus throughput statistics. There is a lightweight alternative 
+ * {@link SimpleTimer} (@{@link SimplyTimed}) that only tracks elapsed
+ * time duration and count. The metric will be registered in the 
+ * application MetricRegistry.
  * <p>
  * Given a method annotated with {@literal @}Timed like this:
  * </p>
