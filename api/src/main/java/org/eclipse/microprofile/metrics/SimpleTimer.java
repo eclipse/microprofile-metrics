@@ -29,6 +29,8 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * A simple timer metric which tracks elapsed time durations and count.
+ * 
+ * This is a lightweight alternative to (@link Timer).
  *
  * The simple timer measures duration in nanoseconds.
  */
