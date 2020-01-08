@@ -91,7 +91,7 @@ public interface SimpleTimer extends Metric, Counting {
     Context time();
 
     /**
-     * Returns the total elapsed timing durations of all completed timing events that are recorded with {@link update(long, TimeUnit)}.
+     * Returns the total elapsed timing durations of all completed timing events that are recorded with {@link #update(long, TimeUnit)}.
      * 
      * @return the elapsed time duration
      */

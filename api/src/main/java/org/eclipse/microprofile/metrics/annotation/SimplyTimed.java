@@ -38,8 +38,9 @@ import org.eclipse.microprofile.metrics.MetricUnits;
 /**
  * An annotation for marking a method, constructor, or class as simply timed.
  * The underlying {@link org.eclipse.microprofile.metrics.SimpleTimer SimpleTimer} metric
- * tracks elapsed time duration and count. This is a lightweight alternative to {@link Timer} 
- * (@{@link Timed}). The metric will be registered in the application MetricRegistry.
+ * tracks elapsed time duration and count. This is a lightweight alternative to
+ * {@link org.eclipse.microprofile.metrics.Timer timer} (@{@link Timed}). The 
+ * metric will be registered in the application MetricRegistry.
  * <p>
  * Given a method annotated with {@literal @}SimplyTimed like this:
  * </p>
