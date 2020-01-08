@@ -39,9 +39,9 @@ import org.eclipse.microprofile.metrics.MetricUnits;
  * The underlying {@link org.eclipse.microprofile.metrics.Timer Timer}
  * metric aggregates timing durations and provides duration statistics,
  * plus throughput statistics. There is a lightweight alternative 
- * {@link SimpleTimer} (@{@link SimplyTimed}) that only tracks elapsed
- * time duration and count. The metric will be registered in the 
- * application MetricRegistry.
+ * {@link org.eclipse.microprofile.metrics.SimpleTimer SimpleTimer} 
+ * (@{@link SimplyTimed}) that only tracks elapsed time duration and 
+ * count. The metric will be registered in the application MetricRegistry.
  * <p>
  * Given a method annotated with {@literal @}Timed like this:
  * </p>
