@@ -78,6 +78,7 @@ import org.eclipse.microprofile.metrics.MetricUnits;
 public @interface Timed {
 
     /**
+     * The name of the timer.
      * @return The name of the timer.
      */
     @Nonbinding
@@ -93,6 +94,7 @@ public @interface Timed {
     String[] tags() default {};
 
     /**
+     * Denotes whether to use the absolute name or use the default given name relative to the annotated class.
      * @return If {@code true}, use the given name as an absolute name. If {@code false} (default), use the given name
      * relative to the annotated class. When annotating a class, this must be {@code false}.
      */
@@ -100,6 +102,7 @@ public @interface Timed {
     boolean absolute() default false;
 
     /**
+     * The display name of the timer.
      * @return The display name of the timer.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -108,6 +111,7 @@ public @interface Timed {
     String displayName() default "";
 
     /**
+     * The description of the timer.
      * @return The description of the timer.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -116,6 +120,7 @@ public @interface Timed {
     String description() default "";
 
    /**
+    * The unit of the timer.
     * @return The unit of the timer. By default, the value is {@link MetricUnits#NANOSECONDS}.
     *
      * @see org.eclipse.microprofile.metrics.Metadata
