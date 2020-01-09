@@ -97,6 +97,7 @@ public @interface Metered {
     boolean absolute() default false;
 
     /**
+     * The display name of the meter.
      * @return The display name of the meter.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -105,6 +106,7 @@ public @interface Metered {
     String displayName() default "";
 
     /**
+     * The description of the meter.
      * @return The description of the meter.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -113,6 +115,7 @@ public @interface Metered {
     String description() default "";
 
     /**
+     * The unit of the meter.
      * @return The unit of the meter. By default, the value is {@link MetricUnits#PER_SECOND}.
      *
      * @see org.eclipse.microprofile.metrics.Metadata

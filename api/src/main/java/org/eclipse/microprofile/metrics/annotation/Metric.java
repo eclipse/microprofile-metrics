@@ -65,12 +65,14 @@ import org.eclipse.microprofile.metrics.MetricUnits;
 public @interface Metric {
 
     /**
+     * The name of the metric.
      * @return The name of the metric.
      */
     @Nonbinding
     String name() default "";
 
     /**
+     * The tags of the metric.
      * @return The tags of the metric. Each {@code String} tag must be in the form of 'key=value'. If the input is empty or does
      * not contain a '=' sign, the entry is ignored.
      * 
@@ -80,6 +82,7 @@ public @interface Metric {
     String[] tags() default {};
 
     /**
+     * Denotes whether to use the absolute name or use the default given name relative to the annotated class.
      * @return If {@code true}, use the given name as an absolute name. If {@code false} (default),
      * use the given name relative to the annotated class.
      */
@@ -87,6 +90,7 @@ public @interface Metric {
     boolean absolute() default false;
 
     /**
+     * The display name of the metric.
      * @return The display name of the metric.
      * 
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -95,6 +99,7 @@ public @interface Metric {
     String displayName() default "";
     
     /**
+     * The description of the metric.
      * @return The description of the metric.
      * 
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -103,6 +108,7 @@ public @interface Metric {
     String description() default "";
     
     /**
+     * The unit of the metric.
      * @return The unit of the metric. By default, the value is {@link MetricUnits#NONE}.
      * 
      * @see org.eclipse.microprofile.metrics.Metadata
