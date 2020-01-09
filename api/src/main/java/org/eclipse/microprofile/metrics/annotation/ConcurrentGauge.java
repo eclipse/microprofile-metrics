@@ -84,12 +84,14 @@ import org.eclipse.microprofile.metrics.MetricUnits;
 public @interface ConcurrentGauge {
 
     /**
+     * The name of the concurrent gauge.
      * @return The name of the concurrent gauge.
      */
     @Nonbinding
     String name() default "";
 
     /**
+     * The tags of the concurrent gauge.
      * @return The tags of the concurrent gauge. Each {@code String} tag must be in the form of 'key=value'. If the input is empty or does
      * not contain a '=' sign, the entry is ignored.
      *
@@ -99,6 +101,7 @@ public @interface ConcurrentGauge {
     String[] tags() default {};
 
     /**
+     * Denotes whether to use the absolute name or use the default given name relative to the annotated class.
      * @return If {@code true}, use the given name as an absolute name. If {@code false} (default), use the given name
      * relative to the annotated class. When annotating a class, this must be {@code false}.
      */
@@ -107,6 +110,7 @@ public @interface ConcurrentGauge {
 
 
     /**
+     * The display name of the concurrent gauge.
      * @return The display name of the concurrent gauge.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -115,6 +119,7 @@ public @interface ConcurrentGauge {
     String displayName() default "";
 
     /**
+     * The description of the concurrent gauge.
      * @return The description of the concurrent gauge.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -123,6 +128,7 @@ public @interface ConcurrentGauge {
     String description() default "";
 
     /**
+     * The unit of the concurrent gauge.
      * @return The unit of the concurrent gauge. By default, the value is {@link MetricUnits#NONE}.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
