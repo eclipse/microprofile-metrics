@@ -62,12 +62,14 @@ import javax.interceptor.InterceptorBinding;
 public @interface Gauge {
 
     /**
+     * The name of the gauge.
      * @return The name of the gauge.
      */
     @Nonbinding
     String name() default "";
 
     /**
+     * The tags of the gauge.
      * @return The tags of the gauge. Each {@code String} tag must be in the form of 'key=value'. If the input is empty or does
      * not contain a '=' sign, the entry is ignored.
      * 
@@ -77,6 +79,7 @@ public @interface Gauge {
     String[] tags() default {};
 
     /**
+     * Denotes whether to use the absolute name or use the default given name relative to the annotated class.
      * @return If {@code true}, use the given name as an absolute name. If {@code false} (default), use the given name
      * relative to the annotated class.
      */
@@ -85,6 +88,7 @@ public @interface Gauge {
     
     
     /**
+     * The display name of the gauge.
      * @return The display name of the gauge.
      * 
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -93,6 +97,7 @@ public @interface Gauge {
     String displayName() default "";
     
     /**
+     * The description of the gauge.
      * @return The description of the gauge.
      * 
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -102,6 +107,7 @@ public @interface Gauge {
     
     
     /**
+     * The unit of the gauge.
      * @return (Required) The unit of the gauge.
      * 
      * @see org.eclipse.microprofile.metrics.Metadata

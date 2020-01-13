@@ -74,12 +74,14 @@ import org.eclipse.microprofile.metrics.MetricUnits;
 public @interface Counted {
 
     /**
+     * The name of the counter.
      * @return The name of the counter.
      */
     @Nonbinding
     String name() default "";
 
     /**
+     * The tags of the counter.
      * @return The tags of the counter. Each {@code String} tag must be in the form of 'key=value'. If the input is empty or does
      * not contain a '=' sign, the entry is ignored.
      *
@@ -89,6 +91,7 @@ public @interface Counted {
     String[] tags() default {};
 
     /**
+     * Denotes whether to use the absolute name or use the default given name relative to the annotated class.
      * @return If {@code true}, use the given name as an absolute name. If {@code false} (default), use the given name
      * relative to the annotated class. When annotating a class, this must be {@code false}.
      */
@@ -106,6 +109,7 @@ public @interface Counted {
     boolean monotonic() default false;
 
     /**
+     * The display name of the counter.
      * @return The display name of the counter.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -114,6 +118,7 @@ public @interface Counted {
     String displayName() default "";
 
     /**
+     * The description of the counter.
      * @return The description of the counter.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -123,6 +128,7 @@ public @interface Counted {
 
 
     /**
+     * The unit of the counter.
      * @return The unit of the counter. By default, the value is {@link MetricUnits#NONE}.
      *
      * @see org.eclipse.microprofile.metrics.Metadata

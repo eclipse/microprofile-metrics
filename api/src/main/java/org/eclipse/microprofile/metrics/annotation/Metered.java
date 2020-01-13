@@ -71,12 +71,14 @@ import org.eclipse.microprofile.metrics.MetricUnits;
 public @interface Metered {
 
     /**
+     * The name of the meter.
      * @return The name of the meter.
      */
     @Nonbinding
     String name() default "";
 
     /**
+     * The tags of the meter.
      * @return The tags of the meter. Each {@code String} tag must be in the form of 'key=value'. If the input is empty or does
      * not contain a '=' sign, the entry is ignored.
      *
@@ -86,6 +88,7 @@ public @interface Metered {
     String[] tags() default {};
 
     /**
+     * Denotes whether to use the absolute name or use the default given name relative to the annotated class.
      * @return If {@code true}, use the given name as an absolute name. If {@code false} (default), use the given name
      * relative to the annotated class. When annotating a class, this must be {@code false}.
      */
@@ -93,6 +96,7 @@ public @interface Metered {
     boolean absolute() default false;
 
     /**
+     * The display name of the meter.
      * @return The display name of the meter.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -101,6 +105,7 @@ public @interface Metered {
     String displayName() default "";
 
     /**
+     * The description of the meter.
      * @return The description of the meter.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -109,6 +114,7 @@ public @interface Metered {
     String description() default "";
 
     /**
+     * The unit of the meter. 
      * @return The unit of the meter. By default, the value is {@link MetricUnits#PER_SECOND}.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
