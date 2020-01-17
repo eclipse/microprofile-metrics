@@ -212,17 +212,18 @@ to prevent hard to spot copy & paste errors, where for example all methods of a 
 `@Timed(name="myApp", absolute=true)`.
 
 If this behaviour is required, then it is possible to mark all such instances as _reusable_ by passing
-the respective flag in the Annotation. Gauges are not reusable.
+the respective flag in the Annotation. Gauges are never reusable.
+
+NOTE: Reusability concepts are generally meant to apply only to annotated metrics. These restrictions are generally not placed on programmatically registered metrics,
+unless a metric is programmatically registered with the `reusable` flag set to false (which has to be set explicitly).
 
 For metrics created programmatically (by calling methods of the `MetricRegistry`), reusing is allowed by default, so
 multiple calls retrieving an instance of a metric from the registry will return the same metric object so that the object can be reused in
-multiple places in the application.
+multiple places in the application's codebase, and all calls that update the metric's value will update the same metric instance.
 
-The implementation must throw an 'IllegalArgumentException' during a metric registration call when the call would result
-in the reuse of a metric where that metric was either previously declared not reusable or where the registration call itself
-declares the metric to not be reusable.
+The implementation must throw an `IllegalArgumentException` if it detects multiple annotations referring to the same metric without being marked reusable.
 
-Only metrics of the same type can be reused under the same MetricID.
+Only metrics of the same type can be reused under the same `MetricID`.
 Trying to reuse a name for different types will result in an `IllegalArgumentException`.
 All metrics under the same name must also have exactly the same metadata.
 
