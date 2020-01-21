@@ -24,8 +24,8 @@
 package org.eclipse.microprofile.metrics;
 
 import java.io.Closeable;
+import java.time.Duration;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A simple timer metric which tracks elapsed time durations and count.
@@ -58,10 +58,9 @@ public interface SimpleTimer extends Metric, Counting {
     /**
      * Adds a recorded duration.
      *
-     * @param duration the length of the duration
-     * @param unit     the scale unit of {@code duration}
+     * @param duration the length of the {@link java.time.Duration duration}
      */
-    void update(long duration, TimeUnit unit);
+    void update(Duration duration);
 
     /**
      * Times and records the duration of event.
@@ -91,11 +90,11 @@ public interface SimpleTimer extends Metric, Counting {
     Context time();
 
     /**
-     * Returns the total elapsed timing durations of all completed timing events that are recorded with {@link #update(long, TimeUnit)}.
+     * Returns the total elapsed timing durations of all completed timing events that are recorded with {@link #update(Duration)}.
      * 
-     * @return the elapsed time duration
+     * @return the elapsed time {@link java.time.Duration duration}
      */
-    long getElapsedTime();
+    Duration getElapsedTime();
 
     @Override
     long getCount();
