@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2019 Contributors to the Eclipse Foundation
+// Copyright (c) 2016, 2020 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -251,3 +251,58 @@ Note: This is a vendor specific attribute/operation that is not defined in java.
 |MBean| java.lang:type=OperatingSystem (com.sun.management.UnixOperatingSystemMXBean for Oracle Java, similar one exists for IBM Java: com.ibm.lang.management.ExtendedOperatingSystem)
 Note: This is a vendor specific attribute/operation that is not defined in java.lang
 |===
+
+
+=== (Optional) REST
+
+Metrics gathered from REST stats are optional and therefore may not be available in every implementation.
+
+The MicroProfile Metrics runtime will track metrics from RESTful resource method calls during runtime (i.e GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD). It is up to the implementation to decide how to enable the REST metrics.
+
+*(Optional) RESTRequests*
+[cols="1,4"]
+|===
+|Name| REST.request
+|DisplayName| Total Requests and Response Time
+|Type| SimpleTimer
+|Unit| None
+|Multi| true
+|Tags| {class=%s1,method=%s2}
+|Description| The number of invocations and total response time of this RESTful resource method since the start of the server.
+|Notes|The `%s1` should be substituted with the fully qualified name of the RESTful resource class. 
+
+The `%s2` should be substituted with the name of the RESTful resource method and appended with its parameter types using an underscore `\_`.  Multiple parameter types are appended one after another (e.g. `<methodName>_<paramType1>_<paramType2>`).
+
+Parameter type formatting rules: +
+- The paramter types are fully qualified (e.g. `java.lang.Object`). +
+- Array paramter types will be formatted as `paramType[]` (e.g `java.lang.Object[]`). +
+- A Vararg parameter will be treated as an array. +
+- Generics will be ignored. For example `List<String>` will be formatted as `java.util.List`.
+
+|===
+
+
+For example given the following RESTful resource:
+[source, java]
+----
+
+package org.eclipse.microprofile.metrics.demo;
+
+@ApplicationScoped
+public class RestDemo {
+
+  @POST
+  public void postMethod(String... s, Object o){
+      ...
+  }
+}
+----
+
+The OpenMetrics formatted rest metrics would be:
+[source]
+----
+# TYPE base_REST_request_total counter
+base_REST_request_total{class="org.eclipse.microprofile.metrics.demo.RestDemo",method="postMethod_java.lang.String[]_java.lang.Object"} 1
+# TYPE base_REST_request_elapsedTime_seconds gauge
+base_REST_request_elapsedTime_seconds{class="org.eclipse.microprofile.metrics.demo.RestDemo",method="postMethod_java.lang.String[]_java.lang.Object"} 1.000
+----
