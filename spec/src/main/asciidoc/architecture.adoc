@@ -57,15 +57,15 @@ Section <<required-metrics#required-metrics>> lists the required metrics. This l
 These are listed here as they are dependent on the underlying JVM and not the server and thus fit better in _base_ scope
 than the _vendor_ one.
 
+The optional REST metrics are listed as base metrics as they are expected to be portable between different implementations. If the implementation provides REST metrics, it is up to the implementation to decide how to enable the REST metrics.
+
 Required base metrics are exposed under `/metrics/base`.
 
 ===== Application metrics
 
 Application specific metrics can not be baked into the server as they are supposed to be provided by the
-application at runtime. Therefore a Java API is provided. Application specific metrics are supposed to be
-portable to other implementations of the MicroProfile. That means that an application written to this
-specification which exposes metrics, can expose the same metrics on a different compliant server
-without change.
+application at runtime. Therefore a Java API is provided.  Application specific metrics are supposed to be portable to other MicroProfile implementations. That means that an application written to this specification which exposes metrics,
+can expose the same metrics on a different compliant server without change.
 
 Details of this Java API are described in <<app-programming-model#app-programming-model>>.
 
