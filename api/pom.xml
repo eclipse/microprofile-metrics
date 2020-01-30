@@ -27,8 +27,13 @@
     <name>MicroProfile Metrics API</name>
     <description>MicroProfile Metrics :: API</description>
 
-
     <dependencies>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.0.1</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>

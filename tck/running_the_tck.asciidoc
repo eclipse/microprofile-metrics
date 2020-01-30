@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2017 Contributors to the Eclipse Foundation
+// Copyright (c) 2016, 2020 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -69,6 +69,13 @@ To enable the tests in your Arquillian based test project you need to add the fo
     </dependency>
 
     <dependency>
+        <groupId>javax.ws.rs</groupId>
+        <artifactId>javax.ws.rs-api</artifactId>
+        <version>2.0.1</version>
+        <scope>provided</scope>
+    </dependency>
+
+    <dependency>
         <groupId>org.jboss.arquillian.junit</groupId>
         <artifactId>arquillian-junit-container</artifactId>
         <version>1.1.8.Final</version>
@@ -114,6 +121,11 @@ If you use Apache Maven, then the tests are run via the `maven-surefire-plugin` 
                 <environmentVariables>
                     <MP_METRICS_TAGS>tier=integration</MP_METRICS_TAGS>
                 </environmentVariables>
+                <!-- THE FOLLOWING TEST WILL TEST AN IMPLEMENTATION AGAINST THE OPTIONAL REST STAT METRICS -->
+                <!-- KEEP DISABLED/EXCLUDED IF NOT TESTING FOR COMPLIANCE WITH OPTIONAL REST STAT METRICS  -->
+                 <excludes>
+                    <exclude>**/MpMetricOptionalTest.java</exclude>
+                </excludes>
             </configuration>
         </plugin>
     </plugins>
@@ -124,6 +136,9 @@ Note: Be sure to set up your Arquillian.xml as required for your server under te
 If the implementation does not support all base metrics as described in the specification because
 they are not available in the used JVM, it is possible to skip the tests related to base metrics
 by adding the system property `skip.base.metric.tests=true` to the surefire process.
+
+If an implementation supports REST stat metrics, remove the `<exclude>**/MpMetricOptionalTest.java</exclude>` to enable
+the relevant TCK tests.
 
 == Running the TCK
 
