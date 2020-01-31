@@ -185,3 +185,8 @@ If your server under test has basic authentication enabled, run the following co
 mvn test -Dtest.url=https://localhost:9443 -Dtest.user=someUser -Dtest.pwd=somePassword 
 ----
 
+If you are testing with the Optional TCK module it will require the tests to send requests to the application deployed on your server. By default the tests will use the port defined in `test.url` as your application port. You can configure a separate application port by defining the `application.port` property.
+----
+# Modify the application.port with your server's defined application port
+mvn test -Dtest.url=https://localhost:9443 -Dtest.user=someUser -Dtest.pwd=somePassword -Dapplication.port=8080
+----
