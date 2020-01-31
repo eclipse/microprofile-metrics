@@ -60,7 +60,10 @@ public class MpMetricOptionalTest {
     private static final String OPENMETRICS_APP_LABEL_REGEX = "_app=\"[-/A-Za-z0-9]+\"";
     
     private static final String APPLICATION_JSON = "application/json";
-    private static final String CONTEXT_ROOT = "optionalTCK";
+
+    // context root under which the application JAX-RS resources are expected to be
+    private static String contextRoot;
+
     private static final String TEXT_PLAIN = "text/plain";
     
     
@@ -151,11 +154,12 @@ public class MpMetricOptionalTest {
             RestAssured.useRelaxedHTTPSValidation();
         }
 
+        contextRoot = System.getProperty("context.root", "/optionalTCK");
     }
 
     @Deployment
     public static WebArchive createDeployment() {
-        WebArchive jar = ShrinkWrap.create(WebArchive.class, CONTEXT_ROOT+".war")
+        WebArchive jar = ShrinkWrap.create(WebArchive.class, "optionalTCK.war")
                 .addPackage(MetricAppBeanOptional.class.getPackage())
                 .addClasses(MetricsRESTActivator.class, MetricAppBeanOptional.class, NameObject.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
@@ -176,7 +180,7 @@ public class MpMetricOptionalTest {
         given().
              header(acceptHeader).
         when().
-        get("/" +CONTEXT_ROOT+"/get-noparam").
+        get(contextRoot+"/get-noparam").
         then().
             statusCode(200);   
            
@@ -203,7 +207,7 @@ public class MpMetricOptionalTest {
         given().
              header(acceptHeader).
         when().
-        get("/" +CONTEXT_ROOT+"/get-noparam").
+        get(contextRoot+"/get-noparam").
         then().
             statusCode(200);    
        /*
@@ -231,7 +235,7 @@ public class MpMetricOptionalTest {
         given().
              header(acceptHeader).
         when().
-             options("/" +CONTEXT_ROOT+"/options-noparam").
+             options(contextRoot+"/options-noparam").
         then().
             statusCode(200);    
        
@@ -258,7 +262,7 @@ public class MpMetricOptionalTest {
         given().
              header(acceptHeader).
         when().
-             head("/" +CONTEXT_ROOT+"/head-noparam").
+             head(contextRoot+"/head-noparam").
         then().
             statusCode(200);    
        
@@ -284,7 +288,7 @@ public class MpMetricOptionalTest {
         given().
              header(acceptHeader).
         when().
-             put("/" +CONTEXT_ROOT+"/put-noparam").
+             put(contextRoot+"/put-noparam").
         then().
             statusCode(200);    
 
@@ -309,7 +313,7 @@ public class MpMetricOptionalTest {
         given().
              header(acceptHeader).
         when().
-             post("/" +CONTEXT_ROOT+"/post-noparam").
+             post(contextRoot+"/post-noparam").
         then().
             statusCode(200);    
        
@@ -335,7 +339,7 @@ public class MpMetricOptionalTest {
         given().
              header(acceptHeader).
         when().
-             delete("/" +CONTEXT_ROOT+"/delete-noparam").
+             delete(contextRoot+"/delete-noparam").
         then().
             statusCode(200);    
 
@@ -366,7 +370,7 @@ public class MpMetricOptionalTest {
              header(acceptHeader).
              queryParam("qp1", "s1").
         when().
-             get("/" +CONTEXT_ROOT+"/get-single-string-param").
+             get(contextRoot+"/get-single-string-param").
         then().
             statusCode(200);
 
@@ -374,7 +378,7 @@ public class MpMetricOptionalTest {
              header(acceptHeader).
              queryParam("qp1", 123).
         when().
-             get("/" +CONTEXT_ROOT+"/get-single-int-param").
+             get(contextRoot+"/get-single-int-param").
         then().
             statusCode(200);    
         
@@ -382,7 +386,7 @@ public class MpMetricOptionalTest {
              header(acceptHeader).
              queryParam("qp1", 123.45).
         when().
-             get("/" +CONTEXT_ROOT+"/get-single-double-param").
+             get(contextRoot+"/get-single-double-param").
         then().
             statusCode(200);    
         
@@ -390,7 +394,7 @@ public class MpMetricOptionalTest {
              header(acceptHeader).
              queryParam("qp1", 123L).
         when().
-             get("/" +CONTEXT_ROOT+"/get-single-long-param").
+             get(contextRoot+"/get-single-long-param").
         then().
             statusCode(200);    
        
@@ -398,7 +402,7 @@ public class MpMetricOptionalTest {
              header(acceptHeader).
              queryParam("qp1", true).
         when().
-             get("/" +CONTEXT_ROOT+"/get-single-boolean-param").
+             get(contextRoot+"/get-single-boolean-param").
         then().
             statusCode(200);    
         
@@ -437,7 +441,7 @@ public class MpMetricOptionalTest {
         given().
              header(acceptHeader).
         when().
-             get("/" +CONTEXT_ROOT+"/get-context-params").
+             get(contextRoot+"/get-context-params").
         then().
             statusCode(200);    
 
@@ -488,7 +492,7 @@ public class MpMetricOptionalTest {
              header(acceptHeader).
              queryParam("qp1", Arrays.asList("a","b","c")).
         when().
-             get("/" +CONTEXT_ROOT+"/get-list-param1").
+             get(contextRoot+"/get-list-param1").
         then().
             statusCode(200);
         
@@ -496,7 +500,7 @@ public class MpMetricOptionalTest {
             .header(acceptHeader)
             .queryParam("qp1", Arrays.asList(1, 2))
         .when()
-            .get("/" + CONTEXT_ROOT + "/get-list-param2")
+            .get(contextRoot + "/get-list-param2")
         .then()
             .statusCode(200);
         
@@ -505,7 +509,7 @@ public class MpMetricOptionalTest {
             .queryParam("qp1", Arrays.asList(1.0, 2.0))
             .queryParam("qp2", Arrays.asList(1L, 2L))
         .when()
-                .get("/" + CONTEXT_ROOT + "/get-list-param3")
+                .get(contextRoot + "/get-list-param3")
         .then()
             .statusCode(200);
        
@@ -541,7 +545,7 @@ public class MpMetricOptionalTest {
              header(acceptHeader).
              queryParam("qp1", Arrays.asList(true, false)).
         when().
-             get("/" +CONTEXT_ROOT+"/get-vararg-param1").
+             get(contextRoot+"/get-vararg-param1").
         then().
             statusCode(200);
         
@@ -550,7 +554,7 @@ public class MpMetricOptionalTest {
             .queryParam("qp1", Arrays.asList(1, 2))
             .queryParam("qp2", Arrays.asList("a", "b"))
         .when()
-            .get("/" + CONTEXT_ROOT + "/get-vararg-param2")
+            .get(contextRoot + "/get-vararg-param2")
         .then()
             .statusCode(200);
         
@@ -558,7 +562,7 @@ public class MpMetricOptionalTest {
             .header(acceptHeader)
             .queryParam("qp1", Arrays.asList("a","b"))
         .when()
-                .get("/" + CONTEXT_ROOT + "/get-array-param1")
+                .get(contextRoot + "/get-array-param1")
         .then()
             .statusCode(200);
 
@@ -566,7 +570,7 @@ public class MpMetricOptionalTest {
             .header(acceptHeader)
             .queryParam("qp1", Arrays.asList(1, 2))
        .when()
-            .get("/" + CONTEXT_ROOT + "/get-array-param2")
+            .get(contextRoot + "/get-array-param2")
        .then()
            .statusCode(200);
         
@@ -574,7 +578,7 @@ public class MpMetricOptionalTest {
             .header(acceptHeader)
             .queryParam("qp1", Arrays.asList(1.0, 2.0))
         .when()
-            .get("/" + CONTEXT_ROOT + "/get-array-param3")
+            .get(contextRoot + "/get-array-param3")
         .then()
            .statusCode(200);
         
@@ -620,7 +624,7 @@ public class MpMetricOptionalTest {
              queryParam("qp4", "a").
              queryParam("qp5", 1L).
         when().
-             get("/" +CONTEXT_ROOT+"/get-multiple-param1").
+             get(contextRoot+"/get-multiple-param1").
         then().
             statusCode(200);
         
@@ -629,7 +633,7 @@ public class MpMetricOptionalTest {
             .queryParam("qp1", "a")
             .queryParam("qp2", Arrays.asList("b", "c"))
         .when()
-            .get("/" + CONTEXT_ROOT + "/get-multiple-param2")
+            .get(contextRoot + "/get-multiple-param2")
         .then()
             .statusCode(200);
         
@@ -640,7 +644,7 @@ public class MpMetricOptionalTest {
             queryParam("qp3", 1.0).
             queryParam("qp4", Arrays.asList("a","b", "c"))
         .when()
-                .get("/" + CONTEXT_ROOT + "/get-multiple-param3")
+                .get(contextRoot + "/get-multiple-param3")
         .then()
             .statusCode(200);
 
@@ -650,7 +654,7 @@ public class MpMetricOptionalTest {
             queryParam("qp1", Arrays.asList("x","y", "z")).
             queryParam("qp3", Arrays.asList(1.0,2.0,3.0)).
        when()
-            .get("/" + CONTEXT_ROOT + "/get-multiple-param4")
+            .get(contextRoot + "/get-multiple-param4")
        .then()
            .statusCode(200);
         
@@ -694,7 +698,7 @@ public class MpMetricOptionalTest {
         given().
              header(acceptHeader).
         when().
-             get("/" +CONTEXT_ROOT+"/get-name-object").
+             get(contextRoot+"/get-name-object").
         then().
             statusCode(200);    
        
