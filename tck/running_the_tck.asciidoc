@@ -155,9 +155,9 @@ they are not available in the used JVM, it is possible to skip the tests related
 by adding the system property `skip.base.metric.tests=true` to the surefire process.
 
 
-=== Additional Configuration for Optional TCK
+=== Additional Configuration for Optional TCKs
 
-Add the the  `<dependency>org.eclipse.microprofile.metrics:microprofile-metrics-optional-tck</dependency>` element to the `<dependenciesToScan>` element:
+Add the `<dependency>org.eclipse.microprofile.metrics:microprofile-metrics-optional-tck</dependency>` element to the `<dependenciesToScan>` element:
 
 
 [source, xml]

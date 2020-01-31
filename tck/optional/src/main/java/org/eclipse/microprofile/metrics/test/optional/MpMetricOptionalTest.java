@@ -721,7 +721,7 @@ public class MpMetricOptionalTest {
     
     @Test
     @RunAsClient
-    @InSequence(144)
+    @InSequence(14)
     public void testValidateGetJSONnoParam() throws InterruptedException {
         Header acceptHeader = new Header("Accept", APPLICATION_JSON);
        
