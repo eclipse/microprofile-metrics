@@ -41,7 +41,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.not;
 
 import io.restassured.RestAssured;
 import io.restassured.builder.ResponseBuilder;
@@ -735,17 +735,17 @@ public class MpMetricOptionalTest {
             statusCode(200).
             contentType(APPLICATION_JSON)
             .body(JSON_BASE_REQUEST_COUNT_START +"getNoParam"+JSON_BASE_REQUEST_END, equalTo(2))  //end-point was hit twice
-            .body(JSON_BASE_REQUEST_TIME_START +"getNoParam"+JSON_BASE_REQUEST_END, greaterThan(0))
+            .body(JSON_BASE_REQUEST_TIME_START +"getNoParam"+JSON_BASE_REQUEST_END, not(0))
             .body(JSON_BASE_REQUEST_COUNT_START +"optionsNoParam"+JSON_BASE_REQUEST_END, equalTo(1))
-            .body(JSON_BASE_REQUEST_TIME_START +"optionsNoParam"+JSON_BASE_REQUEST_END, greaterThan(0))
+            .body(JSON_BASE_REQUEST_TIME_START +"optionsNoParam"+JSON_BASE_REQUEST_END, not(0))
             .body(JSON_BASE_REQUEST_COUNT_START +"headNoParam"+JSON_BASE_REQUEST_END, equalTo(1))
-            .body(JSON_BASE_REQUEST_TIME_START +"headNoParam"+JSON_BASE_REQUEST_END, greaterThan(0))
+            .body(JSON_BASE_REQUEST_TIME_START +"headNoParam"+JSON_BASE_REQUEST_END, not(0))
             .body(JSON_BASE_REQUEST_COUNT_START +"putNoParam"+JSON_BASE_REQUEST_END, equalTo(1))
-            .body(JSON_BASE_REQUEST_TIME_START +"putNoParam"+JSON_BASE_REQUEST_END, greaterThan(0))
+            .body(JSON_BASE_REQUEST_TIME_START +"putNoParam"+JSON_BASE_REQUEST_END, not(0))
             .body(JSON_BASE_REQUEST_COUNT_START +"postNoParam"+JSON_BASE_REQUEST_END, equalTo(1))
-            .body(JSON_BASE_REQUEST_TIME_START +"postNoParam"+JSON_BASE_REQUEST_END, greaterThan(0))
+            .body(JSON_BASE_REQUEST_TIME_START +"postNoParam"+JSON_BASE_REQUEST_END, not(0))
             .body(JSON_BASE_REQUEST_COUNT_START +"deleteNoParam"+JSON_BASE_REQUEST_END, equalTo(1))
-            .body(JSON_BASE_REQUEST_TIME_START +"deleteNoParam"+JSON_BASE_REQUEST_END, greaterThan(0));
+            .body(JSON_BASE_REQUEST_TIME_START +"deleteNoParam"+JSON_BASE_REQUEST_END, not(0));
 
     }
     
@@ -768,88 +768,88 @@ public class MpMetricOptionalTest {
                 .body(JSON_BASE_REQUEST_COUNT_START + "getVarargParam1" + BOOLEANW_PARAM + ARRAY_BRACKETS
                         + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getVarargParam1" + BOOLEANW_PARAM + ARRAY_BRACKETS
-                        + JSON_BASE_REQUEST_END, greaterThan(0))
+                        + JSON_BASE_REQUEST_END, not(0))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getVarargParam2" + INT_PARAM + STRING_PARAM
                         + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getVarargParam2" + INT_PARAM + STRING_PARAM
-                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, greaterThan(0))
+                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, not(0))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getArrayParam1" + STRING_PARAM + ARRAY_BRACKETS
                         + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getArrayParam1" + STRING_PARAM + ARRAY_BRACKETS
-                        + JSON_BASE_REQUEST_END, greaterThan(0))
+                        + JSON_BASE_REQUEST_END, not(0))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getArrayParam2" + INT_PARAM + ARRAY_BRACKETS
                         + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getArrayParam2" + INT_PARAM + ARRAY_BRACKETS
-                        + JSON_BASE_REQUEST_END, greaterThan(0))
+                        + JSON_BASE_REQUEST_END, not(0))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getArrayParam3" + DOUBLEW_PARAM + ARRAY_BRACKETS
                         + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getArrayParam3" + DOUBLEW_PARAM + ARRAY_BRACKETS
-                        + JSON_BASE_REQUEST_END, greaterThan(0))
+                        + JSON_BASE_REQUEST_END, not(0))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
                         equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
-                        greaterThan(0))
+                        not(0))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
                         equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
-                        greaterThan(0))
+                        not(0))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
                         equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
-                        greaterThan(0))
+                        not(0))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
                         equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
-                        greaterThan(0))
+                        not(0))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getSingleBooleanParam" + BOOLEAN_PARAM + JSON_BASE_REQUEST_END,
                         equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + JSON_BASE_REQUEST_END,
-                        greaterThan(0))
+                        not(0))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getListParam1" + LIST_PARAM + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getListParam1" + LIST_PARAM + JSON_BASE_REQUEST_END,
-                        greaterThan(0))
+                        not(0))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getListParam2" + LIST_PARAM + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getListParam2" + LIST_PARAM + JSON_BASE_REQUEST_END,
-                        greaterThan(0))
+                        not(0))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getListParam3" + LIST_PARAM + LIST_PARAM + JSON_BASE_REQUEST_END,
                         equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getListParam3" + LIST_PARAM + LIST_PARAM + JSON_BASE_REQUEST_END,
-                        greaterThan(0))
+                        not(0))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
                         equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
-                        greaterThan(0))
+                        not(0))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
                         equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
-                        greaterThan(0))
+                        not(0))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
                         equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
-                        greaterThan(0))
+                        not(0))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
                         equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
-                        greaterThan(0))
+                        not(0))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getSingleBooleanParam" + BOOLEAN_PARAM
                         + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + JSON_BASE_REQUEST_END,
-                        greaterThan(0))
+                        not(0))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
                         + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
-                        + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, greaterThan(0))
+                        + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, not(0))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getMultipleParam2" + STRING_PARAM + LIST_PARAM
                         + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getMultipleParam2" + STRING_PARAM + LIST_PARAM
-                        + JSON_BASE_REQUEST_END, greaterThan(0))
+                        + JSON_BASE_REQUEST_END, not(0))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getMultipleParam3" + BOOLEAN_PARAM + BOOLEANW_PARAM
                         + DOUBLE_PARAM + STRING_PARAM + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getMultipleParam3" + BOOLEAN_PARAM + BOOLEANW_PARAM + DOUBLE_PARAM
-                        + STRING_PARAM + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, greaterThan(0))
+                        + STRING_PARAM + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, not(0))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getMultipleParam4" + SET_PARAM + SORTED_SET_PARAM + DOUBLE_PARAM
                         + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getMultipleParam4" + SET_PARAM + SORTED_SET_PARAM + DOUBLE_PARAM
-                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, greaterThan(0));
+                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, not(0));
     }    
 }
