@@ -64,6 +64,8 @@ public class MpMetricOptionalTest {
     // context root under which the application JAX-RS resources are expected to be
     private static String contextRoot;
 
+    private static int applicationPort;
+
     private static final String TEXT_PLAIN = "text/plain";
     
     
@@ -141,9 +143,6 @@ public class MpMetricOptionalTest {
 
         RestAssured.baseURI = protocol + "://" + host;
         RestAssured.port = port;
-
-        
-        System.out.println(RestAssured.baseURI + " " + RestAssured.port);
         
         // set user name and password to use for basic authentication for all requests
         String userName = System.getProperty("test.user");
@@ -155,6 +154,9 @@ public class MpMetricOptionalTest {
         }
 
         contextRoot = System.getProperty("context.root", "/optionalTCK");
+
+        applicationPort = Integer.parseInt(System.getProperty("application.port", Integer.toString(port)));
+
     }
 
     @Deployment
@@ -179,6 +181,7 @@ public class MpMetricOptionalTest {
 
         given().
              header(acceptHeader).
+             port(applicationPort).
         when().
         get(contextRoot+"/get-noparam").
         then().
@@ -206,6 +209,7 @@ public class MpMetricOptionalTest {
 
         given().
              header(acceptHeader).
+             port(applicationPort).
         when().
         get(contextRoot+"/get-noparam").
         then().
@@ -234,6 +238,7 @@ public class MpMetricOptionalTest {
 
         given().
              header(acceptHeader).
+             port(applicationPort).
         when().
              options(contextRoot+"/options-noparam").
         then().
@@ -261,6 +266,7 @@ public class MpMetricOptionalTest {
 
         given().
              header(acceptHeader).
+             port(applicationPort).
         when().
              head(contextRoot+"/head-noparam").
         then().
@@ -287,6 +293,7 @@ public class MpMetricOptionalTest {
 
         given().
              header(acceptHeader).
+             port(applicationPort).
         when().
              put(contextRoot+"/put-noparam").
         then().
@@ -312,6 +319,7 @@ public class MpMetricOptionalTest {
 
         given().
              header(acceptHeader).
+             port(applicationPort).
         when().
              post(contextRoot+"/post-noparam").
         then().
@@ -338,6 +346,7 @@ public class MpMetricOptionalTest {
 
         given().
              header(acceptHeader).
+             port(applicationPort).
         when().
              delete(contextRoot+"/delete-noparam").
         then().
@@ -368,6 +377,7 @@ public class MpMetricOptionalTest {
         
         given().
              header(acceptHeader).
+             port(applicationPort).
              queryParam("qp1", "s1").
         when().
              get(contextRoot+"/get-single-string-param").
@@ -376,6 +386,7 @@ public class MpMetricOptionalTest {
 
         given().
              header(acceptHeader).
+             port(applicationPort).
              queryParam("qp1", 123).
         when().
              get(contextRoot+"/get-single-int-param").
@@ -384,6 +395,7 @@ public class MpMetricOptionalTest {
         
         given().
              header(acceptHeader).
+             port(applicationPort).
              queryParam("qp1", 123.45).
         when().
              get(contextRoot+"/get-single-double-param").
@@ -392,6 +404,7 @@ public class MpMetricOptionalTest {
         
         given().
              header(acceptHeader).
+             port(applicationPort).
              queryParam("qp1", 123L).
         when().
              get(contextRoot+"/get-single-long-param").
@@ -400,6 +413,7 @@ public class MpMetricOptionalTest {
        
         given().
              header(acceptHeader).
+             port(applicationPort).
              queryParam("qp1", true).
         when().
              get(contextRoot+"/get-single-boolean-param").
@@ -440,6 +454,7 @@ public class MpMetricOptionalTest {
 
         given().
              header(acceptHeader).
+             port(applicationPort).
         when().
              get(contextRoot+"/get-context-params").
         then().
@@ -490,24 +505,27 @@ public class MpMetricOptionalTest {
 
         given().
              header(acceptHeader).
+             port(applicationPort).
              queryParam("qp1", Arrays.asList("a","b","c")).
         when().
              get(contextRoot+"/get-list-param1").
         then().
             statusCode(200);
         
-        given()
-            .header(acceptHeader)
-            .queryParam("qp1", Arrays.asList(1, 2))
+        given().
+            header(acceptHeader).
+            port(applicationPort).
+            queryParam("qp1", Arrays.asList(1, 2))
         .when()
             .get(contextRoot + "/get-list-param2")
         .then()
             .statusCode(200);
         
-        given()
-            .header(acceptHeader)
-            .queryParam("qp1", Arrays.asList(1.0, 2.0))
-            .queryParam("qp2", Arrays.asList(1L, 2L))
+        given().
+            header(acceptHeader).
+            port(applicationPort).
+            queryParam("qp1", Arrays.asList(1.0, 2.0)).
+            queryParam("qp2", Arrays.asList(1L, 2L))
         .when()
                 .get(contextRoot + "/get-list-param3")
         .then()
@@ -543,40 +561,45 @@ public class MpMetricOptionalTest {
 
         given().
              header(acceptHeader).
+             port(applicationPort).
              queryParam("qp1", Arrays.asList(true, false)).
         when().
              get(contextRoot+"/get-vararg-param1").
         then().
             statusCode(200);
         
-        given()
-            .header(acceptHeader)
-            .queryParam("qp1", Arrays.asList(1, 2))
-            .queryParam("qp2", Arrays.asList("a", "b"))
+        given().
+            header(acceptHeader).
+            port(applicationPort).
+            queryParam("qp1", Arrays.asList(1, 2)).
+            queryParam("qp2", Arrays.asList("a", "b"))
         .when()
             .get(contextRoot + "/get-vararg-param2")
         .then()
             .statusCode(200);
         
-        given()
-            .header(acceptHeader)
-            .queryParam("qp1", Arrays.asList("a","b"))
+        given().
+            header(acceptHeader).
+            port(applicationPort).
+            queryParam("qp1", Arrays.asList("a","b"))
         .when()
                 .get(contextRoot + "/get-array-param1")
         .then()
             .statusCode(200);
 
-        given()
-            .header(acceptHeader)
-            .queryParam("qp1", Arrays.asList(1, 2))
+        given().
+            header(acceptHeader).
+            port(applicationPort).
+            queryParam("qp1", Arrays.asList(1, 2))
        .when()
             .get(contextRoot + "/get-array-param2")
        .then()
            .statusCode(200);
         
-        given()
-            .header(acceptHeader)
-            .queryParam("qp1", Arrays.asList(1.0, 2.0))
+        given().
+            header(acceptHeader).
+            port(applicationPort).
+            queryParam("qp1", Arrays.asList(1.0, 2.0))
         .when()
             .get(contextRoot + "/get-array-param3")
         .then()
@@ -618,6 +641,7 @@ public class MpMetricOptionalTest {
 
         given().
              header(acceptHeader).
+             port(applicationPort).
              queryParam("qp1", true).
              queryParam("qp2", 1).
              queryParam("qp3", 1.0).
@@ -628,10 +652,11 @@ public class MpMetricOptionalTest {
         then().
             statusCode(200);
         
-        given()
-            .header(acceptHeader)
-            .queryParam("qp1", "a")
-            .queryParam("qp2", Arrays.asList("b", "c"))
+        given().
+            header(acceptHeader).
+            port(applicationPort).
+            queryParam("qp1", "a").
+            queryParam("qp2", Arrays.asList("b", "c"))
         .when()
             .get(contextRoot + "/get-multiple-param2")
         .then()
@@ -639,6 +664,7 @@ public class MpMetricOptionalTest {
         
         given()
             .header(acceptHeader).
+            port(applicationPort).
             queryParam("qp1", true).
             queryParam("qp2", false).
             queryParam("qp3", 1.0).
@@ -648,8 +674,9 @@ public class MpMetricOptionalTest {
         .then()
             .statusCode(200);
 
-        given()
-            .header(acceptHeader).
+        given().
+            header(acceptHeader).
+            port(applicationPort).
             queryParam("qp1", Arrays.asList("a","b", "c")).
             queryParam("qp1", Arrays.asList("x","y", "z")).
             queryParam("qp3", Arrays.asList(1.0,2.0,3.0)).
@@ -697,6 +724,7 @@ public class MpMetricOptionalTest {
 
         given().
              header(acceptHeader).
+             port(applicationPort).
         when().
              get(contextRoot+"/get-name-object").
         then().
