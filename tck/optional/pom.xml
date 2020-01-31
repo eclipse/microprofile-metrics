@@ -24,9 +24,9 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>microprofile-metrics-rest-tck</artifactId>
-    <name>MicroProfile Metrics REST-TCK</name>
-    <description>MicroProfile Metrics :: REST-TCK</description>
+    <artifactId>microprofile-metrics-optional-tck</artifactId>
+    <name>MicroProfile Metrics Optional-TCK</name>
+    <description>MicroProfile Metrics :: Optional-TCK CONTAINS[REST STAT METRIC TESTS]</description>
 
     <properties>
         <!-- TODO should come from parent pom -->
@@ -106,6 +106,13 @@
             <groupId>org.eclipse.microprofile.config</groupId>
             <artifactId>microprofile-config-api</artifactId>
             <version>1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.0.1</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
