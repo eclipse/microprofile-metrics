@@ -19,8 +19,15 @@
 
 = Running the Microprofile Metrics TCK
 
-Any implementation claiming Microprofile Metrics 2.1 compatibility must pass this test suite.
+Any implementation claiming Microprofile Metrics 2.3 compatibility must pass this test suite.
 The TCK uses `junit`.
+
+If an implementation supports non-mandatory features defined in the specification then the optional TCK
+must be executed to validate compliance.
+
+The optional TCK currently validates the following non-mandatory features:
+
+- REST stat metrics
 
 == Dependencies
 
@@ -32,19 +39,19 @@ To enable the tests in your Arquillian based test project you need to add the fo
     <dependency>
         <groupId>org.eclipse.microprofile.metrics</groupId>
         <artifactId>microprofile-metrics-api</artifactId>
-        <version>2.1</version>
+        <version>2.3</version>
     </dependency>
 
     <dependency>
         <groupId>org.eclipse.microprofile.metrics</groupId>
         <artifactId>microprofile-metrics-rest-tck</artifactId>
-        <version>2.1</version>
+        <version>2.3</version>
     </dependency>
 
     <dependency>
         <groupId>org.eclipse.microprofile.metrics</groupId>
         <artifactId>microprofile-metrics-api-tck</artifactId>
-        <version>2.1</version>
+        <version>2.3</version>
     </dependency>
 
     <dependency>
@@ -69,13 +76,6 @@ To enable the tests in your Arquillian based test project you need to add the fo
     </dependency>
 
     <dependency>
-        <groupId>javax.ws.rs</groupId>
-        <artifactId>javax.ws.rs-api</artifactId>
-        <version>2.0.1</version>
-        <scope>provided</scope>
-    </dependency>
-
-    <dependency>
         <groupId>org.jboss.arquillian.junit</groupId>
         <artifactId>arquillian-junit-container</artifactId>
         <version>1.1.8.Final</version>
@@ -93,6 +93,27 @@ To enable the tests in your Arquillian based test project you need to add the fo
 
 ----
 
+=== Additional dependencies for Optional TCK
+
+If running the optional TCK module you will need the below *additional* dependencies:
+
+[source, xml]
+----
+
+    <dependency>
+        <groupId>org.eclipse.microprofile.metrics</groupId>
+        <artifactId>microprofile-metrics-optional-tck</artifactId>
+        <version>2.3</version>
+    </dependency>
+
+    <dependency>
+        <groupId>javax.ws.rs</groupId>
+        <artifactId>javax.ws.rs-api</artifactId>
+        <version>2.0.1</version>
+        <scope>provided</scope>
+    </dependency>
+
+----
 == Declaring the Tests to run in Apache Maven pom.xml
 
 If you use Apache Maven, then the tests are run via the `maven-surefire-plugin` by adding the following in your pom.xml.
@@ -121,11 +142,7 @@ If you use Apache Maven, then the tests are run via the `maven-surefire-plugin` 
                 <environmentVariables>
                     <MP_METRICS_TAGS>tier=integration</MP_METRICS_TAGS>
                 </environmentVariables>
-                <!-- THE FOLLOWING TEST WILL TEST AN IMPLEMENTATION AGAINST THE OPTIONAL REST STAT METRICS -->
-                <!-- KEEP DISABLED/EXCLUDED IF NOT TESTING FOR COMPLIANCE WITH OPTIONAL REST STAT METRICS  -->
-                 <excludes>
-                    <exclude>**/MpMetricOptionalTest.java</exclude>
-                </excludes>
+
             </configuration>
         </plugin>
     </plugins>
@@ -137,8 +154,22 @@ If the implementation does not support all base metrics as described in the spec
 they are not available in the used JVM, it is possible to skip the tests related to base metrics
 by adding the system property `skip.base.metric.tests=true` to the surefire process.
 
-If an implementation supports REST stat metrics, remove the `<exclude>**/MpMetricOptionalTest.java</exclude>` to enable
-the relevant TCK tests.
+
+=== Additional Configuration for Optional TCK
+
+Add the the  `<dependency>org.eclipse.microprofile.metrics:microprofile-metrics-optional-tck</dependency>` element to the `<dependenciesToScan>` element:
+
+
+[source, xml]
+----
+
+    <dependenciesToScan>
+        <dependency>org.eclipse.microprofile.metrics:microprofile-metrics-optional-tck</dependency>
+        <dependency>org.eclipse.microprofile.metrics:microprofile-metrics-api-tck</dependency>
+        <dependency>org.eclipse.microprofile.metrics:microprofile-metrics-rest-tck</dependency>
+    </dependenciesToScan>
+
+----
 
 == Running the TCK
 

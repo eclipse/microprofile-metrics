@@ -91,6 +91,7 @@
         <module>spec</module>
         <module>tck/rest</module>
         <module>tck/api</module>
+        <module>tck/optional</module>
     </modules>
 
     <dependencyManagement>
