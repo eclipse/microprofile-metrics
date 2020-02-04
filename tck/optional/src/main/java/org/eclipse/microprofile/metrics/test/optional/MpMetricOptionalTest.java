@@ -91,6 +91,7 @@ public class MpMetricOptionalTest {
     private static final String SORTED_SET_PARAM ="_java.util.SortedSet";
     private static final String OBJECT_PARAM ="_java.lang.Object";
     private static final String NAME_OBJECT_PARAM ="_org.eclipse.microprofile.metrics.test.optional.NameObject";
+    private static final String AYNC_RESP_PARAM ="_javax.ws.rs.container.AsyncResponse";
     
     private static final String ARRAY_BRACKETS = "[]";    
     
@@ -744,12 +745,143 @@ public class MpMetricOptionalTest {
     }
     
     /*
-     * TEST GET REQUEST IN JSON TO RETRIEVE ABOVE VALUES
+     * TEST GET REQUEST ASYNC
      */
     
     @Test
     @RunAsClient
     @InSequence(14)
+    public void testGetAsync() throws InterruptedException {
+        Header acceptHeader = new Header("Accept", TEXT_PLAIN);
+
+        given().
+             header(acceptHeader).
+             port(applicationPort).
+        when().
+             get(contextRoot+"/get-async"). 
+        then().
+            statusCode(200);    
+        
+        
+        Response resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
+        ResponseBuilder responseBuilder = new ResponseBuilder();
+        responseBuilder.clone(resp);
+        responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
+        resp = responseBuilder.build();
+        resp.then().
+            statusCode(200).
+            contentType(TEXT_PLAIN).
+            body(containsString(OM_BASE_REQUEST_COUNT_START + "getAsync" + AYNC_RESP_PARAM + OM_BASE_REQUEST_END)
+                    , containsString(OM_BASE_REQUEST_TIME_START + "getAsync" + AYNC_RESP_PARAM + OM_BASE_REQUEST_END));
+
+    }
+    
+    
+    /*
+     * TEST POST  REQUEST MULTI PARAM
+     */
+    
+    @Test
+    @RunAsClient
+    @InSequence(15)
+    public void testPostMultiParam() throws InterruptedException {
+        Header acceptHeader = new Header("Accept", TEXT_PLAIN);
+
+        given().
+             header(acceptHeader).
+             port(applicationPort).
+             queryParam("qp1", true).
+             queryParam("qp2", 1).
+             queryParam("qp3", 1.0).
+             queryParam("qp4", "a").
+             queryParam("qp5", 1L).
+        when().
+            post(contextRoot+"/post-multiple-param1").
+        then().
+            statusCode(200);
+        
+        given().
+            header(acceptHeader).
+            port(applicationPort).
+            queryParam("qp1", "a").
+            queryParam("qp2", Arrays.asList("b", "c"))
+        .when()
+            .post(contextRoot + "/post-multiple-param2")
+        .then()
+            .statusCode(200);
+        
+        given()
+            .header(acceptHeader).
+            port(applicationPort).
+            queryParam("qp1", true).
+            queryParam("qp2", false).
+            queryParam("qp3", 1.0).
+            queryParam("qp4", Arrays.asList("a","b", "c"))
+        .when()
+            .post(contextRoot + "/post-multiple-param3")
+        .then()
+            .statusCode(200);
+
+        given().
+            header(acceptHeader).
+            port(applicationPort).
+            queryParam("qp1", Arrays.asList("a","b", "c")).
+            queryParam("qp1", Arrays.asList("x","y", "z")).
+            queryParam("qp3", Arrays.asList(1.0,2.0,3.0)).
+       when()
+            .post(contextRoot + "/post-multiple-param4")
+       .then()
+           .statusCode(200);
+        
+        given().
+            header(acceptHeader).
+            port(applicationPort).
+            queryParam("qp1", Arrays.asList("a","b", "c")).
+            queryParam("qp1", Arrays.asList(1L,2L,3L)).
+            queryParam("qp3", Arrays.asList(1,2,3)).
+        when()
+            .post(contextRoot + "/post-multiple-param5")
+        .then()
+            .statusCode(200);
+        
+        Response resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
+        ResponseBuilder responseBuilder = new ResponseBuilder();
+        responseBuilder.clone(resp);
+        responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
+        resp = responseBuilder.build();
+        resp.then().
+            statusCode(200).
+            contentType(TEXT_PLAIN).
+            body(containsString(OM_BASE_REQUEST_COUNT_START + "postMultipleParam1" 
+                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END)
+                , containsString(OM_BASE_REQUEST_TIME_START + "postMultipleParam1" 
+                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END)
+                , containsString(OM_BASE_REQUEST_COUNT_START + "postMultipleParam2" 
+                        + STRING_PARAM + LIST_PARAM +  OM_BASE_REQUEST_END)
+                , containsString(OM_BASE_REQUEST_TIME_START + "postMultipleParam2" 
+                        + STRING_PARAM + LIST_PARAM +  OM_BASE_REQUEST_END)
+                , containsString(OM_BASE_REQUEST_COUNT_START + "postMultipleParam3" 
+                        + BOOLEAN_PARAM + BOOLEANW_PARAM + DOUBLE_PARAM + STRING_PARAM +ARRAY_BRACKETS + OM_BASE_REQUEST_END)
+                , containsString(OM_BASE_REQUEST_TIME_START + "postMultipleParam3" 
+                        + BOOLEAN_PARAM + BOOLEANW_PARAM + DOUBLE_PARAM + STRING_PARAM +ARRAY_BRACKETS + OM_BASE_REQUEST_END)
+                , containsString(OM_BASE_REQUEST_COUNT_START + "postMultipleParam4" 
+                        + SET_PARAM + SORTED_SET_PARAM + DOUBLE_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
+                , containsString(OM_BASE_REQUEST_TIME_START + "postMultipleParam4" 
+                        + SET_PARAM + SORTED_SET_PARAM + DOUBLE_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
+                , containsString(OM_BASE_REQUEST_COUNT_START + "postMultipleParam5" 
+                        + SET_PARAM + LONGW_PARAM + INTW_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
+                , containsString(OM_BASE_REQUEST_TIME_START + "postMultipleParam5" 
+                        + SET_PARAM + LONGW_PARAM + INTW_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END));
+
+    }
+    
+    /*
+     * TEST GET REQUEST JSON TO RETRIEVE ABOVE VALUES
+     */
+
+    @Test
+    @RunAsClient
+    @InSequence(16)
     public void testValidateGetJSONnoParam() throws InterruptedException {
         Header acceptHeader = new Header("Accept", APPLICATION_JSON);
        
@@ -780,7 +912,7 @@ public class MpMetricOptionalTest {
     
     @Test
     @RunAsClient
-    @InSequence(15)
+    @InSequence(17)
     public void testValidateGetJSONParam() throws InterruptedException {
         Header acceptHeader = new Header("Accept", APPLICATION_JSON);
        
@@ -878,6 +1010,30 @@ public class MpMetricOptionalTest {
                 .body(JSON_BASE_REQUEST_COUNT_START + "getMultipleParam4" + SET_PARAM + SORTED_SET_PARAM + DOUBLE_PARAM
                         + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getMultipleParam4" + SET_PARAM + SORTED_SET_PARAM + DOUBLE_PARAM
-                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, not(0));
-    }    
+                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, not(0))
+                .body(JSON_BASE_REQUEST_COUNT_START + "postMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
+                        + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, equalTo(1))
+                .body(JSON_BASE_REQUEST_TIME_START + "postMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
+                        + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, not(0))
+                .body(JSON_BASE_REQUEST_COUNT_START + "postMultipleParam2" + STRING_PARAM + LIST_PARAM
+                        + JSON_BASE_REQUEST_END, equalTo(1))
+                .body(JSON_BASE_REQUEST_TIME_START + "postMultipleParam2" + STRING_PARAM + LIST_PARAM
+                        + JSON_BASE_REQUEST_END, not(0))
+                .body(JSON_BASE_REQUEST_COUNT_START + "postMultipleParam3" + BOOLEAN_PARAM + BOOLEANW_PARAM
+                        + DOUBLE_PARAM + STRING_PARAM + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(1))
+                .body(JSON_BASE_REQUEST_TIME_START + "postMultipleParam3" + BOOLEAN_PARAM + BOOLEANW_PARAM + DOUBLE_PARAM
+                        + STRING_PARAM + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, not(0))
+                .body(JSON_BASE_REQUEST_COUNT_START + "postMultipleParam4" + SET_PARAM + SORTED_SET_PARAM + DOUBLE_PARAM
+                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(1))
+                .body(JSON_BASE_REQUEST_TIME_START + "postMultipleParam4" + SET_PARAM + SORTED_SET_PARAM + DOUBLE_PARAM
+                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, not(0))
+                .body(JSON_BASE_REQUEST_COUNT_START + "postMultipleParam5" + SET_PARAM + LONGW_PARAM + INTW_PARAM
+                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(1))
+                .body(JSON_BASE_REQUEST_TIME_START + "postMultipleParam5" + SET_PARAM + LONGW_PARAM + INTW_PARAM
+                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, not(0))
+                .body(JSON_BASE_REQUEST_COUNT_START + "getAsync" + AYNC_RESP_PARAM + JSON_BASE_REQUEST_END, equalTo(1))
+                .body(JSON_BASE_REQUEST_TIME_START + "getAsync" + AYNC_RESP_PARAM + JSON_BASE_REQUEST_END, not(0));
+        
+    }
+    
 }
