@@ -269,7 +269,9 @@ The MicroProfile Metrics runtime will track metrics from RESTful resource method
 |Multi| true
 |Tags| {class=%s1,method=%s2}
 |Description| The number of invocations and total response time of this RESTful resource method since the start of the server.
-|Notes|The `%s1` should be substituted with the fully qualified name of the RESTful resource class. 
+|Notes|With an asynchronous request the *timing* that is tracked by the REST metric must incorporate the time spent by the asynchronous call.
+
+The `%s1` should be substituted with the fully qualified name of the RESTful resource class. 
 
 The `%s2` should be substituted with the name of the RESTful resource method and appended with its parameter types using an underscore `\_`.  Multiple parameter types are appended one after another (e.g. `<methodName>_<paramType1>_<paramType2>`).
 
