@@ -19,75 +19,158 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
-== Major changes to previous versions
+= Release Notes
+
 
 Changes marked with icon:bolt[role="red"] are breaking changes relative to previous versions of the spec.
 
-* Changes in 2.3
-** Introduced a new base metric derived from RESTful stats into the base scope.
-*** `rest.request` : Tracks the total count of requests and total elapsed time spent at the REST endpoint
-** Introduced the simple timer (`@SimplyTimed`) metric.
-** The API code no longer requires a correctly configured MP Config implementation to be available at runtime, so it is possible to slim down deployments if MP Config is not necessary 
-** Added ProcessCpuTime as a new optional base metric.
-** Added `withOptional*` methods to the `MetadataBuilder`, they don't fail when null values are passed to them
-** Added the `MetricID.getTagsAsArray()` method to the API.
-** Added the method `MetricType.fromClassName`
+[[release_notes_2_3]]
+== Changes in 2.3
+
+A full list of changes may be found on the link:https://github.com/eclipse/microprofile-metrics/milestone/9[MicroProfile Metrics 2.3 Milestone]
+
+=== API/SPI Changes
+** Introduced the simple timer (`@SimplyTimed`) metric. (https://github.com/eclipse/microprofile-metrics/issues/496[#496])
+** Added `withOptional*` methods to the `MetadataBuilder`, they don't fail when null values are passed to them (https://github.com/eclipse/microprofile-metrics/issues/464[#464])
+** Added the `MetricID.getTagsAsArray()` method to the API. (https://github.com/eclipse/microprofile-metrics/issues/457[#457])
+** Added the method `MetricType.fromClassName` (https://github.com/eclipse/microprofile-metrics/issues/455[#455])
+
+=== Functional Changes
+** Introduced the simple timer (`@SimplyTimed`) metric. (https://github.com/eclipse/microprofile-metrics/issues/496[#496])
+** The API code no longer requires a correctly configured MP Config implementation to be available at runtime, so it is possible to slim down deployments if MP Config is not necessary (https://github.com/eclipse/microprofile-metrics/pull/466[#466])
+
+=== Specification Changes
+** Introduced the simple timer (`@SimplyTimed`) metric. (https://github.com/eclipse/microprofile-metrics/issues/496[#496])
+** Added ProcessCpuTime as a new optional base metric. (https://github.com/eclipse/microprofile-metrics/issues/442[#442])
+
+=== TCK enhancement
 ** Improved TCK - Use WebArchive for deployment
 
+[[release_notes_2_2]]
+== Changes in 2.2
+
+A full list of changes may be found on the link:https://github.com/eclipse/microprofile-metrics/milestone/12[MicroProfile Metrics 2.2.1 Milestone]
+
+=== API/SPI Changes
+** Reverted a problematic change from 2.1 where Gauges were required to return subclasses of `java.lang.Number`
+
+=== Functional Changes
+** Reverted a problematic change from 2.1 where Gauges were required to return subclasses of `java.lang.Number`
+** (2.2.1) Added ProcessCpuTime as a new optional base metric. (https://github.com/eclipse/microprofile-metrics/issues/480[#480])
+
+=== Specification Changes
+** (2.2.1) Added ProcessCpuTime as a new optional base metric. (https://github.com/eclipse/microprofile-metrics/issues/480[#480])
 
 
-* Changes in 2.2
-** Reverted a problematic change from 2.1 where Gauges were required to return subclasses of `java.lang.Number` 
+[[release_notes_2_1]]
+== Changes in 2.1
 
-* Changes in 2.1
-** (2.1.1) Added ProcessCpuTime as a new optional base metric.
-** Clarified that metric registry implementations are required to be thread-safe.
-** Clarified in the API code that Gauges must return values that extend `java.lang.Number`.  [NOTE: this caused issues with backward compatibility and was reverted in 2.2]
-** Clarified that implementations can, for JSON export of scopes containing no metrics, omit them, or that they can be present with an empty value.
-** Clarified that metrics should not be created for private methods when a class is annotated (the TCK asserted this in 2.0 anyway)
+A full list of changes may be found on the link:https://github.com/eclipse/microprofile-metrics/milestone/5[MicroProfile Metrics 2.1 Milestone] and link:https://github.com/eclipse/microprofile-metrics/milestone/11[MicroProfile Metrics 2.1.1 Milestone]
+
+=== API/SPI Changes
+** Clarified in the API code that Gauges must return values that extend `java.lang.Number`.  [NOTE: this caused issues with backward compatibility and was reverted in 2.2] (https://github.com/eclipse/microprofile-metrics/issues/304[#304])
+** Added the `reusable(boolean)` method for MetadataBuilder (https://github.com/eclipse/microprofile-metrics/issues/407[#407])
+
+=== Functional Changes
+** (2.1.1) Added ProcessCpuTime as a new optional base metric. (https://github.com/eclipse/microprofile-metrics/issues/454[#454])
+** Clarified in the API code that Gauges must return values that extend `java.lang.Number`.  [NOTE: this caused issues with backward compatibility and was reverted in 2.2] (https://github.com/eclipse/microprofile-metrics/issues/304[#304])
+** Clarified that implementations can, for JSON export of scopes containing no metrics, omit them, or that they can be present with an empty value. (https://github.com/eclipse/microprofile-metrics/issues/416[#416])
+** Clarified that metrics should not be created for private methods when a class is annotated (the TCK asserted this in 2.0 anyway) (https://github.com/eclipse/microprofile-metrics/issues/416[#416])
+** Added the `reusable(boolean)` method for MetadataBuilder (https://github.com/eclipse/microprofile-metrics/issues/407[#407])
+
+=== Specification Changes
+** (2.1.1) Added ProcessCpuTime as a new optional base metric. (https://github.com/eclipse/microprofile-metrics/issues/454[#454])
+** Clarified that metric registry implementations are required to be thread-safe. (https://github.com/eclipse/microprofile-metrics/issues/300[#300])
+** Clarified that implementations can, for JSON export of scopes containing no metrics, omit them, or that they can be present with an empty value. (https://github.com/eclipse/microprofile-metrics/issues/416[#416])
+** Clarified that metrics should not be created for private methods when a class is annotated (the TCK asserted this in 2.0 anyway) (https://github.com/eclipse/microprofile-metrics/issues/416[#416])
+** Added some text to the specification about programmatic creation of metrics (without annotations) (https://github.com/eclipse/microprofile-metrics/issues/399[#399])
+
+=== TCK enhancement
 ** TCKs are updated to use RestAssured 4.0
-** Added the `reusable(boolean)` method for MetadataBuilder 
+
+=== Miscellaneous
 ** Explicitly excluded the transitive dependency on `javax.el-api` from the build of the specification. It wasn't actually used anywhere in the build so there should be no impact. 
-Implementations can still support the Expression Language if they choose to.  
-** Added some text to the specification about programmatic creation of metrics (without annotations)
+Implementations can still support the Expression Language if they choose to. (https://github.com/eclipse/microprofile-metrics/issues/417[#417])
 
+[[release_notes_2_0]]
+== Changes in 2.0
 
-* Changes in 2.0
-** (2.0.3) Added ProcessCpuTime as a new optional base metric.
-** icon:bolt[role="red"] Refactoring of Counters, as the old `@Counted` was misleading in practice.
+A full list of changes may be found on the link:https://github.com/eclipse/microprofile-metrics/milestone/4[MicroProfile Metrics 2.0 Milestone] and link:https://github.com/eclipse/microprofile-metrics/milestone/7[MicroProfile Metrics 2.0.1 Milestone] and link:https://github.com/eclipse/microprofile-metrics/milestone/8[MicroProfile Metrics 2.0.2 Milestone]
+
+=== API/SPI Changes
+** icon:bolt[role="red"] Refactoring of Counters, as the old `@Counted` was misleading in practice. (https://github.com/eclipse/microprofile-metrics/issues/290[#290])
 *** Counters via `@Counted` are now always monotonic, the `monotonic` attribute is gone.
 The `Counted` interface lost the `dec()` methods.
-*** Former non-monotonic counters are now <<app-programming-model#ConcurrentGaugeDef,`@ConcurrentGauge`>> and also in the output reported as gauges.
-*** See <<appendix#migration-hint-to-20, Migration hints>> about migration of applications using MicroProfile Metrics.
-** Removed unnecessary `@InterceptorBinding` annotation from `org.eclipse.microprofile.metrics.annotation.Metric`.
-** icon:bolt[role="red"] Removed deprecated `org.eclipse.microprofile.metrics.MetricRegistry.register(String name, Metric, Metadata)`
-** icon:bolt[role="red"]  `Metadata` is now immutable and built via a <<app-programming-model#pgm-metadata,`MetadataBuilder`>>.
-** Introduced a Tag object which represents a singular tag key/value pair.
-** icon:bolt[role="red"] Metrics are now uniquely identified by a <<architecture#metricid-data-def,MetricID>> (combination of the metric's name and tags).
-** MetricFilter modified to filter with MetricID instead of name
-** The 'Metadata' is mapped to a unique metric name in the `MetricRegistry` and this relationship is immutable.
-** Tag key names for labels are restricted to match the regex `[a-zA-Z_][a-zA-Z0-9_]*`.
-** Tag values defined through MP_METRICS_TAGS must escape equal signs `=` and commas `,` with a backslash `\`.
+*** Former non-monotonic counters are now <<app-programming-model#ConcurrentGaugeDef,`@ConcurrentGauge`>> and also in the output reported as gauges. (https://github.com/eclipse/microprofile-metrics/issues/290[#290])
+*** See <<appendix#migration-hint-to-20, Migration hints>> about migration of applications using MicroProfile Metrics. (https://github.com/eclipse/microprofile-metrics/issues/290[#290])
+** Removed unnecessary `@InterceptorBinding` annotation from `org.eclipse.microprofile.metrics.annotation.Metric`. (https://github.com/eclipse/microprofile-metrics/issues/188[#188])
+** icon:bolt[role="red"] Removed deprecated `org.eclipse.microprofile.metrics.MetricRegistry.register(String name, Metric, Metadata)` (https://github.com/eclipse/microprofile-metrics/issues/268[#268])
+** icon:bolt[role="red"]  `Metadata` is now immutable and built via a <<app-programming-model#pgm-metadata,`MetadataBuilder`>>. (https://github.com/eclipse/microprofile-metrics/issues/228[#228])
+** Introduced a Tag object which represents a singular tag key/value pair. (https://github.com/eclipse/microprofile-metrics/issues/238[#238])
+** MetricFilter modified to filter with MetricID instead of name. (https://github.com/eclipse/microprofile-metrics/issues/238[#238])
+
+=== Functional Changes
+** (2.0.3) Added ProcessCpuTime as a new optional base metric.  (https://github.com/eclipse/microprofile-metrics/issues/454[#454])
+** icon:bolt[role="red"]  `Metadata` is now immutable and built via a <<app-programming-model#pgm-metadata,`MetadataBuilder`>>. (https://github.com/eclipse/microprofile-metrics/issues/228[#228])
+** icon:bolt[role="red"] Metrics are now uniquely identified by a <<architecture#metricid-data-def,MetricID>> (combination of the metric's name and tags). (https://github.com/eclipse/microprofile-metrics/issues/238[#238])
+** MetricFilter modified to filter with MetricID instead of name. (https://github.com/eclipse/microprofile-metrics/issues/238[#238])
+** The 'Metadata' is mapped to a unique metric name in the `MetricRegistry` and this relationship is immutable. (https://github.com/eclipse/microprofile-metrics/issues/238[#238])
+** Tag key names for labels are restricted to match the regex `[a-zA-Z_][a-zA-Z0-9_]*`. (https://github.com/eclipse/microprofile-metrics/issues/238[#238])
+** Tag values defined through MP_METRICS_TAGS must escape equal signs `=` and commas `,` with a backslash `\`. (https://github.com/eclipse/microprofile-metrics/issues/238[#238])
 ** icon:bolt[role="red"] <<rest-endpoints#json-format-def,JSON output format>> for GET requests now appends tags along with the metric in `metricName;tag=value;tag=value` format.
 JSON format for OPTIONS requests have been modified such that the 'tags' attribute is a list of nested lists which holds tags from different metrics that
- are associated with the metadata.
+ are associated with the metadata. (https://github.com/eclipse/microprofile-metrics/issues/331[#381])
 ** OpenMetrics format - formerly called Prometheus format
-*** Reserved characters in OpenMetrics format must be escaped.
-*** icon:bolt[role="red"] In OpenMetrics output format, the separator between scope and metric name is now a `_` instead of a `:`.
-*** icon:bolt[role="red"] Metric names with camelCase are no longer converted to snake_case for OpenMetrics output.
-** icon:bolt[role="red"] The default value of the `reusable` attribute for metric objects created programmatically (not via annotations) is now `true`
-** icon:bolt[role="red"] Some base metrics' names have changed to follow the convention of ending the name of accumulating counters with `total`.
-** icon:bolt[role="red"] Some base metrics' types have changed from Counter to Gauge since Counters must now count monotonically.
+*** Reserved characters in OpenMetrics format must be escaped. (https://github.com/eclipse/microprofile-metrics/issues/238[#238])
+*** icon:bolt[role="red"] In OpenMetrics output format, the separator between scope and metric name is now a `_` instead of a `:`. (https://github.com/eclipse/microprofile-metrics/issues/279[#279])
+*** icon:bolt[role="red"] Metric names with camelCase are no longer converted to snake_case for OpenMetrics output. (https://github.com/eclipse/microprofile-metrics/issues/357[#357])
+** icon:bolt[role="red"] The default value of the `reusable` attribute for metric objects created programmatically (not via annotations) is now `true` (https://github.com/eclipse/microprofile-metrics/issues/328[#328])
+** icon:bolt[role="red"] Some base metrics' names have changed to follow the convention of ending the name of accumulating counters with `total`. (https://github.com/eclipse/microprofile-metrics/issues/375[#375])
+** icon:bolt[role="red"] Some base metrics' types have changed from Counter to Gauge since Counters must now count monotonically. (https://github.com/eclipse/microprofile-metrics/issues/375[#375])
 ** icon:bolt[role="red"] Some base metrics' names have changed because they now use tags to distinguish metrics for multiple JVM objects. For example,
-each existing garbage collector now has its own `gc.total` metric with the name of the garbage collector being in a tag. Names
-of some base metrics in the OpenMetrics output are also affected by the removal of conversion from camelCase to snake_case.
-** Added a set of recommendations how application servers with multiple deployed applications should behave if they support MP Metrics.
+each existing garbage collector now has its own `gc.total` metric with the name of the garbage collector being in a tag. Names 
+of some base metrics in the OpenMetrics output are also affected by the removal of conversion from camelCase to snake_case. (https://github.com/eclipse/microprofile-metrics/issues/375[#375])
 
-* Changes in 1.1
-** Improved TCK
+=== Specification Changes
+** (2.0.3) Added ProcessCpuTime as a new optional base metric.  (https://github.com/eclipse/microprofile-metrics/issues/454[#454])
+** icon:bolt[role="red"] Refactoring of Counters, as the old `@Counted` was misleading in practice. (https://github.com/eclipse/microprofile-metrics/issues/290[#290])
+*** Counters via `@Counted` are now always monotonic, the `monotonic` attribute is gone.
+The `Counted` interface lost the `dec()` methods.
+*** Former non-monotonic counters are now <<app-programming-model#ConcurrentGaugeDef,`@ConcurrentGauge`>> and also in the output reported as gauges. (https://github.com/eclipse/microprofile-metrics/issues/290[#290])
+*** See <<appendix#migration-hint-to-20, Migration hints>> about migration of applications using MicroProfile Metrics. (https://github.com/eclipse/microprofile-metrics/issues/290[#290])
+** icon:bolt[role="red"] Metrics are now uniquely identified by a <<architecture#metricid-data-def,MetricID>> (combination of the metric's name and tags). (https://github.com/eclipse/microprofile-metrics/issues/238[#238])
+** The 'Metadata' is mapped to a unique metric name in the `MetricRegistry` and this relationship is immutable. (https://github.com/eclipse/microprofile-metrics/issues/238[#238])
+** Tag key names for labels are restricted to match the regex `[a-zA-Z_][a-zA-Z0-9_]*`. (https://github.com/eclipse/microprofile-metrics/issues/238[#238])
+** Tag values defined through MP_METRICS_TAGS must escape equal signs `=` and commas `,` with a backslash `\`. (https://github.com/eclipse/microprofile-metrics/issues/238[#238])
+** OpenMetrics format - formerly called Prometheus format
+*** Reserved characters in OpenMetrics format must be escaped. (https://github.com/eclipse/microprofile-metrics/issues/238[#238])
+*** icon:bolt[role="red"] In OpenMetrics output format, the separator between scope and metric name is now a `_` instead of a `:`. (https://github.com/eclipse/microprofile-metrics/issues/279[#279])
+*** icon:bolt[role="red"] Metric names with camelCase are no longer converted to snake_case for OpenMetrics output. (https://github.com/eclipse/microprofile-metrics/issues/357[#357])
+** icon:bolt[role="red"] The default value of the `reusable` attribute for metric objects created programmatically (not via annotations) is now `true` (https://github.com/eclipse/microprofile-metrics/issues/328[#328])
+** icon:bolt[role="red"] Some base metrics' names have changed to follow the convention of ending the name of accumulating counters with `total`. (https://github.com/eclipse/microprofile-metrics/issues/375[#375])
+** icon:bolt[role="red"] Some base metrics' types have changed from Counter to Gauge since Counters must now count monotonically. (https://github.com/eclipse/microprofile-metrics/issues/375[#375])
+** icon:bolt[role="red"] Some base metrics' names have changed because they now use tags to distinguish metrics for multiple JVM objects. For example,
+each existing garbage collector now has its own `gc.total` metric with the name of the garbage collector being in a tag. Names 
+of some base metrics in the OpenMetrics output are also affected by the removal of conversion from camelCase to snake_case. (https://github.com/eclipse/microprofile-metrics/issues/375[#375])
+** Added a set of recommendations how application servers with multiple deployed applications should behave if they support MP Metrics. (https://github.com/eclipse/microprofile-metrics/issues/240[#240])
+
+
+[[release_notes_1_1]]
+== Changes in 1.1
+
+A full list of changes may be found on the link:https://github.com/eclipse/microprofile-metrics/milestone/1[MicroProfile Metrics 1.1 Milestone]
+
+=== API/SPI Changes
 ** `org.eclipse.microprofile.metrics.MetricRegistry.register(String name, Metric, Metadata)` is deprecated.
 Use `org.eclipse.microprofile.metrics.MetricRegistry.register(Metadata, Metric)` instead, where `Metadata`
 already has a field for the name.
-** Global tags are now supplied via the means of MicroProfile Config (the env variable is still valid).
+=== Functional Changes
+** `org.eclipse.microprofile.metrics.MetricRegistry.register(String name, Metric, Metadata)` is deprecated.
+Use `org.eclipse.microprofile.metrics.MetricRegistry.register(Metadata, Metric)` instead, where `Metadata`
+already has a field for the name.
+** Global tags are now supplied via the means of MicroProfile Config (the env variable is still valid). (https://github.com/eclipse/microprofile-metrics/issues/165[#165])
+=== Specification Changes
 ** Annotations and `Metadata` can now have a flag `reusable` that indicates that the metric name can be registered
 more than once. Default is `false` as in Metrics 1.0. See <<architecture#reusing_metrics>>.
+=== TCK enhancement
+** Improved TCK
