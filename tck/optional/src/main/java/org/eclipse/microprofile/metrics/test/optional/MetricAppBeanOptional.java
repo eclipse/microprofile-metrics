@@ -36,7 +36,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.ResourceContext;
+import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Context;
@@ -222,4 +224,60 @@ public class MetricAppBeanOptional {
     public String  getNameObject(@QueryParam("qp1") NameObject v1) throws Exception {
         return "This is a GET request with NameObject";
     }
+    
+    @GET
+    @Path("/get-async")
+    public void  getAsync(@Suspended final AsyncResponse ayncResponse) throws Exception {
+        Thread thread = new Thread ( () -> {
+            try {
+                Thread.sleep(5000);
+            } 
+            catch (Exception e) {
+                System.err.println(e.toString());
+            }
+        });
+        thread.run();
+        
+        ayncResponse.resume("This is a GET request with AsyncResponse");
+    }
+    
+    
+    @POST
+    @Path("/post-multiple-param1")
+    public String  postMultipleParam1(
+            @QueryParam("qp1") boolean v1,
+            @QueryParam("qp2") int v2,
+            @QueryParam("qp3") double v3,
+            @QueryParam("qp4") String v4,
+            @QueryParam("qp5") long v5) throws Exception {
+        return "This is a POST request with multiple parameters1";
+    }
+    
+    @POST
+    @Path("/post-multiple-param2")
+    public String  postMultipleParam2(@QueryParam("qp1") String v1, @QueryParam("qp2") List<String> v2) throws Exception {
+        return "This is a POST request with multiple parameters2";
+    }
+    
+    @POST
+    @Path("/post-multiple-param3")
+    public String  postMultipleParam3(@QueryParam("qp1") boolean v1,
+            @QueryParam("qp2") Boolean v2, @QueryParam("qp3") double v3, @QueryParam("qp4")String...v4) throws Exception {
+        return "This is a GPOSTET request with multiple parameters3";
+    }
+    
+    @POST
+    @Path("/post-multiple-param4")
+    public String  postMultipleParam4(@QueryParam("qp1") Set<String> v1,
+            @QueryParam("qp2") SortedSet<Integer> v2, @QueryParam("qp3") double[] v3) throws Exception {
+        return "This is a POST request with multiple parameters4";
+    }
+    
+    @POST
+    @Path("/post-multiple-param5")
+    public String  postMultipleParam5(@QueryParam("qp1") Set<String> v1,
+            @QueryParam("qp2") Long v2, @QueryParam("qp3") Integer[] v3) throws Exception {
+        return "This is a POST request with multiple parameters5";
+    }
+    
 }
