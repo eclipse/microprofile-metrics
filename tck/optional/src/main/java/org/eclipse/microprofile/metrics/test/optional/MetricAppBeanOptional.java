@@ -227,18 +227,17 @@ public class MetricAppBeanOptional {
     
     @GET
     @Path("/get-async")
-    public void  getAsync(@Suspended final AsyncResponse ayncResponse) throws Exception {
+    public void  getAsync(@Suspended final AsyncResponse asyncResponse) throws Exception {
         Thread thread = new Thread ( () -> {
             try {
                 Thread.sleep(5000);
-            } 
+                asyncResponse.resume("This is a GET request with AsyncResponse");
+            }
             catch (Exception e) {
                 System.err.println(e.toString());
             }
         });
-        thread.run();
-        
-        ayncResponse.resume("This is a GET request with AsyncResponse");
+        thread.start();
     }
     
     
