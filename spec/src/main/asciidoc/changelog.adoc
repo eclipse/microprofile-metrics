@@ -36,10 +36,14 @@ A full list of changes may be found on the link:https://github.com/eclipse/micro
 ** Added the method `MetricType.fromClassName` (https://github.com/eclipse/microprofile-metrics/issues/455[#455])
 
 === Functional Changes
+** Introduced a new base metric derived from RESTful stats into the base scope.
+*** `rest.request` : Tracks the total count of requests and total elapsed time spent at the REST endpoint
 ** Introduced the simple timer (`@SimplyTimed`) metric. (https://github.com/eclipse/microprofile-metrics/issues/496[#496])
 ** The API code no longer requires a correctly configured MP Config implementation to be available at runtime, so it is possible to slim down deployments if MP Config is not necessary (https://github.com/eclipse/microprofile-metrics/pull/466[#466])
 
 === Specification Changes
+** Introduced a new base metric derived from RESTful stats into the base scope.
+*** `rest.request` : Tracks the total count of requests and total elapsed time spent at the REST endpoint
 ** Introduced the simple timer (`@SimplyTimed`) metric. (https://github.com/eclipse/microprofile-metrics/issues/496[#496])
 ** Added ProcessCpuTime as a new optional base metric. (https://github.com/eclipse/microprofile-metrics/issues/442[#442])
 
@@ -164,13 +168,16 @@ A full list of changes may be found on the link:https://github.com/eclipse/micro
 ** `org.eclipse.microprofile.metrics.MetricRegistry.register(String name, Metric, Metadata)` is deprecated.
 Use `org.eclipse.microprofile.metrics.MetricRegistry.register(Metadata, Metric)` instead, where `Metadata`
 already has a field for the name.
+
 === Functional Changes
 ** `org.eclipse.microprofile.metrics.MetricRegistry.register(String name, Metric, Metadata)` is deprecated.
 Use `org.eclipse.microprofile.metrics.MetricRegistry.register(Metadata, Metric)` instead, where `Metadata`
 already has a field for the name.
 ** Global tags are now supplied via the means of MicroProfile Config (the env variable is still valid). (https://github.com/eclipse/microprofile-metrics/issues/165[#165])
+
 === Specification Changes
 ** Annotations and `Metadata` can now have a flag `reusable` that indicates that the metric name can be registered
 more than once. Default is `false` as in Metrics 1.0. See <<architecture#reusing_metrics>>.
+
 === TCK enhancement
 ** Improved TCK
