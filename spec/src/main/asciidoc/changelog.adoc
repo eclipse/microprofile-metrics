@@ -43,7 +43,7 @@ A full list of changes may be found on the link:https://github.com/eclipse/micro
 
 === Specification Changes
 ** Introduced a new base metric derived from RESTful stats into the base scope.
-*** `rest.request` : Tracks the total count of requests and total elapsed time spent at the REST endpoint
+*** `REST.request` : Tracks the total count of requests and total elapsed time spent at the REST endpoint
 ** Introduced the simple timer (`@SimplyTimed`) metric. (https://github.com/eclipse/microprofile-metrics/issues/496[#496])
 ** Added ProcessCpuTime as a new optional base metric. (https://github.com/eclipse/microprofile-metrics/issues/442[#442])
 
