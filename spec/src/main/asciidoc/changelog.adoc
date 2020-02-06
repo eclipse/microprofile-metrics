@@ -37,7 +37,7 @@ A full list of changes may be found on the link:https://github.com/eclipse/micro
 
 === Functional Changes
 ** Introduced a new base metric derived from RESTful stats into the base scope.
-*** `rest.request` : Tracks the total count of requests and total elapsed time spent at the REST endpoint
+*** `REST.request` : Tracks the total count of requests and total elapsed time spent at the REST endpoint
 ** Introduced the simple timer (`@SimplyTimed`) metric. (https://github.com/eclipse/microprofile-metrics/issues/496[#496])
 ** The API code no longer requires a correctly configured MP Config implementation to be available at runtime, so it is possible to slim down deployments if MP Config is not necessary (https://github.com/eclipse/microprofile-metrics/pull/466[#466])
 
