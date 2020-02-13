@@ -24,6 +24,12 @@
 
 Changes marked with icon:bolt[role="red"] are breaking changes relative to previous versions of the spec.
 
+[[release_notes_2_4]]
+== Changes in 2.4
+
+=== API/SPI Changes
+** Added the `MetricRegistry.getType()` method
+
 [[release_notes_2_3]]
 == Changes in 2.3
 
