@@ -470,7 +470,7 @@ public abstract class MetricRegistry {
      *
      * @param name the name of the metric
      * @return a new or pre-existing {@link SimpleTimer}
-     * 
+     *
      * @since 2.3
      */
     public abstract SimpleTimer simpleTimer(String name);
@@ -503,7 +503,7 @@ public abstract class MetricRegistry {
      *
      * @param metadata the name of the metric
      * @return a new or pre-existing {@link SimpleTimer}
-     * 
+     *
      * @since 2.3
      */
     public abstract SimpleTimer simpleTimer(Metadata metadata);
@@ -524,7 +524,7 @@ public abstract class MetricRegistry {
      * @since 2.3
      */
     public abstract SimpleTimer simpleTimer(Metadata metadata, Tag... tags);
-    
+
     /**
      * Removes all metrics with the given name.
      *
@@ -685,5 +685,12 @@ public abstract class MetricRegistry {
      * @return all the metadata in the registry
      */
     public abstract Map<String, Metadata> getMetadata();
+
+    /**
+     * Returns the type of this metric registry.
+     *
+     * @return Type of this registry (VENDOR, BASE, APPLICATION)
+     */
+    public abstract Type getType();
 
 }
