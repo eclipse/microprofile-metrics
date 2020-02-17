@@ -100,8 +100,8 @@ public class ConcurrentGaugedClassBeanTest {
          * Running a managed arquillian container will result
          * with the MetricID being created in a client process
          * that does not contain the MPConfig impl.
-         * 
-         * This will cause client instantiated MetricIDs to 
+         *
+         * This will cause client instantiated MetricIDs to
          * throw an exception. (i.e the global MetricIDs)
          */
         counterMIDs = MetricsUtil.createMetricIDs(C_GAUGED_NAMES);
@@ -114,7 +114,8 @@ public class ConcurrentGaugedClassBeanTest {
         assertThat("Concurrent Gauges are not registered correctly", concurrentGauges.keySet(), is(equalTo(counterMIDs)));
 
 
-        MetricID constructorMetricID = new MetricID(MetricsUtil.absoluteMetricName(ConcurrentGaugedClassBean.class, CONSTRUCTOR_NAME));
+        MetricID constructorMetricID = new MetricID(MetricsUtil.absoluteMetricName(
+            ConcurrentGaugedClassBean.class, "cGaugedClass", CONSTRUCTOR_NAME));
         for (Map.Entry<MetricID, ConcurrentGauge> entry : concurrentGauges.entrySet()) {
             // make sure the max values are zero, with the exception of the constructor, where it could potentially be 1
             if(!entry.getKey().equals(constructorMetricID)) {
