@@ -571,6 +571,10 @@ public void init(@Metric(name="instances") Counter instances) {
 }
 ----
 
+=== Usage of CDI stereotypes
+If a metric annotation is applied to a bean through a CDI stereotype, the implementation must handle it the same way as if the metric annotation
+was applied on the target bean directly. Metric names are computed relative to the name and package of the bean itself, not of the stereotype.
+
 === Registering metrics dynamically
 In addition to declaring metrics via annotations, it is possible to dynamically (un)register metrics by 
 calling methods of a `MetricRegistry` object. While using annotations is generally the preferred approach,
