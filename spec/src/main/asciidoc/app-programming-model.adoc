@@ -685,6 +685,13 @@ The `register` method variants exhibit the _create_ semantics, that means, if a 
 already exists, an exception is thrown. If a metric exists under the same name but with different tags, 
 the newly created metric must have all of its metadata equal to the existing metric's metadata.
 
+For methods that accept a `Metadata` parameter and whose name implies a metric type (all except `register`),
+it is possible to call them with a `Metadata` object which does not specify the metric type (it can be null).
+In this case, the implementation must sanitize the `Metadata` object in a way that if it is retrieved later
+from the registry and `metadata.getType()` or `metadata.getTypeRaw()` is called on it, 
+the actual metric type will be returned. Conversely, if there is a mismatch because the type 
+specified in the `Metadata` is different than the one implied by the method name, an exception must be thrown.
+
 === Unregistering metrics
 
 While the general recommendation is that metrics live for the whole lifecycle of the application, 
