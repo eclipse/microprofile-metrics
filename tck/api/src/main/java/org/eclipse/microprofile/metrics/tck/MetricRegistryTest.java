@@ -158,4 +158,30 @@ public class MetricRegistryTest {
     private void assertExists(Class<? extends org.eclipse.microprofile.metrics.Metric> expected, MetricID metricID) {
         assertNotNull("Metric expected to exist but was undefined: " + metricID, metrics.getMetric(metricID, expected));
     }
+
+    /**
+     * The implementation has to sanitize Metadata passed to registration methods
+     * if the application does not supply the metric type explicitly, but the type is implied
+     * by the used method.
+     */
+    @Test
+    @InSequence(6)
+    public void sanitizeMetadataTest() {
+        Metadata metadata = Metadata.builder().withName("metric1").build();
+        metrics.counter(metadata);
+        Metadata actualMetadata = metrics.getMetadata("metric1");
+        Assert.assertEquals(MetricType.COUNTER, actualMetadata.getTypeRaw());
+    }
+
+    /**
+     * if there is a mismatch because the type specified in the `Metadata` is different than the one
+     * implied by the method name, an exception must be thrown
+     */
+    @Test(expected = Exception.class)
+    @InSequence(7)
+    public void conflictingMetadataTest() {
+        Metadata metadata = Metadata.builder().withName("metric1").withType(MetricType.COUNTER).build();
+        metrics.meter(metadata);
+    }
+
 }

@@ -64,6 +64,8 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 
 === Specification Changes
 ** Clarified how the implementation must handle metrics applied via CDI stereotypes
+** The implementation is required to sanitize `Metadata` passed by the application in cases when it does not contain an explicit type,
+but the type is implied by the name of the registration method that is being called.
 
 === TCK enhancement
 ** Improved TCK - Use newly introduced `MetricRegistry` methods to retrieve single metrics and avoid now deprecated methods `getMetrics()` and `getMetadata()`
