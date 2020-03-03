@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
 
 @Stereotype
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.METHOD, ElementType.FIELD })
+@Target({ElementType.TYPE})
 @Counted
 public @interface CountMe {
 
