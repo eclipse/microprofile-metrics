@@ -39,6 +39,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.junit.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.not;
@@ -774,6 +775,28 @@ public class MpMetricOptionalTest {
             body(containsString(OM_BASE_REQUEST_COUNT_START + "getAsync" + AYNC_RESP_PARAM + OM_BASE_REQUEST_END)
                     , containsString(OM_BASE_REQUEST_TIME_START + "getAsync" + AYNC_RESP_PARAM + OM_BASE_REQUEST_END));
 
+
+        //Proceed to test that expected duration has elapsed
+
+        acceptHeader = new Header("Accept", APPLICATION_JSON);
+
+        resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
+        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
+        responseBuilder = new ResponseBuilder();
+        responseBuilder.clone(resp);
+        responseBuilder.setBody(filteredJSONPath.prettify());
+        resp = responseBuilder.build();
+        Object asyncDurationObject = resp.then().
+                                statusCode(200).
+                                contentType(APPLICATION_JSON).
+                                extract().
+                                path(JSON_BASE_REQUEST_TIME_START + "getAsync" + AYNC_RESP_PARAM + JSON_BASE_REQUEST_END);
+
+        String asyncDurationString = (asyncDurationObject instanceof Number) ? 
+                                        ((Number)asyncDurationObject).toString() : (String) asyncDurationObject;
+        Double asyncDurationDouble = Double.parseDouble(asyncDurationString);
+
+        assertTrue("Expected duration to be greater than 5000000000 nanoseconds (i.e 5 seconds)", (asyncDurationDouble >= 5000000000.00));
     }
     
     
@@ -1033,7 +1056,6 @@ public class MpMetricOptionalTest {
                         + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, not(0))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getAsync" + AYNC_RESP_PARAM + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getAsync" + AYNC_RESP_PARAM + JSON_BASE_REQUEST_END, not(0));
-        
     }
     
 }
