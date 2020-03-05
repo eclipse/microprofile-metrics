@@ -21,7 +21,7 @@
  **********************************************************************/
 package org.eclipse.microprofile.metrics.tck.tags;
 
-import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
@@ -85,7 +85,7 @@ public class MeteredTagMethodBeanTest {
     @Test
     @InSequence(1)
     public void meteredTagMethodRegistered() {
-        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(meterOneMID));
-        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(meterTwoMID));
+        assertThat("Meter is not registered correctly", registry.getMeter(meterOneMID), notNullValue());
+        assertThat("Meter is not registered correctly", registry.getMeter(meterTwoMID), notNullValue());
     }
 }

@@ -64,6 +64,6 @@ public class DefaultNameMetricMethodBeanTest {
 
     @Test
     public void metricMethodsWithDefaultNamingConvention() {
-        assertThat("Metrics are not registered correctly", registry.getMetrics().keySet(), is(equalTo(MetricsUtil.createMetricIDs(metricNames()))));
+        assertThat("Metrics are not registered correctly", registry.getMetricIDs(), is(equalTo(MetricsUtil.createMetricIDs(metricNames()))));
     }
 }

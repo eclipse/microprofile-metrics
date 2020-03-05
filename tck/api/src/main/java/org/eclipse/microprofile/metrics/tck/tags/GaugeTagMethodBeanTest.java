@@ -22,8 +22,8 @@
 package org.eclipse.microprofile.metrics.tck.tags;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
@@ -91,15 +91,16 @@ public class GaugeTagMethodBeanTest {
     @Test
     @InSequence(1)
     public void gaugeTagCalledWithDefaultValue() {
-        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(gaugeOneMID));
-        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(gaugeTwoMID));
-        
-        @SuppressWarnings("unchecked")
-        Gauge<Long> gaugeOne = registry.getGauges().get(gaugeOneMID);
 
         @SuppressWarnings("unchecked")
-        Gauge<Long> gaugeTwo = registry.getGauges().get(gaugeTwoMID);
-        
+        Gauge<Long> gaugeOne = (Gauge<Long>) registry.getGauge(gaugeOneMID);
+
+        @SuppressWarnings("unchecked")
+        Gauge<Long> gaugeTwo = (Gauge<Long>) registry.getGauge(gaugeTwoMID);
+
+        assertThat("Gauge is not registered correctly", gaugeOne, notNullValue());
+        assertThat("Gauge is not registered correctly", gaugeTwo, notNullValue());
+
         // Make sure that the gauge has the expected value
         assertThat("Gauge value is incorrect", gaugeOne.getValue(), is(equalTo(0L)));
         assertThat("Gauge value is incorrect", gaugeTwo.getValue(), is(equalTo(0L)));
@@ -108,14 +109,12 @@ public class GaugeTagMethodBeanTest {
     @Test
     @InSequence(2)
     public void callGaugeTagAfterSetterCall() {
-        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(gaugeOneMID));
-        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(gaugeTwoMID));
-        
         @SuppressWarnings("unchecked")
-        Gauge<Long> gaugeOne = registry.getGauges().get(gaugeOneMID);
-
+        Gauge<Long> gaugeOne = (Gauge<Long>) registry.getGauge(gaugeOneMID);
         @SuppressWarnings("unchecked")
-        Gauge<Long> gaugeTwo = registry.getGauges().get(gaugeTwoMID);
+        Gauge<Long> gaugeTwo = (Gauge<Long>) registry.getGauge(gaugeTwoMID);
+        assertThat("Gauge is not registered correctly", gaugeOne, notNullValue());
+        assertThat("Gauge is not registered correctly", gaugeTwo, notNullValue());
 
         // Call the setter method and assert the gauge is up-to-date
         long value = Math.round(Math.random() * Long.MAX_VALUE);

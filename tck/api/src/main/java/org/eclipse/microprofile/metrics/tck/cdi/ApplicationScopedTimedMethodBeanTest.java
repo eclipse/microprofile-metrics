@@ -16,8 +16,8 @@
 package org.eclipse.microprofile.metrics.tck.cdi;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
@@ -77,8 +77,8 @@ public class ApplicationScopedTimedMethodBeanTest {
     @Test
     @InSequence(1)
     public void timedMethodNotCalledYet() {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timerMID));
-        Timer timer = registry.getTimers().get(timerMID);
+        Timer timer = registry.getTimer(timerMID);
+        assertThat("Timer is not registered correctly", timer, notNullValue());
 
         // Make sure that the timer hasn't been called yet
         assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(0L)));
@@ -87,8 +87,8 @@ public class ApplicationScopedTimedMethodBeanTest {
     @Test
     @InSequence(2)
     public void callTimedMethodOnce() {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timerMID));
-        Timer timer = registry.getTimers().get(timerMID);
+        Timer timer = registry.getTimer(timerMID);
+        assertThat("Timer is not registered correctly", timer, notNullValue());
 
         // Call the timed method and assert it's been timed
         bean.applicationScopedTimedMethod();

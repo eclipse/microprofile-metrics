@@ -16,8 +16,8 @@
 package org.eclipse.microprofile.metrics.tck.metrics;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.enterprise.inject.Instance;
@@ -87,8 +87,8 @@ public class MeteredConstructorBeanTest {
             instance.get();
         }
 
-        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(meterMID));
-        Meter meter = registry.getMeters().get(meterMID);
+        Meter meter = registry.getMeter(meterMID);
+        assertThat("Meter is not registered correctly", meter, notNullValue());
 
         // Make sure that the meter has been called
         assertThat("Meter count is incorrect", meter.getCount(), is(equalTo(count)));

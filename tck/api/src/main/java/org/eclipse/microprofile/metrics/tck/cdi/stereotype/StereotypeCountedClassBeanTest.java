@@ -37,6 +37,7 @@ import org.junit.runner.RunWith;
 import javax.inject.Inject;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(Arquillian.class)
@@ -64,31 +65,31 @@ public class StereotypeCountedClassBeanTest {
     @Test
     public void testPlainAnnotation() {
         MetricID constructorMetricId = new MetricID(StereotypeCountedClassBean.class.getName() + ".StereotypeCountedClassBean");
-        assertTrue(metricRegistry.getCounters().containsKey(constructorMetricId));
+        assertNotNull(metricRegistry.getCounter(constructorMetricId));
         MetricID methodMetricId = new MetricID(StereotypeCountedClassBean.class.getName() + ".foo");
-        assertTrue(metricRegistry.getCounters().containsKey(methodMetricId));
+        assertNotNull(metricRegistry.getCounter(methodMetricId));
         bean.foo();
-        assertEquals(1, metricRegistry.getCounters().get(methodMetricId).getCount());
+        assertEquals(1, metricRegistry.getCounter(methodMetricId).getCount());
     }
 
     @Test
     public void testWithMetadata() {
         String constructorMetricName = "org.eclipse.microprofile.metrics.tck.cdi.stereotype.bloop.StereotypeCountedClassBeanWithSpecifiedMetadata";
         MetricID constructorMetricId = new MetricID(constructorMetricName);
-        assertTrue(metricRegistry.getCounters().containsKey(constructorMetricId));
-        Metadata constructorMetadata = metricRegistry.getMetadata().get(constructorMetricName);
+        assertNotNull(metricRegistry.getCounter(constructorMetricId));
+        Metadata constructorMetadata = metricRegistry.getMetadata(constructorMetricName);
         assertEquals("description", constructorMetadata.getDescription().orElse(null));
         assertEquals("displayName", constructorMetadata.getDisplayName());
 
         String methodMetricName = "org.eclipse.microprofile.metrics.tck.cdi.stereotype.bloop.foo";
         MetricID methodMetricId = new MetricID(methodMetricName);
-        assertTrue(metricRegistry.getCounters().containsKey(methodMetricId));
-        Metadata methodMetadata = metricRegistry.getMetadata().get(methodMetricName);
+        assertNotNull(metricRegistry.getCounter(methodMetricId));
+        Metadata methodMetadata = metricRegistry.getMetadata(methodMetricName);
         assertEquals("description", methodMetadata.getDescription().orElse(null));
         assertEquals("displayName", methodMetadata.getDisplayName());
 
         beanWithSpecifiedMetadata.foo();
-        assertEquals(1, metricRegistry.getCounters().get(methodMetricId).getCount());
+        assertEquals(1, metricRegistry.getCounter(methodMetricId).getCount());
     }
 
 }

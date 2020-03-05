@@ -16,8 +16,8 @@
 package org.eclipse.microprofile.metrics.tck.metrics;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -86,8 +86,8 @@ public class CountedMethodBeanTest {
     @Test
     @InSequence(1)
     public void countedMethodNotCalledYet() {
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterMetricID));
-        Counter counter = registry.getCounters().get(counterMetricID);
+        Counter counter = registry.getCounter(counterMetricID);
+        assertThat("Counter is not registered correctly", counter, notNullValue());
 
         // Make sure that the counter hasn't been called yet
         assertThat("Counter count is incorrect", counter.getCount(), is(equalTo(COUNTER_COUNT.get())));
@@ -96,8 +96,8 @@ public class CountedMethodBeanTest {
     @Test
     @InSequence(2)
     public void metricInjectionIntoTest(@Metric(name = "countedMethod", absolute = true) Counter instance) {
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterMetricID));
-        Counter counter = registry.getCounters().get(counterMetricID);
+        Counter counter = registry.getCounter(counterMetricID);
+        assertThat("Counter is not registered correctly", counter, notNullValue());
 
         // Make sure that the counter registered and the bean instance are the same
         assertThat("Counter and bean instance are not equal", instance, is(equalTo(counter)));
@@ -106,8 +106,8 @@ public class CountedMethodBeanTest {
     @Test
     @InSequence(3)
     public void callCountedMethodOnce() throws InterruptedException, TimeoutException {
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterMetricID));
-        Counter counter = registry.getCounters().get(counterMetricID);
+        Counter counter = registry.getCounter(counterMetricID);
+        assertThat("Counter is not registered correctly", counter, notNullValue());
 
         // Call the counted method, block and assert it's been counted
         final Exchanger<Long> exchanger = new Exchanger<>();
@@ -160,8 +160,8 @@ public class CountedMethodBeanTest {
     @Test
     @InSequence(4)
     public void removeCounterFromRegistry() {
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterMetricID));
-        Counter counter = registry.getCounters().get(counterMetricID);
+        Counter counter = registry.getCounter(counterMetricID);
+        assertThat("Counter is not registered correctly", counter, notNullValue());
 
         // Remove the counter from metrics registry
         registry.remove(counterMetricID);

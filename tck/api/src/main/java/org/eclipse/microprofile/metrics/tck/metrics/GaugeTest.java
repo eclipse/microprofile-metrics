@@ -54,24 +54,19 @@ public class GaugeTest {
 
     @Test
     public void testManualGauge() {
+        MetricID gaugeMetricID = new MetricID("tck.gaugetest.gaugemanual");
         
-        String gaugeName = "tck.gaugetest.gaugemanual";
-        MetricID gaugeMetricID = new MetricID(gaugeName);
-        
-        Assert.assertNull(metrics.getGauges().get(gaugeMetricID));
+        Gauge<?> gauge = metrics.getGauge(gaugeMetricID);
+        Assert.assertNull(gauge);
         gaugeMe();
-
-        Assert.assertEquals(0, (metrics.getGauges().get(gaugeMetricID).getValue()));
-        Assert.assertEquals(1, (metrics.getGauges().get(gaugeMetricID).getValue()));
+        gauge = metrics.getGauge(gaugeMetricID);
+        
+        Assert.assertEquals(0, gauge.getValue());
+        Assert.assertEquals(1, gauge.getValue());
     }
 
     public void gaugeMe() {
-        @SuppressWarnings("unchecked")
-        Gauge<Integer> gaugeManual = metrics.getGauges().get("tck.gaugetest.gaugemanual");
-        if (gaugeManual == null) {
-            gaugeManual = value::getAndIncrement;
-            metrics.register("tck.gaugetest.gaugemanual", gaugeManual);
-        }
+        metrics.gauge("tck.gaugetest.gaugemanual", value::getAndIncrement);
     }
 
 }

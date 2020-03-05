@@ -15,9 +15,8 @@
  */
 package org.eclipse.microprofile.metrics.tck.cdi;
 
-import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -91,17 +90,12 @@ public class MetricProducerMethodBeanTest {
     @Test
     @InSequence(1)
     public void cachedMethodNotCalledYet() {
-        assertThat("Metrics are not registered correctly", registry.getMetrics(),
-            allOf(
-                hasKey(callsMID),
-                hasKey(hitsMID),
-                hasKey(cacheHitsMID)
-            )
-        );
-        Timer calls = registry.getTimers().get(callsMID);
-        Meter hits = registry.getMeters().get(hitsMID);
+        assertThat("Metrics are not registered correctly", registry.getMetricIDs(),
+            contains(callsMID, hitsMID, cacheHitsMID));
+        Timer calls = registry.getTimer(callsMID);
+        Meter hits = registry.getMeter(hitsMID);
         @SuppressWarnings("unchecked")
-        Gauge<Double> gauge = (Gauge<Double>) registry.getGauges().get(cacheHitsMID);
+        Gauge<Double> gauge = (Gauge<Double>) registry.getGauge(cacheHitsMID);
 
         assertThat("Gauge value is incorrect", gauge.getValue(), is(equalTo(((double) hits.getCount() / (double) calls.getCount()))));
     }
@@ -109,17 +103,12 @@ public class MetricProducerMethodBeanTest {
     @Test
     @InSequence(2)
     public void callCachedMethodMultipleTimes() {
-        assertThat("Metrics are not registered correctly", registry.getMetrics(),
-            allOf(
-                hasKey(callsMID),
-                hasKey(hitsMID),
-                hasKey(cacheHitsMID)
-            )
-        );
-        Timer calls = registry.getTimers().get(callsMID);
-        Meter hits = registry.getMeters().get(hitsMID);
+        assertThat("Metrics are not registered correctly", registry.getMetricIDs(),
+            contains(callsMID, hitsMID, cacheHitsMID));
+        Timer calls = registry.getTimer(callsMID);
+        Meter hits = registry.getMeter(hitsMID);
         @SuppressWarnings("unchecked")
-        Gauge<Double> gauge = (Gauge<Double>) registry.getGauges().get(cacheHitsMID);
+        Gauge<Double> gauge = (Gauge<Double>) registry.getGauge(cacheHitsMID);
 
         long count = 10 + Math.round(Math.random() * 10);
         for (int i = 0; i < count; i++) {

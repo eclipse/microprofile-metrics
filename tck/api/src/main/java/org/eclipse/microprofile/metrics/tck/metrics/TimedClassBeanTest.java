@@ -119,7 +119,7 @@ public class TimedClassBeanTest {
     public void timedMethodsNotCalledYet() {
         assertThat("Timers are not registered correctly", registry.getTimers().keySet(), is(equalTo(timerMIDsIncludingToString)));
         
-        assertThat("Constructor timer count is incorrect", registry.getTimers().get(constructorMID).getCount(), is(equalTo(1L)));
+        assertThat("Constructor timer count is incorrect", registry.getTimer(constructorMID).getCount(), is(equalTo(1L)));
 
         // Make sure that the method timers haven't been timed yet
         assertThat("Method timer counts are incorrect", registry.getTimers(METHOD_TIMERS).values(),
@@ -131,7 +131,7 @@ public class TimedClassBeanTest {
     public void callTimedMethodsOnce() {
         assertThat("Timers are not registered correctly", registry.getTimers().keySet(), is(equalTo(timerMIDsIncludingToString)));
         
-        assertThat("Constructor timer count is incorrect", registry.getTimers().get(constructorMID).getCount(), is(equalTo(1L)));
+        assertThat("Constructor timer count is incorrect", registry.getTimer(constructorMID).getCount(), is(equalTo(1L)));
 
         // Call the timed methods and assert they've been timed
         bean.timedMethodOne();

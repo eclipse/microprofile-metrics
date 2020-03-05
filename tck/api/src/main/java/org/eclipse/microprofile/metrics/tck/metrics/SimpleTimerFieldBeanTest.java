@@ -74,7 +74,7 @@ public class SimpleTimerFieldBeanTest {
 
     @Test
     public void simpleTimerFieldsWithDefaultNamingConvention() {
-        assertThat("SimpleTimers are not registered correctly", registry.getMetrics().keySet(), 
+        assertThat("SimpleTimers are not registered correctly", registry.getMetricIDs(), 
             is(equalTo(MetricsUtil.createMetricIDs(metricNames()))));
     }
 }

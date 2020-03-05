@@ -16,8 +16,8 @@
 package org.eclipse.microprofile.metrics.tck.metrics;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.enterprise.inject.Instance;
@@ -90,8 +90,8 @@ public class TimedConstructorBeanTest {
             instance.get();
         }
 
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timerMID));
-        Timer timer = registry.getTimers().get(timerMID);
+        Timer timer = registry.getTimer(timerMID);
+        assertThat("Timer is not registered correctly", timer, notNullValue());
 
         // Make sure that the timer has been called
         assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(count)));

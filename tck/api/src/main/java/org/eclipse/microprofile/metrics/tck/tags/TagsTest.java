@@ -24,6 +24,7 @@ package org.eclipse.microprofile.metrics.tck.tags;
 
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasValue;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
@@ -90,7 +91,7 @@ public class TagsTest {
         MetricID counterMID = new MetricID(counterName, tagColourTwo);
         
         //check the metric is registered
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterMID));
+        assertThat("Counter is not registered correctly", registry.getCounter(counterMID), notNullValue());
     }
     
     @Test
@@ -112,9 +113,9 @@ public class TagsTest {
         MetricID counterBlueMID = new MetricID(counterName, tagEarth,tagBlue);
         
         //check multi-dimensional metrics are registered
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterColourMID));
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterRedMID));
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterBlueMID));
+        assertThat("Counter is not registered correctly", registry.getCounter(counterColourMID), notNullValue());
+        assertThat("Counter is not registered correctly", registry.getCounter(counterRedMID), notNullValue());
+        assertThat("Counter is not registered correctly", registry.getCounter(counterBlueMID), notNullValue());
     }
     
     @Test
@@ -136,9 +137,9 @@ public class TagsTest {
         MetricID meterBlueMID = new MetricID(meterName, tagEarth,tagBlue);
         
         //check multi-dimensional metrics are registered
-        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(meterColourMID));
-        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(meterRedMID));
-        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(meterBlueMID));
+        assertThat("Meter is not registered correctly", registry.getMeter(meterColourMID), notNullValue());
+        assertThat("Meter is not registered correctly", registry.getMeter(meterRedMID), notNullValue());
+        assertThat("Meter is not registered correctly", registry.getMeter(meterBlueMID), notNullValue());
     }
     
     @Test
@@ -160,9 +161,9 @@ public class TagsTest {
         MetricID timerBlueMID = new MetricID(timerName, tagEarth,tagBlue);
         
         //check multi-dimensional metrics are registered
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timerColourMID));
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timerRedMID));
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timerBlueMID));
+        assertThat("Timer is not registered correctly", registry.getTimer(timerColourMID), notNullValue());
+        assertThat("Timer is not registered correctly", registry.getTimer(timerRedMID), notNullValue());
+        assertThat("Timer is not registered correctly", registry.getTimer(timerBlueMID), notNullValue());
     }
     
     @Test
@@ -184,9 +185,9 @@ public class TagsTest {
         MetricID histogramBlueMID = new MetricID(histogramName, tagEarth,tagBlue);
         
         //check multi-dimensional metrics are registered
-        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(histogramColourMID));
-        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(histogramRedMID));
-        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(histogramBlueMID));
+        assertThat("Histogram is not registered correctly", registry.getHistogram(histogramColourMID), notNullValue());
+        assertThat("Histogram is not registered correctly", registry.getHistogram(histogramRedMID), notNullValue());
+        assertThat("Histogram is not registered correctly", registry.getHistogram(histogramBlueMID), notNullValue());
     }
     
     @Test
@@ -208,9 +209,9 @@ public class TagsTest {
         MetricID simpleTimerBlueMID = new MetricID(simpleTimerName, tagEarth,tagBlue);
         
         //check multi-dimensional metrics are registered
-        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimers(), hasKey(simpleTimerColourMID));
-        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimers(), hasKey(simpleTimerRedMID));
-        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimers(), hasKey(simpleTimerBlueMID));
+        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimer(simpleTimerColourMID), notNullValue());
+        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimer(simpleTimerRedMID), notNullValue());
+        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimer(simpleTimerBlueMID), notNullValue());
     }
     
     @Test
@@ -232,8 +233,8 @@ public class TagsTest {
         MetricID concurrentGaugeBlueMID = new MetricID(concurrentGaugeName, tagEarth,tagBlue);
         
         //check multi-dimensional metrics are registered
-        assertThat("ConcurrentGauge is not registered correctly", registry.getConcurrentGauges(), hasKey(concurrentGaugeColourMID));
-        assertThat("ConcurrentGauge is not registered correctly", registry.getConcurrentGauges(), hasKey(concurrentGaugeRedMID));
-        assertThat("ConcurrentGauge is not registered correctly", registry.getConcurrentGauges(), hasKey(concurrentGaugeBlueMID));
+        assertThat("ConcurrentGauge is not registered correctly", registry.getConcurrentGauge(concurrentGaugeColourMID), notNullValue());
+        assertThat("ConcurrentGauge is not registered correctly", registry.getConcurrentGauge(concurrentGaugeRedMID), notNullValue());
+        assertThat("ConcurrentGauge is not registered correctly", registry.getConcurrentGauge(concurrentGaugeBlueMID), notNullValue());
     }
 }

@@ -16,8 +16,8 @@
 package org.eclipse.microprofile.metrics.tck.metrics;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
@@ -75,14 +75,14 @@ public class CounterFieldBeanTest {
     @Test
     @InSequence(1)
     public void counterFieldRegistered() {
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterMID));
+        assertThat("Counter is not registered correctly", registry.getCounter(counterMID), notNullValue());
     }
 
     @Test
     @InSequence(2)
     public void incrementCounterField() {
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterMID));
-        Counter counter = registry.getCounters().get(counterMID);
+        Counter counter = registry.getCounter(counterMID);
+        assertThat("Counter is not registered correctly", counter, notNullValue());
 
         // Call the increment method and assert the counter is up-to-date
         long value = Math.round(Math.random() * Long.MAX_VALUE);

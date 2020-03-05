@@ -20,6 +20,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
@@ -93,12 +94,12 @@ public class MetricProducerFieldBeanTest {
                 not(hasKey(notRegMID))
             )
         );
-        Counter counter1 = registry.getCounters().get(counter1MID);
-        Counter counter2 = registry.getCounters().get(counter2MID);
+        Counter counter1 = registry.getCounter(counter1MID);
+        Counter counter2 = registry.getCounter(counter2MID);
 
-        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(ratioGaugeMID));
         @SuppressWarnings("unchecked")
-        Gauge<Double> gauge = (Gauge<Double>) registry.getGauges().get(ratioGaugeMID);
+        Gauge<Double> gauge = (Gauge<Double>) registry.getGauge(ratioGaugeMID);
+        assertThat("Gauge is not registered correctly", gauge, notNullValue());
 
         assertThat("Gauge value is incorrect", gauge.getValue(), is(equalTo(((double) counter1.getCount()) / ((double) counter2.getCount()))));
     }
@@ -113,12 +114,12 @@ public class MetricProducerFieldBeanTest {
                 not(hasKey(notRegMID))
             )
         );
-        Counter counter1 = registry.getCounters().get(counter1MID);
-        Counter counter2 = registry.getCounters().get(counter2MID);
+        Counter counter1 = registry.getCounter(counter1MID);
+        Counter counter2 = registry.getCounter(counter2MID);
 
-        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(ratioGaugeMID));
         @SuppressWarnings("unchecked")
-        Gauge<Double> gauge = (Gauge<Double>) registry.getGauges().get(ratioGaugeMID);
+        Gauge<Double> gauge = (Gauge<Double>) registry.getGauge(ratioGaugeMID);
+        assertThat("Gauge is not registered correctly", gauge, notNullValue());
 
         counter1.inc(Math.round(Math.random() * Integer.MAX_VALUE));
         counter2.inc(Math.round(Math.random() * Integer.MAX_VALUE));
@@ -136,9 +137,9 @@ public class MetricProducerFieldBeanTest {
 
         assertThat("Gauge value is incorrect", gauge.getValue(), is(equalTo(((double) counter1.getCount()) / ((double) counter2.getCount()))));
 
-        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey("ratioGauge"));
         @SuppressWarnings("unchecked")
-        Gauge<Double> gaugeFromRegistry = (Gauge<Double>) registry.getGauges().get("ratioGauge");
+        Gauge<Double> gaugeFromRegistry = (Gauge<Double>) registry.getGauge(new MetricID("ratioGauge"));
+        assertThat("Gauge is not registered correctly", gaugeFromRegistry, notNullValue());
 
         assertThat("Gauge values from registry and injection do not match", gauge.getValue(), is(equalTo(gaugeFromRegistry.getValue())));
     }

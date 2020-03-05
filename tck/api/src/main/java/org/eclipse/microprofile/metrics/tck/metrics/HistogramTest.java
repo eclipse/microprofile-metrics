@@ -23,8 +23,10 @@
 
 package org.eclipse.microprofile.metrics.tck.metrics;
 
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
 import java.util.Arrays;
-import java.util.SortedMap;
 
 import javax.inject.Inject;
 
@@ -101,19 +103,18 @@ public class HistogramTest {
     public void testMetricRegistry() throws Exception {
         String histogramIntName = "org.eclipse.microprofile.metrics.tck.metrics.HistogramTest.histogramInt";
         String histogramLongName = "test.longData.histogram";
-        
+
         MetricID histogramIntNameMetricID = new MetricID(histogramIntName);
         MetricID histogramLongNameMetricID = new MetricID(histogramLongName);
-        
-        SortedMap<MetricID, Histogram> histograms = metrics.getHistograms();
 
-        Assert.assertTrue(histograms.size() == 2);
+        Histogram histogramInt = metrics.getHistogram(histogramIntNameMetricID);
+        Histogram histogramLong = metrics.getHistogram(histogramLongNameMetricID);
 
-        Assert.assertTrue(histograms.containsKey(histogramIntNameMetricID));
-        Assert.assertTrue(histograms.containsKey(histogramLongNameMetricID));
+        assertThat("Histogram is not registered correctly", histogramInt, notNullValue());
+        assertThat("Histogram is not registered correctly", histogramLong, notNullValue());
 
-        TestUtils.assertEqualsWithTolerance(48, histograms.get(histogramIntNameMetricID).getSnapshot().getValue(0.5));
-        TestUtils.assertEqualsWithTolerance(480, histograms.get(histogramLongNameMetricID).getSnapshot().getValue(0.5));
+        TestUtils.assertEqualsWithTolerance(48, histogramInt.getSnapshot().getValue(0.5));
+        TestUtils.assertEqualsWithTolerance(480, histogramLong.getSnapshot().getValue(0.5));
     }
 
     @Test

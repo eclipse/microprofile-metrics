@@ -97,13 +97,8 @@ public class SimpleTimerTest {
         MetricID simpleTimerLongNameMetricID = new MetricID(simpleTimerLongName);
         MetricID simpleTimerTimeNameMetricID = new MetricID(simpleTimerTimeName);
         
-        SortedMap<MetricID, SimpleTimer> simpleTimers = registry.getSimpleTimers();
-        
-        Assert.assertTrue(simpleTimers.size() > 0);
-
-        Assert.assertTrue(simpleTimers.containsKey(simpleTimerLongNameMetricID));
-        Assert.assertTrue(simpleTimers.containsKey(simpleTimerTimeNameMetricID));
-
+        Assert.assertNotNull(registry.getSimpleTimer(simpleTimerLongNameMetricID));
+        Assert.assertNotNull(registry.getSimpleTimer(simpleTimerTimeNameMetricID));
     }
 
     @Test

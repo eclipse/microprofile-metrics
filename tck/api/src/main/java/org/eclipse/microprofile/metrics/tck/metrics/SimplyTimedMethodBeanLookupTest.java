@@ -24,9 +24,9 @@
 package org.eclipse.microprofile.metrics.tck.metrics;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -95,8 +95,8 @@ public class SimplyTimedMethodBeanLookupTest {
         // Get a contextual instance of the bean
         SimplyTimedMethodBean1 bean = instance.get();
 
-        assertThat("SimplyTimed is not registered correctly", registry.getSimpleTimers(), hasKey(simpleTimerMID));
-        SimpleTimer simpleTimer = registry.getSimpleTimers().get(simpleTimerMID);
+        SimpleTimer simpleTimer = registry.getSimpleTimer(simpleTimerMID);
+        assertThat("SimplyTimed is not registered correctly", simpleTimer, notNullValue());
 
         // Make sure that the simpleTimer hasn't been called yet
         assertThat("SimplyTimed count is incorrect", simpleTimer.getCount(), is(equalTo(SIMPLE_TIMER_COUNT.get())));
@@ -108,8 +108,8 @@ public class SimplyTimedMethodBeanLookupTest {
         // Get a contextual instance of the bean
         SimplyTimedMethodBean1 bean = instance.get();
 
-        assertThat("SimplyTimed is not registered correctly", registry.getSimpleTimers(), hasKey(simpleTimerMID));
-        SimpleTimer simpleTimer = registry.getSimpleTimers().get(simpleTimerMID);
+        SimpleTimer simpleTimer = registry.getSimpleTimer(simpleTimerMID);
+        assertThat("SimplyTimed is not registered correctly", simpleTimer, notNullValue());
 
         // Call the simplyTimed method and assert it's been simplyTimed
         bean.simplyTimedMethod();
@@ -125,8 +125,8 @@ public class SimplyTimedMethodBeanLookupTest {
         // Get a contextual instance of the bean
         SimplyTimedMethodBean1 bean = instance.get();
 
-        assertThat("SimplyTimed is not registered correctly", registry.getSimpleTimers(), hasKey(simpleTimerMID));
-        SimpleTimer simpleTimer = registry.getSimpleTimers().get(simpleTimerMID);
+        SimpleTimer simpleTimer = registry.getSimpleTimer(simpleTimerMID);
+        assertThat("SimplyTimed is not registered correctly", simpleTimer, notNullValue());
 
         // Remove the simpleTimer from metrics registry
         registry.remove(simpleTimerMID);
