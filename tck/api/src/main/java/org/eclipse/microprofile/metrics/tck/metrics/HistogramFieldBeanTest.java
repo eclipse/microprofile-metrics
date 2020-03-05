@@ -16,8 +16,8 @@
 package org.eclipse.microprofile.metrics.tck.metrics;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
@@ -74,14 +74,14 @@ public class HistogramFieldBeanTest {
     @Test
     @InSequence(1)
     public void histogramFieldRegistered() {
-        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(histogramMID));
+        assertThat("Histogram is not registered correctly", registry.getHistogram(histogramMID), notNullValue());
     }
 
     @Test
     @InSequence(2)
     public void updateHistogramField() {
-        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(histogramMID));
-        Histogram histogram = registry.getHistograms().get(histogramMID);
+        Histogram histogram = registry.getHistogram(histogramMID);
+        assertThat("Histogram is not registered correctly", histogram, notNullValue());
 
         // Call the update method and assert the histogram is up-to-date
         long value = Math.round(Math.random() * Long.MAX_VALUE);

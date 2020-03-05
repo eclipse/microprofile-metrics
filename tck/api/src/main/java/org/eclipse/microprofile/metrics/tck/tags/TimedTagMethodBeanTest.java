@@ -21,7 +21,7 @@
  **********************************************************************/
 package org.eclipse.microprofile.metrics.tck.tags;
 
-import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
@@ -85,8 +85,8 @@ public class TimedTagMethodBeanTest {
     @Test
     @InSequence(1)
     public void timedTagMethodRegistered() {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timerOneMID));
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timerTwoMID));
+        assertThat("Timer is not registered correctly", registry.getTimer(timerOneMID), notNullValue());
+        assertThat("Timer is not registered correctly", registry.getTimer(timerTwoMID), notNullValue());
     }
 
 

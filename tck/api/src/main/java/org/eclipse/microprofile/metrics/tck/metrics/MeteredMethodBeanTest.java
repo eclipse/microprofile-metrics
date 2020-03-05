@@ -16,9 +16,9 @@
 package org.eclipse.microprofile.metrics.tck.metrics;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -80,8 +80,8 @@ public class MeteredMethodBeanTest {
     @Test
     @InSequence(1)
     public void meteredMethodNotCalledYet() {
-        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(meterMID));
-        Meter meter = registry.getMeters().get(meterMID);
+        Meter meter = registry.getMeter(meterMID);
+        assertThat("Meter is not registered correctly", meter, notNullValue());
 
         // Make sure that the meter hasn't been marked yet
         assertThat("Meter count is incorrect", meter.getCount(), is(equalTo(METER_COUNT.get())));
@@ -90,8 +90,8 @@ public class MeteredMethodBeanTest {
     @Test
     @InSequence(2)
     public void callMeteredMethodOnce() {
-        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(meterMID));
-        Meter meter = registry.getMeters().get(meterMID);
+        Meter meter = registry.getMeter(meterMID);
+        assertThat("Meter is not registered correctly", meter, notNullValue());
 
         // Call the metered method and assert it's been marked
         bean.meteredMethod();
@@ -103,8 +103,8 @@ public class MeteredMethodBeanTest {
     @Test
     @InSequence(3)
     public void removeMeterFromRegistry() {
-        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(meterMID));
-        Meter meter = registry.getMeters().get(meterMID);
+        Meter meter = registry.getMeter(meterMID);
+        assertThat("Meter is not registered correctly", meter, notNullValue());
 
         // Remove the meter from metrics registry
         registry.remove(meterMID);

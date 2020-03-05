@@ -39,9 +39,9 @@
 package org.eclipse.microprofile.metrics.tck.metrics;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -109,18 +109,18 @@ public class ConcurrentGaugedMethodBeanTest {
     @Test
     @InSequence(1)
     public void countedMethodNotCalledYet() {
-        assertThat("Concurrent Gauges is not registered correctly", registry.getConcurrentGauges(), hasKey(cGaugeMID));
-        ConcurrentGauge counter = registry.getConcurrentGauges().get(cGaugeMID);
+        ConcurrentGauge cGauge = registry.getConcurrentGauge(cGaugeMID);
+        assertThat("Concurrent Gauges is not registered correctly", cGauge, notNullValue());
 
         // Make sure that the counter hasn't been called yet
-        assertThat("Concurrent Gauges count is incorrect", counter.getCount(), is(equalTo(COUNTER_COUNT.get())));
+        assertThat("Concurrent Gauges count is incorrect", cGauge.getCount(), is(equalTo(COUNTER_COUNT.get())));
     }
 
     @Test
     @InSequence(2)
     public void metricInjectionIntoTest(@Metric(name = C_GAUGE_NAME, absolute = true) ConcurrentGauge instance) {
-        assertThat("Concurrent Gauges is not registered correctly", registry.getConcurrentGauges(), hasKey(cGaugeMID));
-        ConcurrentGauge cGauge = registry.getConcurrentGauges().get(cGaugeMID);
+        ConcurrentGauge cGauge = registry.getConcurrentGauge(cGaugeMID);
+        assertThat("Concurrent Gauges is not registered correctly", cGauge, notNullValue());
 
         // Make sure that the counter registered and the bean instance are the same
         assertThat("Concurrent Gauges and bean instance are not equal", instance, is(equalTo(cGauge)));
@@ -129,8 +129,8 @@ public class ConcurrentGaugedMethodBeanTest {
     @Test
     @InSequence(3)
     public void callCountedMethodOnce() throws InterruptedException, TimeoutException {
-        assertThat("Concurrent Gauges is not registered correctly", registry.getConcurrentGauges(), hasKey(cGaugeMID));
-        ConcurrentGauge counter = registry.getConcurrentGauges().get(cGaugeMID);
+        ConcurrentGauge cGauge = registry.getConcurrentGauge(cGaugeMID);
+        assertThat("Concurrent Gauges is not registered correctly", cGauge, notNullValue());
 
         // Call the counted method, block and assert it's been counted
         final Exchanger<Long> exchanger = new Exchanger<>();
@@ -162,7 +162,7 @@ public class ConcurrentGaugedMethodBeanTest {
 
         // Wait until the method is executing and make sure that the counter has been incremented
         exchanger.exchange(0L, 5L, TimeUnit.SECONDS);
-        assertThat("Concurrent Gauges count is incorrect", counter.getCount(), is(equalTo(COUNTER_COUNT.incrementAndGet())));
+        assertThat("Concurrent Gauges count is incorrect", cGauge.getCount(), is(equalTo(COUNTER_COUNT.incrementAndGet())));
 
         // Exchange the result and unblock the method execution
         Long random = 1 + Math.round(Math.random() * (Long.MAX_VALUE - 1));
@@ -172,7 +172,7 @@ public class ConcurrentGaugedMethodBeanTest {
         assertThat("Concurrent Gauges method return value is incorrect", exchanger.exchange(0L), is(equalTo(random)));
 
         // Then make sure that the counter has been decremented
-        assertThat("Concurrent Gauges count is incorrect", counter.getCount(), is(equalTo(COUNTER_COUNT.decrementAndGet())));
+        assertThat("Concurrent Gauges count is incorrect", cGauge.getCount(), is(equalTo(COUNTER_COUNT.decrementAndGet())));
 
         // Finally make sure calling thread is returns correctly
         thread.join();
@@ -182,8 +182,8 @@ public class ConcurrentGaugedMethodBeanTest {
     @Test
     @InSequence(4)
     public void removeCounterFromRegistry() {
-        assertThat("Concurrent Gauge is not registered correctly", registry.getConcurrentGauges(), hasKey(cGaugeMID));
-        ConcurrentGauge counter = registry.getConcurrentGauges().get(cGaugeMID);
+        ConcurrentGauge cGauge = registry.getConcurrentGauge(cGaugeMID);
+        assertThat("Concurrent Gauge is not registered correctly", cGauge, notNullValue());
 
         // Remove the counter from metrics registry
         registry.remove(cGaugeMID);
@@ -200,7 +200,7 @@ public class ConcurrentGaugedMethodBeanTest {
         catch (Exception cause) {
             assertThat(cause, is(instanceOf(IllegalStateException.class)));
             // Make sure that the counter hasn't been called
-            assertThat("Concurrent Gauges count is incorrect", counter.getCount(), is(equalTo(COUNTER_COUNT.get())));
+            assertThat("Concurrent Gauges count is incorrect", cGauge.getCount(), is(equalTo(COUNTER_COUNT.get())));
             return;
         }
 

@@ -16,8 +16,8 @@
 package org.eclipse.microprofile.metrics.tck.metrics;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
@@ -78,9 +78,9 @@ public class GaugeMethodBeanTest {
     @Test
     @InSequence(1)
     public void gaugeCalledWithDefaultValue() {
-        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(gaugeMID));
         @SuppressWarnings("unchecked")
-        Gauge<Long> gauge = registry.getGauges().get(gaugeMID);
+        Gauge<Long> gauge = (Gauge<Long>) registry.getGauge(gaugeMID);
+        assertThat("Gauge is not registered correctly", gauge, notNullValue());
 
         // Make sure that the gauge has the expected value
         assertThat("Gauge value is incorrect", gauge.getValue(), is(equalTo(0L)));
@@ -89,9 +89,9 @@ public class GaugeMethodBeanTest {
     @Test
     @InSequence(2)
     public void callGaugeAfterSetterCall() {
-        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(gaugeMID));
         @SuppressWarnings("unchecked")
-        Gauge<Long> gauge = registry.getGauges().get(gaugeMID);
+        Gauge<Long> gauge = (Gauge<Long>) registry.getGauge(gaugeMID);
+        assertThat("Gauge is not registered correctly", gauge, notNullValue());
 
         // Call the setter method and assert the gauge is up-to-date
         long value = Math.round(Math.random() * Long.MAX_VALUE);

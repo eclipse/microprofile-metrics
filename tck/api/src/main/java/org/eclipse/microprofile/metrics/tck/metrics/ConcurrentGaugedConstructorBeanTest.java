@@ -39,8 +39,8 @@
 package org.eclipse.microprofile.metrics.tck.metrics;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.enterprise.inject.Instance;
@@ -112,8 +112,8 @@ public class ConcurrentGaugedConstructorBeanTest {
             instance.get();
         }
 
-        assertThat("Concurrent Gauge is not registered correctly", registry.getConcurrentGauges(), hasKey(counterMID));
-        ConcurrentGauge concurrentGauge = registry.getConcurrentGauges().get(counterMID);
+        ConcurrentGauge concurrentGauge = registry.getConcurrentGauge(counterMID);
+        assertThat("Concurrent Gauge is not registered correctly", concurrentGauge, notNullValue());
 
         assertThat("Concurrent gauge count is incorrect", concurrentGauge.getCount(), is(equalTo(0L)));
     }

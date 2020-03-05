@@ -24,8 +24,8 @@
 package org.eclipse.microprofile.metrics.tck.metrics;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.enterprise.inject.Instance;
@@ -98,8 +98,8 @@ public class SimplyTimedConstructorBeanTest {
             instance.get();
         }
 
-        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimers(), hasKey(simpleTimerMID));
-        SimpleTimer simpleTimer = registry.getSimpleTimers().get(simpleTimerMID);
+        SimpleTimer simpleTimer = registry.getSimpleTimer(simpleTimerMID);
+        assertThat("SimpleTimer is not registered correctly", simpleTimer, notNullValue());
 
         // Make sure that the simpleTimer has been called
         assertThat("SimpleTimer count is incorrect", simpleTimer.getCount(), is(equalTo(count)));

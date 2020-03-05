@@ -24,9 +24,9 @@
 package org.eclipse.microprofile.metrics.tck.metrics;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -55,7 +55,7 @@ public class SimplyTimedMethodBeanTest {
     private final static String SIMPLE_TIMER_NAME = MetricRegistry.name(SimplyTimedMethodBean2.class, "simplyTimedMethod");
 
     private static MetricID simpleTimerMID;
-    
+
     private final static AtomicLong SIMPLE_TIMER_COUNT = new AtomicLong();
 
     @Deployment
@@ -81,29 +81,29 @@ public class SimplyTimedMethodBeanTest {
          * Running a managed arquillian container will result
          * with the MetricID being created in a client process
          * that does not contain the MPConfig impl.
-         * 
-         * This will cause client instantiated MetricIDs to 
+         *
+         * This will cause client instantiated MetricIDs to
          * throw an exception. (i.e the global MetricIDs)
          */
         simpleTimerMID = new MetricID(SIMPLE_TIMER_NAME);
     }
-    
+
     @Test
     @InSequence(1)
     public void simplyTimedMethodNotCalledYet() {
-        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimers(), hasKey(simpleTimerMID));
-        SimpleTimer simpleTimer = registry.getSimpleTimers().get(simpleTimerMID);
+        SimpleTimer simpleTimer = registry.getSimpleTimer(simpleTimerMID);
+        assertThat("SimpleTimer is not registered correctly", simpleTimer, notNullValue());
 
         // Make sure that the simpleTimer hasn't been called yet
         assertThat("SimpleTimer count is incorrect", simpleTimer.getCount(), is(equalTo(SIMPLE_TIMER_COUNT.get())));
-        
+
     }
 
     @Test
     @InSequence(2)
     public void callSimplyTimedMethodOnce() throws InterruptedException {
-        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimers(), hasKey(simpleTimerMID));
-        SimpleTimer simpleTimer = registry.getSimpleTimers().get(simpleTimerMID);
+        SimpleTimer simpleTimer = registry.getSimpleTimer(simpleTimerMID);
+        assertThat("SimpleTimer is not registered correctly", simpleTimer, notNullValue());
 
         // Call the simplyTimed method and assert it's been simplyTimed
         bean.simplyTimedMethod();
@@ -116,8 +116,8 @@ public class SimplyTimedMethodBeanTest {
     @Test
     @InSequence(3)
     public void removeSimpleTimerFromRegistry() throws InterruptedException {
-        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimers(), hasKey(simpleTimerMID));
-        SimpleTimer simpleTimer = registry.getSimpleTimers().get(simpleTimerMID);
+        SimpleTimer simpleTimer = registry.getSimpleTimer(simpleTimerMID);
+        assertThat("SimpleTimer is not registered correctly", simpleTimer, notNullValue());
 
         // Remove the simpleTimer from metrics registry
         registry.remove(simpleTimerMID);

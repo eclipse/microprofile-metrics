@@ -25,7 +25,7 @@ package org.eclipse.microprofile.metrics.tck.metrics;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.notNullValue;
 
 import javax.inject.Inject;
 
@@ -90,20 +90,20 @@ public class CountedMethodTagBeanTest {
     @Test
     @InSequence(1)
     public void counterTagMethodsRegistered() {
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterOneMID));
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterTwoMID));
+        assertThat("Counter is not registered correctly", registry.getCounter(counterOneMID), notNullValue());
+        assertThat("Counter is not registered correctly", registry.getCounter(counterTwoMID), notNullValue());
     }
     
     @Test
     @InSequence(2)
     public void countedTagMethodNotCalledYet(@Metric(name = "countedMethod", absolute = true, tags = {"number=one"}) Counter instanceOne,
                                              @Metric(name = "countedMethod", absolute = true, tags = {"number=two"}) Counter instanceTwo) {
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterOneMID));
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterTwoMID));
-        
-        Counter counterOne = registry.getCounters().get(counterOneMID);
-        Counter counterTwo = registry.getCounters().get(counterTwoMID);
-        
+        Counter counterOne = registry.getCounter(counterOneMID);
+        Counter counterTwo = registry.getCounter(counterTwoMID);
+
+        assertThat("Counter is not registered correctly", counterOne, notNullValue());
+        assertThat("Counter is not registered correctly", counterTwo, notNullValue());
+
         // Make sure that the counter registered and the bean instance are the same
         assertThat("Counter and bean instance are not equal", instanceOne, is(equalTo(counterOne)));
         assertThat("Counter and bean instance are not equal", instanceTwo, is(equalTo(counterTwo)));

@@ -207,12 +207,11 @@ public class MetricAppBean {
     public void gaugeMe() {
 
         @SuppressWarnings("unchecked")
-        Gauge<Long> gauge = metrics.getGauges().get(new MetricID("metricTest.test1.gauge"));
+        Gauge<Long> gauge = (Gauge<Long>) metrics.getGauge(new MetricID("metricTest.test1.gauge"));
         if (gauge == null) {
             gauge = () -> {
                 return 19L;
             };
-
 
             Metadata metadata = Metadata.builder().withName("metricTest.test1.gauge")
                     .withType(MetricType.GAUGE).withUnit(MetricUnits.GIGABYTES).build();

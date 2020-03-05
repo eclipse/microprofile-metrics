@@ -23,8 +23,8 @@
 package org.eclipse.microprofile.metrics.tck;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
@@ -73,19 +73,19 @@ public class MetricIDTest {
         MetricID counterBlueMID = new MetricID(counterName, tagEarth,tagRed);
         
         //check multi-dimensional metrics are registered
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterColourMID));
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterRedMID));
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterBlueMID));
+        assertThat("Counter is not registered correctly", registry.getCounter(counterColourMID), notNullValue());
+        assertThat("Counter is not registered correctly", registry.getCounter(counterRedMID), notNullValue());
+        assertThat("Counter is not registered correctly", registry.getCounter(counterBlueMID), notNullValue());
         
         //remove one metric
         registry.remove(counterColourMID);
         assertThat("Registry did not remove metric", registry.getCounters().size(), equalTo(2));
-        assertThat("Counter is not registered correctly", registry.getCounters(), not(hasKey(counterColourMID)));
+        assertThat("Counter is not registered correctly", registry.getCounter(counterColourMID), nullValue());
         
         //remove all metrics with the given name
         registry.remove(counterName);
-        assertThat("Counter is not registered correctly", registry.getCounters(), not(hasKey(counterRedMID)));
-        assertThat("Counter is not registered correctly", registry.getCounters(), not(hasKey(counterBlueMID)));
+        assertThat("Counter is not registered correctly", registry.getCounter(counterRedMID), nullValue());
+        assertThat("Counter is not registered correctly", registry.getCounter(counterBlueMID), nullValue());
         
     }
     

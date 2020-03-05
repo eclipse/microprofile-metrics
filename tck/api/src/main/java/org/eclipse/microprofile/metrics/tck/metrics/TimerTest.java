@@ -24,10 +24,10 @@
 package org.eclipse.microprofile.metrics.tck.metrics;
 
 import static org.hamcrest.Matchers.lessThan;
+import static org.junit.Assert.assertNotNull;
 
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.SortedMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
@@ -95,34 +95,34 @@ public class TimerTest {
 
         int markSeconds = 30;
         int delaySeconds = 15;
-        
+
         Timer timer = registry.timer("testRate");
-        
+
         // Call update ~1/sec
         for (int i = 0; i < markSeconds; i++) {
             timer.update(Duration.ofSeconds(1));
             Thread.sleep(1000);
         }
-        
+
         // All rates should be around the value of ~1/sec
         TestUtils.assertEqualsWithTolerance(1.0, timer.getMeanRate());
         TestUtils.assertEqualsWithTolerance(1.0, timer.getOneMinuteRate());
         TestUtils.assertEqualsWithTolerance(1.0, timer.getFiveMinuteRate());
         TestUtils.assertEqualsWithTolerance(1.0, timer.getFifteenMinuteRate());
-        
+
         Thread.sleep(delaySeconds * 1000);
-        
+
         // Approximately calculate what the expected mean should be
         // and let the tolerance account for the delta
         double expectedMean = ((double) markSeconds/(markSeconds + delaySeconds));
         TestUtils.assertEqualsWithTolerance(expectedMean, timer.getMeanRate());
-        
+
         // After a delay, we expect some decay of values
         Assert.assertThat(timer.getOneMinuteRate(), lessThan(1.0));
         Assert.assertThat(timer.getFiveMinuteRate(), lessThan(1.0));
         Assert.assertThat(timer.getFifteenMinuteRate(), lessThan(1.0));
     }
-    
+
     @Test
     @InSequence(2)
     public void testTime() throws Exception {
@@ -132,11 +132,11 @@ public class TimerTest {
         Context context = timer.time();
         double afterStartTime = System.nanoTime();
         Thread.sleep(1000);
-        
+
         double beforeStopTime = System.nanoTime();
         double time = context.stop();
         double afterStopTime = System.nanoTime();
-        
+
 
         double delta = (afterStartTime - beforeStartTime) + (afterStopTime - beforeStopTime);
         Assert.assertEquals(beforeStopTime - beforeStartTime, time, delta);
@@ -147,18 +147,17 @@ public class TimerTest {
     public void testTimerRegistry() throws Exception {
         String timerLongName = "test.longData.timer";
         String timerTimeName = "testTime";
-        
+
         MetricID timerLongNameMetricID = new MetricID(timerLongName);
         MetricID timerTimeNameMetricID = new MetricID(timerTimeName);
-        
-        SortedMap<MetricID, Timer> timers = registry.getTimers();
-        
-        Assert.assertTrue(timers.size() > 0);
 
-        Assert.assertTrue(timers.containsKey(timerLongNameMetricID));
-        Assert.assertTrue(timers.containsKey(timerTimeNameMetricID));
+        Timer timerLong = registry.getTimer(timerLongNameMetricID);
+        Timer timerTime = registry.getTimer(timerTimeNameMetricID);
 
-        TestUtils.assertEqualsWithTolerance(480, timers.get(timerLongNameMetricID).getSnapshot().getValue(0.5));
+        assertNotNull(timerLong);
+        assertNotNull(timerTime);
+
+        TestUtils.assertEqualsWithTolerance(480, timerLong.getSnapshot().getValue(0.5));
     }
 
     @Test

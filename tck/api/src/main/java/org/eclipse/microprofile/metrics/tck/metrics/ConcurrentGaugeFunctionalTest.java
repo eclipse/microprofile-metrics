@@ -26,6 +26,7 @@ package org.eclipse.microprofile.metrics.tck.metrics;
 import org.eclipse.microprofile.metrics.tck.util.ControlledInvocation;
 import org.eclipse.microprofile.metrics.tck.util.BeanWithControlledInvocation;
 import org.eclipse.microprofile.metrics.tck.util.TimeUtil;
+import org.eclipse.microprofile.metrics.ConcurrentGauge;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -88,10 +89,9 @@ public class ConcurrentGaugeFunctionalTest {
             invocation2.stop();
             TimeUtil.waitForNextMinute();
             invocation1.stop();
-            assertEquals("Minimum should be 1 ", 1,
-                metricRegistry.getConcurrentGauges().get(new MetricID("mygauge")).getMin());
-            assertEquals("Maximum should be 2", 2,
-                metricRegistry.getConcurrentGauges().get(new MetricID("mygauge")).getMax());
+            ConcurrentGauge cGauge = metricRegistry.getConcurrentGauge(new MetricID("mygauge"));
+            assertEquals("Minimum should be 1 ", 1, cGauge.getMin());
+            assertEquals("Maximum should be 2", 2, cGauge.getMax());
         }
         finally {
             invocation1.stop();
@@ -110,17 +110,16 @@ public class ConcurrentGaugeFunctionalTest {
         ControlledInvocation[] invocations = new ControlledInvocation[NUMBER_OF_INVOCATIONS];
         try {
             // run some clients for the first method, see the 'count' of the concurrent gauge increment over time
+            ConcurrentGauge cGauge = metricRegistry.getConcurrentGauge(new MetricID("mygauge"));
             for (int i = 0; i < NUMBER_OF_INVOCATIONS; i++) {
                 invocations[i] = new ControlledInvocation(bean);
                 invocations[i].start();
-                assertEquals(i + 1,
-                    metricRegistry.getConcurrentGauges().get(new MetricID("mygauge")).getCount());
+                assertEquals(i + 1, cGauge.getCount());
             }
             // stop all clients and see the 'count' of the concurrent gauge decrement over time
             for (int i = 0; i < NUMBER_OF_INVOCATIONS; i++) {
                 invocations[i].stop();
-                assertEquals(NUMBER_OF_INVOCATIONS - i - 1,
-                    metricRegistry.getConcurrentGauges().get(new MetricID("mygauge")).getCount());
+                assertEquals(NUMBER_OF_INVOCATIONS - i - 1, cGauge.getCount());
             }
         }
         finally {

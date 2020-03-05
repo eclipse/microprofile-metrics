@@ -23,7 +23,7 @@ package org.eclipse.microprofile.metrics.tck.tags;
 
 import javax.inject.Inject;
 
-import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.notNullValue;
 
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
@@ -85,7 +85,7 @@ public class TimerTagFieldBeanTest {
     
     @Test
     public void timersTagFieldRegistered() {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timerOneMID));
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timerTwoMID));
+        assertThat("Timer is not registered correctly", registry.getTimer(timerOneMID), notNullValue());
+        assertThat("Timer is not registered correctly", registry.getTimer(timerTwoMID), notNullValue());
     }
 }

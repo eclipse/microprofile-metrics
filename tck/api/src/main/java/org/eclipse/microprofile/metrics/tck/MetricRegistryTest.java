@@ -22,6 +22,8 @@
 
 package org.eclipse.microprofile.metrics.tck;
 
+import static org.junit.Assert.assertNotNull;
+
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.metrics.ConcurrentGauge;
@@ -92,36 +94,36 @@ public class MetricRegistryTest {
     @InSequence(1)
     public void nameTest() {
         Assert.assertNotNull(metrics);
-        Assert.assertTrue(metrics.getNames().contains("nameTest"));
+        Assert.assertNotNull(metrics.getMetadata("nameTest"));
     }
 
     @Test
     @InSequence(2)
     public void registerTest() {
         metrics.register("regCountTemp", countTemp);
-        Assert.assertTrue(metrics.getCounters().containsKey(new MetricID("regCountTemp")));
+        assertExists(Counter.class, new MetricID("regCountTemp"));
 
         metrics.register("regHistoTemp", histoTemp);
-        Assert.assertTrue(metrics.getHistograms().containsKey(new MetricID("regHistoTemp")));
+        assertExists(Histogram.class, new MetricID("regHistoTemp"));
 
         metrics.register("regTimerTemp", timerTemp);
-        Assert.assertTrue(metrics.getTimers().containsKey(new MetricID("regTimerTemp")));
+        assertExists(Timer.class, new MetricID("regTimerTemp"));
 
         metrics.register("regSimpleTimerTemp", simpleTimerTemp);
-        Assert.assertTrue(metrics.getSimpleTimers().containsKey(new MetricID("regSimpleTimerTemp")));
+        assertExists(SimpleTimer.class, new MetricID("regSimpleTimerTemp"));
 
         metrics.register("regConcurrentGaugeTemp", concurrentGaugeTemp);
-        Assert.assertTrue(metrics.getConcurrentGauges().containsKey(new MetricID("regConcurrentGaugeTemp")));
+        assertExists(ConcurrentGauge.class, new MetricID("regConcurrentGaugeTemp"));
 
         metrics.register("regMeterTemp", meterTemp);
-        Assert.assertTrue(metrics.getMeters().containsKey(new MetricID("regMeterTemp")));
+        assertExists(Meter.class, new MetricID("regMeterTemp"));
     }
 
     @Test
     @InSequence(3)
     public void removeTest() {
         metrics.remove("nameTest");
-        Assert.assertFalse(metrics.getNames().contains("nameTest"));
+        Assert.assertNull(metrics.getMetadata("nameTest"));
     }
 
     @Test
@@ -138,11 +140,11 @@ public class MetricRegistryTest {
         metrics.counter(metricName, purpleTag);
 
         //check both counters have been registered
-        Assert.assertTrue(metrics.getCounters().containsKey(new MetricID(metricName)));
-        Assert.assertTrue(metrics.getCounters().containsKey(new MetricID(metricName, purpleTag)));
+        assertExists(Counter.class, new MetricID(metricName));
+        assertExists(Counter.class, new MetricID(metricName, purpleTag));
 
         //check that the "original" metadata wasn't replaced by the empty default metadata
-        Assert.assertEquals(metrics.getMetadata().get(metricName).getDisplayName(), displayName);
+        Assert.assertEquals(metrics.getMetadata(metricName).getDisplayName(), displayName);
     }
 
     @Test
@@ -153,4 +155,7 @@ public class MetricRegistryTest {
         Assert.assertEquals(MetricRegistry.Type.VENDOR, vendorMetrics.getType());
     }
 
+    private void assertExists(Class<? extends org.eclipse.microprofile.metrics.Metric> expected, MetricID metricID) {
+        assertNotNull("Metric expected to exist but was undefined: " + metricID, metrics.getMetric(metricID, expected));
+    }
 }

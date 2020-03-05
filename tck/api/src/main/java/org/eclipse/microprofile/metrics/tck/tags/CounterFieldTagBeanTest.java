@@ -24,6 +24,7 @@ package org.eclipse.microprofile.metrics.tck.tags;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
@@ -32,6 +33,7 @@ import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.Tag;
+import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -92,23 +94,22 @@ public class CounterFieldTagBeanTest {
     @Test
     @InSequence(1)
     public void counterTagFieldsRegistered() {      
-        
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterMID));
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterTwoMID));
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterThreeMID));
+        assertThat("Counter is not registered correctly", registry.getCounter(counterMID), notNullValue());
+        assertThat("Counter is not registered correctly", registry.getCounter(counterTwoMID), notNullValue());
+        assertThat("Counter is not registered correctly", registry.getCounter(counterThreeMID), notNullValue());
     }
 
     @Test
     @InSequence(2)
     public void incrementCounterTagFields() {
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterMID));
-        Counter counterOne = registry.getCounters().get(counterMID);
-        
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterTwoMID));
-        Counter counterTwo = registry.getCounters().get(counterTwoMID);
-        
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(counterThreeMID));
-        Counter counterThree = registry.getCounters().get(counterThreeMID);
+        Counter counterOne = registry.getCounter(counterMID);
+        assertThat("Counter is not registered correctly", counterOne, notNullValue());
+
+        Counter counterTwo = registry.getCounter(counterTwoMID);
+        assertThat("Counter is not registered correctly", counterTwo, notNullValue());
+
+        Counter counterThree = registry.getCounter(counterThreeMID);
+        assertThat("Counter is not registered correctly", counterThree, notNullValue());
 
         // Call the increment method and assert the counter is up-to-date
         long value = Math.round(Math.random() * Long.MAX_VALUE);

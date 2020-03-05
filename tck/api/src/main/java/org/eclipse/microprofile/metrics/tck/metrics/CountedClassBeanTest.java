@@ -127,6 +127,6 @@ public class CountedClassBeanTest {
                 everyItem(Matchers.<Counter> hasProperty("count", equalTo(1L))));
 
         assertThat("Constructor's metric should be incremented at least once",
-            registry.getCounters().get(constructorMID).getCount(), is(greaterThanOrEqualTo(1L)));
+            registry.getCounter(constructorMID).getCount(), is(greaterThanOrEqualTo(1L)));
     }
 }

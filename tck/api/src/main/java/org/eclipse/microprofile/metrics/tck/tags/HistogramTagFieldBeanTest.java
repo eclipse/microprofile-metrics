@@ -22,8 +22,8 @@
 package org.eclipse.microprofile.metrics.tck.tags;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
@@ -87,18 +87,18 @@ public class HistogramTagFieldBeanTest {
     @Test
     @InSequence(1)
     public void histogramTagFieldRegistered() {
-        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(histogramOneMID));
-        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(histogramTwoMID));
+        assertThat("Histogram is not registered correctly", registry.getHistogram(histogramOneMID), notNullValue());
+        assertThat("Histogram is not registered correctly", registry.getHistogram(histogramTwoMID), notNullValue());
     }
     
     @Test
     @InSequence(2)
     public void updateHistogramTagField() {
-        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(histogramOneMID));
-        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(histogramTwoMID));
+        Histogram histogramOne = registry.getHistogram(histogramOneMID);
+        Histogram histogramTwo = registry.getHistogram(histogramTwoMID);
+        assertThat("Histogram is not registered correctly", histogramOne, notNullValue());
+        assertThat("Histogram is not registered correctly", histogramTwo, notNullValue());
         
-        Histogram histogramOne = registry.getHistograms().get(histogramOneMID);
-        Histogram histogramTwo = registry.getHistograms().get(histogramTwoMID);
         
         // Call the update method and assert the histogram is up-to-date
         long value = Math.round(Math.random() * Long.MAX_VALUE);

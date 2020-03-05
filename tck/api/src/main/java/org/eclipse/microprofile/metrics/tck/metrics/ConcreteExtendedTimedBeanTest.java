@@ -16,8 +16,8 @@
 package org.eclipse.microprofile.metrics.tck.metrics;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
@@ -72,12 +72,11 @@ public class ConcreteExtendedTimedBeanTest {
         extendedTimedMID = new MetricID(EXTENDED_TIMED_NAME);
     }
 
-    
     @Test
     @InSequence(1)
     public void timedMethodNotCalledYet(MetricRegistry registry) {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timedMID));
-        Timer timer = registry.getTimers().get(timedMID);
+        Timer timer = registry.getTimer(timedMID);
+        assertThat("Timer is not registered correctly", timer, notNullValue());
 
         // Make sure that the timer hasn't been called yet
         assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(0L)));
@@ -86,8 +85,8 @@ public class ConcreteExtendedTimedBeanTest {
     @Test
     @InSequence(2)
     public void extendedTimedMethodNotCalledYet(MetricRegistry registry) {
-        assertThat("Timer is not registered correctly on the methods on the abstract class", registry.getTimers(), hasKey(extendedTimedMID));
-        Timer timer = registry.getTimers().get(extendedTimedMID);
+        Timer timer = registry.getTimer(extendedTimedMID);
+        assertThat("Timer is not registered correctly on the methods on the abstract class", timer, notNullValue());
 
         // Make sure that the timer hasn't been called yet
         assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(0L)));
@@ -96,8 +95,8 @@ public class ConcreteExtendedTimedBeanTest {
     @Test
     @InSequence(3)
     public void callTimedMethodOnce(MetricRegistry registry) {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timedMID));
-        Timer timer = registry.getTimers().get(timedMID);
+        Timer timer = registry.getTimer(timedMID);
+        assertThat("Timer is not registered correctly", timer, notNullValue());
 
         // Call the timed method and assert it's been timed
         bean.timedMethod();
@@ -109,8 +108,8 @@ public class ConcreteExtendedTimedBeanTest {
     @Test
     @InSequence(4)
     public void callExtendedTimedMethodOnce(MetricRegistry registry) {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(extendedTimedMID));
-        Timer timer = registry.getTimers().get(extendedTimedMID);
+        Timer timer = registry.getTimer(extendedTimedMID);
+        assertThat("Timer is not registered correctly", timer, notNullValue());
 
         // Call the timed method and assert it's been timed
         bean.anotherTimedMethod();

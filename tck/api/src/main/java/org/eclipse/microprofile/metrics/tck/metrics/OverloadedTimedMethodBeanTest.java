@@ -68,7 +68,7 @@ public class OverloadedTimedMethodBeanTest {
     @InSequence(1)
     public void overloadedTimedMethodNotCalledYet() {
         Assert.assertTrue("Metrics are not registered correctly", 
-            registry.getMetrics().keySet().containsAll(MetricsUtil.createMetricIDs(absoluteMetricNames())));
+            registry.getMetricIDs().containsAll(MetricsUtil.createMetricIDs(absoluteMetricNames())));
 
         // Make sure that all the timers haven't been called yet
         assertThat("Timer counts are incorrect", registry.getTimers().values(), hasItem(Matchers.<Timer> hasProperty("count", equalTo(0L))));
@@ -78,7 +78,7 @@ public class OverloadedTimedMethodBeanTest {
     @InSequence(2)
     public void callOverloadedTimedMethodOnce() {
         Assert.assertTrue("Metrics are not registered correctly", 
-            registry.getMetrics().keySet().containsAll(MetricsUtil.createMetricIDs(absoluteMetricNames())));
+            registry.getMetricIDs().containsAll(MetricsUtil.createMetricIDs(absoluteMetricNames())));
 
         // Call the timed methods and assert they've all been timed once
         bean.overloadedTimedMethod();

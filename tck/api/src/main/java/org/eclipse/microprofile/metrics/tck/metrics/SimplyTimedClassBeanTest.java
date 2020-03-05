@@ -130,7 +130,7 @@ public class SimplyTimedClassBeanTest {
     public void simplyTimedMethodsNotCalledYet() {
         assertThat("SimpleTimers are not registered correctly", registry.getSimpleTimers().keySet(), is(equalTo(simpleTimerMIDsIncludingToString)));
         
-        assertThat("Constructor timer count is incorrect", registry.getSimpleTimers().get(constructorMID).getCount(), is(equalTo(1L)));
+        assertThat("Constructor timer count is incorrect", registry.getSimpleTimer(constructorMID).getCount(), is(equalTo(1L)));
 
         // Make sure that the method timers haven't been simplyTimed yet
         assertThat("Method simple timer counts are incorrect", registry.getSimpleTimers(METHOD_SIMPLE_TIMERS).values(),
@@ -142,7 +142,7 @@ public class SimplyTimedClassBeanTest {
     public void callSimplyTimedMethodsOnce() {
         assertThat("SimpleTimers are not registered correctly", registry.getSimpleTimers().keySet(), is(equalTo(simpleTimerMIDsIncludingToString)));
         
-        assertThat("Constructor simple timer count is incorrect", registry.getSimpleTimers().get(constructorMID).getCount(), is(equalTo(1L)));
+        assertThat("Constructor simple timer count is incorrect", registry.getSimpleTimer(constructorMID).getCount(), is(equalTo(1L)));
 
         // Call the simplyTimed methods and assert they've been simplyTimed
         bean.simplyTimedMethodOne();
