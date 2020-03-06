@@ -199,7 +199,7 @@ public interface MetricRegistry {
      * and type. If a {@link Metadata} object is already registered with this metric name then that
      * {@link Metadata} will be used.
      *
-     * @param name the name of the metric
+     * @param metricID the ID of the metric
      * @return a new or pre-existing {@link Counter}
      *
      * @since 2.4
@@ -267,7 +267,7 @@ public interface MetricRegistry {
      * a new {@link ConcurrentGauge} if none is registered.
      * If a {@link ConcurrentGauge} was created, a {@link Metadata} object will be registered with the name and type.
      *
-     * @param name the name of the metric
+     * @param metricID the ID of the metric
      * @return a new or pre-existing {@link ConcurrentGauge}
      *
      * @since 2.4
@@ -308,8 +308,13 @@ public interface MetricRegistry {
     /**
      * Return the {@link Gauge} registered under the {@link MetricID} with this name and with no tags;
      * or create and register this gauge if none is registered.
+<<<<<<< HEAD
      *
      * If a {@link Histogram} was created, a {@link Metadata} object will be registered with the name
+=======
+     * 
+     * If a {@link Gauge} was created, a {@link Metadata} object will be registered with the name
+>>>>>>> fixes checkstyle and javadoc warnings
      * and type. If a {@link Metadata} object is already registered with this metric name then that
      * {@link Metadata} will be used.
      *
@@ -326,8 +331,13 @@ public interface MetricRegistry {
     /**
      * Return the {@link Gauge} registered under the {@link MetricID} with this name and with the
      * provided {@link Tag}s; or create and register this gauge if none is registered.
+<<<<<<< HEAD
      *
      * If a {@link Histogram} was created, a {@link Metadata} object will be registered with the name
+=======
+     * 
+     * If a {@link Gauge} was created, a {@link Metadata} object will be registered with the name
+>>>>>>> fixes checkstyle and javadoc warnings
      * and type. If a {@link Metadata} object is already registered with this metric name then that
      * {@link Metadata} will be used.
      *
@@ -344,12 +354,17 @@ public interface MetricRegistry {
     /**
      * Return the {@link Gauge} registered under the {@link MetricID}; or create and register this
      * gauge if none is registered.
+<<<<<<< HEAD
      *
      * If a {@link Histogram} was created, a {@link Metadata} object will be registered with the name
+=======
+     * 
+     * If a {@link Gauge} was created, a {@link Metadata} object will be registered with the name
+>>>>>>> fixes checkstyle and javadoc warnings
      * and type. If a {@link Metadata} object is already registered with this metric name then that
      * {@link Metadata} will be used.
      *
-     * @param name the name of the metric
+     * @param metricID the ID of the metric
      * @param gauge the {@link Gauge} to use if none is registered already
      * @return the pre-existing or provided {@link Gauge}
      *
@@ -398,7 +413,7 @@ public interface MetricRegistry {
      * and type. If a {@link Metadata} object is already registered with this metric name then that
      * {@link Metadata} will be used.
      *
-     * @param name the name of the metric
+     * @param metricID the ID of the metric
      * @return a new or pre-existing {@link Histogram}
      *
      * @since 2.4
@@ -478,7 +493,7 @@ public interface MetricRegistry {
      * and type. If a {@link Metadata} object is already registered with this metric name then that
      * {@link Metadata} will be used.
      *
-     * @param name the name of the metric
+     * @param metricID the ID of the metric
      * @return a new or pre-existing {@link Meter}
      *
      * @since 2.4
@@ -558,7 +573,7 @@ public interface MetricRegistry {
      * and type. If a {@link Metadata} object is already registered with this metric name then that
      * {@link Metadata} will be used.
      *
-     * @param name the name of the metric
+     * @param metricID the ID of the metric
      * @return a new or pre-existing {@link Timer}
      *
      * @since 2.4
@@ -640,7 +655,7 @@ public interface MetricRegistry {
      * and type. If a {@link Metadata} object is already registered with this metric name then that
      * {@link Metadata} will be used.
      *
-     * @param name the name of the metric
+     * @param metricID the ID of the metric
      * @return a new or pre-existing {@link SimpleTimer}
      *
      * @since 2.4
@@ -706,7 +721,8 @@ public interface MetricRegistry {
     default <T extends Metric> T getMetric(MetricID metricID, Class<T> asType) {
         try {
             return asType.cast(getMetric(metricID));
-        } catch (ClassCastException e) {
+        }
+        catch (ClassCastException e) {
             throw new IllegalArgumentException(metricID + " was not of expected type " + asType, e);
         }
     }
