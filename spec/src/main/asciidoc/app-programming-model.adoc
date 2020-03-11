@@ -155,9 +155,62 @@ MAY stop the deployment of an application if Metadata is missing.
 
 [[annotated-naming-convention]]
 ==== Annotated Naming Convention
-Annotated metrics are registered into the _application_ `MetricRegistry` with the name based on the annotation's `name` and `absolute` fields.
+Annotated metrics are registered into the _application_ `MetricRegistry` with the name based on
 
-.Example of annotated metric names
+- The annotation's `name` parameter (herein referred to as "local name"),  
+- the annotation's `absolute` parameter and
+- the fully qualified (canonical) name of the declaring class.
+
+If the `name` parameter is not specified, then the local name will be the short name of the declaring element (name of the field or method).
+For constructors, the local name in this case is the short name of the class to which this constructor belongs.
+If the metric annotation is applied on class level and the `name` parameter is specified, then the value of the `name` parameter
+replaces the fully qualified name of the declaring class for the purpose of computing the metric name for each field and method of the annotated class.
+
+When the `absolute` parameter is `true`, then the resulting metric name is equal to just the local name.
+When the `absolute` parameter is `false`, then the fully qualified name of the declaring class is prepended to it, separated by a dot.
+
+.Examples of metric names when metric annotations are applied to beans
+[source, java]
+----
+package com.example;
+
+import javax.inject.Inject;
+import org.eclipse.microprofile.metrics.Counter;
+import org.eclipse.microprofile.metrics.annotation.Metric;
+
+public class Colours {
+
+    @Counted
+    public void red() {
+        // ...
+    }
+    
+    @Counted(name="blueCount")
+    public void blue() {
+        // ...
+    }
+    
+    @Counted(name="greenCount", absolute=true)
+    public void green() {
+        // ...
+    }
+    
+    @Counted(absolute=true)
+    public void yellow() {
+        // ...
+    }
+    
+}
+----
+The above bean would produce the following entries in the `MetricRegistry`
+----
+com.example.Colours.red
+com.example.Colours.blueCount
+greenCount
+yellow
+----
+
+.Examples of metric names when `@Inject` is used together with `@Metric`
 [source, java]
 ----
 package com.example;
