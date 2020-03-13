@@ -162,7 +162,7 @@ Annotated metrics are registered into the _application_ `MetricRegistry` with th
 - the fully qualified (canonical) name of the declaring class.
 
 If the `name` parameter is not specified, then the local name will be the short name of the declaring element (name of the field or method).
-For constructors, the local name in this case is the short name of the class to which this constructor belongs.
+For constructors, the local name in this case is the simple name of the class to which this constructor belongs.
 If the metric annotation is applied on class level and the `name` parameter is specified, then the value of the `name` parameter
 replaces the fully qualified name of the declaring class for the purpose of computing the metric name for each field and method of the annotated class.
 
