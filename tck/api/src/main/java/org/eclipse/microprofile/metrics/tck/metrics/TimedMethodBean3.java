@@ -20,11 +20,11 @@ import org.eclipse.microprofile.metrics.annotation.Timed;
 public class TimedMethodBean3 {
 
     @Timed(name = "timedMethod")
-    public void timedMethod() {
-
+    public void timedMethod() throws InterruptedException {
+        Thread.sleep(2000);
     }
 
-    public void selfInvocationTimedMethod() {
+    public void selfInvocationTimedMethod() throws InterruptedException {
         timedMethod();
     }
 }
