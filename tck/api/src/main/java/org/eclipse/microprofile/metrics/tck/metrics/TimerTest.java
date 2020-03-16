@@ -25,9 +25,9 @@ package org.eclipse.microprofile.metrics.tck.metrics;
 
 import static org.hamcrest.Matchers.lessThan;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.SortedMap;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
@@ -84,7 +84,7 @@ public class TimerTest {
         globalTimer = registry.timer("test.longData.timer");
 
         for (long i : SAMPLE_LONG_DATA) {
-            globalTimer.update(i, TimeUnit.NANOSECONDS);
+            globalTimer.update(Duration.ofNanos(i));
         }
         isInitialized = true;
     }
@@ -100,7 +100,7 @@ public class TimerTest {
         
         // Call update ~1/sec
         for (int i = 0; i < markSeconds; i++) {
-            timer.update(1, TimeUnit.SECONDS);
+            timer.update(Duration.ofSeconds(1));
             Thread.sleep(1000);
         }
         

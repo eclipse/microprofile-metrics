@@ -62,7 +62,7 @@ public class TimerInjectionBeanTest {
 
     @Test
     @InSequence(2)
-    public void callTimedMethodOnce() {
+    public void callTimedMethodOnce() throws InterruptedException {
         // Call the timed method and assert it's been timed
         bean.timedMethod();
 

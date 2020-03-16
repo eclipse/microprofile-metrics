@@ -29,6 +29,7 @@ import javax.inject.Inject;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.Timer;
+import org.eclipse.microprofile.metrics.tck.util.TestUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -54,6 +55,7 @@ public class TimedMethodBeanTest {
         return ShrinkWrap.create(WebArchive.class)
             // Test bean
             .addClass(TimedMethodBean2.class)
+            .addClass(TestUtils.class)
             // Bean archive deployment descriptor
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
@@ -90,7 +92,7 @@ public class TimedMethodBeanTest {
 
     @Test
     @InSequence(2)
-    public void callTimedMethodOnce() {
+    public void callTimedMethodOnce() throws InterruptedException {
         assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timerMID));
         Timer timer = registry.getTimers().get(timerMID);
 
@@ -99,11 +101,12 @@ public class TimedMethodBeanTest {
 
         // Make sure that the timer has been called
         assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(TIMER_COUNT.incrementAndGet())));
+        TestUtils.assertEqualsWithTolerance(2000000000L,  timer.getElapsedTime().toNanos());
     }
 
     @Test
     @InSequence(3)
-    public void removeTimerFromRegistry() {
+    public void removeTimerFromRegistry() throws InterruptedException {
         assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timerMID));
         Timer timer = registry.getTimers().get(timerMID);
 
