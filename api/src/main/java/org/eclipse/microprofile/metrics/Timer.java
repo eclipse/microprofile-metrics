@@ -24,7 +24,7 @@ package org.eclipse.microprofile.metrics;
 
 import java.io.Closeable;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 
 /**
@@ -55,13 +55,13 @@ public interface Timer extends Metered, Sampling {
         @Override
         void close();
     }
+
     /**
      * Adds a recorded duration.
      *
-     * @param duration the length of the duration
-     * @param unit     the scale unit of {@code duration}
+     * @param duration the length of the {@link java.time.Duration duration}
      */
-    void update(long duration, TimeUnit unit);
+    void update(Duration duration);
 
     /**
      * Times and records the duration of event.
@@ -89,6 +89,13 @@ public interface Timer extends Metered, Sampling {
      * @see Context
      */
     Context time();
+
+    /**
+     * Returns the total elapsed timing durations of all completed timing events that are recorded with {@link #update(Duration)}.
+     * 
+     * @return the elapsed time {@link java.time.Duration duration}
+     */
+    Duration getElapsedTime();
 
     @Override
     long getCount();

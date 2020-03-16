@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2019 Contributors to the Eclipse Foundation
+// Copyright (c) 2016, 2020 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -289,6 +289,7 @@ The JSON node is named `<metric-name>`. The JSON leafs are named `<key>[';'<tag-
 | JSON Key | Value (Equivalent Timer method)
 
 | `count` | `getCount()`
+| `elapsedTime` | `getElapsedTime()`
 | `meanRate` | `getMeanRate()`
 | `oneMinRate` | `getOneMinuteRate()`
 | `fiveMinRate` | `getFiveMinuteRate()`
@@ -311,6 +312,7 @@ The JSON node is named `<metric-name>`. The JSON leafs are named `<key>[';'<tag-
 {
   "responseTime": {
     "count": 29382,
+    "elapsedTime": 25608694,
     "meanRate": 12.185627192860734,
     "oneMinRate": 12.563,
     "fiveMinRate": 12.364,
@@ -326,7 +328,8 @@ The JSON node is named `<metric-name>`. The JSON leafs are named `<key>[';'<tag-
     "p99": 5608694.0,
     "p999": 5608694.0,
     "count;servlet=two": 29382,
-    "meanRate;servlet=two": 12.185627192860734,
+    "elapsedTime;servlet=two": 25608694,
+    "meanRate;servlet=two":12.185627192860734,
     "oneMinRate;servlet=two": 12.563,
     "fiveMinRate;servlet=two": 12.364,
     "fifteenMinRate;servlet=two": 12.126,
@@ -716,6 +719,7 @@ The `quantile` OpenMetrics label is merged with with the metric's tags.
 | `one_min_rate_per_second`       | Gauge   | `getOneMinuteRate()`                | PER_SECOND
 | `five_min_rate_per_second`      | Gauge   | `getFiveMinuteRate()`               | PER_SECOND
 | `fifteen_min_rate_per_second`   | Gauge   | `getFifteenMinuteRate()`            | PER_SECOND
+| `elapsedTime_seconds`           | Gauge   | `getElapsedTime()`                  | SECONDS^1^
 | `min_seconds`                   | Gauge   | `getSnapshot().getMin()`            | SECONDS^1^
 | `max_seconds`                   | Gauge   | `getSnapshot().getMax()`            | SECONDS^1^
 | `mean_seconds`                  | Gauge   | `getSnapshot().getMean()`           | SECONDS^1^
@@ -744,6 +748,8 @@ application_response_time_one_min_rate_per_second  2.794076465421066E-14
 application_response_time_five_min_rate_per_second  4.800392614619373E-4
 # TYPE application_response_time_fifteen_min_rate_per_second  gauge
 application_response_time_fifteen_min_rate_per_second  0.01063191047532505
+# TYPE application_response_time_elapsedTime_seconds gauge
+application_response_time_elapsedTime_seconds  0.023
 # TYPE application_response_time_mean_seconds gauge
 application_response_time_mean_seconds 0.000415041
 # TYPE application_response_time_max_seconds gauge
