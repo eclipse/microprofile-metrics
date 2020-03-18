@@ -28,7 +28,31 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 == Changes in 3.0
 
 === API/SPI Changes
+** `MetricRegistry` changed from `abstract class` to `interface` with some existing methods now implemented as `default` methods
 ** Added the `MetricRegistry.getType()` method
+** Added the `MetricRegistry.counter(MetricID)` method
+** Added the `MetricRegistry.concurrentGauge(MetricID)` method
+** Added the `MetricRegistry.gauge(MetricID, Gauge)` method
+** Added the `MetricRegistry.gauge(String, Gauge)` method
+** Added the `MetricRegistry.gauge(String, Gauge, Tag[])` method
+** Added the `MetricRegistry.histogram(MetricID)` method
+** Added the `MetricRegistry.meter(MetricID)` method
+** Added the `MetricRegistry.timer(MetricID)` method
+** Added the `MetricRegistry.simpleTimer(MetricID)` method
+** Added the `MetricRegistry.getMetric(MetricID)` method
+** Added the `MetricRegistry.getMetric(MetricID metricID, Class)` method
+** Added the `MetricRegistry.getCounter(MetricID)` method
+** Added the `MetricRegistry.getConcurrentGauge(MetricID)` method
+** Added the `MetricRegistry.getGauge(MetricID)` method
+** Added the `MetricRegistry.getHistogram(MetricID)` method
+** Added the `MetricRegistry.getMeter(MetricID)` method
+** Added the `MetricRegistry.getTimer(MetricID)` method
+** Added the `MetricRegistry.getSimpleTimer(MetricID)` method
+** Added the `MetricRegistry.getMetadata(String)` method
+** Added the `MetricRegistry.getMetrics(MetricFilter)` method
+** Added the `MetricRegistry.getMetrics(Class, MetricFilter)` method
+** `MetricRegistry.getMetrics()` is now deprecated
+** `MetricRegistry.getMetadata()` is now deprecated
 ** Added `SimpleTimer.getMaxTimeDuration()` and `SimpleTimer.getMaxTimeDuration()` methods which return a `java.time.Duration` object (https://github.com/eclipse/microprofile-metrics/issues/523[#523])
 ** Timer class updated  (https://github.com/eclipse/microprofile-metrics/issues/524[#524])
 *** Changed `Timer.update(long duration, java.util.concurrent.TimeUnit)` to `Timer.update(java.time.Duration duration)`
@@ -40,6 +64,9 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 
 === Specification Changes
 ** Clarified how the implementation must handle metrics applied via CDI stereotypes
+
+=== TCK enhancement
+** Improved TCK - Use newly introduced `MetricRegistry` methods to retrieve single metrics and avoid now deprecated methods `getMetrics()` and `getMetadata()`
 
 [[release_notes_2_3]]
 == Changes in 2.3
@@ -110,7 +137,7 @@ A full list of changes may be found on the link:https://github.com/eclipse/micro
 ** TCKs are updated to use RestAssured 4.0
 
 === Miscellaneous
-** Explicitly excluded the transitive dependency on `javax.el-api` from the build of the specification. It wasn't actually used anywhere in the build so there should be no impact. 
+** Explicitly excluded the transitive dependency on `javax.el-api` from the build of the specification. It wasn't actually used anywhere in the build so there should be no impact.
 Implementations can still support the Expression Language if they choose to. (https://github.com/eclipse/microprofile-metrics/issues/417[#417])
 
 [[release_notes_2_0]]
@@ -149,7 +176,7 @@ JSON format for OPTIONS requests have been modified such that the 'tags' attribu
 ** icon:bolt[role="red"] Some base metrics' names have changed to follow the convention of ending the name of accumulating counters with `total`. (https://github.com/eclipse/microprofile-metrics/issues/375[#375])
 ** icon:bolt[role="red"] Some base metrics' types have changed from Counter to Gauge since Counters must now count monotonically. (https://github.com/eclipse/microprofile-metrics/issues/375[#375])
 ** icon:bolt[role="red"] Some base metrics' names have changed because they now use tags to distinguish metrics for multiple JVM objects. For example,
-each existing garbage collector now has its own `gc.total` metric with the name of the garbage collector being in a tag. Names 
+each existing garbage collector now has its own `gc.total` metric with the name of the garbage collector being in a tag. Names
 of some base metrics in the OpenMetrics output are also affected by the removal of conversion from camelCase to snake_case. (https://github.com/eclipse/microprofile-metrics/issues/375[#375])
 
 === Specification Changes
@@ -171,7 +198,7 @@ The `Counted` interface lost the `dec()` methods.
 ** icon:bolt[role="red"] Some base metrics' names have changed to follow the convention of ending the name of accumulating counters with `total`. (https://github.com/eclipse/microprofile-metrics/issues/375[#375])
 ** icon:bolt[role="red"] Some base metrics' types have changed from Counter to Gauge since Counters must now count monotonically. (https://github.com/eclipse/microprofile-metrics/issues/375[#375])
 ** icon:bolt[role="red"] Some base metrics' names have changed because they now use tags to distinguish metrics for multiple JVM objects. For example,
-each existing garbage collector now has its own `gc.total` metric with the name of the garbage collector being in a tag. Names 
+each existing garbage collector now has its own `gc.total` metric with the name of the garbage collector being in a tag. Names
 of some base metrics in the OpenMetrics output are also affected by the removal of conversion from camelCase to snake_case. (https://github.com/eclipse/microprofile-metrics/issues/375[#375])
 ** Added a set of recommendations how application servers with multiple deployed applications should behave if they support MP Metrics. (https://github.com/eclipse/microprofile-metrics/issues/240[#240])
 
