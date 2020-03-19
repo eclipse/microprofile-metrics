@@ -40,7 +40,7 @@ public final class MetricUnits {
     public static final String BITS = "bits";
     /** 1000 {@link #BITS} */
     public static final String KILOBITS = "kilobits";
-    /** 1000 {@link #KIBIBITS} */
+    /** 1000 {@link #KILOBITS} */
     public static final String MEGABITS = "megabits";
     /** 1000 {@link #MEGABITS} */
     public static final String GIGABITS = "gigabits";
