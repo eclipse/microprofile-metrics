@@ -251,7 +251,7 @@ The JSON node is named `<metric-name>`. The JSON leafs are named `<key>[';'<tag-
 ----
 {
   "daily_value_changes": {
-    "count":'2,
+    "count": 2,
     "min": -1624,
     "max": 26,
     "mean": -799.0,
