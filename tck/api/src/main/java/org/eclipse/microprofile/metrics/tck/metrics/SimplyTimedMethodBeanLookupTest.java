@@ -38,6 +38,7 @@ import javax.inject.Inject;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.SimpleTimer;
+import org.eclipse.microprofile.metrics.tck.util.TestUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -52,17 +53,18 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public class SimplyTimedMethodBeanLookupTest {
 
-    private final static String TIMER_NAME = MetricRegistry.name(SimplyTimedMethodBean1.class, "simplyTimedMethod");
+    private final static String SIMPLE_TIMER_NAME = MetricRegistry.name(SimplyTimedMethodBean1.class, "simplyTimedMethod");
     
     private static MetricID simpleTimerMID;
 
-    private final static AtomicLong TIMER_COUNT = new AtomicLong();
+    private final static AtomicLong SIMPLE_TIMER_COUNT = new AtomicLong();
 
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
             // Test bean
             .addClass(SimplyTimedMethodBean1.class)
+            .addClass(TestUtils.class)
             // Bean archive deployment descriptor
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
@@ -84,7 +86,7 @@ public class SimplyTimedMethodBeanLookupTest {
          * This will cause client instantiated MetricIDs to 
          * throw an exception. (i.e the global MetricIDs)
          */
-        simpleTimerMID = new MetricID(TIMER_NAME);
+        simpleTimerMID = new MetricID(SIMPLE_TIMER_NAME);
     }
     
     @Test
@@ -97,12 +99,12 @@ public class SimplyTimedMethodBeanLookupTest {
         SimpleTimer simpleTimer = registry.getSimpleTimers().get(simpleTimerMID);
 
         // Make sure that the simpleTimer hasn't been called yet
-        assertThat("SimplyTimed count is incorrect", simpleTimer.getCount(), is(equalTo(TIMER_COUNT.get())));
+        assertThat("SimplyTimed count is incorrect", simpleTimer.getCount(), is(equalTo(SIMPLE_TIMER_COUNT.get())));
     }
 
     @Test
     @InSequence(2)
-    public void callSimplyTimedMethodOnce() {
+    public void callSimplyTimedMethodOnce() throws InterruptedException {
         // Get a contextual instance of the bean
         SimplyTimedMethodBean1 bean = instance.get();
 
@@ -113,12 +115,13 @@ public class SimplyTimedMethodBeanLookupTest {
         bean.simplyTimedMethod();
 
         // Make sure that the simpleTimer has been called
-        assertThat("SimplyTimed count is incorrect", simpleTimer.getCount(), is(equalTo(TIMER_COUNT.incrementAndGet())));
+        assertThat("SimplyTimed count is incorrect", simpleTimer.getCount(), is(equalTo(SIMPLE_TIMER_COUNT.incrementAndGet())));
+        TestUtils.assertEqualsWithTolerance(2000000000L,  simpleTimer.getElapsedTime().toNanos());
     }
 
     @Test
     @InSequence(3)
-    public void removeSimplyTimedFromRegistry() {
+    public void removeSimplyTimedFromRegistry() throws InterruptedException {
         // Get a contextual instance of the bean
         SimplyTimedMethodBean1 bean = instance.get();
 
@@ -135,7 +138,7 @@ public class SimplyTimedMethodBeanLookupTest {
         catch (RuntimeException cause) {
             assertThat(cause, is(instanceOf(IllegalStateException.class)));
             // Make sure that the simpleTimer hasn't been called
-            assertThat("SimplyTimed count is incorrect", simpleTimer.getCount(), is(equalTo(TIMER_COUNT.get())));
+            assertThat("SimplyTimed count is incorrect", simpleTimer.getCount(), is(equalTo(SIMPLE_TIMER_COUNT.get())));
             return;
         }
 
