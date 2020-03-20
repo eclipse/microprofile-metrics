@@ -28,11 +28,11 @@ import org.eclipse.microprofile.metrics.annotation.SimplyTimed;
 public class SimplyTimedMethodBean1 {
 
     @SimplyTimed(name = "simplyTimedMethod")
-    public void simplyTimedMethod() {
-
+    public void simplyTimedMethod() throws InterruptedException {
+        Thread.sleep(2000);
     }
 
-    public void selfInvocationSimplyTimedMethod() {
+    public void selfInvocationSimplyTimedMethod() throws InterruptedException {
         simplyTimedMethod();
     }
 }

@@ -1,6 +1,6 @@
-/*
+/**
  * ********************************************************************
- *  Copyright (c) 2019 Contributors to the Eclipse Foundation
+ *  Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  *  See the NOTICES file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -24,15 +24,12 @@
 package org.eclipse.microprofile.metrics.tck.metrics;
 
 import org.eclipse.microprofile.metrics.annotation.SimplyTimed;
+import javax.enterprise.context.ApplicationScoped;
 
-public class SimplyTimedMethodBean3 {
+@ApplicationScoped
+public class SimpleTimerFunctionalBean{
 
-    @SimplyTimed(name = "simplyTimedMethod")
-    public void simplyTimedMethod() throws InterruptedException {
-        Thread.sleep(2000);
-    }
-
-    public void selfInvocationSimplyTimedMethod() throws InterruptedException {
-        simplyTimedMethod();
+    @SimplyTimed(name = "mySimplyTimed", absolute = true)
+    public void doSomething() {
     }
 }

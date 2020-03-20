@@ -354,8 +354,10 @@ The JSON node is named `<metric-name>`. The JSON leafs are named `<key>[';'<tag-
 |===
 | JSON Key | Value (Equivalent SimpleTimer method)
 
-| `count`       | `getCount()`
-| `elapsedTime` | `getElapsedTime()`
+| `count`                 | `getCount()`
+| `elapsedTime`           | `getElapsedTime()`
+| `maxTimeDuration`       | `getMaxTimeDuration()`
+| `minTimeDuration`       | `getMinTimeDuration()`
 |===
 
 .Example Simple Timer JSON GET Response
@@ -364,7 +366,9 @@ The JSON node is named `<metric-name>`. The JSON leafs are named `<key>[';'<tag-
 {
   "simple_responseTime": {
     "count": 1,
-    "elapsedTime": 12300000000
+    "elapsedTime": 12300000000,
+    "maxTimeDuration": 3231000000,
+    "minTimeDuration": 25600000
   }
 }
 ----
@@ -769,6 +773,8 @@ The OpenMetrics name is composed `<scope>'_'<metric-name>'_'<suffix>`.
 | Suffix{label}                   | TYPE    | Value (SimpleTimer method)                | Units
 | `total`                         | Counter | `getCount()`                              | N/A
 | `elapsedTime_seconds`           | Gauge   | `getElapsedTime()`                        | SECONDS^1^
+| `maxTimeDuration_seconds`       | Gauge   | `getMaxTimeDuration()`                    | SECONDS^1^
+| `minTimeDuration_seconds`       | Gauge   | `getMinTimeDuration()`                    | SECONDS^1^
 |===
 
 ^1^ The implementation is expected to convert the result returned by the `SimpleTimer` into seconds
@@ -780,7 +786,11 @@ The OpenMetrics name is composed `<scope>'_'<metric-name>'_'<suffix>`.
 # HELP application_response_time_total The number of calls to this REST endpoint #(1)
 application_response_time_total 12
 # TYPE application_response_time_elapsedTime_seconds gauge
-application_response_time_elapsedTime_seconds  12.3
+application_response_time_elapsedTime_seconds  12.30000000
+# TYPE application_response_time_maxTimeDuration_seconds gauge
+application_response_time_maxTimeDuration_seconds  3.231000000
+# TYPE application_response_time_minTimeDuration_seconds gauge
+application_response_time_minTimeDuration_seconds  0.0256
 ----
 
 <1> Note help is only emitted for the metric related to `getCount()`, but not for elapsedTime.

@@ -70,7 +70,7 @@ public class SimpleTimerInjectionBeanTest {
 
     @Test
     @InSequence(2)
-    public void callSimplyTimedMethodOnce() {
+    public void callSimplyTimedMethodOnce() throws InterruptedException {
         // Call the timed method and assert it's been timed
         bean.simplyTimedMethod();
 

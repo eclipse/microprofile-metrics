@@ -29,6 +29,10 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 
 === API/SPI Changes
 ** Added the `MetricRegistry.getType()` method
+** Added `SimpleTimer.getMaxTimeDuration()` and `SimpleTimer.getMaxTimeDuration()` methods which return a `java.time.Duration` object (https://github.com/eclipse/microprofile-metrics/issues/523[#523])
+
+=== Functional Changes
+** Simple Timer metrics now track the highest and lowest recorded timing duration of the previous completed minute (https://github.com/eclipse/microprofile-metrics/issues/523[#523])
 
 === Specification Changes
 ** Clarified how the implementation must handle metrics applied via CDI stereotypes

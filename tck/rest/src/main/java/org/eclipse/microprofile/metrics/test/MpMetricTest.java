@@ -585,9 +585,13 @@ public class MpMetricTest {
                 
                 .body("'metricTest.test1.simpleTimer'.'count;tier=integration'", equalTo(1))
                 .body("'metricTest.test1.simpleTimer'", hasKey("elapsedTime;tier=integration"))
+                .body("'metricTest.test1.simpleTimer'", hasKey("minTimeDuration;tier=integration"))
+                .body("'metricTest.test1.simpleTimer'", hasKey("maxTimeDuration;tier=integration"))
                 
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA'.'count;tier=integration'", equalTo(1))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA'", hasKey("elapsedTime;tier=integration"));
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA'", hasKey("elapsedTime;tier=integration"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA'", hasKey("minTimeDuration;tier=integration"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA'", hasKey("maxTimeDuration;tier=integration"));
     }
 
     @Test
@@ -1180,12 +1184,18 @@ public class MpMetricTest {
                 //SimpleTimer - ;tier=integration
                 .body("'taggedSimpleTimer'.'count;tier=integration'", equalTo(0))
                 .body("'taggedSimpleTimer'", hasKey("elapsedTime;tier=integration"))
+                .body("'taggedSimpleTimer'", hasKey("maxTimeDuration;tier=integration"))
+                .body("'taggedSimpleTimer'", hasKey("minTimeDuration;tier=integration"))
                 //SimpleTimer - ;number=one;tier=integration
                 .body("'taggedSimpleTimer'.'count;number=one;tier=integration'", equalTo(0))
                 .body("'taggedSimpleTimer'", hasKey("elapsedTime;number=one;tier=integration"))
+                .body("'taggedSimpleTimer'", hasKey("maxTimeDuration;number=one;tier=integration"))
+                .body("'taggedSimpleTimer'", hasKey("minTimeDuration;number=one;tier=integration"))
                 //SimpleTimer - ;number=two;tier=integration
                 .body("'taggedSimpleTimer'.'count;number=two;tier=integration'", equalTo(0))
                 .body("'taggedSimpleTimer'", hasKey("elapsedTime;number=two;tier=integration"))
+                .body("'taggedSimpleTimer'", hasKey("maxTimeDuration;number=two;tier=integration"))
+                .body("'taggedSimpleTimer'", hasKey("minTimeDuration;number=two;tier=integration"))
                 
                 
                 //Meter - ;tier=integration
@@ -1263,6 +1273,8 @@ public class MpMetricTest {
             .body(containsString("# TYPE application_" + prefix + "total counter"))
             .body(containsString(prefix + "total"))
             .body(containsString(prefix + "elapsedTime_seconds"))
+            .body(containsString(prefix + "maxTimeDuration_seconds"))
+            .body(containsString(prefix + "minTimeDuration_seconds"))
         ;
     }
     
