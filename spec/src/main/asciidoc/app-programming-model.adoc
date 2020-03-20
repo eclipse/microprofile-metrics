@@ -155,19 +155,24 @@ MAY stop the deployment of an application if Metadata is missing.
 
 [[annotated-naming-convention]]
 ==== Annotated Naming Convention
-Annotated metrics are registered into the _application_ `MetricRegistry` with the name based on
+Annotated metrics are registered into the _application_ `MetricRegistry` with the name computed using the rules in the following tables.
 
-- The annotation's `name` parameter (herein referred to as "local name"),  
-- the annotation's `absolute` parameter and
-- the fully qualified (canonical) name of the declaring class.
+If the metric annotation is placed on a method or field:
+|===
+| | `name` is specified | `name` is not specified
+| `absolute=true` | Value of the `name` argument | Name of the annotated element
+| `absolute=false` | `<canonical-name-of-declaring-class>.<value-of-name-argument>` | `<canonical-name-of-declaring-class>.<name-of-element>`
+|===
 
-If the `name` parameter is not specified, then the local name will be the short name of the declaring element (name of the field or method).
-For constructors, the local name in this case is the simple name of the class to which this constructor belongs.
-If the metric annotation is applied on class level and the `name` parameter is specified, then the value of the `name` parameter
-replaces the fully qualified name of the declaring class for the purpose of computing the metric name for each field and method of the annotated class.
+If the metric annotation is placed on a class, then for each method, the metric name will be:
 
-When the `absolute` parameter is `true`, then the resulting metric name is equal to just the local name.
-When the `absolute` parameter is `false`, then the fully qualified name of the declaring class is prepended to it, separated by a dot.
+|===
+| | `name` is specified | `name` is not specified
+| `absolute=true` | `<value-of-name-argument>.<name-of-the-method>` | `<short-name-of-class>.<name-of-the-method>`
+| `absolute=false` | `<package-of-the-class>.<value-of-name-argument>.<name-of-the-method>` | `<canonical-name-of-the-class>.<name-of-the-method>`
+|===
+
+In case of constructors, "name of the method" is the short name of the declaring class.
 
 .Examples of metric names when metric annotations are applied to beans
 [source, java]
