@@ -27,9 +27,6 @@ import java.util.Objects;
 
 /**
  * The {@link Metadata} builder.
- * This builder has a default value:
- * {@link MetadataBuilder#type} as {@link MetricType#INVALID}
- * {@link MetadataBuilder#unit} as {@link MetricUnits#NONE}
  */
 public class MetadataBuilder {
 
@@ -39,9 +36,9 @@ public class MetadataBuilder {
 
     private String description;
 
-    private MetricType type = MetricType.INVALID;
+    private MetricType type;
 
-    private String unit = MetricUnits.NONE;
+    private String unit;
 
     MetadataBuilder(Metadata metadata) {
         this.name = metadata.getName();
@@ -99,7 +96,7 @@ public class MetadataBuilder {
      * @throws NullPointerException when type is null
      */
     public MetadataBuilder withType(MetricType type) {
-        this.type = type == null ? MetricType.INVALID : type;
+        this.type = type;
         return this;
     }
 
@@ -111,7 +108,7 @@ public class MetadataBuilder {
      * @throws NullPointerException when unit is null
      */
     public MetadataBuilder withUnit(String unit) {
-        this.unit = unit == null ? MetricUnits.NONE : unit;
+        this.unit = unit;
         return this;
     }
 
