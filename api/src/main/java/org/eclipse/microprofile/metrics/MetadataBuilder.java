@@ -72,7 +72,7 @@ public class MetadataBuilder {
      * @throws NullPointerException when displayName is null
      */
     public MetadataBuilder withDisplayName(String displayName) {
-        this.displayName = displayName;
+        this.displayName = "".equals(displayName) ? null : displayName;
         return this;
     }
 
@@ -84,7 +84,7 @@ public class MetadataBuilder {
      * @throws NullPointerException when description is null
      */
     public MetadataBuilder withDescription(String description) {
-        this.description = description;
+        this.description = "".equals(description) ? null : description;
         return this;
     }
 
@@ -96,7 +96,7 @@ public class MetadataBuilder {
      * @throws NullPointerException when type is null
      */
     public MetadataBuilder withType(MetricType type) {
-        this.type = type;
+        this.type = MetricType.INVALID == type ? null : type;
         return this;
     }
 
@@ -108,7 +108,7 @@ public class MetadataBuilder {
      * @throws NullPointerException when unit is null
      */
     public MetadataBuilder withUnit(String unit) {
-        this.unit = unit;
+        this.unit = MetricUnits.NONE.equals(unit) ? null : unit;
         return this;
     }
 
