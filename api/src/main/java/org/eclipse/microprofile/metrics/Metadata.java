@@ -68,12 +68,16 @@ public interface Metadata {
      */
     String getDisplayName();
 
+    Optional<String> getDisplayNameOptional();
+
     /**
-     * Returns the description of the metric.
+     * Returns the description of the metric if set, otherwise this method returns the empty {@link String}.
      *
      * @return the description
      */
-    Optional<String> getDescription();
+    String getDescription();
+
+    Optional<String> getDescriptionOptional();
 
     /**
      * Returns the String representation of the {@link MetricType}.
@@ -84,13 +88,20 @@ public interface Metadata {
     String getType();
 
     /**
-     * Returns the {@link MetricType} of the metric
+     * Returns the {@link MetricType} of the metric if set, otherwise it returns {@link MetricType#INVALID}
      *
      * @return the {@link MetricType}
      */
     MetricType getTypeRaw();
 
-    Optional<String> getUnit();
+    /**
+     * Returns the unit of this metric if set, otherwise this method returns {@link MetricUnits#NONE}
+     *
+     * @return the unit
+     */
+    String getUnit();
+
+    Optional<String> getUnitOptional();
 
     /**
      * Returns a new builder
