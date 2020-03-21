@@ -68,7 +68,7 @@ public interface Metadata {
      */
     String getDisplayName();
 
-    Optional<String> getDisplayNameOptional();
+    Optional<String> displayName();
 
     /**
      * Returns the description of the metric if set, otherwise this method returns the empty {@link String}.
@@ -77,7 +77,7 @@ public interface Metadata {
      */
     String getDescription();
 
-    Optional<String> getDescriptionOptional();
+    Optional<String> description();
 
     /**
      * Returns the String representation of the {@link MetricType}.
@@ -101,7 +101,7 @@ public interface Metadata {
      */
     String getUnit();
 
-    Optional<String> getUnitOptional();
+    Optional<String> unit();
 
     /**
      * Returns a new builder

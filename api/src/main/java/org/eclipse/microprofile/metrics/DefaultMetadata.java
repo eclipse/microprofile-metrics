@@ -87,21 +87,21 @@ public class DefaultMetadata implements Metadata {
 
     @Override
     public String getDisplayName() {
-        return getDisplayNameOptional().orElse(name);
+        return displayName().orElse(name);
     }
 
     @Override
-    public Optional<String> getDisplayNameOptional() {
+    public Optional<String> displayName() {
         return Optional.ofNullable(displayName);
     }
 
     @Override
     public String getDescription() {
-        return getDescriptionOptional().orElse("");
+        return description().orElse("");
     }
 
     @Override
-    public Optional<String> getDescriptionOptional() {
+    public Optional<String> description() {
         return Optional.ofNullable(description);
     }
 
@@ -117,11 +117,11 @@ public class DefaultMetadata implements Metadata {
 
     @Override
     public String getUnit() {
-        return getUnitOptional().orElse(MetricUnits.NONE);
+        return unit().orElse(MetricUnits.NONE);
     }
 
     @Override
-    public Optional<String> getUnitOptional() {
+    public Optional<String> unit() {
         return Optional.ofNullable(unit);
     }
 
