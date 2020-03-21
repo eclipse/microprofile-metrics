@@ -43,9 +43,9 @@ public class MetadataBuilder {
     MetadataBuilder(Metadata metadata) {
         this.name = metadata.getName();
         this.type = metadata.getTypeRaw();
-        metadata.getDescriptionOptional().ifPresent(this::withDescription);
-        metadata.getUnitOptional().ifPresent(this::withUnit);
-        metadata.getDisplayNameOptional().ifPresent(this::withDisplayName);
+        metadata.description().ifPresent(this::withDescription);
+        metadata.unit().ifPresent(this::withUnit);
+        metadata.displayName().ifPresent(this::withDisplayName);
     }
 
     public MetadataBuilder() {
