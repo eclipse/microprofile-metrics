@@ -77,14 +77,14 @@ public class StereotypeCountedClassBeanTest {
         MetricID constructorMetricId = new MetricID(constructorMetricName);
         assertNotNull(metricRegistry.getCounter(constructorMetricId));
         Metadata constructorMetadata = metricRegistry.getMetadata(constructorMetricName);
-        assertEquals("description", constructorMetadata.getDescription().orElse(null));
+        assertEquals("description", constructorMetadata.description().orElse(null));
         assertEquals("displayName", constructorMetadata.getDisplayName());
 
         String methodMetricName = "org.eclipse.microprofile.metrics.tck.cdi.stereotype.bloop.foo";
         MetricID methodMetricId = new MetricID(methodMetricName);
         assertNotNull(metricRegistry.getCounter(methodMetricId));
         Metadata methodMetadata = metricRegistry.getMetadata(methodMetricName);
-        assertEquals("description", methodMetadata.getDescription().orElse(null));
+        assertEquals("description", methodMetadata.description().orElse(null));
         assertEquals("displayName", methodMetadata.getDisplayName());
 
         beanWithSpecifiedMetadata.foo();

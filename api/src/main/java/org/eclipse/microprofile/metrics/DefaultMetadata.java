@@ -87,11 +87,21 @@ public class DefaultMetadata implements Metadata {
 
     @Override
     public String getDisplayName() {
-        return Optional.ofNullable(displayName).orElse(name);
+        return getDisplayNameOptional().orElse(name);
     }
 
     @Override
-    public Optional<String> getDescription() {
+    public Optional<String> getDisplayNameOptional() {
+        return Optional.ofNullable(displayName);
+    }
+
+    @Override
+    public String getDescription() {
+        return getDescriptionOptional().orElse("");
+    }
+
+    @Override
+    public Optional<String> getDescriptionOptional() {
         return Optional.ofNullable(description);
     }
 
@@ -106,7 +116,12 @@ public class DefaultMetadata implements Metadata {
     }
 
     @Override
-    public Optional<String> getUnit() {
+    public String getUnit() {
+        return getUnitOptional().orElse(MetricUnits.NONE);
+    }
+
+    @Override
+    public Optional<String> getUnitOptional() {
         return Optional.ofNullable(unit);
     }
 
@@ -120,16 +135,12 @@ public class DefaultMetadata implements Metadata {
         }
         Metadata that = (Metadata) o;
 
-        //Retrieve the Optional value or set to the "defaults" if empty
-        String thatDescription = (that.getDescription().isPresent()) ? that.getDescription().get() : null;
-        String thatUnit = (that.getUnit().isPresent()) ? that.getUnit().get() : MetricUnits.NONE;
-
-        //Need to use this.getDisplayname() and this.getTypeRaw() for the Optional.orElse() logic
+        //Use getters to compare the effective values
         return Objects.equals(name, that.getName()) &&
                 Objects.equals(this.getDisplayName(), that.getDisplayName()) &&
-                Objects.equals(description, thatDescription) &&
-                Objects.equals(unit, thatUnit) &&
-                Objects.equals(this.getTypeRaw(), that.getTypeRaw());
+                Objects.equals(this.getDescription(), that.getDescription()) &&
+                Objects.equals(this.getUnit(), that.getUnit()) &&
+                Objects.equals(this.getTypeRaw(), that.getTypeRaw()) &&
     }
 
     @Override

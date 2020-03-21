@@ -46,10 +46,9 @@ public class MetadataBuilder {
     MetadataBuilder(Metadata metadata) {
         this.name = metadata.getName();
         this.type = metadata.getTypeRaw();
-        this.displayName = metadata.getDisplayName();
-        metadata.getDescription().ifPresent(this::withDescription);
-        metadata.getUnit().ifPresent(this::withUnit);
-
+        metadata.getDescriptionOptional().ifPresent(this::withDescription);
+        metadata.getUnitOptional().ifPresent(this::withUnit);
+        metadata.getDisplayNameOptional().ifPresent(this::withDisplayName);
     }
 
     public MetadataBuilder() {
@@ -76,17 +75,6 @@ public class MetadataBuilder {
      * @throws NullPointerException when displayName is null
      */
     public MetadataBuilder withDisplayName(String displayName) {
-        this.displayName = Objects.requireNonNull(displayName, "displayName is required");
-        return this;
-    }
-
-    /**
-     * Sets the displayName. Does accept null.
-     *
-     * @param displayName the displayName
-     * @return the builder instance
-     */
-    public MetadataBuilder withOptionalDisplayName(String displayName) {
         this.displayName = displayName;
         return this;
     }
@@ -99,17 +87,6 @@ public class MetadataBuilder {
      * @throws NullPointerException when description is null
      */
     public MetadataBuilder withDescription(String description) {
-        this.description = Objects.requireNonNull(description, "description is required");
-        return this;
-    }
-
-    /**
-     * Sets the description. Does accept null.
-     *
-     * @param description the name
-     * @return the builder instance
-     */
-    public MetadataBuilder withOptionalDescription(String description) {
         this.description = description;
         return this;
     }
@@ -122,18 +99,7 @@ public class MetadataBuilder {
      * @throws NullPointerException when type is null
      */
     public MetadataBuilder withType(MetricType type) {
-        this.type = Objects.requireNonNull(type, "type is required");
-        return this;
-    }
-
-    /**
-     * Sets the type. Does accept null.
-     *
-     * @param type the type
-     * @return the builder instance
-     */
-    public MetadataBuilder withOptionalType(MetricType type) {
-        this.type = type;
+        this.type = type == null ? MetricType.INVALID : type;
         return this;
     }
 
@@ -145,18 +111,7 @@ public class MetadataBuilder {
      * @throws NullPointerException when unit is null
      */
     public MetadataBuilder withUnit(String unit) {
-        this.unit = Objects.requireNonNull(unit, "unit is required");
-        return this;
-    }
-
-    /**
-     * Sets the unit. Does accept null.
-     *
-     * @param unit the unit
-     * @return the builder instance
-     */
-    public MetadataBuilder withOptionalUnit(String unit) {
-        this.unit = unit;
+        this.unit = unit == null ? MetricUnits.NONE : unit;
         return this;
     }
 
