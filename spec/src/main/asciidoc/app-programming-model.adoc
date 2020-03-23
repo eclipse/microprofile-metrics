@@ -169,7 +169,7 @@ If the metric annotation is placed on a class, then for each method, the metric 
 |===
 | | `name` is specified | `name` is not specified
 | `absolute=true` | `<value-of-name-argument>.<name-of-the-method>` | `<short-name-of-class>.<name-of-the-method>`
-| `absolute=false` | `<package-of-the-class>.<value-of-name-argument>.<name-of-the-method>` | `<canonical-name-of-the-class>.<name-of-the-method>`
+| `absolute=false` | `<package-of-the-declaring-class>.<value-of-name-argument>.<name-of-the-method>` | `<canonical-name-of-the-declaring-class>.<name-of-the-method>`
 |===
 
 In case of constructors, "name of the method" is the short name of the declaring class.
