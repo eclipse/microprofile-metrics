@@ -29,6 +29,7 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 
 === API/SPI Changes
 ** `MetricRegistry` changed from `abstract class` to `interface` with some existing methods now implemented as `default` methods
+** icon:bolt[role="red"] Removed everything related to reusability from the API code
 ** Added the `MetricRegistry.getType()` method
 ** Added the `MetricRegistry.counter(MetricID)` method
 ** Added the `MetricRegistry.concurrentGauge(MetricID)` method
@@ -63,6 +64,7 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 ** Timer now exposes total elapsed time duration as a metric value (https://github.com/eclipse/microprofile-metrics/issues/524[#524])
 
 === Specification Changes
+** icon:bolt[role="red"] Removed the concept of reusability
 ** Clarified how the implementation must handle metrics applied via CDI stereotypes
 ** The implementation is required to sanitize `Metadata` passed by the application in cases when it does not contain an explicit type,
 but the type is implied by the name of the registration method that is being called.

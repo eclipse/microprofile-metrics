@@ -71,29 +71,13 @@ public class DefaultMetadata implements Metadata {
      */
     private final String unit;
 
-    /**
-     * Can this metric (in a scope) be used multiple times?
-     * <p>
-     * Setting this is optional. The default is <tt>true</tt>, which
-     * allows reusing.
-     * </p>
-     * Note that this only has an effect if the <tt>name</tt> is explicitly given or
-     * <tt>absolute</tt> is set to true and two methods that are marked as metric have
-     * the same MetricID (name and tags).
-     * <p>
-     * If the name is automatically determined, then this flag has no effect as
-     * all metric names are different anyway
-     */
-    private final boolean reusable;
-
     protected DefaultMetadata(String name, String displayName, String description,
-                              MetricType type, String unit, boolean reusable) {
+                              MetricType type, String unit) {
         this.name = name;
         this.displayName = displayName;
         this.description = description;
         this.type = type;
         this.unit = unit;
-        this.reusable = reusable;
     }
 
     @Override
@@ -127,11 +111,6 @@ public class DefaultMetadata implements Metadata {
     }
 
     @Override
-    public boolean isReusable() {
-        return reusable;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -144,19 +123,18 @@ public class DefaultMetadata implements Metadata {
         //Retrieve the Optional value or set to the "defaults" if empty
         String thatDescription = (that.getDescription().isPresent()) ? that.getDescription().get() : null;
         String thatUnit = (that.getUnit().isPresent()) ? that.getUnit().get() : MetricUnits.NONE;
-        
+
         //Need to use this.getDisplayname() and this.getTypeRaw() for the Optional.orElse() logic
         return Objects.equals(name, that.getName()) &&
                 Objects.equals(this.getDisplayName(), that.getDisplayName()) &&
                 Objects.equals(description, thatDescription) &&
                 Objects.equals(unit, thatUnit) &&
-                Objects.equals(this.getTypeRaw(), that.getTypeRaw()) &&
-                Objects.equals(reusable, that.isReusable());
+                Objects.equals(this.getTypeRaw(), that.getTypeRaw());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, displayName, description, unit, type, reusable);
+        return Objects.hash(name, displayName, description, unit, type);
     }
 
     @Override
@@ -165,7 +143,6 @@ public class DefaultMetadata implements Metadata {
         sb.append("name='").append(name).append('\'');
         sb.append(", type=").append(type);
         sb.append(", unit='").append(unit).append('\'');
-        sb.append(", reusable=").append(reusable);
         if(description != null) {
             sb.append(", description='").append(description).append('\'');
         }

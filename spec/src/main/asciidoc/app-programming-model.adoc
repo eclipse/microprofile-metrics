@@ -61,12 +61,8 @@ annotated objects change. The value of a `Gauge` is recomputed each time a clien
 * The implementation must expose the values of the objects registered in the MetricsRegistry via REST-API as described
 in <<architecture#rest-api>>.
 * Metrics registered via non-annotations API need their values be set via updates from the application code.
-* The implementation must flag duplicate metrics upon registration and reject the duplicate unless the metric
-is explicitly marked as reusable upon first registration and in all subsequent registrations.
-** A duplicate metric is a metric that has the same scope and MetricID (name and tags) as an existing one.
-** The implementation must throw an `IllegalArgumentException` when the metric is rejected.
-** It is not allowed to reuse a metric (name) for metrics of different types.
-The implementation must throw an `IllegalArgumentException` if such a mismatch is detected.
+* The implementation must detect if multiple annotations declare the same gauge (with the same `MetricID`)
+and throw an `IllegalArgumentException` if such duplicate exists
 ** See <<architecture#reusing_metrics,reusing of metrics>> for more details.
 * The implementation must flag and reject metrics upon registration if the metadata information being registered is not equivalent to the metadata information that has already been registered under the given metric name (if it already exists).
 ** All metrics of a given metric name must be associated with the same metadata information
@@ -148,7 +144,6 @@ If `false`, prepends the package name and class name before the given name. Defa
 `String displayName`:: Optional. A human readable display name for metadata.
 `String description`:: Optional. A description of the metric.
 `String unit`:: Unit of the metric. For `@Gauge` no default is provided. Check the `MetricUnits` class for a set of pre-defined units.
-`boolean reusable`:: Denotes if a metric with a certain MetricID can be registered in more than one place. Does not apply to gauges.
 
 NOTE: Implementors are encouraged to issue warnings in the server log if metadata is missing. Implementors
 MAY stop the deployment of an application if Metadata is missing.

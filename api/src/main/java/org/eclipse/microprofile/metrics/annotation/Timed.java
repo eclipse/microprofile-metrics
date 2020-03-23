@@ -38,9 +38,9 @@ import org.eclipse.microprofile.metrics.MetricUnits;
  * An annotation for marking a method, constructor, or class as timed.
  * The underlying {@link org.eclipse.microprofile.metrics.Timer Timer}
  * metric aggregates timing durations and provides duration statistics,
- * plus throughput statistics. There is a lightweight alternative 
- * {@link org.eclipse.microprofile.metrics.SimpleTimer SimpleTimer} 
- * (@{@link SimplyTimed}) that only tracks elapsed time duration and 
+ * plus throughput statistics. There is a lightweight alternative
+ * {@link org.eclipse.microprofile.metrics.SimpleTimer SimpleTimer}
+ * (@{@link SimplyTimed}) that only tracks elapsed time duration and
  * count. The metric will be registered in the application MetricRegistry.
  * <p>
  * Given a method annotated with {@literal @}Timed like this:
@@ -66,7 +66,7 @@ import org.eclipse.microprofile.metrics.MetricUnits;
  * </code></pre>
  * A timer for the defining class will be created for each of the constructors/methods.
  * Each time a constructor/method is invoked, the execution will be timed with the respective timer.
- * 
+ *
  * This annotation will throw an IllegalStateException if the constructor/method is invoked, but the metric no
  * longer exists in the MetricRegistry.
  */
@@ -129,11 +129,4 @@ public @interface Timed {
     @Nonbinding
     String unit() default MetricUnits.NANOSECONDS;
 
-    /**
-     * Denotes if this metric instance can be reused by multiple registrations.
-     * @return false if not reusable, true otherwise
-     * @since Metrics 1.1
-     */
-    @Nonbinding
-    boolean reusable() default false;
 }

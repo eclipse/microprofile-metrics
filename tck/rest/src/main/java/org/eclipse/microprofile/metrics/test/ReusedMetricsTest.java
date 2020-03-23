@@ -53,11 +53,11 @@ import io.restassured.response.Response;
  * @author Heiko W. Rupp
  */
 @RunWith(Arquillian.class)
-public class ReusableMetricsTest {
+public class ReusedMetricsTest {
 
-  private static final String JSON_APP_LABEL_REGEX = ";_app=[-/A-Za-z0-9]+([;\\\"]?)"; 
-  private static final String JSON_APP_LABEL_REGEXS_SUB = "$1";   
-  
+  private static final String JSON_APP_LABEL_REGEX = ";_app=[-/A-Za-z0-9]+([;\\\"]?)";
+  private static final String JSON_APP_LABEL_REGEXS_SUB = "$1";
+
   private static final String APPLICATION_JSON = "application/json";
   private static final String DEFAULT_PROTOCOL = "http";
   private static final String DEFAULT_HOST = "localhost";
@@ -94,7 +94,7 @@ public class ReusableMetricsTest {
         }
 
     }
-    
+
   @Deployment
   public static WebArchive createDeployment() {
       WebArchive jar = ShrinkWrap.create(WebArchive.class).addClass(MetricAppBean2.class)
@@ -112,21 +112,21 @@ public class ReusableMetricsTest {
     metricAppBean.timeMeA();
     metricAppBean.simplyTimeMeA();
   }
-  
+
   @Test
   @RunAsClient
   @InSequence(2)
     public void testSharedCounter() {
 
         Header acceptJson = new Header("Accept", APPLICATION_JSON);
-        
+
         Response resp = given().header(acceptJson).get("/metrics/application");
         JsonPath filteredJSONPath = new JsonPath(resp.jsonPath().prettify().replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB));
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
         responseBuilder.setBody(filteredJSONPath.prettify());
         resp = responseBuilder.build();
-        
+
         resp.then()
                 .assertThat().body("'countMe2;tier=integration'", equalTo(1))
                 .assertThat().body("'org.eclipse.microprofile.metrics.test.MetricAppBean2.meterMe2'.'count;tier=integration'", equalTo(1))
@@ -157,49 +157,14 @@ public class ReusableMetricsTest {
     responseBuilder.clone(resp);
     responseBuilder.setBody(filteredJSONPath.prettify());
     resp = responseBuilder.build();
-    
+
     resp.then()
     .assertThat().body("'countMe2;tier=integration'", equalTo(2))
     .assertThat().body("'org.eclipse.microprofile.metrics.test.MetricAppBean2.meterMe2'.'count;tier=integration'", equalTo(2))
     .assertThat().body("'timeMe2'.'count;tier=integration'", equalTo(2))
     .assertThat().body("'simplyTimeMe2'.'count;tier=integration'", equalTo(2));
-    
+
 
   }
-
-  @Test
-  @InSequence(5)
-  public void setReusableHistogram() {
-    metricAppBean.registerReusableHistogram();
-  }
-
-
-  @Test
-  @RunAsClient
-  @InSequence(6)
-  public void testReusedHistogram() {
-
-    Header acceptJson = new Header("Accept", APPLICATION_JSON);
-
-    Response resp = given().header(acceptJson).get("/metrics/application");
-    JsonPath filteredJSONPath = new JsonPath(resp.jsonPath().prettify().replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB));
-    ResponseBuilder responseBuilder = new ResponseBuilder();
-    responseBuilder.clone(resp);
-    responseBuilder.setBody(filteredJSONPath.prettify());
-    resp = responseBuilder.build();
-    
-    resp.then()
-    .assertThat().body("'reusableHisto'.'count;tier=integration'", equalTo(2))
-    .assertThat().body("'reusableHisto'.'min;tier=integration'", equalTo(1))
-    .assertThat().body("'reusableHisto'.'max;tier=integration'", equalTo(3));
-
-  }
-
-  @Test(expected=IllegalArgumentException.class)
-  @InSequence(7)
-  public void testBadReusableMixed() {
-      metricAppBean.badRegisterReusableMixed();
-  }
-
 
 }

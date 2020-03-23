@@ -26,10 +26,7 @@ package org.eclipse.microprofile.metrics.test;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import org.eclipse.microprofile.metrics.Histogram;
-import org.eclipse.microprofile.metrics.Metadata;
 import org.eclipse.microprofile.metrics.MetricRegistry;
-import org.eclipse.microprofile.metrics.MetricType;
 import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.Metered;
 import org.eclipse.microprofile.metrics.annotation.SimplyTimed;
@@ -41,76 +38,41 @@ public class MetricAppBean2 {
     @Inject
     private MetricRegistry registry;
 
-    @Counted(name = "countMe2", absolute = true, reusable = true)
+    @Counted(name = "countMe2", absolute = true)
     public void countMeA() {
 
     }
 
-    @Counted(name = "countMe2", absolute = true, reusable = true)
+    @Counted(name = "countMe2", absolute = true)
     public void countMeB() {
 
     }
 
-    @Metered(reusable = true, name = "meterMe2")
+    @Metered(name = "meterMe2")
     public void meterMeA() {
 
     }
 
-    @Metered(reusable = true, name = "meterMe2")
+    @Metered(name = "meterMe2")
     public void meterMeB() {
 
     }
 
-    @Timed(absolute = true, reusable = true, name = "timeMe2")
+    @Timed(absolute = true, name = "timeMe2")
     public void timeMeA() {
 
     }
-    @Timed(absolute = true, reusable = true, name = "timeMe2")
+    @Timed(absolute = true, name = "timeMe2")
     public void timeMeB() {
 
     }
-    
-    @SimplyTimed(absolute = true, reusable = true, name = "simplyTimeMe2")
+
+    @SimplyTimed(absolute = true, name = "simplyTimeMe2")
     public void simplyTimeMeA() {
 
     }
-    @SimplyTimed(absolute = true, reusable = true, name = "simplyTimeMe2")
+    @SimplyTimed(absolute = true, name = "simplyTimeMe2")
     public void simplyTimeMeB() {
-
-    }
-
-
-    public void registerReusableHistogram() {
-
-        Metadata metadata = Metadata.builder()
-            .withName("reusableHisto").withType(MetricType.HISTOGRAM)
-            .reusable().build();
-        Histogram histogram = registry.histogram(metadata);
-
-        histogram.update(1);
-
-        Histogram histogram1 = registry.histogram(metadata);
-
-        histogram1.update(3);
-    }
-
-
-    public void badRegisterReusableMixed() {
-
-        Metadata metadata = Metadata.builder()
-            .withName("badReusableMixed").withType(MetricType.HISTOGRAM)
-            .reusable().build();
-        Histogram histogram = registry.histogram(metadata);
-
-        histogram.update(1);
-
-        // We register a different metric type - that is forbidden
-        // so we expect an exception
-
-        Metadata metadata2 = Metadata.builder()
-            .withName("badReusableMixed").withType(MetricType.COUNTER)
-            .reusable().build();
-        registry.counter(metadata2);
 
     }
 

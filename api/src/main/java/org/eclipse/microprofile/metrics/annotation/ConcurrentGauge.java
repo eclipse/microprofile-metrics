@@ -66,10 +66,10 @@ import org.eclipse.microprofile.metrics.MetricUnits;
  *         public void cGaugedMethod2() {}
  *     }
  * </code></pre>
- * 
+ *
  * A counter for the defining class will be created for each of the constructors/methods.
  * Each time the constructor/method is invoked, the respective gauge will be updated.
- * 
+ *
  * This annotation will throw an IllegalStateException if the constructor/method is invoked, but the metric no
  * longer exists in the MetricRegistry.
  *
@@ -136,14 +136,5 @@ public @interface ConcurrentGauge {
      */
     @Nonbinding
     String unit() default MetricUnits.NONE;
-
-
-    /**
-     * Denotes if this metric instance can be reused by multiple registrations.
-     * @return false if not reusable, true otherwise
-     * @since Metrics 1.1
-     */
-    @Nonbinding
-    boolean reusable() default false;
 
 }
