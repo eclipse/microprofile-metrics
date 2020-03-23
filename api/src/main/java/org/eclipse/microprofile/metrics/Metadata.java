@@ -92,8 +92,6 @@ public interface Metadata {
 
     Optional<String> getUnit();
 
-    boolean isReusable();
-
     /**
      * Returns a new builder
      *

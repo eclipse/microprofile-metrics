@@ -174,10 +174,6 @@ Full minute is the minute from second 0 to just before second 0 on the next minu
 * description (optional): A human readable description of the metric.
 * displayName (optional): A human readable name of the metric for display purposes if the metric name is not
 human readable. This could e.g. be the case when the metric name is a uuid.
-* reusable (optional): If set to `true`, then it is allowed to register a metric multiple times under the same <<metricid-data-def>>.
-Note that all such instances must set `reusable` to `true`.
-Default is `true` for metrics created programmatically, `false` for metrics declared using annotations.
-See <<reusing_metrics>> for more details.
 
 Metadata must not change over the lifetime of a process (i.e. it is not allowed
 to return the units as seconds in one retrieval and as hours in a subsequent one).
@@ -214,36 +210,20 @@ The MetricID:
 [[reusing_metrics]]
 ==== Reusing Metrics
 
-For metrics declared using annotations, by default it is not allowed to register more than one metric under a certain name and tags combination in a scope. This is done
-to prevent hard to spot copy & paste errors, where for example all methods of a JAX-RS class are marked with
-`@Timed(name="myApp", absolute=true)`.
+For metrics declared using annotations, it is allowed to reference one metric by multiple annotations.
+The prerequisite for this is that the annotations carry the same metadata. If multiple annotations declare the same
+metric, but contain different metadata, an `IllegalArgumentException` must be thrown during startup.
 
-If this behaviour is required, then it is possible to mark all such instances as _reusable_ by passing
-the respective flag in the Annotation. Gauges are never reusable.
-
-NOTE: Reusability concepts are generally meant to apply only to annotated metrics. These restrictions are generally not placed on programmatically registered metrics,
-unless a metric is programmatically registered with the `reusable` flag set to false (which has to be set explicitly).
-
-For metrics created programmatically (by calling methods of the `MetricRegistry`), reusing is allowed by default, so
-multiple calls retrieving an instance of a metric from the registry will return the same metric object so that the object can be reused in
-multiple places in the application's codebase, and all calls that update the metric's value will update the same metric instance.
-
-The implementation must throw an `IllegalArgumentException` if it detects multiple annotations referring to the same metric without being marked reusable.
-
-Only metrics of the same type can be reused under the same `MetricID`.
-Trying to reuse a name for different types will result in an `IllegalArgumentException`.
-All metrics under the same name must also have exactly the same metadata.
-
-TIP: If you want to re-use a MetricID, then you need to also explicitly set the `name` field OR set `absolute`
-to `true` and have multiple methods annotated as metric that have the same method name and tags.
+Reusability does not apply to gauges though. The implementation must throw an `IllegalArgumentException` during startup if it detects multiple 
+`@Gauge` annotations referring to the same gauge (with the same `MetricID`).
 
 .Example of reused counters
 [source,java]
 ----
-    @Counted(name = "countMe", absolute = true, reusable = true, tags={"tag1=value1"})
+    @Counted(name = "countMe", absolute = true, tags={"tag1=value1"})
     public void countMeA() { }
 
-    @Counted(name = "countMe", absolute = true, reusable = true, tags={"tag1=value1"})
+    @Counted(name = "countMe", absolute = true, tags={"tag1=value1"})
     public void countMeB() { }
 ----
 

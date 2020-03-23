@@ -30,7 +30,6 @@ import java.util.Objects;
  * This builder has a default value:
  * {@link MetadataBuilder#type} as {@link MetricType#INVALID}
  * {@link MetadataBuilder#unit} as {@link MetricUnits#NONE}
- * {@link MetadataBuilder#reusable} as {@link Boolean#FALSE}
  */
 public class MetadataBuilder {
 
@@ -44,12 +43,9 @@ public class MetadataBuilder {
 
     private String unit = MetricUnits.NONE;
 
-    private boolean reusable = true;
-
     MetadataBuilder(Metadata metadata) {
         this.name = metadata.getName();
         this.type = metadata.getTypeRaw();
-        this.reusable = metadata.isReusable();
         this.displayName = metadata.getDisplayName();
         metadata.getDescription().ifPresent(this::withDescription);
         metadata.getUnit().ifPresent(this::withUnit);
@@ -164,36 +160,6 @@ public class MetadataBuilder {
         return this;
     }
 
-    /**
-     * Sets the reusability flag to {@link Boolean#TRUE}
-     *
-     * @return the builder instance
-     */
-    public MetadataBuilder reusable() {
-        this.reusable = true;
-        return this;
-    }
-
-    /**
-     * Sets the reusability flag to the desired boolean value
-     *
-     * @param value the value of the reusability flag
-     * @return the builder instance
-     */
-    public MetadataBuilder reusable(boolean value) {
-        this.reusable = value;
-        return this;
-    }
-
-    /**
-     * Sets the reusability flag to {@link Boolean#FALSE}
-     *
-     * @return the builder instance
-     */
-    public MetadataBuilder notReusable() {
-        this.reusable = false;
-        return this;
-    }
 
     /**
      * @return An object implementing {@link Metadata} from the provided properties
@@ -204,6 +170,6 @@ public class MetadataBuilder {
             throw new IllegalStateException("Name is required");
         }
 
-        return new DefaultMetadata(name, displayName, description, type, unit, reusable);
+        return new DefaultMetadata(name, displayName, description, type, unit);
     }
 }

@@ -62,10 +62,10 @@ import org.eclipse.microprofile.metrics.MetricUnits;
  * </code></pre>
  * A meter for the defining class will be created for each of the constructors/methods.
  * Each time a constructor/method is invoked, the respective meter will be marked.
- * 
+ *
  * This annotation will throw an IllegalStateException if the constructor/method is invoked, but the metric no
  * longer exists in the MetricRegistry.
- * 
+ *
  */
 @Inherited
 @Documented
@@ -123,13 +123,5 @@ public @interface Metered {
      */
     @Nonbinding
     String unit() default MetricUnits.PER_SECOND;
-
-    /**
-     * Denotes if this metric instance can be reused by multiple registrations.
-     * @return false if not reusable, true otherwise
-     * @since Metrics 1.1
-     */
-    @Nonbinding
-    boolean reusable() default false;
 
 }
