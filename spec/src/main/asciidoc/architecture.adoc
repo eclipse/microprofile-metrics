@@ -170,7 +170,7 @@ Full minute is the minute from second 0 to just before second 0 on the next minu
 ** meter: a metric which tracks mean throughput and one-, five-, and fifteen-minute exponentially-weighted moving average throughput.
 ** histogram: a metric which calculates the distribution of a value.
 ** timer: a metric which aggregates timing durations and provides duration statistics, plus throughput statistics.
-** simple timer: a lightweight alternative to the timer metric that only tracks the elapsed time duration, invocation counts, highest recorded time duration within the previous completed full minute and lowest recorded time duration within the previous completed full minute.The simple timer may be preferrable over the timer when used with Prometheus as the statistical calculations can be deferred to Prometheus using the simple timer's available values.
+** simple timer: a lightweight alternative to the timer metric that only tracks the elapsed time duration, invocation counts, highest recorded time duration within the previous completed full minute and lowest recorded time duration within the previous completed full minute. The simple timer may be preferrable over the timer when used with Prometheus as the statistical calculations can be deferred to Prometheus using the simple timer's available values.
 * description (optional): A human readable description of the metric.
 * displayName (optional): A human readable name of the metric for display purposes if the metric name is not
 human readable. This could e.g. be the case when the metric name is a uuid.

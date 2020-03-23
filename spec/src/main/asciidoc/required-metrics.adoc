@@ -268,7 +268,7 @@ The MicroProfile Metrics runtime will track metrics from RESTful resource method
 |Unit| None
 |Multi| true
 |Tags| {class=%s1,method=%s2}
-|Description| The number of invocations and total response time of this RESTful resource method since the start of the server.
+|Description| The number of invocations and total response time of this RESTful resource method since the start of the server. Also tracks the highest recorded time duration within the previous completed full minute and lowest recorded time duration within the previous completed full minute.
 |Notes|With an asynchronous request the *timing* that is tracked by the REST metric must incorporate the time spent by the asynchronous call.
 
 The `%s1` should be substituted with the fully qualified name of the RESTful resource class. 
@@ -307,4 +307,8 @@ The OpenMetrics formatted rest metrics would be:
 base_REST_request_total{class="org.eclipse.microprofile.metrics.demo.RestDemo",method="postMethod_java.lang.String[]_java.lang.Object"} 1
 # TYPE base_REST_request_elapsedTime_seconds gauge
 base_REST_request_elapsedTime_seconds{class="org.eclipse.microprofile.metrics.demo.RestDemo",method="postMethod_java.lang.String[]_java.lang.Object"} 1.000
+# TYPE base_REST_request_maxTimeDuration_seconds gauge
+base_REST_request_maxTimeDuration_seconds{class="org.eclipse.microprofile.metrics.demo.RestDemo",method="postMethod_java.lang.String[]_java.lang.Object"} 1.000
+# TYPE base_REST_request_minTimeDuration_seconds gauge
+base_REST_request_minTimeDuration_seconds{class="org.eclipse.microprofile.metrics.demo.RestDemo",method="postMethod_java.lang.String[]_java.lang.Object"} 1.000
 ----
