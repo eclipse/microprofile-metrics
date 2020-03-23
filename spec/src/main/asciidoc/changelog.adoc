@@ -58,6 +58,7 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 ** Timer class updated  (https://github.com/eclipse/microprofile-metrics/issues/524[#524])
 *** Changed `Timer.update(long duration, java.util.concurrent.TimeUnit)` to `Timer.update(java.time.Duration duration)`
 *** Added `Timer.getElapsedTime()` which returns `java.time.Duration`
+** Removed `MetadataBuilder.withOptional*` methods, the remaining `with*` methods do accept `null` value (considered not present) except `withName` which does not accept `null` or `""`
 
 === Functional Changes
 ** Simple Timer metrics now track the highest and lowest recorded timing duration of the previous completed minute (https://github.com/eclipse/microprofile-metrics/issues/523[#523])
@@ -82,7 +83,6 @@ A full list of changes may be found on the link:https://github.com/eclipse/micro
 ** Added `withOptional*` methods to the `MetadataBuilder`, they don't fail when null values are passed to them (https://github.com/eclipse/microprofile-metrics/issues/464[#464])
 ** Added the `MetricID.getTagsAsArray()` method to the API. (https://github.com/eclipse/microprofile-metrics/issues/457[#457])
 ** Added the method `MetricType.fromClassName` (https://github.com/eclipse/microprofile-metrics/issues/455[#455])
-** Removed `MetadataBuilder.withOptional*` methods, the remaining `with*` methods do accept `null` value (considered not present) except `withName` which does not accept `null` or `""`
 
 === Functional Changes
 ** Introduced a new base metric derived from RESTful stats into the base scope.
