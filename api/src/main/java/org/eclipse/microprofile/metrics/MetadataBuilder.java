@@ -27,6 +27,9 @@ import java.util.Objects;
 
 /**
  * The {@link Metadata} builder.
+ *
+ * All values are considered "not present" by default.
+ * Name must be set before {@link #build()} is called.
  */
 public class MetadataBuilder {
 
@@ -58,18 +61,21 @@ public class MetadataBuilder {
      * @param name the name
      * @return the builder instance
      * @throws NullPointerException when name is null
+     * @throws IllegalArgumentException when name is empty
      */
     public MetadataBuilder withName(String name) {
         this.name = Objects.requireNonNull(name, "name is required");
+        if ("".equals(name)) {
+            throw new IllegalArgumentException("Name must not be empty");
+        }
         return this;
     }
 
     /**
-     * Sets the displayName. Does not accept null.
+     * Sets the displayName.
      *
-     * @param displayName the displayName
+     * @param displayName the displayName, empty string is considered as "not present" (null)
      * @return the builder instance
-     * @throws NullPointerException when displayName is null
      */
     public MetadataBuilder withDisplayName(String displayName) {
         this.displayName = "".equals(displayName) ? null : displayName;
@@ -77,11 +83,10 @@ public class MetadataBuilder {
     }
 
     /**
-     * Sets the description. Does not accept null.
+     * Sets the description.
      *
-     * @param description the name
+     * @param description the name, empty string is considered as "not present" (null)
      * @return the builder instance
-     * @throws NullPointerException when description is null
      */
     public MetadataBuilder withDescription(String description) {
         this.description = "".equals(description) ? null : description;
@@ -89,11 +94,10 @@ public class MetadataBuilder {
     }
 
     /**
-     * Sets the type. Does not accept null.
+     * Sets the type.
      *
-     * @param type the type
+     * @param type the type, {@link MetricType#INVALID} is considered as "not present" (null)
      * @return the builder instance
-     * @throws NullPointerException when type is null
      */
     public MetadataBuilder withType(MetricType type) {
         this.type = MetricType.INVALID == type ? null : type;
@@ -101,11 +105,10 @@ public class MetadataBuilder {
     }
 
     /**
-     * Sets the unit. Does not accept null.
+     * Sets the unit.
      *
-     * @param unit the unit
+     * @param unit the unit, {@link MetricUnits#NONE} is considered as "not present" (null)
      * @return the builder instance
-     * @throws NullPointerException when unit is null
      */
     public MetadataBuilder withUnit(String unit) {
         this.unit = MetricUnits.NONE.equals(unit) ? null : unit;
