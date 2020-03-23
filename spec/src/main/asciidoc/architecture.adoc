@@ -162,16 +162,15 @@ The Metadata:
 ** counter: a monotonically increasing numeric value (e.g. total number of requests received).
 ** concurrent gauge: an incrementally increasing or decreasing numeric value (e.g. number of parallel invocations of a method).
 +
-This type exposes three values: current count, highest count within the previous full minute and lowest count within the
-previous full minute.
+This type exposes three values: current count, highest count within the previous completed full minute and lowest count within the
+previous completed full minute.
 +
 Full minute is the minute from second 0 to just before second 0 on the next minute ( eg. from [10:46:00-10:46:59.99999999] ).
 ** gauge: a metric that is sampled to obtain its value (e.g. cpu temperature or disk usage).
 ** meter: a metric which tracks mean throughput and one-, five-, and fifteen-minute exponentially-weighted moving average throughput.
 ** histogram: a metric which calculates the distribution of a value.
 ** timer: a metric which aggregates timing durations and provides duration statistics, plus throughput statistics.
-** simple timer: a lightweight alternative to the timer metric that only tracks the elapsed time duration and invocation counts. The simple timer 
-may be preferrable over the timer when used with Prometheus as the statistical calculations can be deferred to Prometheus using the simple timer's available values.
+** simple timer: a lightweight alternative to the timer metric that only tracks the elapsed time duration, invocation counts, highest recorded time duration within the previous completed full minute and lowest recorded time duration within the previous completed full minute.The simple timer may be preferrable over the timer when used with Prometheus as the statistical calculations can be deferred to Prometheus using the simple timer's available values.
 * description (optional): A human readable description of the metric.
 * displayName (optional): A human readable name of the metric for display purposes if the metric name is not
 human readable. This could e.g. be the case when the metric name is a uuid.
