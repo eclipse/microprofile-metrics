@@ -164,7 +164,7 @@ If the metric annotation is placed on a method or field:
 | `absolute=false` | `<canonical-name-of-declaring-class>.<value-of-name-argument>` | `<canonical-name-of-declaring-class>.<name-of-element>`
 |===
 
-If the metric annotation is placed on a class, then for each method, the metric name will be:
+If the metric annotation is placed on a class, then for each method (including constructors), the metric name will be:
 
 |===
 | | `name` is specified | `name` is not specified
