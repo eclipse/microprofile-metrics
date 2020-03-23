@@ -100,30 +100,30 @@ public interface SimpleTimer extends Metric, Counting {
     long getCount();
     
     /**
-     * Get the maximum recorded time duration of the SimpleTimer for the previously completed minute.
+     * Get the maximum recorded time duration of the SimpleTimer for the previously completed full minute.
      * <p>
-     * This represents the highest timed duration in the last complete minute. For example if the last completed
-     * minute recorded durations of 12 seconds, 9 seconds and 1 second the largest value is 12 seconds.
+     * This represents the highest timed duration in the last completed full minute. For example if the last completed
+     * full minute recorded durations of 12 seconds, 9 seconds and 1 second the largest value is 12 seconds.
      * 
-     * If no time duration has been recorded in the last complete minute then 0 is returned.
-     * If there has only been one time duration recorded in the last complete minute then this value will be returned
+     * If no time duration has been recorded in the last completed full minute then 0 is returned.
+     * If there has only been one time duration recorded in the last completed full minute then this value will be returned
      * by both {@link SimpleTimer#getMaxTimeDuration()} and {@link SimpleTimer#getMinTimeDuration()}
      *
-     * @return The maximum recorded time duration in the previously completed minute.
+     * @return The maximum recorded time duration in the previously completed full minute.
      */
     Duration getMaxTimeDuration();
 
     /**
-     * Get the minimum recorded time duration of the SimpleTimer for the previously completed minute.
+     * Get the minimum recorded time duration of the SimpleTimer for the previously completed full minute.
      * <p>
-     * This represents the lowest  timed duration in the last complete minute. For example if the last completed
-     * minute recorded durations of 12 seconds, 9 seconds and 1 second the lowest value is 1 second.
+     * This represents the lowest  timed duration in the last completed full minute. For example if the last completed
+     * full minute recorded durations of 12 seconds, 9 seconds and 1 second the lowest value is 1 second.
      *
-     * If no time duration has been recorded in the last complete minute then 0 is returned.
-     * If there has only been one time duration recorded in the last complete minute then this value will be returned
+     * If no time duration has been recorded in the last completed full minute then 0 is returned.
+     * If there has only been one time duration recorded in the last completed full minute then this value will be returned
      * by both {@link SimpleTimer#getMaxTimeDuration()} and {@link SimpleTimer#getMinTimeDuration()}
      *
-     * @return The minimum recorded time duration in the previously completed minute.
+     * @return The minimum recorded time duration in the previously completed full minute.
      */
     Duration getMinTimeDuration();
 

@@ -81,7 +81,7 @@ public class SimpleTimerFunctionalTest {
         //The min and max values should NOT be 0 right now
         assertNotEquals("Minimum should not be 0 ", 0,
                 metricRegistry.getSimpleTimers().get(new MetricID("mySimplyTimed")).getMinTimeDuration().toNanos());
-        assertNotEquals("Maximum should be 2", 0,
+        assertNotEquals("Maximum should not be 0" , 0,
                 metricRegistry.getSimpleTimers().get(new MetricID("mySimplyTimed")).getMaxTimeDuration().toNanos());
     
     
@@ -90,13 +90,6 @@ public class SimpleTimerFunctionalTest {
                 get(new MetricID("mySimplyTimed")).getMaxTimeDuration(),
                 metricRegistry.getSimpleTimers().get(new MetricID("mySimplyTimed")).getMinTimeDuration());
         
-        TimeUtil.waitForNextMinute();
-        
-        // The min and max should be 0 right now
-        assertEquals("Minimum should be 0 ", 0,
-                metricRegistry.getSimpleTimers().get(new MetricID("mySimplyTimed")).getMinTimeDuration().toNanos());
-        assertEquals("Maximum should be 0", 0,
-                metricRegistry.getSimpleTimers().get(new MetricID("mySimplyTimed")).getMaxTimeDuration().toNanos());
     }
 
 }
