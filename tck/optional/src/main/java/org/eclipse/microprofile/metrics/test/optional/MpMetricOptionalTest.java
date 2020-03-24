@@ -39,6 +39,8 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import static org.hamcrest.CoreMatchers.either;
 import static org.junit.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -55,11 +57,11 @@ import io.restassured.response.Response;
 @RunWith(Arquillian.class)
 public class MpMetricOptionalTest {
 
-    private static final String JSON_APP_LABEL_REGEX = ";_app=[-/A-Za-z0-9]+([;\\\"]?)"; 
+    private static final String JSON_APP_LABEL_REGEX = ";_app=[-/A-Za-z0-9]+([;\\\"]?)";
     private static final String JSON_APP_LABEL_REGEXS_SUB = "$1";
-    
+
     private static final String OPENMETRICS_APP_LABEL_REGEX = "_app=\"[-/A-Za-z0-9]+\"";
-    
+
     private static final String APPLICATION_JSON = "application/json";
 
     // context root under which the application JAX-RS resources are expected to be
@@ -68,8 +70,8 @@ public class MpMetricOptionalTest {
     private static int applicationPort;
 
     private static final String TEXT_PLAIN = "text/plain";
-    
-    
+
+
     private static final String STRING_PARAM = "_java.lang.String";
     private static final String INT_PARAM = "_int";
     private static final String INTW_PARAM = "_java.lang.Integer";
@@ -93,19 +95,19 @@ public class MpMetricOptionalTest {
     private static final String OBJECT_PARAM ="_java.lang.Object";
     private static final String NAME_OBJECT_PARAM ="_org.eclipse.microprofile.metrics.test.optional.NameObject";
     private static final String AYNC_RESP_PARAM ="_javax.ws.rs.container.AsyncResponse";
-    
-    private static final String ARRAY_BRACKETS = "[]";    
-    
-    private static final String JSON_BASE_REQUEST_COUNT_START = 
+
+    private static final String ARRAY_BRACKETS = "[]";
+
+    private static final String JSON_BASE_REQUEST_COUNT_START =
             "'REST.request'.'count;class=org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional;method=";
-    private static final String JSON_BASE_REQUEST_TIME_START = 
+    private static final String JSON_BASE_REQUEST_TIME_START =
             "'REST.request'.'elapsedTime;class=org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional;method=";
-    private static final String JSON_BASE_MAX_TIME_START = 
+    private static final String JSON_BASE_MAX_TIME_START =
             "'REST.request'.'maxTimeDuration;class=org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional;method=";
-    private static final String JSON_BASE_MIN_TIME_START = 
+    private static final String JSON_BASE_MIN_TIME_START =
             "'REST.request'.'minTimeDuration;class=org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional;method=";
     private static final String JSON_BASE_REQUEST_END = ";tier=integration'";
-    
+
     private static final String OM_BASE_REQUEST_COUNT_START = "base_REST_request_total"
             + "{class=\"org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional\",method=\"";
     private static final String OM_BASE_REQUEST_TIME_START = "base_REST_request_elapsedTime_seconds"
@@ -115,14 +117,14 @@ public class MpMetricOptionalTest {
     private static final String OM_BASE_MIN_TIME_START = "base_REST_request_minTimeDuration_seconds"
             + "{class=\"org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional\",method=\"";
     private static final String OM_BASE_REQUEST_END = "\",tier=\"integration\"}";
-    
+
     private static final String METRICS_ENDPOINT = "/metrics";
     private static final String BASE_METRIC_ENDPOINT = METRICS_ENDPOINT + "/base";
     private static final String RESTREQUEST_METRIC_ENDPOINT = BASE_METRIC_ENDPOINT + "/REST.request";
-    
+
     @ArquillianResource
     private URL deploymentURL;
-    
+
     private static final String DEFAULT_PROTOCOL = "http";
     private static final String DEFAULT_HOST = "localhost";
     private static final int DEFAULT_PORT = 8080;
@@ -134,8 +136,8 @@ public class MpMetricOptionalTest {
     private static String  filterOutAppLabelOpenMetrics(String responseBody) {
         return responseBody.replaceAll(OPENMETRICS_APP_LABEL_REGEX, "").replaceAll("\\{,", "{").replaceAll(",\\}", "}");
     }
-    
-    
+
+
     @BeforeClass
     static public void setup() throws MalformedURLException {
         // set base URI and port number to use for all requests
@@ -153,7 +155,7 @@ public class MpMetricOptionalTest {
 
         RestAssured.baseURI = protocol + "://" + host;
         RestAssured.port = port;
-        
+
         // set user name and password to use for basic authentication for all requests
         String userName = System.getProperty("test.user");
         String password = System.getProperty("test.pwd");
@@ -179,7 +181,7 @@ public class MpMetricOptionalTest {
         System.out.println(jar.toString(true));
         return jar;
     }
-    
+
     /*
      * TEST ALL DIFFERENT TYPE OF REQUESTS WITH NO PARAMETERS
      */
@@ -195,8 +197,8 @@ public class MpMetricOptionalTest {
         when().
         get(contextRoot+"/get-noparam").
         then().
-            statusCode(200);   
-           
+            statusCode(200);
+
        Response resp = given().header(acceptHeader).when().get(METRICS_ENDPOINT);
        ResponseBuilder responseBuilder = new ResponseBuilder();
        responseBuilder.clone(resp);
@@ -210,8 +212,8 @@ public class MpMetricOptionalTest {
                    , containsString(OM_BASE_MAX_TIME_START + "getNoParam" + OM_BASE_REQUEST_END)
                    , containsString(OM_BASE_MIN_TIME_START + "getNoParam" + OM_BASE_REQUEST_END));
     }
-    
-    
+
+
     @Test
     @RunAsClient
     @InSequence(2)
@@ -225,7 +227,7 @@ public class MpMetricOptionalTest {
         when().
         get(contextRoot+"/get-noparam").
         then().
-            statusCode(200);    
+            statusCode(200);
        /*
         * Explicitly hitting /metrics/base/REST.request from now on
         */
@@ -242,8 +244,8 @@ public class MpMetricOptionalTest {
                 , containsString(OM_BASE_MAX_TIME_START + "getNoParam" + OM_BASE_REQUEST_END)
                 , containsString(OM_BASE_MIN_TIME_START + "getNoParam" + OM_BASE_REQUEST_END));
  }
-    
-    
+
+
     @Test
     @RunAsClient
     @InSequence(3)
@@ -256,8 +258,8 @@ public class MpMetricOptionalTest {
         when().
              options(contextRoot+"/options-noparam").
         then().
-            statusCode(200);    
-       
+            statusCode(200);
+
         Response resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
@@ -272,8 +274,8 @@ public class MpMetricOptionalTest {
                     , containsString(OM_BASE_MIN_TIME_START + "optionsNoParam" + OM_BASE_REQUEST_END));
 
     }
-    
-    
+
+
     @Test
     @RunAsClient
     @InSequence(4)
@@ -286,8 +288,8 @@ public class MpMetricOptionalTest {
         when().
              head(contextRoot+"/head-noparam").
         then().
-            statusCode(200);    
-       
+            statusCode(200);
+
         Response resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
@@ -302,7 +304,7 @@ public class MpMetricOptionalTest {
                     , containsString(OM_BASE_MIN_TIME_START + "headNoParam" + OM_BASE_REQUEST_END));
 
     }
-    
+
     @Test
     @RunAsClient
     @InSequence(5)
@@ -315,7 +317,7 @@ public class MpMetricOptionalTest {
         when().
              put(contextRoot+"/put-noparam").
         then().
-            statusCode(200);    
+            statusCode(200);
 
         Response resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
         ResponseBuilder responseBuilder = new ResponseBuilder();
@@ -330,7 +332,7 @@ public class MpMetricOptionalTest {
                     , containsString(OM_BASE_MAX_TIME_START + "putNoParam" + OM_BASE_REQUEST_END)
                     , containsString(OM_BASE_MIN_TIME_START + "putNoParam" + OM_BASE_REQUEST_END));
     }
-    
+
     @Test
     @RunAsClient
     @InSequence(6)
@@ -343,8 +345,8 @@ public class MpMetricOptionalTest {
         when().
              post(contextRoot+"/post-noparam").
         then().
-            statusCode(200);    
-       
+            statusCode(200);
+
         Response resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
@@ -359,7 +361,7 @@ public class MpMetricOptionalTest {
                     , containsString(OM_BASE_MIN_TIME_START + "postNoParam" + OM_BASE_REQUEST_END));
 
     }
-    
+
     @Test
     @RunAsClient
     @InSequence(7)
@@ -372,7 +374,7 @@ public class MpMetricOptionalTest {
         when().
              delete(contextRoot+"/delete-noparam").
         then().
-            statusCode(200);    
+            statusCode(200);
 
         Response resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
         ResponseBuilder responseBuilder = new ResponseBuilder();
@@ -388,17 +390,17 @@ public class MpMetricOptionalTest {
                     , containsString(OM_BASE_MIN_TIME_START + "deleteNoParam" + OM_BASE_REQUEST_END));
 
     }
-    
+
     /*
      * TEST GET REQUESTS WITH SINGLE PARAMETER
      */
-    
+
     @Test
     @RunAsClient
     @InSequence(8)
     public void testGetSingleParams() throws InterruptedException {
         Header acceptHeader = new Header("Accept", TEXT_PLAIN);
-        
+
         given().
              header(acceptHeader).
              port(applicationPort).
@@ -415,8 +417,8 @@ public class MpMetricOptionalTest {
         when().
              get(contextRoot+"/get-single-int-param").
         then().
-            statusCode(200);    
-        
+            statusCode(200);
+
         given().
              header(acceptHeader).
              port(applicationPort).
@@ -424,8 +426,8 @@ public class MpMetricOptionalTest {
         when().
              get(contextRoot+"/get-single-double-param").
         then().
-            statusCode(200);    
-        
+            statusCode(200);
+
         given().
              header(acceptHeader).
              port(applicationPort).
@@ -433,8 +435,8 @@ public class MpMetricOptionalTest {
         when().
              get(contextRoot+"/get-single-long-param").
         then().
-            statusCode(200);    
-       
+            statusCode(200);
+
         given().
              header(acceptHeader).
              port(applicationPort).
@@ -442,8 +444,8 @@ public class MpMetricOptionalTest {
         when().
              get(contextRoot+"/get-single-boolean-param").
         then().
-            statusCode(200);    
-        
+            statusCode(200);
+
         Response resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
@@ -456,22 +458,22 @@ public class MpMetricOptionalTest {
                     , containsString(OM_BASE_REQUEST_TIME_START + "getSingleStringParam" + STRING_PARAM + OM_BASE_REQUEST_END)
                     , containsString(OM_BASE_MAX_TIME_START + "getSingleStringParam" + STRING_PARAM + OM_BASE_REQUEST_END)
                     , containsString(OM_BASE_MIN_TIME_START + "getSingleStringParam" + STRING_PARAM + OM_BASE_REQUEST_END)
-                    
+
                     , containsString(OM_BASE_REQUEST_COUNT_START + "getSingleIntParam" + INT_PARAM + OM_BASE_REQUEST_END)
                     , containsString(OM_BASE_REQUEST_TIME_START + "getSingleIntParam" + INT_PARAM + OM_BASE_REQUEST_END)
                     , containsString(OM_BASE_MAX_TIME_START + "getSingleIntParam" + INT_PARAM + OM_BASE_REQUEST_END)
                     , containsString(OM_BASE_MIN_TIME_START + "getSingleIntParam" + INT_PARAM + OM_BASE_REQUEST_END)
-                    
+
                     , containsString(OM_BASE_REQUEST_COUNT_START + "getSingleDoubleParam" + DOUBLE_PARAM + OM_BASE_REQUEST_END)
                     , containsString(OM_BASE_REQUEST_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + OM_BASE_REQUEST_END)
                     , containsString(OM_BASE_MAX_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM+ OM_BASE_REQUEST_END)
                     , containsString(OM_BASE_MIN_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM+ OM_BASE_REQUEST_END)
-                    
+
                     , containsString(OM_BASE_REQUEST_COUNT_START + "getSingleLongParam" + LONG_PARAM + OM_BASE_REQUEST_END)
                     , containsString(OM_BASE_REQUEST_TIME_START + "getSingleLongParam" + LONG_PARAM + OM_BASE_REQUEST_END)
                     , containsString(OM_BASE_MAX_TIME_START + "getSingleLongParam" + LONG_PARAM + OM_BASE_REQUEST_END)
                     , containsString(OM_BASE_MIN_TIME_START + "getSingleLongParam" + LONG_PARAM + OM_BASE_REQUEST_END)
-                    
+
                     , containsString(OM_BASE_REQUEST_COUNT_START + "getSingleBooleanParam" + BOOLEAN_PARAM + OM_BASE_REQUEST_END)
                     , containsString(OM_BASE_REQUEST_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + OM_BASE_REQUEST_END)
                     , containsString(OM_BASE_MAX_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + OM_BASE_REQUEST_END)
@@ -479,11 +481,11 @@ public class MpMetricOptionalTest {
 
     }
 
-    
+
     /*
      * TEST GET REQUEST WITH CONTEXT PARAMETERS
      */
-    
+
     @Test
     @RunAsClient
     @InSequence(9)
@@ -496,7 +498,7 @@ public class MpMetricOptionalTest {
         when().
              get(contextRoot+"/get-context-params").
         then().
-            statusCode(200);    
+            statusCode(200);
 
         Response resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
         ResponseBuilder responseBuilder = new ResponseBuilder();
@@ -554,11 +556,11 @@ public class MpMetricOptionalTest {
                         + OM_BASE_REQUEST_END));
 
     }
-    
+
     /*
      * TEST GET REQUEST WITH LIST PARAMETERS
      */
-    
+
     @Test
     @RunAsClient
     @InSequence(10)
@@ -573,7 +575,7 @@ public class MpMetricOptionalTest {
              get(contextRoot+"/get-list-param1").
         then().
             statusCode(200);
-        
+
         given().
             header(acceptHeader).
             port(applicationPort).
@@ -582,7 +584,7 @@ public class MpMetricOptionalTest {
             .get(contextRoot + "/get-list-param2")
         .then()
             .statusCode(200);
-        
+
         given().
             header(acceptHeader).
             port(applicationPort).
@@ -592,7 +594,7 @@ public class MpMetricOptionalTest {
                 .get(contextRoot + "/get-list-param3")
         .then()
             .statusCode(200);
-       
+
         Response resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
@@ -605,12 +607,12 @@ public class MpMetricOptionalTest {
                 , containsString(OM_BASE_REQUEST_TIME_START + "getListParam1" + LIST_PARAM +  OM_BASE_REQUEST_END)
                 , containsString(OM_BASE_MAX_TIME_START + "getListParam1" + LIST_PARAM +  OM_BASE_REQUEST_END)
                 , containsString(OM_BASE_MIN_TIME_START + "getListParam1" + LIST_PARAM +  OM_BASE_REQUEST_END)
-                
+
                 , containsString(OM_BASE_REQUEST_COUNT_START + "getListParam2" + LIST_PARAM +  OM_BASE_REQUEST_END)
                 , containsString(OM_BASE_REQUEST_TIME_START + "getListParam2" + LIST_PARAM +  OM_BASE_REQUEST_END)
                 , containsString(OM_BASE_MAX_TIME_START + "getListParam2" + LIST_PARAM +  OM_BASE_REQUEST_END)
                 , containsString(OM_BASE_MIN_TIME_START + "getListParam2" + LIST_PARAM +  OM_BASE_REQUEST_END)
-                
+
                 , containsString(OM_BASE_REQUEST_COUNT_START + "getListParam3" + LIST_PARAM + LIST_PARAM + OM_BASE_REQUEST_END)
                 , containsString(OM_BASE_REQUEST_TIME_START + "getListParam3" + LIST_PARAM + LIST_PARAM + OM_BASE_REQUEST_END)
                 , containsString(OM_BASE_MAX_TIME_START + "getListParam3" + LIST_PARAM + LIST_PARAM + OM_BASE_REQUEST_END)
@@ -618,11 +620,11 @@ public class MpMetricOptionalTest {
                 );
 
     }
-    
+
     /*
      * TEST GET REQUEST WITH ARRAY AND VARARG PARAMETERS
      */
-    
+
     @Test
     @RunAsClient
     @InSequence(11)
@@ -637,7 +639,7 @@ public class MpMetricOptionalTest {
              get(contextRoot+"/get-vararg-param1").
         then().
             statusCode(200);
-        
+
         given().
             header(acceptHeader).
             port(applicationPort).
@@ -647,7 +649,7 @@ public class MpMetricOptionalTest {
             .get(contextRoot + "/get-vararg-param2")
         .then()
             .statusCode(200);
-        
+
         given().
             header(acceptHeader).
             port(applicationPort).
@@ -665,7 +667,7 @@ public class MpMetricOptionalTest {
             .get(contextRoot + "/get-array-param2")
        .then()
            .statusCode(200);
-        
+
         given().
             header(acceptHeader).
             port(applicationPort).
@@ -674,7 +676,7 @@ public class MpMetricOptionalTest {
             .get(contextRoot + "/get-array-param3")
         .then()
            .statusCode(200);
-        
+
         Response resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
@@ -687,38 +689,38 @@ public class MpMetricOptionalTest {
                 , containsString(OM_BASE_REQUEST_TIME_START + "getVarargParam1" + BOOLEANW_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
                 , containsString(OM_BASE_MAX_TIME_START + "getVarargParam1" + BOOLEANW_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
                 , containsString(OM_BASE_MIN_TIME_START + "getVarargParam1" + BOOLEANW_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
-                
-                , containsString(OM_BASE_REQUEST_COUNT_START + "getVarargParam2" 
+
+                , containsString(OM_BASE_REQUEST_COUNT_START + "getVarargParam2"
                         + INT_PARAM + STRING_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_REQUEST_TIME_START + "getVarargParam2" 
+                , containsString(OM_BASE_REQUEST_TIME_START + "getVarargParam2"
                         + INT_PARAM + STRING_PARAM + ARRAY_BRACKETS +  OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_MAX_TIME_START + "getVarargParam2" 
+                , containsString(OM_BASE_MAX_TIME_START + "getVarargParam2"
                         + INT_PARAM + STRING_PARAM + ARRAY_BRACKETS +  OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_MIN_TIME_START + "getVarargParam2" 
+                , containsString(OM_BASE_MIN_TIME_START + "getVarargParam2"
                         + INT_PARAM + STRING_PARAM + ARRAY_BRACKETS +  OM_BASE_REQUEST_END)
-                        
+
                 , containsString(OM_BASE_REQUEST_COUNT_START + "getArrayParam1" + STRING_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
                 , containsString(OM_BASE_REQUEST_TIME_START + "getArrayParam1" + STRING_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
                 , containsString(OM_BASE_MAX_TIME_START + "getArrayParam1" + STRING_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
                 , containsString(OM_BASE_MIN_TIME_START + "getArrayParam1" + STRING_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
-                
+
                 , containsString(OM_BASE_REQUEST_COUNT_START + "getArrayParam2" + INT_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
                 , containsString(OM_BASE_REQUEST_TIME_START + "getArrayParam2" + INT_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
                 , containsString(OM_BASE_MAX_TIME_START + "getArrayParam2" + INT_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
                 , containsString(OM_BASE_MIN_TIME_START + "getArrayParam2" + INT_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
-                
+
                 , containsString(OM_BASE_REQUEST_COUNT_START + "getArrayParam3" + DOUBLEW_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
                 , containsString(OM_BASE_REQUEST_TIME_START + "getArrayParam3" + DOUBLEW_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
                 , containsString(OM_BASE_MAX_TIME_START + "getArrayParam3" + DOUBLEW_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
                 , containsString(OM_BASE_MIN_TIME_START + "getArrayParam3" + DOUBLEW_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END));
 
     }
-    
-    
+
+
     /*
      * TEST GET REQUEST WITH MULTIPLE TYPE OF PARAMETERS
      */
-    
+
     @Test
     @RunAsClient
     @InSequence(12)
@@ -737,7 +739,7 @@ public class MpMetricOptionalTest {
              get(contextRoot+"/get-multiple-param1").
         then().
             statusCode(200);
-        
+
         given().
             header(acceptHeader).
             port(applicationPort).
@@ -747,7 +749,7 @@ public class MpMetricOptionalTest {
             .get(contextRoot + "/get-multiple-param2")
         .then()
             .statusCode(200);
-        
+
         given()
             .header(acceptHeader).
             port(applicationPort).
@@ -770,7 +772,7 @@ public class MpMetricOptionalTest {
             .get(contextRoot + "/get-multiple-param4")
        .then()
            .statusCode(200);
-        
+
         Response resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
@@ -779,47 +781,47 @@ public class MpMetricOptionalTest {
         resp.then().
             statusCode(200).
             contentType(TEXT_PLAIN).
-            body(containsString(OM_BASE_REQUEST_COUNT_START + "getMultipleParam1" 
+            body(containsString(OM_BASE_REQUEST_COUNT_START + "getMultipleParam1"
                         + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_REQUEST_TIME_START + "getMultipleParam1" 
+                , containsString(OM_BASE_REQUEST_TIME_START + "getMultipleParam1"
                         + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_MAX_TIME_START + "getMultipleParam1" 
+                , containsString(OM_BASE_MAX_TIME_START + "getMultipleParam1"
                         + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_MIN_TIME_START + "getMultipleParam1" 
+                , containsString(OM_BASE_MIN_TIME_START + "getMultipleParam1"
                         + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END)
-                
-                , containsString(OM_BASE_REQUEST_COUNT_START + "getMultipleParam2" 
+
+                , containsString(OM_BASE_REQUEST_COUNT_START + "getMultipleParam2"
                         + STRING_PARAM + LIST_PARAM +  OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_REQUEST_TIME_START + "getMultipleParam2" 
+                , containsString(OM_BASE_REQUEST_TIME_START + "getMultipleParam2"
                         + STRING_PARAM + LIST_PARAM +  OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_MIN_TIME_START + "getMultipleParam2" 
+                , containsString(OM_BASE_MIN_TIME_START + "getMultipleParam2"
                         + STRING_PARAM + LIST_PARAM +  OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_MAX_TIME_START + "getMultipleParam2" 
+                , containsString(OM_BASE_MAX_TIME_START + "getMultipleParam2"
                         + STRING_PARAM + LIST_PARAM +  OM_BASE_REQUEST_END)
-                
-                , containsString(OM_BASE_REQUEST_COUNT_START + "getMultipleParam3" 
+
+                , containsString(OM_BASE_REQUEST_COUNT_START + "getMultipleParam3"
                         + BOOLEAN_PARAM + BOOLEANW_PARAM + DOUBLE_PARAM + STRING_PARAM +ARRAY_BRACKETS + OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_REQUEST_TIME_START + "getMultipleParam3" 
+                , containsString(OM_BASE_REQUEST_TIME_START + "getMultipleParam3"
                         + BOOLEAN_PARAM + BOOLEANW_PARAM + DOUBLE_PARAM + STRING_PARAM +ARRAY_BRACKETS + OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_MIN_TIME_START + "getMultipleParam3" 
+                , containsString(OM_BASE_MIN_TIME_START + "getMultipleParam3"
                         + BOOLEAN_PARAM + BOOLEANW_PARAM + DOUBLE_PARAM + STRING_PARAM +ARRAY_BRACKETS + OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_MAX_TIME_START + "getMultipleParam3" 
+                , containsString(OM_BASE_MAX_TIME_START + "getMultipleParam3"
                         + BOOLEAN_PARAM + BOOLEANW_PARAM + DOUBLE_PARAM + STRING_PARAM +ARRAY_BRACKETS + OM_BASE_REQUEST_END)
-                
-                , containsString(OM_BASE_REQUEST_COUNT_START + "getMultipleParam4" 
+
+                , containsString(OM_BASE_REQUEST_COUNT_START + "getMultipleParam4"
                         + SET_PARAM + SORTED_SET_PARAM + DOUBLE_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_REQUEST_TIME_START + "getMultipleParam4" 
+                , containsString(OM_BASE_REQUEST_TIME_START + "getMultipleParam4"
                         + SET_PARAM + SORTED_SET_PARAM + DOUBLE_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_MAX_TIME_START + "getMultipleParam4" 
+                , containsString(OM_BASE_MAX_TIME_START + "getMultipleParam4"
                         + SET_PARAM + SORTED_SET_PARAM + DOUBLE_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_MIN_TIME_START + "getMultipleParam4" 
+                , containsString(OM_BASE_MIN_TIME_START + "getMultipleParam4"
                         + SET_PARAM + SORTED_SET_PARAM + DOUBLE_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END));
 
     }
-    
-    
+
+
     /*
-     * TEST GET REQUEST WITH org.eclipse.microprofile.metrics.test.optional.NameObject 
+     * TEST GET REQUEST WITH org.eclipse.microprofile.metrics.test.optional.NameObject
      */
     @Test
     @RunAsClient
@@ -833,8 +835,8 @@ public class MpMetricOptionalTest {
         when().
              get(contextRoot+"/get-name-object").
         then().
-            statusCode(200);    
-       
+            statusCode(200);
+
         Response resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
@@ -849,11 +851,11 @@ public class MpMetricOptionalTest {
                     , containsString(OM_BASE_MIN_TIME_START + "getNameObject" + NAME_OBJECT_PARAM + OM_BASE_REQUEST_END));
 
     }
-    
+
     /*
      * TEST GET REQUEST ASYNC
      */
-    
+
     @Test
     @RunAsClient
     @InSequence(14)
@@ -864,11 +866,11 @@ public class MpMetricOptionalTest {
              header(acceptHeader).
              port(applicationPort).
         when().
-             get(contextRoot+"/get-async"). 
+             get(contextRoot+"/get-async").
         then().
-            statusCode(200);    
-        
-        
+            statusCode(200);
+
+
         Response resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
@@ -899,18 +901,18 @@ public class MpMetricOptionalTest {
                                 extract().
                                 path(JSON_BASE_REQUEST_TIME_START + "getAsync" + AYNC_RESP_PARAM + JSON_BASE_REQUEST_END);
 
-        String asyncDurationString = (asyncDurationObject instanceof Number) ? 
+        String asyncDurationString = (asyncDurationObject instanceof Number) ?
                                         ((Number)asyncDurationObject).toString() : (String) asyncDurationObject;
         Double asyncDurationDouble = Double.parseDouble(asyncDurationString);
 
         assertTrue("Expected duration to be greater than 5000000000 nanoseconds (i.e 5 seconds)", (asyncDurationDouble >= 5000000000.00));
     }
-    
-    
+
+
     /*
      * TEST POST  REQUEST MULTI PARAM
      */
-    
+
     @Test
     @RunAsClient
     @InSequence(15)
@@ -929,7 +931,7 @@ public class MpMetricOptionalTest {
             post(contextRoot+"/post-multiple-param1").
         then().
             statusCode(200);
-        
+
         given().
             header(acceptHeader).
             port(applicationPort).
@@ -939,7 +941,7 @@ public class MpMetricOptionalTest {
             .post(contextRoot + "/post-multiple-param2")
         .then()
             .statusCode(200);
-        
+
         given()
             .header(acceptHeader).
             port(applicationPort).
@@ -962,7 +964,7 @@ public class MpMetricOptionalTest {
             .post(contextRoot + "/post-multiple-param4")
        .then()
            .statusCode(200);
-        
+
         given().
             header(acceptHeader).
             port(applicationPort).
@@ -973,7 +975,7 @@ public class MpMetricOptionalTest {
             .post(contextRoot + "/post-multiple-param5")
         .then()
             .statusCode(200);
-        
+
         Response resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
@@ -982,50 +984,50 @@ public class MpMetricOptionalTest {
         resp.then().
             statusCode(200).
             contentType(TEXT_PLAIN).
-            body(containsString(OM_BASE_REQUEST_COUNT_START + "postMultipleParam1" 
+            body(containsString(OM_BASE_REQUEST_COUNT_START + "postMultipleParam1"
                         + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_REQUEST_TIME_START + "postMultipleParam1" 
+                , containsString(OM_BASE_REQUEST_TIME_START + "postMultipleParam1"
                         + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_MAX_TIME_START + "postMultipleParam1" 
+                , containsString(OM_BASE_MAX_TIME_START + "postMultipleParam1"
                         + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_MIN_TIME_START + "postMultipleParam1" 
+                , containsString(OM_BASE_MIN_TIME_START + "postMultipleParam1"
                         + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END)
-                
-                , containsString(OM_BASE_REQUEST_COUNT_START + "postMultipleParam2" 
+
+                , containsString(OM_BASE_REQUEST_COUNT_START + "postMultipleParam2"
                         + STRING_PARAM + LIST_PARAM +  OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_REQUEST_TIME_START + "postMultipleParam2" 
+                , containsString(OM_BASE_REQUEST_TIME_START + "postMultipleParam2"
                         + STRING_PARAM + LIST_PARAM +  OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_MAX_TIME_START + "postMultipleParam2" 
+                , containsString(OM_BASE_MAX_TIME_START + "postMultipleParam2"
                         + STRING_PARAM + LIST_PARAM +  OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_MIN_TIME_START + "postMultipleParam2" 
+                , containsString(OM_BASE_MIN_TIME_START + "postMultipleParam2"
                         + STRING_PARAM + LIST_PARAM +  OM_BASE_REQUEST_END)
-                
-                , containsString(OM_BASE_REQUEST_COUNT_START + "postMultipleParam3" 
+
+                , containsString(OM_BASE_REQUEST_COUNT_START + "postMultipleParam3"
                         + BOOLEAN_PARAM + BOOLEANW_PARAM + DOUBLE_PARAM + STRING_PARAM +ARRAY_BRACKETS + OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_MAX_TIME_START + "postMultipleParam3" 
+                , containsString(OM_BASE_MAX_TIME_START + "postMultipleParam3"
                         + BOOLEAN_PARAM + BOOLEANW_PARAM + DOUBLE_PARAM + STRING_PARAM +ARRAY_BRACKETS + OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_MIN_TIME_START + "postMultipleParam3" 
+                , containsString(OM_BASE_MIN_TIME_START + "postMultipleParam3"
                         + BOOLEAN_PARAM + BOOLEANW_PARAM + DOUBLE_PARAM + STRING_PARAM +ARRAY_BRACKETS + OM_BASE_REQUEST_END)
-                
-                , containsString(OM_BASE_REQUEST_COUNT_START + "postMultipleParam4" 
+
+                , containsString(OM_BASE_REQUEST_COUNT_START + "postMultipleParam4"
                         + SET_PARAM + SORTED_SET_PARAM + DOUBLE_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_MAX_TIME_START + "postMultipleParam4" 
+                , containsString(OM_BASE_MAX_TIME_START + "postMultipleParam4"
                         + SET_PARAM + SORTED_SET_PARAM + DOUBLE_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_MIN_TIME_START + "postMultipleParam4" 
+                , containsString(OM_BASE_MIN_TIME_START + "postMultipleParam4"
                         + SET_PARAM + SORTED_SET_PARAM + DOUBLE_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
-                
-                , containsString(OM_BASE_REQUEST_COUNT_START + "postMultipleParam5" 
+
+                , containsString(OM_BASE_REQUEST_COUNT_START + "postMultipleParam5"
                         + SET_PARAM + LONGW_PARAM + INTW_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_REQUEST_TIME_START + "postMultipleParam5" 
+                , containsString(OM_BASE_REQUEST_TIME_START + "postMultipleParam5"
                         + SET_PARAM + LONGW_PARAM + INTW_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_MAX_TIME_START + "postMultipleParam5" 
+                , containsString(OM_BASE_MAX_TIME_START + "postMultipleParam5"
                         + SET_PARAM + LONGW_PARAM + INTW_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
-                , containsString(OM_BASE_MIN_TIME_START + "postMultipleParam5" 
+                , containsString(OM_BASE_MIN_TIME_START + "postMultipleParam5"
                         + SET_PARAM + LONGW_PARAM + INTW_PARAM + ARRAY_BRACKETS + OM_BASE_REQUEST_END)
                 );
 
     }
-    
+
     /*
      * TEST GET REQUEST JSON TO RETRIEVE ABOVE VALUES
      */
@@ -1035,7 +1037,7 @@ public class MpMetricOptionalTest {
     @InSequence(16)
     public void testValidateGetJSONnoParam() throws InterruptedException {
         Header acceptHeader = new Header("Accept", APPLICATION_JSON);
-       
+
         Response resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
         JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
         ResponseBuilder responseBuilder = new ResponseBuilder();
@@ -1047,36 +1049,36 @@ public class MpMetricOptionalTest {
             contentType(APPLICATION_JSON)
             .body(JSON_BASE_REQUEST_COUNT_START +"getNoParam"+JSON_BASE_REQUEST_END, equalTo(2))  //end-point was hit twice
             .body(JSON_BASE_REQUEST_TIME_START +"getNoParam"+JSON_BASE_REQUEST_END, not(0))
-            .body(JSON_BASE_MAX_TIME_START +"getNoParam"+JSON_BASE_REQUEST_END, equalTo(0))
-            .body(JSON_BASE_MIN_TIME_START +"getNoParam"+JSON_BASE_REQUEST_END, equalTo(0))
-            
+            .body(JSON_BASE_MAX_TIME_START +"getNoParam"+JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
+            .body(JSON_BASE_MIN_TIME_START +"getNoParam"+JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
+
             .body(JSON_BASE_REQUEST_COUNT_START +"optionsNoParam"+JSON_BASE_REQUEST_END, equalTo(1))
             .body(JSON_BASE_REQUEST_TIME_START +"optionsNoParam"+JSON_BASE_REQUEST_END, not(0))
-            .body(JSON_BASE_MAX_TIME_START +"optionsNoParam"+JSON_BASE_REQUEST_END, equalTo(0))
-            .body(JSON_BASE_MIN_TIME_START +"optionsNoParam"+JSON_BASE_REQUEST_END, equalTo(0))
-            
+            .body(JSON_BASE_MAX_TIME_START +"optionsNoParam"+JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
+            .body(JSON_BASE_MIN_TIME_START +"optionsNoParam"+JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
+
             .body(JSON_BASE_REQUEST_COUNT_START +"headNoParam"+JSON_BASE_REQUEST_END, equalTo(1))
             .body(JSON_BASE_REQUEST_TIME_START +"headNoParam"+JSON_BASE_REQUEST_END, not(0))
-            .body(JSON_BASE_MAX_TIME_START +"headNoParam"+JSON_BASE_REQUEST_END, equalTo(0))
-            .body(JSON_BASE_MIN_TIME_START +"headNoParam"+JSON_BASE_REQUEST_END, equalTo(0))
-            
+            .body(JSON_BASE_MAX_TIME_START +"headNoParam"+JSON_BASE_REQUEST_END,either(equalTo(0)).or(equalTo(0.0f)))
+            .body(JSON_BASE_MIN_TIME_START +"headNoParam"+JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
+
             .body(JSON_BASE_REQUEST_COUNT_START +"putNoParam"+JSON_BASE_REQUEST_END, equalTo(1))
             .body(JSON_BASE_REQUEST_TIME_START +"putNoParam"+JSON_BASE_REQUEST_END, not(0))
-            .body(JSON_BASE_MAX_TIME_START +"putNoParam"+JSON_BASE_REQUEST_END, equalTo(0))
-            .body(JSON_BASE_MIN_TIME_START +"putNoParam"+JSON_BASE_REQUEST_END, equalTo(0))
-            
+            .body(JSON_BASE_MAX_TIME_START +"putNoParam"+JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
+            .body(JSON_BASE_MIN_TIME_START +"putNoParam"+JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
+
             .body(JSON_BASE_REQUEST_COUNT_START +"postNoParam"+JSON_BASE_REQUEST_END, equalTo(1))
             .body(JSON_BASE_REQUEST_TIME_START +"postNoParam"+JSON_BASE_REQUEST_END, not(0))
-            .body(JSON_BASE_MAX_TIME_START +"postNoParam"+JSON_BASE_REQUEST_END, equalTo(0))
-            .body(JSON_BASE_MIN_TIME_START +"postNoParam"+JSON_BASE_REQUEST_END, equalTo(0))
-            
+            .body(JSON_BASE_MAX_TIME_START +"postNoParam"+JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
+            .body(JSON_BASE_MIN_TIME_START +"postNoParam"+JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
+
             .body(JSON_BASE_REQUEST_COUNT_START +"deleteNoParam"+JSON_BASE_REQUEST_END, equalTo(1))
             .body(JSON_BASE_REQUEST_TIME_START +"deleteNoParam"+JSON_BASE_REQUEST_END, not(0))
-            .body(JSON_BASE_MAX_TIME_START +"deleteNoParam"+JSON_BASE_REQUEST_END, equalTo(0))
-            .body(JSON_BASE_MIN_TIME_START +"deleteNoParam"+JSON_BASE_REQUEST_END, equalTo(0));
+            .body(JSON_BASE_MAX_TIME_START +"deleteNoParam"+JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
+            .body(JSON_BASE_MIN_TIME_START +"deleteNoParam"+JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)));
 
     }
-    
+
     @Test
     @RunAsClient
     @InSequence(17)
@@ -1096,218 +1098,218 @@ public class MpMetricOptionalTest {
                 .body(JSON_BASE_REQUEST_TIME_START + "getVarargParam1" + BOOLEANW_PARAM + ARRAY_BRACKETS
                         + JSON_BASE_REQUEST_END, not(0))
                 .body(JSON_BASE_MAX_TIME_START + "getVarargParam1" + BOOLEANW_PARAM + ARRAY_BRACKETS
-                        + JSON_BASE_REQUEST_END, equalTo(0))
+                        + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "getVarargParam1" + BOOLEANW_PARAM + ARRAY_BRACKETS
-                        + JSON_BASE_REQUEST_END, equalTo(0))
+                        + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getVarargParam2" + INT_PARAM + STRING_PARAM
                         + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getVarargParam2" + INT_PARAM + STRING_PARAM
                         + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, not(0))
                 .body(JSON_BASE_MAX_TIME_START + "getVarargParam2" + INT_PARAM + STRING_PARAM
-                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(0))
+                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "getVarargParam2" + INT_PARAM + STRING_PARAM
-                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(0))
+                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getArrayParam1" + STRING_PARAM + ARRAY_BRACKETS
                         + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getArrayParam1" + STRING_PARAM + ARRAY_BRACKETS
                         + JSON_BASE_REQUEST_END, not(0))
                 .body(JSON_BASE_MAX_TIME_START + "getArrayParam1" + STRING_PARAM + ARRAY_BRACKETS
-                        + JSON_BASE_REQUEST_END, equalTo(0))
+                        + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "getArrayParam1" + STRING_PARAM + ARRAY_BRACKETS
-                        + JSON_BASE_REQUEST_END, equalTo(0))
+                        + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getArrayParam2" + INT_PARAM + ARRAY_BRACKETS
                         + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getArrayParam2" + INT_PARAM + ARRAY_BRACKETS
                         + JSON_BASE_REQUEST_END, not(0))
                 .body(JSON_BASE_MAX_TIME_START + "getArrayParam2" + INT_PARAM + ARRAY_BRACKETS
-                        + JSON_BASE_REQUEST_END, equalTo(0))
+                        + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "getArrayParam2" + INT_PARAM + ARRAY_BRACKETS
-                        + JSON_BASE_REQUEST_END, equalTo(0))
+                        + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getArrayParam3" + DOUBLEW_PARAM + ARRAY_BRACKETS
                         + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getArrayParam3" + DOUBLEW_PARAM + ARRAY_BRACKETS
                         + JSON_BASE_REQUEST_END, not(0))
                 .body(JSON_BASE_MAX_TIME_START + "getArrayParam3" + DOUBLEW_PARAM + ARRAY_BRACKETS
-                        + JSON_BASE_REQUEST_END, equalTo(0))
+                        + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "getArrayParam3" + DOUBLEW_PARAM + ARRAY_BRACKETS
-                        + JSON_BASE_REQUEST_END, equalTo(0))
+                        + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
                         equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
                         not(0))
                 .body(JSON_BASE_MAX_TIME_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
                         equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
                         not(0))
                 .body(JSON_BASE_MAX_TIME_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
                         equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
                         not(0))
                 .body(JSON_BASE_MAX_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
                         equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
                         not(0))
                 .body(JSON_BASE_MAX_TIME_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getSingleBooleanParam" + BOOLEAN_PARAM + JSON_BASE_REQUEST_END,
                         equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + JSON_BASE_REQUEST_END,
                         not(0))
                 .body(JSON_BASE_MAX_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getListParam1" + LIST_PARAM + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getListParam1" + LIST_PARAM + JSON_BASE_REQUEST_END,
                         not(0))
                 .body(JSON_BASE_MAX_TIME_START + "getListParam1" + LIST_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "getListParam1" + LIST_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getListParam2" + LIST_PARAM + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getListParam2" + LIST_PARAM + JSON_BASE_REQUEST_END,
                         not(0))
                 .body(JSON_BASE_MAX_TIME_START + "getListParam2" + LIST_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "getListParam2" + LIST_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getListParam3" + LIST_PARAM + LIST_PARAM + JSON_BASE_REQUEST_END,
                         equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getListParam3" + LIST_PARAM + LIST_PARAM + JSON_BASE_REQUEST_END,
                         not(0))
                 .body(JSON_BASE_MAX_TIME_START + "getListParam3" + LIST_PARAM + LIST_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "getListParam3" + LIST_PARAM + LIST_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
                         equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
                         not(0))
                 .body(JSON_BASE_MAX_TIME_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
                         equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
                         not(0))
                 .body(JSON_BASE_MAX_TIME_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
                         equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
                         not(0))
                 .body(JSON_BASE_MAX_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
                         equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
                         not(0))
                 .body(JSON_BASE_MAX_TIME_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getSingleBooleanParam" + BOOLEAN_PARAM
                         + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + JSON_BASE_REQUEST_END,
                         not(0))
                 .body(JSON_BASE_MAX_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(0))
+                        either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
                         + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
                         + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, not(0))
                 .body(JSON_BASE_MAX_TIME_START + "getMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
-                        + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, equalTo(0))
+                        + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "getMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
-                        + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, equalTo(0))
+                        + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getMultipleParam2" + STRING_PARAM + LIST_PARAM
                         + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getMultipleParam2" + STRING_PARAM + LIST_PARAM
                         + JSON_BASE_REQUEST_END, not(0))
                 .body(JSON_BASE_MAX_TIME_START + "getMultipleParam2" + STRING_PARAM + LIST_PARAM
-                        + JSON_BASE_REQUEST_END, equalTo(0))
+                        + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "getMultipleParam2" + STRING_PARAM + LIST_PARAM
-                        + JSON_BASE_REQUEST_END, equalTo(0))
+                        + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getMultipleParam3" + BOOLEAN_PARAM + BOOLEANW_PARAM
                         + DOUBLE_PARAM + STRING_PARAM + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getMultipleParam3" + BOOLEAN_PARAM + BOOLEANW_PARAM + DOUBLE_PARAM
                         + STRING_PARAM + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, not(0))
                 .body(JSON_BASE_MAX_TIME_START + "getMultipleParam3" + BOOLEAN_PARAM + BOOLEANW_PARAM + DOUBLE_PARAM
-                        + STRING_PARAM + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(0))
+                        + STRING_PARAM + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "getMultipleParam3" + BOOLEAN_PARAM + BOOLEANW_PARAM + DOUBLE_PARAM
-                        + STRING_PARAM + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(0))
+                        + STRING_PARAM + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getMultipleParam4" + SET_PARAM + SORTED_SET_PARAM + DOUBLE_PARAM
                         + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getMultipleParam4" + SET_PARAM + SORTED_SET_PARAM + DOUBLE_PARAM
                         + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, not(0))
                 .body(JSON_BASE_MAX_TIME_START + "getMultipleParam4" + SET_PARAM + SORTED_SET_PARAM + DOUBLE_PARAM
-                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(0))
+                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "getMultipleParam4" + SET_PARAM + SORTED_SET_PARAM + DOUBLE_PARAM
-                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(0))
+                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "postMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
                         + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "postMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
                         + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, not(0))
                 .body(JSON_BASE_MAX_TIME_START + "postMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
-                        + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, equalTo(0))
+                        + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "postMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
-                        + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, equalTo(0))
+                        + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "postMultipleParam2" + STRING_PARAM + LIST_PARAM
                         + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "postMultipleParam2" + STRING_PARAM + LIST_PARAM
                         + JSON_BASE_REQUEST_END, not(0))
                 .body(JSON_BASE_MAX_TIME_START + "postMultipleParam2" + STRING_PARAM + LIST_PARAM
-                        + JSON_BASE_REQUEST_END, equalTo(0))
+                        + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "postMultipleParam2" + STRING_PARAM + LIST_PARAM
-                        + JSON_BASE_REQUEST_END, equalTo(0))
+                        + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "postMultipleParam3" + BOOLEAN_PARAM + BOOLEANW_PARAM
                         + DOUBLE_PARAM + STRING_PARAM + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "postMultipleParam3" + BOOLEAN_PARAM + BOOLEANW_PARAM + DOUBLE_PARAM
                         + STRING_PARAM + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, not(0))
                 .body(JSON_BASE_MAX_TIME_START + "postMultipleParam3" + BOOLEAN_PARAM + BOOLEANW_PARAM + DOUBLE_PARAM
-                        + STRING_PARAM + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(0))
+                        + STRING_PARAM + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "postMultipleParam3" + BOOLEAN_PARAM + BOOLEANW_PARAM + DOUBLE_PARAM
-                        + STRING_PARAM + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(0))
+                        + STRING_PARAM + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "postMultipleParam4" + SET_PARAM + SORTED_SET_PARAM + DOUBLE_PARAM
                         + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "postMultipleParam4" + SET_PARAM + SORTED_SET_PARAM + DOUBLE_PARAM
                         + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, not(0))
                 .body(JSON_BASE_MAX_TIME_START + "postMultipleParam4" + SET_PARAM + SORTED_SET_PARAM + DOUBLE_PARAM
-                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(0))
+                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "postMultipleParam4" + SET_PARAM + SORTED_SET_PARAM + DOUBLE_PARAM
-                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(0))                
+                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "postMultipleParam5" + SET_PARAM + LONGW_PARAM + INTW_PARAM
                         + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "postMultipleParam5" + SET_PARAM + LONGW_PARAM + INTW_PARAM
                         + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, not(0))
                 .body(JSON_BASE_MAX_TIME_START + "postMultipleParam5" + SET_PARAM + LONGW_PARAM + INTW_PARAM
-                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(0))
+                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_MIN_TIME_START + "postMultipleParam5" + SET_PARAM + LONGW_PARAM + INTW_PARAM
-                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, equalTo(0))
+                        + ARRAY_BRACKETS + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
                 .body(JSON_BASE_REQUEST_COUNT_START + "getAsync" + AYNC_RESP_PARAM + JSON_BASE_REQUEST_END, equalTo(1))
                 .body(JSON_BASE_REQUEST_TIME_START + "getAsync" + AYNC_RESP_PARAM + JSON_BASE_REQUEST_END, not(0))
-                .body(JSON_BASE_MAX_TIME_START + "getAsync" + AYNC_RESP_PARAM + JSON_BASE_REQUEST_END, equalTo(0))
-                .body(JSON_BASE_MIN_TIME_START + "getAsync" + AYNC_RESP_PARAM + JSON_BASE_REQUEST_END, equalTo(0));
+                .body(JSON_BASE_MAX_TIME_START + "getAsync" + AYNC_RESP_PARAM + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)))
+                .body(JSON_BASE_MIN_TIME_START + "getAsync" + AYNC_RESP_PARAM + JSON_BASE_REQUEST_END, either(equalTo(0)).or(equalTo(0.0f)));
     }
 }
