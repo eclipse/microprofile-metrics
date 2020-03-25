@@ -70,20 +70,19 @@ public class SimpleTimerFunctionalTest {
         TimeUtil.waitForNextMinute();
         bean.doSomething();
 
-        // The min and max should be 0 right now
-        assertEquals("Minimum should be 0 ", 0,
-                metricRegistry.getSimpleTimers().get(new MetricID("mySimplyTimed")).getMinTimeDuration().toNanos());
-        assertEquals("Maximum should be 0", 0,
-                metricRegistry.getSimpleTimers().get(new MetricID("mySimplyTimed")).getMaxTimeDuration().toNanos());
+        // The min and max should be -1 right now
+        assertEquals("Minimum should be -1 ", -1.0,
+                (double) metricRegistry.getSimpleTimers().get(new MetricID("mySimplyTimed")).getMinTimeDuration().toNanos(), 0.0);
+        assertEquals("Maximum should be Na-1", -1.0,
+                (double) metricRegistry.getSimpleTimers().get(new MetricID("mySimplyTimed")).getMaxTimeDuration().toNanos(), 0.0);
 
         TimeUtil.waitForNextMinute();
 
-        //The min and max values should NOT be 0 right now
-        assertNotEquals("Minimum should not be 0 ", 0,
-                metricRegistry.getSimpleTimers().get(new MetricID("mySimplyTimed")).getMinTimeDuration().toNanos());
-        assertNotEquals("Maximum should not be 0" , 0,
-                metricRegistry.getSimpleTimers().get(new MetricID("mySimplyTimed")).getMaxTimeDuration().toNanos());
-    
+        //The min and max values should NOT be -1 right now
+        assertNotEquals("Minimum should not be -1 ", -1.0,
+                (double) metricRegistry.getSimpleTimers().get(new MetricID("mySimplyTimed")).getMinTimeDuration().toNanos());
+        assertNotEquals("Maximum should not be -1" , -1.0,
+                (double) metricRegistry.getSimpleTimers().get(new MetricID("mySimplyTimed")).getMaxTimeDuration().toNanos());
     
         //The min and max values should be the SAME
         assertEquals("Minimum and Maximum should contain the same value ", metricRegistry.getSimpleTimers().

@@ -105,7 +105,8 @@ public interface SimpleTimer extends Metric, Counting {
      * This represents the highest timed duration in the last completed full minute. For example if the last completed
      * full minute recorded durations of 12 seconds, 9 seconds and 1 second the largest value is 12 seconds.
      * 
-     * If no time duration has been recorded in the last completed full minute then 0 is returned.
+     * If no time duration has been recorded in the last completed full minute then a {@link java.time.Duration Duration} of 
+     * -1 nanoseconds  is returned.
      * If there has only been one time duration recorded in the last completed full minute then this value will be returned
      * by both {@link SimpleTimer#getMaxTimeDuration()} and {@link SimpleTimer#getMinTimeDuration()}
      *
@@ -119,7 +120,8 @@ public interface SimpleTimer extends Metric, Counting {
      * This represents the lowest  timed duration in the last completed full minute. For example if the last completed
      * full minute recorded durations of 12 seconds, 9 seconds and 1 second the lowest value is 1 second.
      *
-     * If no time duration has been recorded in the last completed full minute then 0 is returned.
+     * If no time duration has been recorded in the last completed full minute then a {@link java.time.Duration Duration} of 
+     * -1 nanoseconds  is returned.
      * If there has only been one time duration recorded in the last completed full minute then this value will be returned
      * by both {@link SimpleTimer#getMaxTimeDuration()} and {@link SimpleTimer#getMinTimeDuration()}
      *
