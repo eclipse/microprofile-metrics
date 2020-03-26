@@ -367,11 +367,13 @@ The JSON node is named `<metric-name>`. The JSON leafs are named `<key>[';'<tag-
   "simple_responseTime": {
     "count": 1,
     "elapsedTime": 12300000000,
-    "maxTimeDuration": 3231000000,
-    "minTimeDuration": 25600000
+    "maxTimeDuration": 3231000000,   //(1)
+    "minTimeDuration": 25600000      //(1)
   }
 }
 ----
+
+<1> The `minTimeDuration` and `maxTimeDuration` will display a `null` value if no values were recorded.
 
 ==== Metadata
 
@@ -767,6 +769,7 @@ application_response_time_seconds{quantile="0.999"} 0.005608694
 `Simple Timer` is a complex metric type comprised of multiple key/values. Each key will require a suffix to be appended to the metric name. The format is specified by the table below.
 The OpenMetrics name is composed `<scope>'_'<metric-name>'_'<suffix>`.
 
+
 .OpenMetrics text mapping for a SimpleTimer metric
 [cols="2,1,2,1"]
 |===
@@ -788,12 +791,14 @@ application_response_time_total 12
 # TYPE application_response_time_elapsedTime_seconds gauge
 application_response_time_elapsedTime_seconds  12.30000000
 # TYPE application_response_time_maxTimeDuration_seconds gauge
-application_response_time_maxTimeDuration_seconds  3.231000000
+application_response_time_maxTimeDuration_seconds  3.231000000 #(2)
 # TYPE application_response_time_minTimeDuration_seconds gauge
-application_response_time_minTimeDuration_seconds  0.0256
+application_response_time_minTimeDuration_seconds  0.0256 #(2)
 ----
 
 <1> Note help is only emitted for the metric related to `getCount()`, but not for elapsedTime.
+
+<2> The `minTimeDuration` and `maxTimeDuration` will display a `NaN` value if no values were recorded.
 
 === Security
 

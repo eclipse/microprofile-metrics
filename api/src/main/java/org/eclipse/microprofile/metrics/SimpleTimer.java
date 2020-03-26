@@ -105,12 +105,11 @@ public interface SimpleTimer extends Metric, Counting {
      * This represents the highest timed duration in the last completed full minute. For example if the last completed
      * full minute recorded durations of 12 seconds, 9 seconds and 1 second the largest value is 12 seconds.
      * 
-     * If no time duration has been recorded in the last completed full minute then a {@link java.time.Duration Duration} of 
-     * -1 nanoseconds  is returned.
+     * If no time duration has been recorded in the last completed full minute then a null is returned.
      * If there has only been one time duration recorded in the last completed full minute then this value will be returned
      * by both {@link SimpleTimer#getMaxTimeDuration()} and {@link SimpleTimer#getMinTimeDuration()}
      *
-     * @return The maximum recorded time duration in the previously completed full minute.
+     * @return The maximum recorded time duration in the previously completed full minute or null if no values were recorded
      */
     Duration getMaxTimeDuration();
 
@@ -120,12 +119,11 @@ public interface SimpleTimer extends Metric, Counting {
      * This represents the lowest  timed duration in the last completed full minute. For example if the last completed
      * full minute recorded durations of 12 seconds, 9 seconds and 1 second the lowest value is 1 second.
      *
-     * If no time duration has been recorded in the last completed full minute then a {@link java.time.Duration Duration} of 
-     * -1 nanoseconds  is returned.
+     * If no time duration has been recorded in the last completed full minute then a null is returned.
      * If there has only been one time duration recorded in the last completed full minute then this value will be returned
      * by both {@link SimpleTimer#getMaxTimeDuration()} and {@link SimpleTimer#getMinTimeDuration()}
      *
-     * @return The minimum recorded time duration in the previously completed full minute.
+     * @return The minimum recorded time duration in the previously completed full minute or null if no values were recorded
      */
     Duration getMinTimeDuration();
 

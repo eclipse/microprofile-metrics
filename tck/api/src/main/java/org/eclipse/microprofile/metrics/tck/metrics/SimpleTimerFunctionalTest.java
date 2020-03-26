@@ -40,7 +40,8 @@ import javax.inject.Inject;
 import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @RunWith(Arquillian.class)
 public class SimpleTimerFunctionalTest {
@@ -70,19 +71,16 @@ public class SimpleTimerFunctionalTest {
         TimeUtil.waitForNextMinute();
         bean.doSomething();
 
-        // The min and max should be -1 right now
-        assertEquals("Minimum should be -1 ", -1.0,
-                (double) metricRegistry.getSimpleTimers().get(new MetricID("mySimplyTimed")).getMinTimeDuration().toNanos(), 0.0);
-        assertEquals("Maximum should be Na-1", -1.0,
-                (double) metricRegistry.getSimpleTimers().get(new MetricID("mySimplyTimed")).getMaxTimeDuration().toNanos(), 0.0);
+        // The min and max should be null right now
+        assertNull("Minimum should be null", metricRegistry.getSimpleTimers().get(new MetricID("mySimplyTimed")).getMinTimeDuration());
+        assertNull("Maximum should be null", metricRegistry.getSimpleTimers().get(new MetricID("mySimplyTimed")).getMaxTimeDuration());
+
 
         TimeUtil.waitForNextMinute();
 
-        //The min and max values should NOT be -1 right now
-        assertNotEquals("Minimum should not be -1 ", -1.0,
-                (double) metricRegistry.getSimpleTimers().get(new MetricID("mySimplyTimed")).getMinTimeDuration().toNanos());
-        assertNotEquals("Maximum should not be -1" , -1.0,
-                (double) metricRegistry.getSimpleTimers().get(new MetricID("mySimplyTimed")).getMaxTimeDuration().toNanos());
+        //The min and max values should NOT be null right now
+        assertNotNull("Minimum should NOT be null", metricRegistry.getSimpleTimers().get(new MetricID("mySimplyTimed")).getMinTimeDuration());
+        assertNotNull("Maximum should NOT be null", metricRegistry.getSimpleTimers().get(new MetricID("mySimplyTimed")).getMaxTimeDuration());
     
         //The min and max values should be the SAME
         assertEquals("Minimum and Maximum should contain the same value ", metricRegistry.getSimpleTimers().
