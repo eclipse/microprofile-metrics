@@ -66,6 +66,9 @@ import java.util.stream.Stream;
  * </ul>
  */
 public class MetricID implements Comparable<MetricID> {
+    // singleton instance that caches the results of the global tags lookup
+    private static final GlobalTagsProvider DEFAULT_GLOBAL_TAGS_PROVIDER = new DefaultGlobalTagsProvider();
+
     // need to keep these for backwards compatibility, as they are public
     public static final String GLOBAL_TAGS_VARIABLE = "mp.metrics.tags";
 
@@ -93,16 +96,15 @@ public class MetricID implements Comparable<MetricID> {
      * Constructs a MetricID with the given metric name, global tags defined
      * by the specified {@link GlobalTagsProvider}, and additional {@link Tag}s.
      *
-     * @param name the name of the metric
+     * @param name the name of the metric; cannot be {@code null}
      * @param globalTagsProvider the provider instance to retrieve the global tags from;
-     *                           can be {@code null}
-     * @param tags the (non-global) tags associated with this metric
+     *                           cannot be {@code null}
+     * @param tags the optional (non-global) tags associated with this metric
      */
     public MetricID(String name, GlobalTagsProvider globalTagsProvider, Tag... tags) {
-        this.name = name;
-        if (globalTagsProvider != null) {
-            globalTagsProvider.getGlobalTags().forEach(this::addTag);
-        }
+        this.name = Objects.requireNonNull(name, "name cannot be null");
+        Objects.requireNonNull(globalTagsProvider, "globalTagsProvider cannot be null")
+            .getGlobalTags().forEach(this::addTag);
         addTags(tags);
     }
 
@@ -110,21 +112,23 @@ public class MetricID implements Comparable<MetricID> {
      * Constructs a MetricID with the given metric name and no tags.
      * If global tags are available then they will be appended to this MetricID.
      *
-     * @param name the name of the metric
+     * @param name the name of the metric; cannot be {@code null}
      */
+    @Deprecated
     public MetricID(String name) {
-        this(name, DefaultGlobalTagsProvider.INSTANCE, null);
+        this(name, DEFAULT_GLOBAL_TAGS_PROVIDER, null);
     }
 
     /**
      * Constructs a MetricID with the given metric name and {@link Tag}s.
      * If global tags are available then they will be appended to this MetricID
      *
-     * @param name the name of the metric
-     * @param tags the tags associated with this metric
+     * @param name the name of the metric; cannot be {@code null}
+     * @param tags the optional (non-global) tags associated with this metric
      */
+    @Deprecated
     public MetricID(String name, Tag... tags) {
-        this(name, DefaultGlobalTagsProvider.INSTANCE, tags);
+        this(name, DEFAULT_GLOBAL_TAGS_PROVIDER, tags);
     }
 
     /**

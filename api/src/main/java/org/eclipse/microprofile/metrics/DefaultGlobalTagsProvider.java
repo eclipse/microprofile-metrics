@@ -43,9 +43,6 @@ import org.eclipse.microprofile.config.ConfigProvider;
  * </p>
  */
 class DefaultGlobalTagsProvider implements GlobalTagsProvider {
-    // singleton instance that caches the results of the global tags lookup
-    static final GlobalTagsProvider INSTANCE = new DefaultGlobalTagsProvider();
-
     private static final String GLOBAL_TAGS_VARIABLE = "mp.metrics.tags";
 
     private static final String APPLICATION_NAME_VARIABLE = "mp.metrics.appName";
