@@ -30,7 +30,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -47,13 +47,13 @@ public class GaugeInjectionBeanTest {
     }
 
     @Inject
-    private GaugeInjectionBean bean;
+    private static GaugeInjectionBean bean;
 
     @Inject
     @Metric(absolute = true, name = "org.eclipse.microprofile.metrics.tck.cdi.GaugeInjectionBean.gaugeInjection")
     private Gauge<Long> gauge;
 
-    @Before
+    @BeforeClass
     public void instantiateApplicationScopedBean() {
         // Let's trigger the instantiation of the application scoped bean
         // explicitly
