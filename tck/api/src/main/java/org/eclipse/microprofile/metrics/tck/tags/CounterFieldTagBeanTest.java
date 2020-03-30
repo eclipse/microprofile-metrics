@@ -22,7 +22,6 @@
 package org.eclipse.microprofile.metrics.tck.tags;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -33,7 +32,6 @@ import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.Tag;
-import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -49,13 +47,13 @@ import org.junit.runner.RunWith;
 public class CounterFieldTagBeanTest {
 
     private final static String COUNTER_NAME = MetricRegistry.name(CounterFieldTagBean.class, "counterName");
-    
+
     private final static Tag NUMBER_TWO_TAG = new Tag("number", "two");
     private final static Tag NUMBER_THREE_TAG = new Tag("number", "three");
-        
-    private final static Tag COLOUR_RED_TAG = new Tag("colour", "red"); 
-    private final static Tag COLOUR_BLUE_TAG = new Tag("colour", "blue"); 
-        
+
+    private final static Tag COLOUR_RED_TAG = new Tag("colour", "red");
+    private final static Tag COLOUR_BLUE_TAG = new Tag("colour", "blue");
+
     private static MetricID counterMID ;
     private static MetricID counterTwoMID;
     private static MetricID counterThreeMID;
@@ -82,18 +80,18 @@ public class CounterFieldTagBeanTest {
          * Running a managed arquillian container will result
          * with the MetricID being created in a client process
          * that does not contain the MPConfig impl.
-         * 
-         * This will cause client instantiated MetricIDs to 
+         *
+         * This will cause client instantiated MetricIDs to
          * throw an exception. (i.e the global MetricIDs)
          */
         counterMID = new MetricID(COUNTER_NAME);
         counterTwoMID = new MetricID(COUNTER_NAME, NUMBER_TWO_TAG, COLOUR_RED_TAG);
         counterThreeMID = new MetricID(COUNTER_NAME, NUMBER_THREE_TAG, COLOUR_BLUE_TAG);
     }
-    
+
     @Test
     @InSequence(1)
-    public void counterTagFieldsRegistered() {      
+    public void counterTagFieldsRegistered() {
         assertThat("Counter is not registered correctly", registry.getCounter(counterMID), notNullValue());
         assertThat("Counter is not registered correctly", registry.getCounter(counterTwoMID), notNullValue());
         assertThat("Counter is not registered correctly", registry.getCounter(counterThreeMID), notNullValue());
@@ -114,13 +112,13 @@ public class CounterFieldTagBeanTest {
         // Call the increment method and assert the counter is up-to-date
         long value = Math.round(Math.random() * Long.MAX_VALUE);
         bean.incrementOne(value);
-        
+
         long valueTwo = Math.round(Math.random() * Long.MAX_VALUE);
         bean.incrementTwo(valueTwo);
-        
+
         long valueThree = Math.round(Math.random() * Long.MAX_VALUE);
         bean.incrementThree(valueThree);
-        
+
         assertThat("Counter value is incorrect", counterOne.getCount(), is(equalTo(value)));
         assertThat("Counter value is incorrect", counterTwo.getCount(), is(equalTo(valueTwo)));
         assertThat("Counter value is incorrect", counterThree.getCount(), is(equalTo(valueThree)));

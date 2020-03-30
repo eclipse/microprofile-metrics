@@ -23,7 +23,6 @@
  */
 package org.eclipse.microprofile.metrics.tck.metrics;
 
-import java.util.SortedMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
@@ -68,7 +67,7 @@ public class SimpleTimerTest {
 
         isInitialized = true;
     }
-    
+
     @Test
     @InSequence(1)
     public void testTime() throws Exception {
@@ -78,11 +77,11 @@ public class SimpleTimerTest {
         Context context = simpleTimer.time();
         double afterStartTime = System.nanoTime();
         Thread.sleep(1000);
-        
+
         double beforeStopTime = System.nanoTime();
         double time = context.stop();
         double afterStopTime = System.nanoTime();
-        
+
 
         double delta = (afterStartTime - beforeStartTime) + (afterStopTime - beforeStopTime);
         Assert.assertEquals(beforeStopTime - beforeStartTime, time, delta);
@@ -93,10 +92,10 @@ public class SimpleTimerTest {
     public void testTimerRegistry() throws Exception {
         String simpleTimerLongName = "test.longData.simpleTimer";
         String simpleTimerTimeName = "testSimpleTime";
-        
+
         MetricID simpleTimerLongNameMetricID = new MetricID(simpleTimerLongName);
         MetricID simpleTimerTimeNameMetricID = new MetricID(simpleTimerTimeName);
-        
+
         Assert.assertNotNull(registry.getSimpleTimer(simpleTimerLongNameMetricID));
         Assert.assertNotNull(registry.getSimpleTimer(simpleTimerTimeNameMetricID));
     }
