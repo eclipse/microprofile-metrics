@@ -202,11 +202,7 @@ public interface MetricRegistry {
      * @param metricID the ID of the metric
      * @return a new or pre-existing {@link Counter}
      *
-<<<<<<< HEAD
-     * @since 2.4
-=======
      * @since 3.0
->>>>>>> Updates @since annotation for added methods from 2.4 to 3.0
      */
     Counter counter(MetricID metricID);
 
@@ -274,11 +270,7 @@ public interface MetricRegistry {
      * @param metricID the ID of the metric
      * @return a new or pre-existing {@link ConcurrentGauge}
      *
-<<<<<<< HEAD
-     * @since 2.4
-=======
      * @since 3.0
->>>>>>> Updates @since annotation for added methods from 2.4 to 3.0
      */
     ConcurrentGauge concurrentGauge(MetricID metricID);
 
@@ -316,17 +308,8 @@ public interface MetricRegistry {
     /**
      * Return the {@link Gauge} registered under the {@link MetricID} with this name and with no tags;
      * or create and register this gauge if none is registered.
-<<<<<<< HEAD
-<<<<<<< HEAD
      *
-     * If a {@link Histogram} was created, a {@link Metadata} object will be registered with the name
-=======
-     * 
-=======
-     *
->>>>>>> Updates @since annotation for added methods from 2.4 to 3.0
      * If a {@link Gauge} was created, a {@link Metadata} object will be registered with the name
->>>>>>> fixes checkstyle and javadoc warnings
      * and type. If a {@link Metadata} object is already registered with this metric name then that
      * {@link Metadata} will be used.
      *
@@ -334,11 +317,7 @@ public interface MetricRegistry {
      * @param gauge the {@link Gauge} to use if none is registered already
      * @return the pre-existing or provided {@link Gauge}
      *
-<<<<<<< HEAD
-     * @since 2.4
-=======
      * @since 3.0
->>>>>>> Updates @since annotation for added methods from 2.4 to 3.0
      */
     default Gauge<?> gauge(String name, Gauge<?> gauge) {
         return gauge(new MetricID(name), gauge);
@@ -347,17 +326,8 @@ public interface MetricRegistry {
     /**
      * Return the {@link Gauge} registered under the {@link MetricID} with this name and with the
      * provided {@link Tag}s; or create and register this gauge if none is registered.
-<<<<<<< HEAD
-<<<<<<< HEAD
      *
-     * If a {@link Histogram} was created, a {@link Metadata} object will be registered with the name
-=======
-     * 
-=======
-     *
->>>>>>> Updates @since annotation for added methods from 2.4 to 3.0
      * If a {@link Gauge} was created, a {@link Metadata} object will be registered with the name
->>>>>>> fixes checkstyle and javadoc warnings
      * and type. If a {@link Metadata} object is already registered with this metric name then that
      * {@link Metadata} will be used.
      *
@@ -365,11 +335,7 @@ public interface MetricRegistry {
      * @param gauge the {@link Gauge} to use if none is registered already
      * @return the pre-existing or provided {@link Gauge}
      *
-<<<<<<< HEAD
-     * @since 2.4
-=======
      * @since 3.0
->>>>>>> Updates @since annotation for added methods from 2.4 to 3.0
      */
     default Gauge<?> gauge(String name, Gauge<?> gauge, Tag...tags) {
         return gauge(new MetricID(name, tags), gauge);
@@ -378,17 +344,8 @@ public interface MetricRegistry {
     /**
      * Return the {@link Gauge} registered under the {@link MetricID}; or create and register this
      * gauge if none is registered.
-<<<<<<< HEAD
-<<<<<<< HEAD
      *
-     * If a {@link Histogram} was created, a {@link Metadata} object will be registered with the name
-=======
-     * 
-=======
-     *
->>>>>>> Updates @since annotation for added methods from 2.4 to 3.0
      * If a {@link Gauge} was created, a {@link Metadata} object will be registered with the name
->>>>>>> fixes checkstyle and javadoc warnings
      * and type. If a {@link Metadata} object is already registered with this metric name then that
      * {@link Metadata} will be used.
      *
@@ -396,11 +353,7 @@ public interface MetricRegistry {
      * @param gauge the {@link Gauge} to use if none is registered already
      * @return the pre-existing or provided {@link Gauge}
      *
-<<<<<<< HEAD
-     * @since 2.4
-=======
      * @since 3.0
->>>>>>> Updates @since annotation for added methods from 2.4 to 3.0
      */
     Gauge<?> gauge(MetricID metricID, Gauge<?> gauge);
 
@@ -448,11 +401,7 @@ public interface MetricRegistry {
      * @param metricID the ID of the metric
      * @return a new or pre-existing {@link Histogram}
      *
-<<<<<<< HEAD
-     * @since 2.4
-=======
      * @since 3.0
->>>>>>> Updates @since annotation for added methods from 2.4 to 3.0
      */
     Histogram histogram(MetricID metricID);
 
@@ -532,11 +481,7 @@ public interface MetricRegistry {
      * @param metricID the ID of the metric
      * @return a new or pre-existing {@link Meter}
      *
-<<<<<<< HEAD
-     * @since 2.4
-=======
      * @since 3.0
->>>>>>> Updates @since annotation for added methods from 2.4 to 3.0
      */
     Meter meter(MetricID metricID);
 
@@ -616,11 +561,7 @@ public interface MetricRegistry {
      * @param metricID the ID of the metric
      * @return a new or pre-existing {@link Timer}
      *
-<<<<<<< HEAD
-     * @since 2.4
-=======
      * @since 3.0
->>>>>>> Updates @since annotation for added methods from 2.4 to 3.0
      */
     Timer timer(MetricID metricID);
 
@@ -778,11 +719,7 @@ public interface MetricRegistry {
      * @return the {@link Counter} registered for the key or {@code null} if none has been registered so far
      * @throws IllegalArgumentException If the registered metric was not assignable to {@link Counter}
      *
-<<<<<<< HEAD
-     * @since 2.4
-=======
      * @since 3.0
->>>>>>> Updates @since annotation for added methods from 2.4 to 3.0
      */
     default Counter getCounter(MetricID metricID) {
         return getMetric(metricID, Counter.class);
@@ -795,11 +732,7 @@ public interface MetricRegistry {
      * @return the {@link ConcurrentGauge} registered for the key or {@code null} if none has been registered so far
      * @throws IllegalArgumentException If the registered metric was not assignable to {@link ConcurrentGauge}
      *
-<<<<<<< HEAD
-     * @since 2.4
-=======
      * @since 3.0
->>>>>>> Updates @since annotation for added methods from 2.4 to 3.0
      */
     default ConcurrentGauge getConcurrentGauge(MetricID metricID) {
         return getMetric(metricID, ConcurrentGauge.class);
@@ -812,11 +745,7 @@ public interface MetricRegistry {
      * @return the {@link  Gauge} registered for the key or {@code null} if none has been registered so far
      * @throws IllegalArgumentException If the registered metric was not assignable to {@link  Gauge}
      *
-<<<<<<< HEAD
-     * @since 2.4
-=======
      * @since 3.0
->>>>>>> Updates @since annotation for added methods from 2.4 to 3.0
      */
     default Gauge<?> getGauge(MetricID metricID) {
         return getMetric(metricID, Gauge.class);
@@ -829,11 +758,7 @@ public interface MetricRegistry {
      * @return the {@link Histogram} registered for the key or {@code null} if none has been registered so far
      * @throws IllegalArgumentException If the registered metric was not assignable to {@link Histogram}
      *
-<<<<<<< HEAD
-     * @since 2.4
-=======
      * @since 3.0
->>>>>>> Updates @since annotation for added methods from 2.4 to 3.0
      */
     default Histogram getHistogram(MetricID metricID) {
         return getMetric(metricID, Histogram.class);
@@ -846,11 +771,7 @@ public interface MetricRegistry {
      * @return the {@link  Meter} registered for the key or {@code null} if none has been registered so far
      * @throws IllegalArgumentException If the registered metric was not assignable to {@link  Meter}
      *
-<<<<<<< HEAD
-     * @since 2.4
-=======
      * @since 3.0
->>>>>>> Updates @since annotation for added methods from 2.4 to 3.0
      */
     default Meter getMeter(MetricID metricID) {
         return getMetric(metricID, Meter.class);
@@ -863,11 +784,7 @@ public interface MetricRegistry {
      * @return the {@link  Timer} registered for the key or {@code null} if none has been registered so far
      * @throws IllegalArgumentException If the registered metric was not assignable to {@link  Timer}
      *
-<<<<<<< HEAD
-     * @since 2.4
-=======
      * @since 3.0
->>>>>>> Updates @since annotation for added methods from 2.4 to 3.0
      */
     default Timer getTimer(MetricID metricID) {
         return getMetric(metricID, Timer.class);
