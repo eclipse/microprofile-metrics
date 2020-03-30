@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Gauge;
@@ -46,7 +47,6 @@ public class GaugeInjectionBeanTest {
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
-    @Inject
     private static GaugeInjectionBean bean;
 
     @Inject
@@ -55,6 +55,7 @@ public class GaugeInjectionBeanTest {
 
     @BeforeClass
     public static void instantiateApplicationScopedBean() {
+        bean = CDI.current().select(GaugeInjectionBean.class).get();
         // Let's trigger the instantiation of the application scoped bean
         // explicitly
         // as only a proxy gets injected otherwise
