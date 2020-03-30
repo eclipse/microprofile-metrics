@@ -23,9 +23,6 @@
  **********************************************************************/
 package org.eclipse.microprofile.metrics;
 
-import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.ConfigProvider;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -33,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -70,17 +66,11 @@ import java.util.stream.Stream;
  * </ul>
  */
 public class MetricID implements Comparable<MetricID> {
-
+    // need to keep these for backwards compatibility, as they are public
     public static final String GLOBAL_TAGS_VARIABLE = "mp.metrics.tags";
 
     public static final String APPLICATION_NAME_VARIABLE = "mp.metrics.appName";
     public static final String APPLICATION_NAME_TAG = "_app";
-
-    private static final String GLOBAL_TAG_MALFORMED_EXCEPTION = "Malformed list of Global Tags. Tag names "
-                                                                + "must match the following regex [a-zA-Z_][a-zA-Z0-9_]*."
-                                                                + " Global Tag values must not be empty."
-                                                                + " Global Tag values MUST escape equal signs `=` and commas `,`"
-                                                                + " with a backslash `\\` ";
 
     /**
      * Name of the metric.
@@ -100,13 +90,30 @@ public class MetricID implements Comparable<MetricID> {
     private final Map<String, String> tags = new TreeMap<String, String>();
 
     /**
+     * Constructs a MetricID with the given metric name, global tags defined
+     * by the specified {@link GlobalTagsProvider}, and additional {@link Tag}s.
+     *
+     * @param name the name of the metric
+     * @param globalTagsProvider the provider instance to retrieve the global tags from;
+     *                           can be {@code null}
+     * @param tags the (non-global) tags associated with this metric
+     */
+    public MetricID(String name, GlobalTagsProvider globalTagsProvider, Tag... tags) {
+        this.name = name;
+        if (globalTagsProvider != null) {
+            globalTagsProvider.getGlobalTags().forEach(this::addTag);
+        }
+        addTags(tags);
+    }
+
+    /**
      * Constructs a MetricID with the given metric name and no tags.
      * If global tags are available then they will be appended to this MetricID.
      *
      * @param name the name of the metric
      */
     public MetricID(String name) {
-        this(name, null);
+        this(name, DefaultGlobalTagsProvider.INSTANCE, null);
     }
 
     /**
@@ -117,25 +124,7 @@ public class MetricID implements Comparable<MetricID> {
      * @param tags the tags associated with this metric
      */
     public MetricID(String name, Tag... tags) {
-        this.name = name;
-        try {
-            Config config = ConfigProvider.getConfig();
-            Optional<String> globalTags = config.getOptionalValue(GLOBAL_TAGS_VARIABLE, String.class);
-            globalTags.ifPresent(this::parseGlobalTags);
-
-            // for application servers with multiple applications deployed, distinguish metrics from different applications by adding the "_app" tag
-            Optional<String> applicationName = config.getOptionalValue(APPLICATION_NAME_VARIABLE, String.class);
-            applicationName.ifPresent(appName -> {
-                if (!appName.isEmpty()) {
-                    addTag(new Tag(APPLICATION_NAME_TAG, appName));
-                }
-            });
-        }
-        catch(NoClassDefFoundError | IllegalStateException | ExceptionInInitializerError e) {
-            // MP Config is probably not available, so just go on
-        }
-
-        addTags(tags);
+        this(name, DefaultGlobalTagsProvider.INSTANCE, tags);
     }
 
     /**
@@ -244,43 +233,6 @@ public class MetricID implements Comparable<MetricID> {
             return;
         }
         tags.put(tag.getTagName(), tag.getTagValue());
-    }
-
-    /**
-     * Parses the global tags retrieved from environment variable {@code MP_METRICS_TAGS}.
-     *
-     * @param globalTags the string of global tags retrieved from MP_METRICS_TAGS
-     * @throws IllegalArgumentException if the global tags list does not adhere to
-     *             the appropriate format.
-     */
-    private void parseGlobalTags(String globalTags) throws IllegalArgumentException {
-        if (globalTags == null || globalTags.length() == 0) {
-            return;
-        }
-        String[] kvPairs = globalTags.split("(?<!\\\\),");
-        for (String kvString : kvPairs) {
-
-            if (kvString.length() == 0) {
-                throw new IllegalArgumentException(GLOBAL_TAG_MALFORMED_EXCEPTION);
-            }
-
-            String[] keyValueSplit = kvString.split("(?<!\\\\)=");
-
-            if (keyValueSplit.length != 2 || keyValueSplit[0].length() == 0 || keyValueSplit[1].length() == 0) {
-                throw new IllegalArgumentException(GLOBAL_TAG_MALFORMED_EXCEPTION);
-            }
-
-            String key = keyValueSplit[0];
-            String value = keyValueSplit[1];
-
-            if (!key.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {
-                throw new IllegalArgumentException("Invalid Tag name. Tag names must match the following regex "
-                                                   + "[a-zA-Z_][a-zA-Z0-9_]*");
-            }
-            value = value.replace("\\,", ",");
-            value = value.replace("\\=", "=");
-            tags.put(key, value);
-        }
     }
 
     /**
