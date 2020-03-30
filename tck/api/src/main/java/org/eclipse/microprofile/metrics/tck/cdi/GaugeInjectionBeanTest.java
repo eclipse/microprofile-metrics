@@ -54,7 +54,7 @@ public class GaugeInjectionBeanTest {
     private Gauge<Long> gauge;
 
     @BeforeClass
-    public void instantiateApplicationScopedBean() {
+    public static void instantiateApplicationScopedBean() {
         // Let's trigger the instantiation of the application scoped bean
         // explicitly
         // as only a proxy gets injected otherwise
