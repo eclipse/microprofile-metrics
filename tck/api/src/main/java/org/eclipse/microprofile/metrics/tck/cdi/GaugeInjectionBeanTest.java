@@ -19,7 +19,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Gauge;
@@ -31,7 +30,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -47,15 +45,16 @@ public class GaugeInjectionBeanTest {
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
-    private static GaugeInjectionBean bean;
+    @Inject
+    private GaugeInjectionBean bean;
 
     @Inject
     @Metric(absolute = true, name = "org.eclipse.microprofile.metrics.tck.cdi.GaugeInjectionBean.gaugeInjection")
     private Gauge<Long> gauge;
 
-    @BeforeClass
-    public static void instantiateApplicationScopedBean() {
-        bean = CDI.current().select(GaugeInjectionBean.class).get();
+    @Test
+    @InSequence(1)
+    public void instantiateApplicationScopedBean() {
         // Let's trigger the instantiation of the application scoped bean
         // explicitly
         // as only a proxy gets injected otherwise
@@ -63,14 +62,14 @@ public class GaugeInjectionBeanTest {
     }
 
     @Test
-    @InSequence(1)
+    @InSequence(2)
     public void gaugeCalledWithDefaultValue() {
         // Make sure that the gauge has the expected value
         assertThat("Gauge value is incorrect", gauge.getValue(), is(equalTo(0L)));
     }
 
     @Test
-    @InSequence(2)
+    @InSequence(3)
     public void callGaugeAfterSetterCall(
             @Metric(absolute = true, name = "org.eclipse.microprofile.metrics.tck.cdi.GaugeInjectionBean.gaugeInjection") Gauge<Long> gauge) {
         // Call the setter method and assert the gauge is up-to-date
