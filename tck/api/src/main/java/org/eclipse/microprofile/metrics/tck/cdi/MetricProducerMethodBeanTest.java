@@ -91,7 +91,7 @@ public class MetricProducerMethodBeanTest {
     @InSequence(1)
     public void cachedMethodNotCalledYet() {
         assertThat("Metrics are not registered correctly", registry.getMetricIDs(),
-            contains(callsMID, hitsMID, cacheHitsMID));
+            contains(cacheHitsMID, callsMID, hitsMID));
         Timer calls = registry.getTimer(callsMID);
         Meter hits = registry.getMeter(hitsMID);
         @SuppressWarnings("unchecked")
@@ -104,7 +104,7 @@ public class MetricProducerMethodBeanTest {
     @InSequence(2)
     public void callCachedMethodMultipleTimes() {
         assertThat("Metrics are not registered correctly", registry.getMetricIDs(),
-            contains(callsMID, hitsMID, cacheHitsMID));
+            contains(cacheHitsMID, callsMID, hitsMID));
         Timer calls = registry.getTimer(callsMID);
         Meter hits = registry.getMeter(hitsMID);
         @SuppressWarnings("unchecked")
