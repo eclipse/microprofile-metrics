@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017, 2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2018, 2020 Contributors to the Eclipse Foundation
  *               2017, 2018 Red Hat, Inc. and/or its affiliates
  *               and other contributors as indicated by the @author tags.
  *
@@ -50,7 +50,7 @@ import java.util.Optional;
  * </li>
  * </ul>
  *
- * @author hrupp, Raymond Lam
+ * @author hrupp, Raymond Lam, Jan Bernitt
  */
 public interface Metadata {
 
