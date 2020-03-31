@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2018, 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2018, 2019, 2020 Contributors to the Eclipse Foundation
  *               2018 Red Hat, Inc. and/or its affiliates
  *               and other contributors as indicated by the @author tags.
  *
