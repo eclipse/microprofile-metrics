@@ -114,7 +114,6 @@ public class MetricID implements Comparable<MetricID> {
      *
      * @param name the name of the metric; cannot be {@code null}
      */
-    @Deprecated
     public MetricID(String name) {
         this(name, DEFAULT_GLOBAL_TAGS_PROVIDER, null);
     }
@@ -126,7 +125,6 @@ public class MetricID implements Comparable<MetricID> {
      * @param name the name of the metric; cannot be {@code null}
      * @param tags the optional (non-global) tags associated with this metric
      */
-    @Deprecated
     public MetricID(String name, Tag... tags) {
         this(name, DEFAULT_GLOBAL_TAGS_PROVIDER, tags);
     }
