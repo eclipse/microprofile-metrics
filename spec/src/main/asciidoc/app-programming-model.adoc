@@ -55,7 +55,8 @@ that need to store the metrics may not deal well with this amount of data.
 === Responsibility of the MicroProfile Metrics implementation
 
 * The implementation must scan the application at deploy time for <<api-annotations>> and register the
-Metrics along with their metadata in the _application_ MetricsRegistry.
+Metrics along with their metadata in the _application_ MetricsRegistry. This does not apply to gauges, they can
+be registered lazily when the declaring bean is being instantiated. 
 * The implementation must watch the annotated objects and update internal data structures when the values of the
 annotated objects change. The value of a `Gauge` is recomputed each time a client requests the value. 
 * The implementation must expose the values of the objects registered in the MetricsRegistry via REST-API as described
@@ -579,8 +580,12 @@ Gauge<Double> hitPercentage = new Gauge<Double>() {
 };
 ----
 
-When a metric injected field is annotated, the implementation must provide the registered metric with the given name (using the <<annotated-naming-convention>>) if the metric already exist. If no metric exists with the given name then the implementation must produce and register the requested metric.
-`@Metric` can only be used on injected fields of type `Meter`, `Timer`, `Counter`, and `Histogram`.
+When a metric injected field is annotated, the implementation must provide the registered metric with the given name (using the <<annotated-naming-convention>>) if the metric already exists. 
+If no metric exists with the given name then the implementation must produce and register the requested metric.
+
+Gauges are an exception to this rule, because it could happen that an annotated gauge is not registered yet when the reference to it is being injected. In that case, the implementation
+must inject a proxy gauge implementation which forwards `getValue()` calls to the actual gauge, if the actual gauge already exists. If `getValue()` is called on the
+proxy gauge and the actual gauge still does not exist in the registry, `getValue()` will return null.
 
 .Example of an injected field
 [source, java]
