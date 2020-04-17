@@ -169,9 +169,7 @@ public interface MetricRegistry {
      * @param name the name of the metric
      * @return a new or pre-existing {@link Counter}
      */
-    default Counter counter(String name) {
-        return counter(new MetricID(name));
-    }
+    Counter counter(String name);
 
     /**
      * Return the {@link Counter} registered under the {@link MetricID} with this name and with the provided
@@ -187,9 +185,7 @@ public interface MetricRegistry {
      *
      * @since 2.0
      */
-    default Counter counter(String name, Tag... tags) {
-        return counter(new MetricID(name, tags));
-    }
+    Counter counter(String name, Tag... tags);
 
     /**
      * Return the {@link Counter} registered under the {@link MetricID};
@@ -245,9 +241,7 @@ public interface MetricRegistry {
      * @param name the name of the metric
      * @return a new or pre-existing {@link ConcurrentGauge}
      */
-    default ConcurrentGauge concurrentGauge(String name) {
-        return concurrentGauge(new MetricID(name));
-    }
+    ConcurrentGauge concurrentGauge(String name);
 
     /**
      * Return the {@link ConcurrentGauge} registered under the {@link MetricID} with this name and
@@ -258,9 +252,7 @@ public interface MetricRegistry {
      * @param tags the tags of the metric
      * @return a new or pre-existing {@link ConcurrentGauge}
      */
-    default ConcurrentGauge concurrentGauge(String name, Tag... tags) {
-        return concurrentGauge(new MetricID(name, tags));
-    }
+    ConcurrentGauge concurrentGauge(String name, Tag... tags);
 
     /**
      * Return the {@link ConcurrentGauge} registered under the {@link MetricID}; or create and register
@@ -319,9 +311,7 @@ public interface MetricRegistry {
      *
      * @since 3.0
      */
-    default Gauge<?> gauge(String name, Gauge<?> gauge) {
-        return gauge(new MetricID(name), gauge);
-    }
+    Gauge<?> gauge(String name, Gauge<?> gauge);
 
     /**
      * Return the {@link Gauge} registered under the {@link MetricID} with this name and with the
@@ -337,9 +327,7 @@ public interface MetricRegistry {
      *
      * @since 3.0
      */
-    default Gauge<?> gauge(String name, Gauge<?> gauge, Tag...tags) {
-        return gauge(new MetricID(name, tags), gauge);
-    }
+    Gauge<?> gauge(String name, Gauge<?> gauge, Tag...tags);
 
     /**
      * Return the {@link Gauge} registered under the {@link MetricID}; or create and register this
@@ -368,9 +356,7 @@ public interface MetricRegistry {
      * @param name the name of the metric
      * @return a new or pre-existing {@link Histogram}
      */
-    default Histogram histogram(String name) {
-        return histogram(new MetricID(name));
-    }
+    Histogram histogram(String name);
 
     /**
      * Return the {@link Histogram} registered under the {@link MetricID} with this name and with the
@@ -386,9 +372,7 @@ public interface MetricRegistry {
      *
      * @since 2.0
      */
-    default Histogram histogram(String name, Tag... tags) {
-        return histogram(new MetricID(name, tags));
-    }
+    Histogram histogram(String name, Tag... tags);
 
     /**
      * Return the {@link Histogram} registered under the {@link MetricID};
@@ -448,9 +432,7 @@ public interface MetricRegistry {
      * @param name the name of the metric
      * @return a new or pre-existing {@link Meter}
      */
-    default Meter meter(String name) {
-        return meter(new MetricID(name));
-    }
+    Meter meter(String name);
 
     /**
      * Return the {@link Meter} registered under the {@link MetricID} with this name and with the provided {@link Tag}s;
@@ -466,9 +448,7 @@ public interface MetricRegistry {
      *
      * @since 2.0
      */
-    default Meter meter(String name, Tag... tags) {
-        return meter(new MetricID(name, tags));
-    }
+    Meter meter(String name, Tag... tags);
 
     /**
      * Return the {@link Meter} registered under the {@link MetricID};
@@ -527,9 +507,7 @@ public interface MetricRegistry {
      * @param name the name of the metric
      * @return a new or pre-existing {@link Timer}
      */
-    default Timer timer(String name) {
-        return timer(new MetricID(name));
-    }
+    Timer timer(String name);
 
     /**
      * Return the {@link Timer} registered under the {@link MetricID} with this name and with the provided {@link Tag}s;
@@ -546,9 +524,7 @@ public interface MetricRegistry {
      *
      * @since 2.0
      */
-    default Timer timer(String name, Tag... tags) {
-        return timer(new MetricID(name, tags));
-    }
+    Timer timer(String name, Tag... tags);
 
     /**
      * Return the {@link Timer} registered under the {@link MetricID};
@@ -609,9 +585,7 @@ public interface MetricRegistry {
      *
      * @since 2.3
      */
-    default SimpleTimer simpleTimer(String name) {
-        return simpleTimer(new MetricID(name));
-    }
+    SimpleTimer simpleTimer(String name);
 
     /**
      * Return the {@link SimpleTimer} registered under the {@link MetricID} with this name and with the provided {@link Tag}s;
@@ -628,9 +602,7 @@ public interface MetricRegistry {
      *
      * @since 2.3
      */
-    default SimpleTimer simpleTimer(String name, Tag... tags) {
-        return simpleTimer(new MetricID(name, tags));
-    }
+    SimpleTimer simpleTimer(String name, Tag... tags);
 
     /**
      * Return the {@link SimpleTimer} registered under the {@link MetricID};
@@ -703,14 +675,7 @@ public interface MetricRegistry {
      *
      * @since 3.0
      */
-    default <T extends Metric> T getMetric(MetricID metricID, Class<T> asType) {
-        try {
-            return asType.cast(getMetric(metricID));
-        }
-        catch (ClassCastException e) {
-            throw new IllegalArgumentException(metricID + " was not of expected type " + asType, e);
-        }
-    }
+    <T extends Metric> T getMetric(MetricID metricID, Class<T> asType);
 
     /**
      * Return the {@link Counter} registered for the provided {@link MetricID}.
@@ -721,9 +686,7 @@ public interface MetricRegistry {
      *
      * @since 3.0
      */
-    default Counter getCounter(MetricID metricID) {
-        return getMetric(metricID, Counter.class);
-    }
+    Counter getCounter(MetricID metricID);
 
     /**
      * Return the {@link ConcurrentGauge} registered for the provided {@link MetricID}.
@@ -734,9 +697,7 @@ public interface MetricRegistry {
      *
      * @since 3.0
      */
-    default ConcurrentGauge getConcurrentGauge(MetricID metricID) {
-        return getMetric(metricID, ConcurrentGauge.class);
-    }
+    ConcurrentGauge getConcurrentGauge(MetricID metricID);
 
     /**
      * Return the {@link  Gauge} registered for the provided {@link MetricID}.
@@ -747,9 +708,7 @@ public interface MetricRegistry {
      *
      * @since 3.0
      */
-    default Gauge<?> getGauge(MetricID metricID) {
-        return getMetric(metricID, Gauge.class);
-    }
+    Gauge<?> getGauge(MetricID metricID);
 
     /**
      * Return the {@link Histogram} registered for the provided {@link MetricID}.
@@ -760,9 +719,7 @@ public interface MetricRegistry {
      *
      * @since 3.0
      */
-    default Histogram getHistogram(MetricID metricID) {
-        return getMetric(metricID, Histogram.class);
-    }
+    Histogram getHistogram(MetricID metricID);
 
     /**
      * Return the {@link  Meter} registered for the provided {@link MetricID}.
@@ -773,9 +730,7 @@ public interface MetricRegistry {
      *
      * @since 3.0
      */
-    default Meter getMeter(MetricID metricID) {
-        return getMetric(metricID, Meter.class);
-    }
+    Meter getMeter(MetricID metricID);
 
     /**
      * Return the {@link  Timer} registered for the provided {@link MetricID}.
@@ -786,9 +741,7 @@ public interface MetricRegistry {
      *
      * @since 3.0
      */
-    default Timer getTimer(MetricID metricID) {
-        return getMetric(metricID, Timer.class);
-    }
+    Timer getTimer(MetricID metricID);
 
     /**
      * Return the {@link  SimpleTimer} registered for the provided {@link MetricID}.
@@ -799,9 +752,7 @@ public interface MetricRegistry {
      *
      * @since 3.0
      */
-    default SimpleTimer getSimpleTimer(MetricID metricID) {
-        return getMetric(metricID, SimpleTimer.class);
-    }
+    SimpleTimer getSimpleTimer(MetricID metricID);
 
     /**
      * Return the {@link Metadata} for the provided name.
@@ -865,9 +816,7 @@ public interface MetricRegistry {
      * @param filter the metric filter to match
      * @return all the gauges in the registry
      */
-    default SortedMap<MetricID, Gauge> getGauges(MetricFilter filter) {
-        return getMetrics(Gauge.class, filter);
-    }
+    SortedMap<MetricID, Gauge> getGauges(MetricFilter filter);
 
     /**
      * Returns a map of all the counters in the registry and their {@link MetricID}s.
@@ -883,9 +832,7 @@ public interface MetricRegistry {
      * @param filter the metric filter to match
      * @return all the counters in the registry
      */
-    default SortedMap<MetricID, Counter> getCounters(MetricFilter filter) {
-        return getMetrics(Counter.class, filter);
-    }
+    SortedMap<MetricID, Counter> getCounters(MetricFilter filter);
 
     /**
      * Returns a map of all the concurrent gauges in the registry and their {@link MetricID}s.
@@ -901,9 +848,7 @@ public interface MetricRegistry {
      * @param filter    the metric filter to match
      * @return all the concurrent gauges in the registry
      */
-    default SortedMap<MetricID, ConcurrentGauge> getConcurrentGauges(MetricFilter filter) {
-        return getMetrics(ConcurrentGauge.class, filter);
-    }
+    SortedMap<MetricID, ConcurrentGauge> getConcurrentGauges(MetricFilter filter);
 
     /**
      * Returns a map of all the histograms in the registry and their {@link MetricID}s.
@@ -919,9 +864,7 @@ public interface MetricRegistry {
      * @param filter the metric filter to match
      * @return all the histograms in the registry
      */
-    default SortedMap<MetricID, Histogram> getHistograms(MetricFilter filter) {
-        return getMetrics(Histogram.class, filter);
-    }
+    SortedMap<MetricID, Histogram> getHistograms(MetricFilter filter);
 
     /**
      * Returns a map of all the meters in the registry and their {@link MetricID}s.
@@ -936,9 +879,7 @@ public interface MetricRegistry {
      * @param filter the metric filter to match
      * @return all the meters in the registry
      */
-    default SortedMap<MetricID, Meter> getMeters(MetricFilter filter) {
-        return getMetrics(Meter.class, filter);
-    }
+    SortedMap<MetricID, Meter> getMeters(MetricFilter filter);
 
     /**
      * Returns a map of all the timers in the registry and their {@link MetricID}s.
@@ -953,9 +894,7 @@ public interface MetricRegistry {
      * @param filter the metric filter to match
      * @return all the timers in the registry
      */
-    default SortedMap<MetricID, Timer> getTimers(MetricFilter filter) {
-        return getMetrics(Timer.class, filter);
-    }
+    SortedMap<MetricID, Timer> getTimers(MetricFilter filter);
 
     /**
      * Returns a map of all the simple timers in the registry and their {@link MetricID}s.
@@ -970,9 +909,7 @@ public interface MetricRegistry {
      * @param filter the metric filter to match
      * @return all the timers in the registry
      */
-    default SortedMap<MetricID, SimpleTimer> getSimpleTimers(MetricFilter filter) {
-        return getMetrics(SimpleTimer.class, filter);
-    }
+    SortedMap<MetricID, SimpleTimer> getSimpleTimers(MetricFilter filter);
 
     /**
      * Returns a map of all the metrics in the registry and their {@link MetricID}s which match the given filter.
@@ -995,11 +932,7 @@ public interface MetricRegistry {
      * @since 3.0
      */
     @SuppressWarnings("unchecked")
-    default <T extends Metric> SortedMap<MetricID, T> getMetrics(Class<T> ofType, MetricFilter filter) {
-        return (SortedMap<MetricID, T>) getMetrics(
-                (metricID, metric) -> filter.matches(metricID, metric)
-                    && ofType.isAssignableFrom(metric.getClass()));
-    }
+    <T extends Metric> SortedMap<MetricID, T> getMetrics(Class<T> ofType, MetricFilter filter);
 
     /**
      * Returns a map of all the metrics in the registry and their {@link MetricID}s.
