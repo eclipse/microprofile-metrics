@@ -140,7 +140,7 @@ public class DefaultMetadata implements Metadata {
                 Objects.equals(this.getDisplayName(), that.getDisplayName()) &&
                 Objects.equals(this.getDescription(), that.getDescription()) &&
                 Objects.equals(this.getUnit(), that.getUnit()) &&
-                Objects.equals(this.getTypeRaw(), that.getTypeRaw()) &&
+                Objects.equals(this.getTypeRaw(), that.getTypeRaw());
     }
 
     @Override
