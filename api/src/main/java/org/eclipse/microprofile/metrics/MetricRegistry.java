@@ -935,29 +935,26 @@ public interface MetricRegistry {
     <T extends Metric> SortedMap<MetricID, T> getMetrics(Class<T> ofType, MetricFilter filter);
 
     /**
-     * Returns a map of all the metrics in the registry and their {@link MetricID}s.
+     * Returns a map of all the metrics in the registry and their {@link MetricID}s at query time.
+     * The only guarantee about this method is that any key has a value (compared to using {@link #getMetric(MetricID)}
+     * and {@link #getMetricIDs()} together).
+     *
+     * It is <b>only</b> intended for bulk querying, if you need a single or a few entries, always prefer
+     * {@link #getMetric(MetricID)} or {@link #getMetrics(MetricFilter)}.
      *
      * @return all the metrics in the registry
-     * @deprecated Prior to 2.4 this method was the standard way to access {@link Metric}s by their {@link MetricID};
-     *             Doing so might cause unnecessary creation of an intermediate map that might be computed by the
-     *             implementation. Prefer {@link #getMetric(MetricID)} for key based lookup of single {@link Metric};
-     *             Use {@link #getMetricIDs()} to iterate over all metrics.
-     *             Use {@link #getMetrics(MetricFilter)} with {@link MetricFilter#ALL} if a (most likely) computed
-     *             {@link Map} is preferred.
      */
-    @Deprecated
     Map<MetricID, Metric> getMetrics();
 
     /**
      * Returns a map of all the metadata in the registry and their names.
+     * The only guarantee about this method is that any key has a value (compared to using {@link #getMetadata(String)}.
+     *
+     * It is <b>only</b> intended for bulk querying, if you need a single or a few metadata, always prefer
+     * {@link #getMetadata(String)}}.
      *
      * @return all the metadata in the registry
-     * @deprecated Prior to 2.4 this method was the standard way to access {@link Metadata} by their name; Doing so
-     *             might cause unnecessary creation of an intermediate map that might be computed by the implementation.
-     *             Prefer {@link #getMetadata(String)} for key based lookup of a single {@link Metadata};
-     *             Use {@link #getNames()} to iterate over all names.
      */
-    @Deprecated
     Map<String, Metadata> getMetadata();
 
     /**
