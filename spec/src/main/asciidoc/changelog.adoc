@@ -54,7 +54,7 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 ** Added the `MetricRegistry.getMetrics(Class, MetricFilter)` method
 ** `MetricRegistry.getMetrics()` is now deprecated
 ** `MetricRegistry.getMetadata()` is now deprecated
-** Added `SimpleTimer.getMaxTimeDuration()` and `SimpleTimer.getMaxTimeDuration()` methods which return a `java.time.Duration` object (https://github.com/eclipse/microprofile-metrics/issues/523[#523])
+** Added `SimpleTimer.getMinTimeDuration()` and `SimpleTimer.getMaxTimeDuration()` methods which return a `java.time.Duration` object (https://github.com/eclipse/microprofile-metrics/issues/523[#523])
 ** Timer class updated  (https://github.com/eclipse/microprofile-metrics/issues/524[#524])
 *** Changed `Timer.update(long duration, java.util.concurrent.TimeUnit)` to `Timer.update(java.time.Duration duration)`
 *** Added `Timer.getElapsedTime()` which returns `java.time.Duration`
