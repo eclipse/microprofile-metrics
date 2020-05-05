@@ -279,4 +279,28 @@ public class MetricAppBeanOptional {
         return "This is a POST request with multiple parameters5";
     }
     
+    @GET
+    @Path("/get-mapped-arithmetic-exception")
+    public String  getMappedArithException() throws Exception {
+        return "This is a GET request to test mapped exceptions that throws an ArithmeticException";
+    }
+    
+    @POST
+    @Path("/post-mapped-arithmetic-exception")
+    public String  postMappedArithException() throws Exception {
+        return "This is a POST request to test mapped exceptions that throws an ArithmeticException";
+    }
+    
+    @GET
+    @Path("/get-unmapped-exception")
+    public String  getUnmappedArithException() throws Exception {
+        throw new IllegalArgumentException();
+    }
+    
+    @POST
+    @Path("/post-unmapped-exception")
+    public String  postUnmappedArithException() throws Exception {
+        throw new IllegalArgumentException();
+    }
+    
 }
