@@ -61,12 +61,16 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 === Functional Changes
 ** Simple Timer metrics now track the highest and lowest recorded timing duration of the previous completed minute (https://github.com/eclipse/microprofile-metrics/issues/523[#523])
 ** Timer now exposes total elapsed time duration as a metric value (https://github.com/eclipse/microprofile-metrics/issues/524[#524])
+** Clarified that the existing REST metric `REST.request` will not monitor and track a REST request to a REST endpoint if an unmapped exception occurs.
+** Introduced a new base REST metric `REST.request.unmappedException.total` that counts the occurrences of unmapped exceptions for each REST endpoint (https://github.com/eclipse/microprofile-metrics/issues/533)[#533]
 
 === Specification Changes
 ** icon:bolt[role="red"] Removed the concept of reusability
 ** Clarified how the implementation must handle metrics applied via CDI stereotypes
 ** The implementation is required to sanitize `Metadata` passed by the application in cases when it does not contain an explicit type,
 but the type is implied by the name of the registration method that is being called.
+** Clarified that the existing REST metric `REST.request` will not monitor and track a REST request to a REST endpoint if an unmapped exception occurs
+** Introduced a new base REST metric `REST.request.unmappedException.total` that counts the occurrences of unmapped exceptions for each REST endpoint (https://github.com/eclipse/microprofile-metrics/issues/533)[#533]
 
 === TCK enhancement
 ** Improved TCK - Use newly introduced `MetricRegistry` methods to retrieve single metrics and avoid use of the `getMetrics()` and `getMetadata()` methods
