@@ -28,7 +28,7 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 == Changes in 3.0
 
 === API/SPI Changes
-** `MetricRegistry` changed from `abstract class` to `interface` with some existing methods now implemented as `default` methods
+** `MetricRegistry` changed from `abstract class` to `interface`
 ** icon:bolt[role="red"] Removed everything related to reusability from the API code
 ** Added the `MetricRegistry.getType()` method
 ** Added the `MetricRegistry.counter(MetricID)` method
@@ -52,8 +52,6 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 ** Added the `MetricRegistry.getMetadata(String)` method
 ** Added the `MetricRegistry.getMetrics(MetricFilter)` method
 ** Added the `MetricRegistry.getMetrics(Class, MetricFilter)` method
-** `MetricRegistry.getMetrics()` is now deprecated
-** `MetricRegistry.getMetadata()` is now deprecated
 ** Added `SimpleTimer.getMinTimeDuration()` and `SimpleTimer.getMaxTimeDuration()` methods which return a `java.time.Duration` object (https://github.com/eclipse/microprofile-metrics/issues/523[#523])
 ** Timer class updated  (https://github.com/eclipse/microprofile-metrics/issues/524[#524])
 *** Changed `Timer.update(long duration, java.util.concurrent.TimeUnit)` to `Timer.update(java.time.Duration duration)`
@@ -71,7 +69,7 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 but the type is implied by the name of the registration method that is being called.
 
 === TCK enhancement
-** Improved TCK - Use newly introduced `MetricRegistry` methods to retrieve single metrics and avoid now deprecated methods `getMetrics()` and `getMetadata()`
+** Improved TCK - Use newly introduced `MetricRegistry` methods to retrieve single metrics and avoid use of the `getMetrics()` and `getMetadata()` methods
 
 [[release_notes_2_3]]
 == Changes in 2.3
