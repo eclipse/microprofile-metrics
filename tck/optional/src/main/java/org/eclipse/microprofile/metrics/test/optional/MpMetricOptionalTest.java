@@ -1324,7 +1324,7 @@ public class MpMetricOptionalTest {
     public void testGetMappedArithException() throws InterruptedException {
         /*
          * Check Prometheus/OpenMetrics
-         * 
+         *
          * Need to explicitly hard code the values expected
          */
         Header acceptHeader = new Header("Accept", TEXT_PLAIN);
@@ -1349,7 +1349,7 @@ public class MpMetricOptionalTest {
                    , containsString(OM_BASE_REQUEST_TIME_START + "getMappedArithException" + OM_BASE_REQUEST_END)
                    , containsString(OM_BASE_MAX_TIME_START + "getMappedArithException" + OM_BASE_REQUEST_END)
                    , containsString(OM_BASE_MIN_TIME_START + "getMappedArithException" + OM_BASE_REQUEST_END));
-       
+
        resp = given().header(acceptHeader).when().get(RESTREQUEST_UNMAPPED_EXCEPION_METRIC_ENDPOINT);
        responseBuilder = new ResponseBuilder();
        responseBuilder.clone(resp);
@@ -1359,11 +1359,11 @@ public class MpMetricOptionalTest {
            statusCode(200).
            contentType(TEXT_PLAIN).
            body(containsString(OM_BASE_REQUEST_UNMAPPED_EXCEPTION_START + "getMappedArithException" + OM_BASE_REQUEST_END + " 0"));
-       
+
        /*
         * Check JSON
         */
-       
+
        acceptHeader = new Header("Accept", APPLICATION_JSON);
        resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
@@ -1382,7 +1382,7 @@ public class MpMetricOptionalTest {
                        + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
                .body(JSON_BASE_MIN_TIME_START + "getMappedArithException"
                        + JSON_BASE_REQUEST_END, nullOrGreaterThanZero());
-       
+
        acceptHeader = new Header("Accept", APPLICATION_JSON);
        resp = given().header(acceptHeader).when().get(RESTREQUEST_UNMAPPED_EXCEPION_METRIC_ENDPOINT);
        filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
@@ -1396,14 +1396,14 @@ public class MpMetricOptionalTest {
                .body(JSON_BASE_REQUEST_UNMAPPED_EXCEPTION_START + "getMappedArithException"
                        + JSON_BASE_REQUEST_END, equalTo(0));
     }
-    
+
     @Test
     @RunAsClient
     @InSequence(19)
     public void testPostMappedArithException() throws InterruptedException {
         /*
          * Check Prometheus/OpenMetrics
-         * 
+         *
          * Need to explicitly hard code the values expected
          */
         Header acceptHeader = new Header("Accept", TEXT_PLAIN);
@@ -1428,7 +1428,7 @@ public class MpMetricOptionalTest {
                    , containsString(OM_BASE_REQUEST_TIME_START + "postMappedArithException" + OM_BASE_REQUEST_END)
                    , containsString(OM_BASE_MAX_TIME_START + "postMappedArithException" + OM_BASE_REQUEST_END)
                    , containsString(OM_BASE_MIN_TIME_START + "postMappedArithException" + OM_BASE_REQUEST_END));
-       
+
        resp = given().header(acceptHeader).when().get(RESTREQUEST_UNMAPPED_EXCEPION_METRIC_ENDPOINT);
        responseBuilder = new ResponseBuilder();
        responseBuilder.clone(resp);
@@ -1438,11 +1438,11 @@ public class MpMetricOptionalTest {
            statusCode(200).
            contentType(TEXT_PLAIN).
            body(containsString(OM_BASE_REQUEST_UNMAPPED_EXCEPTION_START + "postMappedArithException" + OM_BASE_REQUEST_END + " 0"));
-       
+
        /*
         * Check JSON
         */
-       
+
        acceptHeader = new Header("Accept", APPLICATION_JSON);
        resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
@@ -1461,7 +1461,7 @@ public class MpMetricOptionalTest {
                        + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
                .body(JSON_BASE_MIN_TIME_START + "postMappedArithException"
                        + JSON_BASE_REQUEST_END, nullOrGreaterThanZero());
-       
+
        acceptHeader = new Header("Accept", APPLICATION_JSON);
        resp = given().header(acceptHeader).when().get(RESTREQUEST_UNMAPPED_EXCEPION_METRIC_ENDPOINT);
        filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
@@ -1475,14 +1475,14 @@ public class MpMetricOptionalTest {
                .body(JSON_BASE_REQUEST_UNMAPPED_EXCEPTION_START + "postMappedArithException"
                        + JSON_BASE_REQUEST_END, equalTo(0));
     }
-    
+
     @Test
     @RunAsClient
     @InSequence(20)
     public void testGetUnmappedArithException() throws InterruptedException {
         /*
          * Check Prometheus/OpenMetrics
-         * 
+         *
          * Need to explicitly hard code the values expected
          */
         Header acceptHeader = new Header("Accept", TEXT_PLAIN);
@@ -1507,7 +1507,7 @@ public class MpMetricOptionalTest {
                    , containsString(OM_BASE_REQUEST_TIME_START + "getUnmappedArithException" + OM_BASE_REQUEST_END)
                    , containsString(OM_BASE_MAX_TIME_START + "getUnmappedArithException" + OM_BASE_REQUEST_END)
                    , containsString(OM_BASE_MIN_TIME_START + "getUnmappedArithException" + OM_BASE_REQUEST_END));
-       
+
        resp = given().header(acceptHeader).when().get(RESTREQUEST_UNMAPPED_EXCEPION_METRIC_ENDPOINT);
        responseBuilder = new ResponseBuilder();
        responseBuilder.clone(resp);
@@ -1520,7 +1520,7 @@ public class MpMetricOptionalTest {
        /*
         * Check JSON
         */
-       
+
        acceptHeader = new Header("Accept", APPLICATION_JSON);
        resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
@@ -1532,14 +1532,14 @@ public class MpMetricOptionalTest {
            statusCode(200).
            contentType(APPLICATION_JSON)
                .body(JSON_BASE_REQUEST_COUNT_START + "getUnmappedArithException"
-                       + JSON_BASE_REQUEST_END, equalTo(0))
+                       + JSON_BASE_REQUEST_END, zero())
                .body(JSON_BASE_REQUEST_TIME_START + "getUnmappedArithException"
-                       + JSON_BASE_REQUEST_END, equalTo(0))
+                       + JSON_BASE_REQUEST_END, zero())
                .body(JSON_BASE_MAX_TIME_START + "getUnmappedArithException"
                        + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
                .body(JSON_BASE_MIN_TIME_START + "getUnmappedArithException"
                        + JSON_BASE_REQUEST_END, nullOrGreaterThanZero());
-       
+
        acceptHeader = new Header("Accept", APPLICATION_JSON);
        resp = given().header(acceptHeader).when().get(RESTREQUEST_UNMAPPED_EXCEPION_METRIC_ENDPOINT);
        filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
@@ -1553,14 +1553,14 @@ public class MpMetricOptionalTest {
                .body(JSON_BASE_REQUEST_UNMAPPED_EXCEPTION_START + "getUnmappedArithException"
                        + JSON_BASE_REQUEST_END, equalTo(1));
     }
-   
+
     @Test
     @RunAsClient
     @InSequence(21)
     public void testPostUnmappedArithException() throws InterruptedException {
         /*
          * Check Prometheus/OpenMetrics
-         * 
+         *
          * Need to explicitly hard code the values expected
          */
         Header acceptHeader = new Header("Accept", TEXT_PLAIN);
@@ -1581,11 +1581,11 @@ public class MpMetricOptionalTest {
        resp.then().
            statusCode(200).
            contentType(TEXT_PLAIN).
-           body(containsString(OM_BASE_REQUEST_COUNT_START + "postUnmappedArithException" + OM_BASE_REQUEST_END + " 0") 
+           body(containsString(OM_BASE_REQUEST_COUNT_START + "postUnmappedArithException" + OM_BASE_REQUEST_END + " 0")
                    , containsString(OM_BASE_REQUEST_TIME_START + "postUnmappedArithException" + OM_BASE_REQUEST_END)
                    , containsString(OM_BASE_MAX_TIME_START + "postUnmappedArithException" + OM_BASE_REQUEST_END)
                    , containsString(OM_BASE_MIN_TIME_START + "postUnmappedArithException" + OM_BASE_REQUEST_END));
-       
+
        resp = given().header(acceptHeader).when().get(RESTREQUEST_UNMAPPED_EXCEPION_METRIC_ENDPOINT);
        responseBuilder = new ResponseBuilder();
        responseBuilder.clone(resp);
@@ -1595,11 +1595,11 @@ public class MpMetricOptionalTest {
            statusCode(200).
            contentType(TEXT_PLAIN).
            body(containsString(OM_BASE_REQUEST_UNMAPPED_EXCEPTION_START + "postUnmappedArithException" + OM_BASE_REQUEST_END + " 1"));
-       
+
        /*
         * Check JSON
         */
-       
+
        acceptHeader = new Header("Accept", APPLICATION_JSON);
        resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
@@ -1611,14 +1611,14 @@ public class MpMetricOptionalTest {
            statusCode(200).
            contentType(APPLICATION_JSON)
                .body(JSON_BASE_REQUEST_COUNT_START + "postUnmappedArithException"
-                       + JSON_BASE_REQUEST_END, equalTo(0))
+                       + JSON_BASE_REQUEST_END, zero())
                .body(JSON_BASE_REQUEST_TIME_START + "postUnmappedArithException"
-                       + JSON_BASE_REQUEST_END, equalTo(0))
+                       + JSON_BASE_REQUEST_END, zero())
                .body(JSON_BASE_MAX_TIME_START + "postUnmappedArithException"
                        + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
                .body(JSON_BASE_MIN_TIME_START + "postUnmappedArithException"
                        + JSON_BASE_REQUEST_END, nullOrGreaterThanZero());
-       
+
        acceptHeader = new Header("Accept", APPLICATION_JSON);
        resp = given().header(acceptHeader).when().get(RESTREQUEST_UNMAPPED_EXCEPION_METRIC_ENDPOINT);
        filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
@@ -1632,7 +1632,7 @@ public class MpMetricOptionalTest {
                .body(JSON_BASE_REQUEST_UNMAPPED_EXCEPTION_START + "postUnmappedArithException"
                        + JSON_BASE_REQUEST_END, equalTo(1));
     }
-    
+
     Matcher<Object> nullOrGreaterThanZero() {
         return new LambdaMatcher<>((value) -> {
             if (value == null) {
@@ -1642,6 +1642,17 @@ public class MpMetricOptionalTest {
                 return value instanceof Number && ((Number) value).doubleValue() > 0;
             }
         }, "Value should be either null, or a number greater than zero");
+    }
+
+    Matcher<Object> zero() {
+        return new LambdaMatcher<>((value) -> {
+            if (value == null) {
+                return false;
+            }
+            else {
+                return value instanceof Number && ((Number) value).doubleValue() == 0.0;
+            }
+        }, "Value should be zero");
     }
 
 }
