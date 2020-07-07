@@ -47,18 +47,6 @@ import org.eclipse.microprofile.metrics.MetricUnits;
  * <p>
  * This may also be used to register a metric.
  * </p>
- * <pre><code>
- *     {@literal @}Produces
- *     {@literal @}Metric(name="hitPercentage")
- *     {@literal @}ApplicationScoped
- *     Gauge&lt;Double&gt; hitPercentage = new Gauge&lt;Double&gt;() {
- * 
- *       {@literal @}Override
- *       public Double getValue() {
- *           return hits / total;
- *       }
- *     };
- * </code></pre>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })

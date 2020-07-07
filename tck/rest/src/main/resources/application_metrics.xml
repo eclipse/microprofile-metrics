@@ -30,5 +30,4 @@
   <metric multi="false" name="org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeB" type="gauge" unit="hands"/>
   <metric multi="false" name="meterMeA" type="meter" unit="per_second" description="meter-me-a-description" display-name="meter-me-a-display-name"/>
   <metric multi="false" name="org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA" type="timer" unit="nanoseconds"/>
-  <metric multi="false" name="coffee_price_produces" type="gauge" unit="USD" description="getCoffeePriceDescription" display-name="getCoffeePriceDisplayName"/>
 </config>

@@ -30,6 +30,7 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 === API/SPI Changes
 ** `MetricRegistry` changed from `abstract class` to `interface`
 ** icon:bolt[role="red"] Removed everything related to reusability from the API code
+** icon:bolt[role="red"] CDI producers annotated with `@Metric` no longer trigger metric registration
 ** Added the `MetricRegistry.getType()` method
 ** Added the `MetricRegistry.counter(MetricID)` method
 ** Added the `MetricRegistry.concurrentGauge(MetricID)` method
