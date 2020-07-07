@@ -43,7 +43,6 @@ import org.eclipse.microprofile.metrics.annotation.Timed;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.enterprise.inject.Produces;
 
 @ApplicationScoped
 public class MetricAppBean {
@@ -176,13 +175,6 @@ public class MetricAppBean {
 
     @Inject
     private MetricRegistry metrics;
-
-    @Produces
-    @Metric(name = "coffee_price_produces", unit = "USD", absolute = true,
-        description = "getCoffeePriceDescription", displayName = "getCoffeePriceDisplayName")
-    protected org.eclipse.microprofile.metrics.Gauge<Long> getCoffeePrice() {
-        return () -> 4L;
-    }
 
     @Inject
     @ConfigProperty(name = "MP_METRICS_TAGS")

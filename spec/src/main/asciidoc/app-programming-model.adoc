@@ -119,8 +119,7 @@ The following Annotations exist, see below for common fields:
 |@ConcurrentGauge | M, C, T | Denotes a gauge which counts the parallel invocations of the annotated object. | MetricUnits.NONE
 |@Gauge   | M | Denotes a gauge, which samples the value of the annotated object.  | _no default_, must be supplied by the user
 |@Metered | M, C, T  | Denotes a meter, which tracks the frequency of invocations of the annotated object. | MetricUnits.PER_SECOND
-|@Metric  | M, F, P | An annotation that contains the metadata information when requesting a metric to be injected or produced. This annotation can be used on fields
-    of type `Meter`, `Timer`, `Counter`, and `Histogram`. For `Gauge`, the `@Metric` annotation can only be used on producer methods/fields. | MetricUnits.NONE
+|@Metric  | F, P | An annotation that contains the metadata information when requesting a metric to be injected. | MetricUnits.NONE
 |@Timed   | M, C, T | Denotes a timer, which tracks duration of the annotated object. | MetricUnits.NANOSECONDS
 |@SimplyTimed   | M, C, T | Denotes a simple timer, which tracks duration and invocations of the annotated object. | MetricUnits.NANOSECONDS
 |===
@@ -557,30 +556,13 @@ An annotation requesting that a metric should be injected or registered.
 The implementation must support the following annotation targets:
 
   * `FIELD`
-  * `METHOD`
   * `PARAMETER`
 
 The following lists the behavior for each annotation target.
 
 ===== FIELD
-When a metric producer field is annotated, the implementation must register the metric to the application `MetricRegistry` (using the <<annotated-naming-convention>>). If a metric with the given name already exist (created by another @Produces for example), an `java.lang.IllegalArgumentException` must be thrown.
 
-.Example of a producer field
-[source, java]
-----
-@Produces
-@Metric(name="hitPercentage")
-@ApplicationScoped
-Gauge<Double> hitPercentage = new Gauge<Double>() {
-
-  @Override
-  public Double getValue() {
-      return hits / total;
-  }
-};
-----
-
-When a metric injected field is annotated, the implementation must provide the registered metric with the given name (using the <<annotated-naming-convention>>) if the metric already exists. 
+When a metric injected field is annotated, the implementation must provide the registered metric with the given name (using the <<annotated-naming-convention>>) if the metric already exists.
 If no metric exists with the given name then the implementation must produce and register the requested metric.
 
 Gauges are an exception to this rule, because it could happen that an annotated gauge is not registered yet when the reference to it is being injected. In that case, the implementation
@@ -593,28 +575,6 @@ proxy gauge and the actual gauge still does not exist in the registry, `getValue
 @Inject
 @Metric(name = "applicationCount")
 Counter count;
-----
-
-
-===== METHOD
-
-When a metric producer method is annotated, the implementation must register the metric produced by the method using the <<annotated-naming-convention>>.
-
-.Example of a producer method
-[source, java]
-----
-@Produces
-@Metric(name = "hitPercentage")
-@ApplicationScoped
-protected Gauge<Double> createHitPercentage() {
-    return new Gauge<Double>() {
-
-      @Override
-      public Double getValue() {
-          return hits / total;
-      }
-    };
-}
 ----
 
 ===== PARAMETER
