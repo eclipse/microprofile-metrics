@@ -46,15 +46,6 @@ import javax.interceptor.InterceptorBinding;
  * A gauge with the fully qualified class name + {@code queueSize} will be created which uses the
  * annotated method's return value as its value.
  * 
- * <p>
- * Given a field annotated with {@literal @}Gauge like this:
- * </p>
- * <pre><code>
- *     {@literal @}Gauge
- *     long value;
- * </code></pre>
- * A gauge with the fully qualified class name + {@code value} will be created which uses the
- * annotated field value as its value.
  */
 @InterceptorBinding
 @Retention(RetentionPolicy.RUNTIME)
