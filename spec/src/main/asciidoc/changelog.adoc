@@ -21,16 +21,18 @@
 
 = Release Notes
 
-
-Changes marked with icon:bolt[role="red"] are breaking changes relative to previous versions of the spec.
-
 [[release_notes_3_0]]
 == Changes in 3.0
 
+=== Breaking changes
+** Removed everything related to reusability from the API code. All metrics are now considered reusable.
+** CDI producers annotated with `@Metric` no longer trigger metric registration. If these metrics should be registered, it must be done differently (for example using the `MetricRegistry` methods)
+** `MetricRegistry` changed from `abstract class` to `interface`
+** Changed `Timer.update(long duration, java.util.concurrent.TimeUnit)` to `Timer.update(java.time.Duration duration)`
+** Removed `MetadataBuilder.withOptional*` methods, the remaining `with*` methods do accept `null` value (considered not present) except `withName` which does not accept `null` or `""`
+
 === API/SPI Changes
 ** `MetricRegistry` changed from `abstract class` to `interface`
-** icon:bolt[role="red"] Removed everything related to reusability from the API code
-** icon:bolt[role="red"] CDI producers annotated with `@Metric` no longer trigger metric registration
 ** Added the `MetricRegistry.getType()` method
 ** Added the `MetricRegistry.counter(MetricID)` method
 ** Added the `MetricRegistry.concurrentGauge(MetricID)` method
@@ -57,7 +59,7 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 ** Timer class updated  (https://github.com/eclipse/microprofile-metrics/issues/524[#524])
 *** Changed `Timer.update(long duration, java.util.concurrent.TimeUnit)` to `Timer.update(java.time.Duration duration)`
 *** Added `Timer.getElapsedTime()` which returns `java.time.Duration`
-** Removed `MetadataBuilder.withOptional*` methods, the remaining `with*` methods do accept `null` value (considered not present) except `withName` which does not accept `null` or `""`
+** Removed `MetadataBuilder.withOptional*` methods
 
 === Functional Changes
 ** Simple Timer metrics now track the highest and lowest recorded timing duration of the previous completed minute (https://github.com/eclipse/microprofile-metrics/issues/523[#523])
@@ -66,7 +68,8 @@ Changes marked with icon:bolt[role="red"] are breaking changes relative to previ
 ** Introduced a new base REST metric `REST.request.unmappedException.total` that counts the occurrences of unmapped exceptions for each REST endpoint (https://github.com/eclipse/microprofile-metrics/issues/533)[#533]
 
 === Specification Changes
-** icon:bolt[role="red"] Removed the concept of reusability
+** Removed the concept of reusability
+** CDI producers annotated with `@Metric` no longer trigger metric registration
 ** Clarified how the implementation must handle metrics applied via CDI stereotypes
 ** The implementation is required to sanitize `Metadata` passed by the application in cases when it does not contain an explicit type,
 but the type is implied by the name of the registration method that is being called.
@@ -152,6 +155,8 @@ Implementations can still support the Expression Language if they choose to. (ht
 == Changes in 2.0
 
 A full list of changes may be found on the link:https://github.com/eclipse/microprofile-metrics/milestone/4[MicroProfile Metrics 2.0 Milestone] and link:https://github.com/eclipse/microprofile-metrics/milestone/7[MicroProfile Metrics 2.0.1 Milestone] and link:https://github.com/eclipse/microprofile-metrics/milestone/8[MicroProfile Metrics 2.0.2 Milestone]
+
+Changes marked with icon:bolt[role="red"] are breaking changes relative to previous versions of the spec.
 
 === API/SPI Changes
 ** icon:bolt[role="red"] Refactoring of Counters, as the old `@Counted` was misleading in practice. (https://github.com/eclipse/microprofile-metrics/issues/290[#290])
