@@ -18,7 +18,7 @@
 
     <groupId>org.eclipse.microprofile.metrics</groupId>
     <artifactId>microprofile-metrics-parent</artifactId>
-    <version>3.0-M5</version>
+    <version>3.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>MicroProfile Metrics</name>
     <description>Eclipse MicroProfile Metrics Feature :: Parent POM</description>
@@ -71,7 +71,7 @@
         <url>https://github.com/eclipse/microprofile-metrics</url>
         <connection>scm:git:https://github.com/eclipse/microprofile-metrics.git</connection>
         <developerConnection>scm:git:git@github.com:eclipse/microprofile-metrics.git</developerConnection>
-        <tag>3.0-M5</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <issueManagement>
