@@ -71,10 +71,6 @@ public class TagsTest {
         
         assertThat(metricID.getTags(), hasKey("goodbye"));
         assertThat(metricID.getTags(), hasValue("friend"));
-        
-        //MP_METRICS_TAGS=tier=integration
-        assertThat("Counter's Global Tag not set properly", metricID.getTags(), hasKey("tier"));
-        assertThat("Counter's Global Tag not set properly", metricID.getTags(), hasValue("integration"));
     }
 
     @Test

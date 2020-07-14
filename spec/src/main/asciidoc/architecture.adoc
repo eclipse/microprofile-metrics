@@ -142,6 +142,8 @@ export MP_METRICS_TAGS=app=shop,tier=integration,special=deli\=ver\,y
 
 Global tags and tags registered with the metric are included in the output returned from the REST API.
 
+Global tags MUST NOT be automatically added to the `MetricID` objects, they must be appended to all metrics by the implementation during export.
+
 NOTE: In application servers with multiple applications deployed, there is one reserved tag name: `_app`, which serves for
 distinguishing metrics from different applications and must not be used for any other purpose. For details,
  see section <<app-servers>>.
