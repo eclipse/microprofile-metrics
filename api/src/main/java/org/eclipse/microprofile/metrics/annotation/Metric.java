@@ -49,7 +49,7 @@ import org.eclipse.microprofile.metrics.MetricUnits;
  * </p>
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
+@Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
 public @interface Metric {
 
     /**
