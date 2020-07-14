@@ -60,6 +60,7 @@
 *** Changed `Timer.update(long duration, java.util.concurrent.TimeUnit)` to `Timer.update(java.time.Duration duration)`
 *** Added `Timer.getElapsedTime()` which returns `java.time.Duration`
 ** Removed `MetadataBuilder.withOptional*` methods
+** Global tags and `_app` tag are no longer handled automatically by the `MetricID` class, the implementation is expected to add them by itself, for example during metric export
 
 === Functional Changes
 ** Simple Timer metrics now track the highest and lowest recorded timing duration of the previous completed minute (https://github.com/eclipse/microprofile-metrics/issues/523[#523])
