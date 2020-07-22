@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.function.Supplier;
+import java.util.function.ToDoubleFunction;
 
 /**
  * The registry that stores metrics and their metadata.
@@ -298,52 +300,131 @@ public interface MetricRegistry {
     ConcurrentGauge concurrentGauge(Metadata metadata, Tag... tags);
 
     /**
-     * Return the {@link Gauge} registered under the {@link MetricID} with this name and with no tags;
-     * or create and register this gauge if none is registered.
+     * Return the {@link Gauge} of type Long registered under the {@link MetricID} with this
+     * name and with the provided {@link Tag}s; or create and register this gauge if none is registered.
      *
      * If a {@link Gauge} was created, a {@link Metadata} object will be registered with the name
      * and type. If a {@link Metadata} object is already registered with this metric name then that
      * {@link Metadata} will be used.
      *
-     * @param name the name of the metric
-     * @param gauge the {@link Gauge} to use if none is registered already
-     * @return the pre-existing or provided {@link Gauge}
+     * The created {@link Gauge} will apply a @link java.util.function.ToDoubleFunction ToDoubleFunction}
+     * to the provided object to resolve a Long value.
+     *
+     * @param <T>    The Type of the Object of which the function <code>func</code> is applied to
+     * @param name   The name of the Gauge metric
+     * @param object The object that the {@link java.util.function.ToDoubleFunction ToDoubleFunction} <code>func</code> will be applied to
+     * @param func   The {@link java.util.function.ToDoubleFunction ToDoubleFunction} that will be applied to <code>object</code>
+     * @param tags   The tags of the metric
+     * @return a new or pre-existing {@link Gauge}
      *
      * @since 3.0
      */
-    Gauge<?> gauge(String name, Gauge<?> gauge);
+    <T> Gauge<Long> gauge(String name, T object, ToDoubleFunction<T> func, Tag... tags);
 
     /**
-     * Return the {@link Gauge} registered under the {@link MetricID} with this name and with the
-     * provided {@link Tag}s; or create and register this gauge if none is registered.
+     * Return the {@link Gauge} of type Long registered under the {@link MetricID}; or create
+     * and register this gauge if none is registered.
      *
      * If a {@link Gauge} was created, a {@link Metadata} object will be registered with the name
      * and type. If a {@link Metadata} object is already registered with this metric name then that
      * {@link Metadata} will be used.
      *
-     * @param name the name of the metric
-     * @param gauge the {@link Gauge} to use if none is registered already
-     * @return the pre-existing or provided {@link Gauge}
+     * The created {@link Gauge} will apply a @link java.util.function.ToDoubleFunction ToDoubleFunction}
+     * to the provided object to resolve a Long value.
+     *
+     * @param <T>      The Type of the Object of which the function <code>func</code> is applied to
+     * @param metricID The MetricID of the Gauge metric
+     * @param object   The object that the {@link java.util.function.ToDoubleFunction ToDoubleFunction} <code>func</code> will be applied to
+     * @param func     The {@link java.util.function.ToDoubleFunction ToDoubleFunction} that will be applied to <code>object</code>
+     * @return a new or pre-existing {@link Gauge}
      *
      * @since 3.0
      */
-    Gauge<?> gauge(String name, Gauge<?> gauge, Tag...tags);
+    <T> Gauge<Long> gauge(MetricID metricID, T object, ToDoubleFunction<T> func);
 
     /**
-     * Return the {@link Gauge} registered under the {@link MetricID}; or create and register this
-     * gauge if none is registered.
+     * Return the {@link Gauge} of type Long registered under the {@link MetricID} with the @{link Metadata}'s
+     * name and with the provided {@link Tag}s; or create and register this gauge if none is registered.
      *
      * If a {@link Gauge} was created, a {@link Metadata} object will be registered with the name
      * and type. If a {@link Metadata} object is already registered with this metric name then that
      * {@link Metadata} will be used.
      *
-     * @param metricID the ID of the metric
-     * @param gauge the {@link Gauge} to use if none is registered already
-     * @return the pre-existing or provided {@link Gauge}
+     * The created {@link Gauge} will apply a @link java.util.function.ToDoubleFunction ToDoubleFunction}
+     * to the provided object to resolve a Long value.
+     *
+     * @param <T>      The Type of the Object of which the function <code>func</code> is applied to
+     * @param metadata The Metadata of the Gauge
+     * @param object   The object that the {@link java.util.function.ToDoubleFunction ToDoubleFunction} <code>func</code> will be applied to
+     * @param func     The {@link java.util.function.ToDoubleFunction ToDoubleFunction} that will be applied to <code>object</code>
+     * @param tags     The tags of the metric
+     * @return a new or pre-existing {@link Gauge}
      *
      * @since 3.0
      */
-    Gauge<?> gauge(MetricID metricID, Gauge<?> gauge);
+    <T> Gauge<Long> gauge(Metadata metadata, T object, ToDoubleFunction<T> func, Tag... tags);
+
+    /**
+     * Return the {@link Gauge} registered under the {@link MetricID} with this
+     * name and with the provided {@link Tag}s; or create and register this gauge if none is registered.
+     *
+     * If a {@link Gauge} was created, a {@link Metadata} object will be registered with the name
+     * and type. If a {@link Metadata} object is already registered with this metric name then that
+     * {@link Metadata} will be used.
+     *
+     * The created {@link Gauge} will return the value that the {@link java.util.function.Supplier Supplier}
+     * will provide.
+     *
+     * @param <T>      The type that {@link Gauge} metric will return
+     * @param name     The name of the Gauge
+     * @param supplier The {@link java.util.function.Supplier Supplier} function that will return the value for the Gauge metric
+     * @param tags     The tags of the metric
+     * @return a new or pre-existing {@link Gauge}
+     *
+     * @since 3.0
+     */
+    <T> Gauge<T> gauge(String name, Supplier<T> supplier, Tag... tags);
+
+    /**
+     * Return the {@link Gauge} registered under the {@link MetricID}; or create
+     * and register this gauge if none is registered.
+     *
+     * If a {@link Gauge} was created, a {@link Metadata} object will be registered with the name
+     * and type. If a {@link Metadata} object is already registered with this metric name then that
+     * {@link Metadata} will be used.
+     *
+     * The created {@link Gauge} will return the value that the {@link java.util.function.Supplier Supplier}
+     * will provide.
+     *
+     * @param <T>      The type that {@link Gauge} metric will return
+     * @param metricID The {@link MetricID}
+     * @param supplier The {@link java.util.function.Supplier Supplier} function that will return the value for the Gauge metric
+     * @return a new or pre-existing {@link Gauge}
+     *
+     * @since 3.0
+     */
+    <T> Gauge<T> gauge(MetricID metricID, Supplier<T> supplier);
+
+    /**
+     * Return the {@link Gauge} registered under the {@link MetricID} with the @{link Metadata}'s
+     * name and with the provided {@link Tag}s; or create and register this gauge if none is registered.
+     *
+     * If a {@link Gauge} was created, a {@link Metadata} object will be registered with the name
+     * and type. If a {@link Metadata} object is already registered with this metric name then that
+     * {@link Metadata} will be used.
+     *
+     * The created {@link Gauge} will return the value that the {@link java.util.function.Supplier Supplier}
+     * will provide.
+     *
+     * @param <T>      The type that {@link Gauge} metric will return
+     * @param metadata The metadata of the gauge
+     * @param supplier The {@link java.util.function.Supplier Supplier} function that will return the value for the Gauge metric
+     * @param tags     The tags of the metric
+     * @return a new or pre-existing {@link Gauge}
+     *
+     * @since 3.0
+     */
+    <T> Gauge<T> gauge(Metadata metadata, Supplier<T> supplier, Tag... tags);
 
     /**
      * Return the {@link Histogram} registered under the {@link MetricID} with this name and with no tags;

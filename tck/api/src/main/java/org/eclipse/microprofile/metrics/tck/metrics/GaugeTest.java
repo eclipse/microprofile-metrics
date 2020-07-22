@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2020 Contributors to the Eclipse Foundation
  *               2010-2013 Coda Hale, Yammer.com
  *
  * See the NOTICES file(s) distributed with this work for additional
@@ -54,19 +54,40 @@ public class GaugeTest {
 
     @Test
     public void testManualGauge() {
-        MetricID gaugeMetricID = new MetricID("tck.gaugetest.gaugemanual");
+        MetricID supplierGaugeMetricID = new MetricID("tck.gaugetest.supplierGaugeManual");
+        MetricID toDoubleFunctiongaugeMetricID = new MetricID("tck.gaugetest.toDoubleFunctionGaugeManual");
         
-        Gauge<?> gauge = metrics.getGauge(gaugeMetricID);
-        Assert.assertNull(gauge);
+        Gauge<?> sGauge = metrics.getGauge(supplierGaugeMetricID);
+        
+        //Gauge that uses a ToDoubleFunction retrieves a Long value
+        Gauge<?> fGauge = metrics.getGauge(toDoubleFunctiongaugeMetricID);
+        
+        Assert.assertNull(sGauge);
+        Assert.assertNull(fGauge);
+        
         gaugeMe();
-        gauge = metrics.getGauge(gaugeMetricID);
         
-        Assert.assertEquals(0, gauge.getValue());
-        Assert.assertEquals(1, gauge.getValue());
+        sGauge = metrics.getGauge(supplierGaugeMetricID);
+        fGauge = metrics.getGauge(toDoubleFunctiongaugeMetricID);
+        
+        Assert.assertEquals(0, sGauge.getValue());
+        //Gauge that uses a ToDoubleFunction retrieves a Long value
+        Assert.assertEquals(1L, fGauge.getValue());
+        
+        Assert.assertEquals(2, sGauge.getValue());
+        //Gauge that uses a ToDoubleFunction retrieves a Long value
+        Assert.assertEquals(3L, fGauge.getValue());
     }
 
     public void gaugeMe() {
-        metrics.gauge("tck.gaugetest.gaugemanual", value::getAndIncrement);
+        metrics.gauge("tck.gaugetest.supplierGaugeManual", value::getAndIncrement, null);
+        
+        metrics.gauge("tck.gaugetest.toDoubleFunctionGaugeManual", value , 
+                (atomicInteger) -> {
+                    AtomicInteger myAtomicInteger= (AtomicInteger) atomicInteger;
+                    return myAtomicInteger.getAndIncrement();
+                    }, null);
+
     }
 
 }

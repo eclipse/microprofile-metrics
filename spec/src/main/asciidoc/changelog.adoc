@@ -36,9 +36,12 @@
 ** Added the `MetricRegistry.getType()` method
 ** Added the `MetricRegistry.counter(MetricID)` method
 ** Added the `MetricRegistry.concurrentGauge(MetricID)` method
-** Added the `MetricRegistry.gauge(MetricID, Gauge)` method
-** Added the `MetricRegistry.gauge(String, Gauge)` method
-** Added the `MetricRegistry.gauge(String, Gauge, Tag[])` method
+** Added the `MetricRegistry.gauge(String, Object, ToDoubleFunction, Tag[])` method
+** Added the `MetricRegistry.gauge(MetricID, Object, ToDoubleFunction)` method
+** Added the `MetricRegistry.gauge(Metadata, Object, ToDoubleFunction, Tag[])` method
+** Added the `MetricRegistry.gauge(String, Supplier, Tag[])` method
+** Added the `MetricRegistry.gauge(MetricID, Supplier)` method
+** Added the `MetricRegistry.gauge(Metadata), Supplier, Tag[])` method
 ** Added the `MetricRegistry.histogram(MetricID)` method
 ** Added the `MetricRegistry.meter(MetricID)` method
 ** Added the `MetricRegistry.timer(MetricID)` method
