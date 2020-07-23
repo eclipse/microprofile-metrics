@@ -296,22 +296,7 @@ how such application servers should behave if they want to support MicroProfile 
 Metrics from all applications and scopes should be available under a single REST endpoint ending with `/metrics` similarly as
 in case of single-application deployments (microservices).
 
-To help distinguish between metrics pertaining to each deployed application,
-a tag named `_app` should be appended to each metric. Its value should be equal to the context root of the web application to which the metric belongs.
-For example, if a deployment is available under the `/cars` context root, each metric created by this deployment will contain an additional
-tag named `_app` with a value of `/cars`. If the application server allows using metrics in JAR deployments, which have no web context,
-the name of the JAR archive (including the `.jar` suffix) should be used. If such JAR is a module of an EAR application, the value of the `_app` tag should be
-`ear_name#jar_name`.
-
-This is an example JSON output from an application server that has applications under `/app1` and `/app2`, both of which have a counter metric
-named `requestCount`:
-
-----
-{
-  "requestCount;_app=/app1" : 198,
-  "requestCount;_app=/app2" : 320
-}
-----
+To help distinguish between metrics pertaining to each deployed application, a tag named `_app` should be appended to each metric. 
 
 The value of the `_app` tag should be passed by the application server to the application via a MicroProfile Config property named `mp.metrics.appName`.
 It should be possible to override this value by bundling the file `META-INF/microprofile-config.properties` within the application archive
@@ -320,16 +305,3 @@ and setting a custom value for the property `mp.metrics.appName` inside it.
 It is allowed for application servers to choose to not add the `_app` tag at all, but in that case, metrics from two applications on
 one server can clash as no differentiator (by application) is given.
 
-There should be a single `MetricRegistry` instance shared between all applications to prevent unexpected clashes when merging the contents
-of different registries while responding to metric export requests. It is up to the application server whether it will allow sharing
-of metrics between different applications (for example, if there's a reusable metric in one application, another might want to reuse it).
-
-==== Implementation notes:
-Constructors of the `MetricID` class from the API code already handle adding the `_app` tag automatically
-when they detect that there is a property named `mp.metrics.appName` available from the `org.eclipse.microprofile.config.Config` instance
-available in the current context. If no such property exists or if the value is empty, no tag will be appended.
-
-Generally, the responsibility of the application server implementation will be to append a property `mp.metrics.appName` to the
-`org.eclipse.microprofile.config.Config` instance of each application during deployment time, its value being the web context root of the application
-or the JAR name. This can be achieved for example by adding a custom `ConfigSource` with an ordinal less than 100, because
-the `ConfigSource` that reads properties `META-INF/microprofile-config.properties` has an ordinal of 100, and this needs to have higher priority.
