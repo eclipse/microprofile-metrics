@@ -57,9 +57,7 @@ public class GaugeTest {
         MetricID supplierGaugeMetricID = new MetricID("tck.gaugetest.supplierGaugeManual");
         MetricID toDoubleFunctiongaugeMetricID = new MetricID("tck.gaugetest.toDoubleFunctionGaugeManual");
         
-        Gauge<?> sGauge = metrics.getGauge(supplierGaugeMetricID);
-        
-        //Gauge that uses a ToDoubleFunction retrieves a Long value
+        Gauge<?> sGauge = metrics.getGauge(supplierGaugeMetricID);      
         Gauge<?> fGauge = metrics.getGauge(toDoubleFunctiongaugeMetricID);
         
         Assert.assertNull(sGauge);
@@ -71,12 +69,10 @@ public class GaugeTest {
         fGauge = metrics.getGauge(toDoubleFunctiongaugeMetricID);
         
         Assert.assertEquals(0, sGauge.getValue());
-        //Gauge that uses a ToDoubleFunction retrieves a Long value
-        Assert.assertEquals(1L, fGauge.getValue());
+        Assert.assertEquals(1.0, fGauge.getValue());
         
         Assert.assertEquals(2, sGauge.getValue());
-        //Gauge that uses a ToDoubleFunction retrieves a Long value
-        Assert.assertEquals(3L, fGauge.getValue());
+        Assert.assertEquals(3.0, fGauge.getValue());
     }
 
     public void gaugeMe() {
