@@ -300,7 +300,7 @@ public interface MetricRegistry {
     ConcurrentGauge concurrentGauge(Metadata metadata, Tag... tags);
 
     /**
-     * Return the {@link Gauge} of type Long registered under the {@link MetricID} with this
+     * Return the {@link Gauge} of type Double registered under the {@link MetricID} with this
      * name and with the provided {@link Tag}s; or create and register this gauge if none is registered.
      *
      * If a {@link Gauge} was created, a {@link Metadata} object will be registered with the name
@@ -319,10 +319,10 @@ public interface MetricRegistry {
      *
      * @since 3.0
      */
-    <T> Gauge<Long> gauge(String name, T object, ToDoubleFunction<T> func, Tag... tags);
+    <T> Gauge<Double> gauge(String name, T object, ToDoubleFunction<T> func, Tag... tags);
 
     /**
-     * Return the {@link Gauge} of type Long registered under the {@link MetricID}; or create
+     * Return the {@link Gauge} of type Double registered under the {@link MetricID}; or create
      * and register this gauge if none is registered.
      *
      * If a {@link Gauge} was created, a {@link Metadata} object will be registered with the name
@@ -340,10 +340,10 @@ public interface MetricRegistry {
      *
      * @since 3.0
      */
-    <T> Gauge<Long> gauge(MetricID metricID, T object, ToDoubleFunction<T> func);
+    <T> Gauge<Double> gauge(MetricID metricID, T object, ToDoubleFunction<T> func);
 
     /**
-     * Return the {@link Gauge} of type Long registered under the {@link MetricID} with the @{link Metadata}'s
+     * Return the {@link Gauge} of type Double registered under the {@link MetricID} with the @{link Metadata}'s
      * name and with the provided {@link Tag}s; or create and register this gauge if none is registered.
      *
      * If a {@link Gauge} was created, a {@link Metadata} object will be registered with the name
@@ -362,7 +362,7 @@ public interface MetricRegistry {
      *
      * @since 3.0
      */
-    <T> Gauge<Long> gauge(Metadata metadata, T object, ToDoubleFunction<T> func, Tag... tags);
+    <T> Gauge<Double> gauge(Metadata metadata, T object, ToDoubleFunction<T> func, Tag... tags);
 
     /**
      * Return the {@link Gauge} registered under the {@link MetricID} with this
@@ -375,7 +375,7 @@ public interface MetricRegistry {
      * The created {@link Gauge} will return the value that the {@link java.util.function.Supplier Supplier}
      * will provide.
      *
-     * @param <T>      The type that {@link Gauge} metric will return
+     * @param <T>      A {@link java.lang.Number Number}
      * @param name     The name of the Gauge
      * @param supplier The {@link java.util.function.Supplier Supplier} function that will return the value for the Gauge metric
      * @param tags     The tags of the metric
@@ -383,7 +383,7 @@ public interface MetricRegistry {
      *
      * @since 3.0
      */
-    <T> Gauge<T> gauge(String name, Supplier<T> supplier, Tag... tags);
+    <T extends Number> Gauge<T> gauge(String name, Supplier<T> supplier, Tag... tags);
 
     /**
      * Return the {@link Gauge} registered under the {@link MetricID}; or create
@@ -396,14 +396,14 @@ public interface MetricRegistry {
      * The created {@link Gauge} will return the value that the {@link java.util.function.Supplier Supplier}
      * will provide.
      *
-     * @param <T>      The type that {@link Gauge} metric will return
+     * @param <T>      A {@link java.lang.Number Number}
      * @param metricID The {@link MetricID}
      * @param supplier The {@link java.util.function.Supplier Supplier} function that will return the value for the Gauge metric
      * @return a new or pre-existing {@link Gauge}
      *
      * @since 3.0
      */
-    <T> Gauge<T> gauge(MetricID metricID, Supplier<T> supplier);
+    <T extends Number> Gauge<T> gauge(MetricID metricID, Supplier<T> supplier);
 
     /**
      * Return the {@link Gauge} registered under the {@link MetricID} with the @{link Metadata}'s
@@ -416,7 +416,7 @@ public interface MetricRegistry {
      * The created {@link Gauge} will return the value that the {@link java.util.function.Supplier Supplier}
      * will provide.
      *
-     * @param <T>      The type that {@link Gauge} metric will return
+     * @param <T>      A {@link java.lang.Number Number}
      * @param metadata The metadata of the gauge
      * @param supplier The {@link java.util.function.Supplier Supplier} function that will return the value for the Gauge metric
      * @param tags     The tags of the metric
@@ -424,7 +424,7 @@ public interface MetricRegistry {
      *
      * @since 3.0
      */
-    <T> Gauge<T> gauge(Metadata metadata, Supplier<T> supplier, Tag... tags);
+    <T extends Number> Gauge<T> gauge(Metadata metadata, Supplier<T> supplier, Tag... tags);
 
     /**
      * Return the {@link Histogram} registered under the {@link MetricID} with this name and with no tags;
