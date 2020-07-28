@@ -36,9 +36,9 @@
 ** Added the `MetricRegistry.getType()` method
 ** Added the `MetricRegistry.counter(MetricID)` method
 ** Added the `MetricRegistry.concurrentGauge(MetricID)` method
-** Added the `MetricRegistry.gauge(String, Object, ToDoubleFunction, Tag[])` method
-** Added the `MetricRegistry.gauge(MetricID, Object, ToDoubleFunction)` method
-** Added the `MetricRegistry.gauge(Metadata, Object, ToDoubleFunction, Tag[])` method
+** Added the `MetricRegistry.gauge(String, Object, Function, Tag[])` method
+** Added the `MetricRegistry.gauge(MetricID, Object, Function)` method
+** Added the `MetricRegistry.gauge(Metadata, Object, Function, Tag[])` method
 ** Added the `MetricRegistry.gauge(String, Supplier, Tag[])` method
 ** Added the `MetricRegistry.gauge(MetricID, Supplier)` method
 ** Added the `MetricRegistry.gauge(Metadata), Supplier, Tag[])` method
