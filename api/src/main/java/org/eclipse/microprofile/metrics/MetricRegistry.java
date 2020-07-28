@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.function.Supplier;
-import java.util.function.ToDoubleFunction;
+import java.util.function.Function;
 
 /**
  * The registry that stores metrics and their metadata.
@@ -300,69 +300,72 @@ public interface MetricRegistry {
     ConcurrentGauge concurrentGauge(Metadata metadata, Tag... tags);
 
     /**
-     * Return the {@link Gauge} of type Double registered under the {@link MetricID} with this
+     * Return the {@link Gauge} of type {@link java.lang.Number Number} registered under the {@link MetricID} with this
      * name and with the provided {@link Tag}s; or create and register this gauge if none is registered.
      *
      * If a {@link Gauge} was created, a {@link Metadata} object will be registered with the name
      * and type. If a {@link Metadata} object is already registered with this metric name then that
      * {@link Metadata} will be used.
      *
-     * The created {@link Gauge} will apply a @link java.util.function.ToDoubleFunction ToDoubleFunction}
-     * to the provided object to resolve a Long value.
+     * The created {@link Gauge} will apply a {@link java.util.function.Function Function}
+     * to the provided object to resolve a {@link java.lang.Number Number} value.
      *
      * @param <T>    The Type of the Object of which the function <code>func</code> is applied to
+     * @param <R>    A {@link java.lang.Number Number}
      * @param name   The name of the Gauge metric
-     * @param object The object that the {@link java.util.function.ToDoubleFunction ToDoubleFunction} <code>func</code> will be applied to
-     * @param func   The {@link java.util.function.ToDoubleFunction ToDoubleFunction} that will be applied to <code>object</code>
+     * @param object The object that the {@link java.util.function.Function Function} <code>func</code> will be applied to
+     * @param func   The {@link java.util.function.Function Function} that will be applied to <code>object</code>
      * @param tags   The tags of the metric
      * @return a new or pre-existing {@link Gauge}
      *
      * @since 3.0
      */
-    <T> Gauge<Double> gauge(String name, T object, ToDoubleFunction<T> func, Tag... tags);
+    <T, R extends Number> Gauge<R> gauge(String name, T object, Function<T, R> func, Tag... tags);
 
     /**
-     * Return the {@link Gauge} of type Double registered under the {@link MetricID}; or create
+     * Return the {@link Gauge} of type {@link java.lang.Number Number} registered under the {@link MetricID}; or create
      * and register this gauge if none is registered.
      *
      * If a {@link Gauge} was created, a {@link Metadata} object will be registered with the name
      * and type. If a {@link Metadata} object is already registered with this metric name then that
      * {@link Metadata} will be used.
      *
-     * The created {@link Gauge} will apply a @link java.util.function.ToDoubleFunction ToDoubleFunction}
-     * to the provided object to resolve a Long value.
+     * The created {@link Gauge} will apply a {@link java.util.function.Function Function}
+     * to the provided object to resolve a {@link java.lang.Number Number} value.
      *
      * @param <T>      The Type of the Object of which the function <code>func</code> is applied to
+     * @param <R>      A {@link java.lang.Number Number}
      * @param metricID The MetricID of the Gauge metric
-     * @param object   The object that the {@link java.util.function.ToDoubleFunction ToDoubleFunction} <code>func</code> will be applied to
-     * @param func     The {@link java.util.function.ToDoubleFunction ToDoubleFunction} that will be applied to <code>object</code>
+     * @param object   The object that the {@link java.util.function.Function Function} <code>func</code> will be applied to
+     * @param func     The {@link java.util.function.Function Function} that will be applied to <code>object</code>
      * @return a new or pre-existing {@link Gauge}
      *
      * @since 3.0
      */
-    <T> Gauge<Double> gauge(MetricID metricID, T object, ToDoubleFunction<T> func);
+    <T, R extends Number> Gauge<R> gauge(MetricID metricID, T object, Function<T, R> func);
 
     /**
-     * Return the {@link Gauge} of type Double registered under the {@link MetricID} with the @{link Metadata}'s
+     * Return the {@link Gauge} of type {@link java.lang.Number Number} registered under the {@link MetricID} with the @{link Metadata}'s
      * name and with the provided {@link Tag}s; or create and register this gauge if none is registered.
      *
      * If a {@link Gauge} was created, a {@link Metadata} object will be registered with the name
      * and type. If a {@link Metadata} object is already registered with this metric name then that
      * {@link Metadata} will be used.
      *
-     * The created {@link Gauge} will apply a @link java.util.function.ToDoubleFunction ToDoubleFunction}
-     * to the provided object to resolve a Long value.
+     * The created {@link Gauge} will apply a {@link java.util.function.Function Function}
+     * to the provided object to resolve a {@link java.lang.Number Number} value.
      *
      * @param <T>      The Type of the Object of which the function <code>func</code> is applied to
+     * @param <R>      A {@link java.lang.Number Number}
      * @param metadata The Metadata of the Gauge
-     * @param object   The object that the {@link java.util.function.ToDoubleFunction ToDoubleFunction} <code>func</code> will be applied to
-     * @param func     The {@link java.util.function.ToDoubleFunction ToDoubleFunction} that will be applied to <code>object</code>
+     * @param object   The object that the {@link java.util.function.Function Function} <code>func</code> will be applied to
+     * @param func     The {@link java.util.function.Function Function} that will be applied to <code>object</code>
      * @param tags     The tags of the metric
      * @return a new or pre-existing {@link Gauge}
      *
      * @since 3.0
      */
-    <T> Gauge<Double> gauge(Metadata metadata, T object, ToDoubleFunction<T> func, Tag... tags);
+    <T, R extends Number> Gauge<R> gauge(Metadata metadata, T object, Function<T, R> func, Tag... tags);
 
     /**
      * Return the {@link Gauge} registered under the {@link MetricID} with this
@@ -425,6 +428,7 @@ public interface MetricRegistry {
      * @since 3.0
      */
     <T extends Number> Gauge<T> gauge(Metadata metadata, Supplier<T> supplier, Tag... tags);
+
 
     /**
      * Return the {@link Histogram} registered under the {@link MetricID} with this name and with no tags;

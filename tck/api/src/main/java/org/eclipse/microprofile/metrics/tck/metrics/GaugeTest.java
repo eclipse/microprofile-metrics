@@ -69,10 +69,10 @@ public class GaugeTest {
         fGauge = metrics.getGauge(toDoubleFunctiongaugeMetricID);
         
         Assert.assertEquals(0, sGauge.getValue());
-        Assert.assertEquals(1.0, fGauge.getValue());
+        Assert.assertEquals(1, fGauge.getValue());
         
         Assert.assertEquals(2, sGauge.getValue());
-        Assert.assertEquals(3.0, fGauge.getValue());
+        Assert.assertEquals(3, fGauge.getValue());
     }
 
     public void gaugeMe() {
