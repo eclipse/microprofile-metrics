@@ -303,7 +303,7 @@ The `%s2` should be substituted with the name of the RESTful resource method and
 
 Parameter type formatting rules: +
 - The paramter types are fully qualified (e.g. `java.lang.Object`). +
-- Array paramter types will be formatted as `paramType[]` (e.g `java.lang.Object[]`). +
+- If the implementation supports array parameters, array parameter types will be formatted as `paramType[]` (e.g `java.lang.Object[]`). +
 - A Vararg parameter will be treated as an array. +
 - Generics will be ignored. For example `List<String>` will be formatted as `java.util.List`.
 

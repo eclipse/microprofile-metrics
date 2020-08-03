@@ -157,37 +157,6 @@ public class MetricAppBeanOptional {
     }
     
     @GET
-    @Path("/get-vararg-param1")
-    public String  getVarargParam1(@QueryParam("qp1") Boolean... v1) throws Exception {
-        return "This is a GET request with vararg parameter1";
-    }
-    
-    @GET
-    @Path("/get-vararg-param2")
-    public String  getVarargParam2(@QueryParam("qp1") int v1, @QueryParam("qp2") String... v2) throws Exception {
-        return "This is a GET request with vararg parameter2";
-    }
-    
-    @GET
-    @Path("/get-array-param1")
-    public String  getArrayParam1(@QueryParam("qp1") String[] v1) throws Exception {
-        return "This is a GET request with array parameter";
-    }
-    
-    @GET
-    @Path("/get-array-param2")
-    public String  getArrayParam2(@QueryParam("qp1") int[] v1) throws Exception {
-        return "This is a GET request with array parameter";
-    }
-    
-    @GET
-    @Path("/get-array-param3")
-    public String  getArrayParam3(@QueryParam("qp1") Double[] v1) throws Exception {
-        return "This is a GET request with array parameter";
-    }
-
-    
-    @GET
     @Path("/get-multiple-param1")
     public String  getMultipleParam1(
             @QueryParam("qp1") boolean v1,
@@ -205,16 +174,9 @@ public class MetricAppBeanOptional {
     }
     
     @GET
-    @Path("/get-multiple-param3")
-    public String  getMultipleParam3(@QueryParam("qp1") boolean v1,
-            @QueryParam("qp2") Boolean v2, @QueryParam("qp3") double v3, @QueryParam("qp4")String...v4) throws Exception {
-        return "This is a GET request with multiple parameters3";
-    }
-    
-    @GET
     @Path("/get-multiple-param4")
     public String  getMultipleParam4(@QueryParam("qp1") Set<String> v1,
-            @QueryParam("qp2") SortedSet<Integer> v2, @QueryParam("qp3") double[] v3) throws Exception {
+            @QueryParam("qp2") SortedSet<Integer> v2) throws Exception {
         return "This is a GET request with multiple parameters4";
     }
     
@@ -259,26 +221,12 @@ public class MetricAppBeanOptional {
     }
     
     @POST
-    @Path("/post-multiple-param3")
-    public String  postMultipleParam3(@QueryParam("qp1") boolean v1,
-            @QueryParam("qp2") Boolean v2, @QueryParam("qp3") double v3, @QueryParam("qp4")String...v4) throws Exception {
-        return "This is a GPOSTET request with multiple parameters3";
-    }
-    
-    @POST
     @Path("/post-multiple-param4")
     public String  postMultipleParam4(@QueryParam("qp1") Set<String> v1,
-            @QueryParam("qp2") SortedSet<Integer> v2, @QueryParam("qp3") double[] v3) throws Exception {
+            @QueryParam("qp2") SortedSet<Integer> v2) throws Exception {
         return "This is a POST request with multiple parameters4";
     }
-    
-    @POST
-    @Path("/post-multiple-param5")
-    public String  postMultipleParam5(@QueryParam("qp1") Set<String> v1,
-            @QueryParam("qp2") Long v2, @QueryParam("qp3") Integer[] v3) throws Exception {
-        return "This is a POST request with multiple parameters5";
-    }
-    
+
     @GET
     @Path("/get-mapped-arithmetic-exception")
     public String  getMappedArithException() throws Exception {
