@@ -283,7 +283,6 @@ Parameter type formatting rules: +
 
 |===
 
-
 For example given the following RESTful resource:
 [source, java]
 ----
