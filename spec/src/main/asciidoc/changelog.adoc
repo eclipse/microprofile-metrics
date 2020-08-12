@@ -30,6 +30,7 @@
 ** `MetricRegistry` changed from `abstract class` to `interface`
 ** Changed `Timer.update(long duration, java.util.concurrent.TimeUnit)` to `Timer.update(java.time.Duration duration)`
 ** Removed `MetadataBuilder.withOptional*` methods, the remaining `with*` methods do accept `null` value (considered not present) except `withName` which does not accept `null` or `""`
+** Changed `Metadata.getDescription()` and `Metadata.getUnit()` to return `String` instead of `Optional<String>` and added `Metadata.description()` and `Metadata.unit()` that return `Optional<String>`
 
 === API/SPI Changes
 ** `MetricRegistry` changed from `abstract class` to `interface`
