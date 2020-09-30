@@ -22,7 +22,6 @@
 
 package org.eclipse.microprofile.metrics.test;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.Gauge;
 import org.eclipse.microprofile.metrics.Histogram;
@@ -176,11 +175,6 @@ public class MetricAppBean {
     @Inject
     private MetricRegistry metrics;
 
-    @Inject
-    @ConfigProperty(name = "MP_METRICS_TAGS")
-    private String globalTags;
-
-
     public void countMe() {
         Counter counter = metrics.counter("metricTest.test1.count");
         counter.inc();
@@ -291,10 +285,6 @@ public class MetricAppBean {
     @SimplyTimed
     public void simpleTimeMeA() {
 
-    }
-
-    public String getGlobalTags() {
-        return globalTags;
     }
 
     /**

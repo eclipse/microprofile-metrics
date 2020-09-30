@@ -863,19 +863,6 @@ public class MpMetricTest {
 
     }
 
-
-    @Test
-    @InSequence(32)
-    public void testGlobalTagsViaConfig() {
-        /*
-         * Test modified to check that it contains tier=integration
-         * due to the possibility of vendor's implementation either
-         * providing an _app tag. Or not.
-         */
-        boolean expectedTag = metricAppBean.getGlobalTags().contains("tier=integration");
-        assertEquals(expectedTag, true);
-    }
-
     @Test
     @InSequence(33)
     public void testSetupPromNoBadCharsInNames() {
