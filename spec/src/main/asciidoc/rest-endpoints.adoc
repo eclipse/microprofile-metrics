@@ -569,7 +569,7 @@ application_cost_dollars 80
 ==== Counter OpenMetrics Text Format
 
 The value of the counter must be the value of `getCount()`.
-The exposed metric name must have a  `_total` suffix.
+The exposed metric name must have a `_total` suffix.
 The suffix is not appended if the (translated) original metric name already ends in `_total`.
 Counters do not have a suffix for the unit.
 The OpenMetrics name is composed `<scope>'_'<metric-name>'_'<suffix>.
@@ -655,7 +655,7 @@ application_requests_fifteen_min_rate_per_second 12.126
 
 The `# HELP` description line is only required for the `summary` value as shown below.
 The OpenMetrics name is composed `<scope>'_'<metric-name>'_'<suffix>` where `<suffix>` can consist of a fixed part and a unit or just a unit.
-The `quantile` OpenMetrics label is merged with with the metric's tags.
+The `quantile` OpenMetrics label is merged with the metric's tags.
 
 .OpenMetrics text mapping for a Histogram metric
 [cols="2,1,2,1"]
@@ -708,7 +708,7 @@ application_file_sizes_bytes{quantile="0.999"} 31716
 
 The `# HELP` description line is only required for the `summary` value as shown below.
 The OpenMetrics name is composed `<scope>'_'<metric-name>'_'<suffix>`.
-The `quantile` OpenMetrics label is merged with with the metric's tags.
+The `quantile` OpenMetrics label is merged with the metric's tags.
 
 .OpenMetrics text mapping for a Timer metric
 [cols="2,1,2,1"]

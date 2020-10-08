@@ -39,9 +39,6 @@ The following three sets of sub-resource (scopes) are exposed.
 * vendor: vendor specific metrics (optional)
 * application: application-specific metrics (optional)
 
-NOTE: It is expected that a future version of this specification will also have a sub-resource for integrations
-with other specifications of MicroProfile.
-
 [[scopes]]
 ==== Scopes
 
@@ -130,7 +127,7 @@ Tags can be supplied in two ways:
 
 * At the level of a metric as described in <<app-programming-model#app-programming-model>>.
 * At the application server level by using https://github.com/eclipse/microprofile-config[MicroProfile Config] and
-setting a configuration property of the name `mp.metrics.tags`. The implementation MUST make sure that an implementation of MicroProfile Config version at least 1.3 is available at runtime.
+setting a configuration property of the name `mp.metrics.tags`. The implementation MUST make sure that an implementation of MicroProfile Config version at least 2.0 is available at runtime.
 If it is supplied as an environment variable rather than system property, it can be named `MP_METRICS_TAGS` and will be picked up too.
 ** Tag values set through `mp.metrics.tags` MUST escape equal symbols `=` and commas `,` with a backslash `\`
 
@@ -304,6 +301,7 @@ The value of the `_app` tag should be passed by the application server to the ap
 It should be possible to override this value by bundling the file `META-INF/microprofile-config.properties` within the application archive
 and setting a custom value for the property `mp.metrics.appName` inside it.
 
-It is allowed for application servers to choose to not add the `_app` tag at all, but in that case, metrics from two applications on
-one server can clash as no differentiator (by application) is given.
+It is allowed for application servers to choose to not add the _app tag at all. Implementations may differ in how they handle cases where 
+metrics are registered with the same name from two or more applications running in the same server.  This behavior is not expected to be 
+portable across vendors.
 
