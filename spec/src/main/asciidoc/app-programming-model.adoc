@@ -94,7 +94,7 @@ All Annotations are in the `org.eclipse.microprofile.metrics.annotation` package
 ====
 These annotations include interceptor bindings as defined by the Java Interceptors specification.
 
-CDI leverages on the Java Interceptors specification to provide the ability to associate interceptors to beans via typesafe interceptor bindings, as a mean to separate cross-cutting concerns, like Metrics annotations instrumentation, from the application business logic.
+CDI leverages the Java Interceptors specification to provide the ability to associate interceptors to beans via typesafe interceptor bindings, as a means to separate cross-cutting concerns, like Metrics annotations instrumentation, from the application business logic.
 
 Both the Java Interceptors and CDI specifications set restrictions about the type of bean to which an interceptor can be bound.
 
@@ -595,8 +595,8 @@ was applied on the target bean directly. Metric names are computed relative to t
 
 === Registering metrics dynamically
 In addition to declaring metrics via annotations, it is possible to dynamically (un)register metrics by 
-calling methods of a `MetricRegistry` object. While using annotations is generally the preferred approach,
-registering metrics dynamically can be useful in some cases, for example, when the final list of metrics is not known in 
+calling methods of a `MetricRegistry` object. 
+Registering metrics dynamically can be useful in some cases, for example, when the final list of metrics is not known in 
 advance (when the application is being coded), or when there are too many similar metrics and 
 it would be more practical to register them in a `for` loop than to introduce 
 lots of annotations in the code. The two approaches can also be combined if necessary.
