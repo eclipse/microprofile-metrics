@@ -33,6 +33,7 @@
 ** Changed `Metadata.getDescription()` and `Metadata.getUnit()` to return `String` instead of `Optional<String>` and added `Metadata.description()` and `Metadata.unit()` that return `Optional<String>`
 
 === API/SPI Changes
+** Updated dependencies scopes and versions to align with Jakarta EE 8
 ** `MetricRegistry` changed from `abstract class` to `interface`
 ** Added the `MetricRegistry.getType()` method
 ** Added the `MetricRegistry.counter(MetricID)` method
