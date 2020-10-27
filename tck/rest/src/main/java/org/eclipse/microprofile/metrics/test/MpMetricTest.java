@@ -528,6 +528,7 @@ public class MpMetricTest {
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeB;tier=integration'", equalTo(7777777))
 
                 .body("'metricTest.test1.histogram'.'count;tier=integration'", equalTo(1000))
+                .body("'metricTest.test1.histogram'.'sum;tier=integration'", equalTo(499500))
                 .body("'metricTest.test1.histogram'.'max;tier=integration'", equalTo(999))
                 .body("'metricTest.test1.histogram'.'mean;tier=integration'", closeTo(499.5))
                 .body("'metricTest.test1.histogram'.'min;tier=integration'", equalTo(0))
@@ -725,6 +726,7 @@ public class MpMetricTest {
         resp.then().statusCode(200)
             .and()
             .body(containsString(prefix + "bytes_count"))
+            .body(containsString(prefix + "bytes_sum"))
             .body(containsString("# TYPE application_" + prefix + "bytes summary"))
             .body(containsString(prefix + "mean_bytes"))
             .body(containsString(prefix + "min_bytes"))
@@ -755,6 +757,7 @@ public class MpMetricTest {
         resp.then().statusCode(200)
             .and()
             .body(containsString(prefix + "_count"))
+            .body(containsString(prefix + "_sum"))
             .body(containsString("# TYPE application_" + prefix + " summary"))
             .body(containsString(prefix + "_mean"))
             .body(containsString(prefix + "_min"))
