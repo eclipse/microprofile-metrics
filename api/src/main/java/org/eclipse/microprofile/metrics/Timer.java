@@ -102,7 +102,9 @@ public interface Timer extends Metered, Sampling, Summing {
 
     @Override
     /**
-     * @return returns the cumulative recorded time durations in nanoseconds
+     * Returns the total elapsed timing durations of all completed timing events that are recorded, in nanoseconds
+     *
+     * @return the elapsed time in nanoseconds
      */
     long getSum();
 
