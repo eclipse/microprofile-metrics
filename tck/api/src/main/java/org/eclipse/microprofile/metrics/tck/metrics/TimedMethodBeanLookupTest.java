@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -109,6 +110,7 @@ public class TimedMethodBeanLookupTest {
         // Make sure that the timer has been called
         assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(TIMER_COUNT.incrementAndGet())));
         TestUtils.assertEqualsWithTolerance(2000000000L,  timer.getElapsedTime().toNanos());
+        assertEquals("The Timer's sum and elapsedTime values are supposed to be the same value", timer.getSum(), timer.getElapsedTime().toNanos());
     }
 
     @Test

@@ -66,14 +66,18 @@
 *** Added `Timer.getElapsedTime()` which returns `java.time.Duration`
 ** Removed `MetadataBuilder.withOptional*` methods
 ** Global tags and `_app` tag are no longer handled automatically by the `MetricID` class, the implementation is expected to add them by itself, for example during metric export
-** Added the `Histogram.getSum()` which returns `long` (https://github.com/eclipse/microprofile-metrics/issues/597[#597)
+** Introduce the `Summable` interface that contains the `getSum()` method which returns long. This interface is extended by the `Timer`, `Histogram` and `SimpleTimer` interfaces. (https://github.com/eclipse/microprofile-metrics/issues/597[#597])
+*** Added the `Histogram.getSum()` 
+*** Added the `Timer.getSum()` which returns the duration in nanoseconds
+*** Added the `SimpleTimer.getSum()` which returns the duration in nanoseconds
 
 === Functional Changes
 ** Simple Timer metrics now track the highest and lowest recorded timing duration of the previous completed minute (https://github.com/eclipse/microprofile-metrics/issues/523[#523])
-** Timer now exposes total elapsed time duration as a metric value (https://github.com/eclipse/microprofile-metrics/issues/524[#524])
+** Timer now exposes total elapsed time duration as a metric value. (https://github.com/eclipse/microprofile-metrics/issues/524[#524])
+*** As of RC3 this value is exposed as a `sum` value in JSON format and is exposed as the `<metric_name>_<units>_sum`under the `summary` type in OpenMetrics format (https://github.com/eclipse/microprofile-metrics/issues/597[#597])
 ** Clarified that the existing REST metric `REST.request` will not monitor and track a REST request to a REST endpoint if an unmapped exception occurs.
 ** Introduced a new base REST metric `REST.request.unmappedException.total` that counts the occurrences of unmapped exceptions for each REST endpoint (https://github.com/eclipse/microprofile-metrics/issues/533[#533])
-** Histogram now exposes the total sum of recorded values (https://github.com/eclipse/microprofile-metrics/issues/597[#597)
+** Histogram and Timer now exposes the total sum of recorded values as a `sum` value (https://github.com/eclipse/microprofile-metrics/issues/597[#597])
 
 === Specification Changes
 ** Removed the concept of reusability
@@ -83,9 +87,7 @@
 but the type is implied by the name of the registration method that is being called.
 ** Clarified that the existing REST metric `REST.request` will not monitor and track a REST request to a REST endpoint if an unmapped exception occurs
 ** Introduced a new base REST metric `REST.request.unmappedException.total` that counts the occurrences of unmapped exceptions for each REST endpoint (https://github.com/eclipse/microprofile-metrics/issues/533[#533])
-issues/533[#533])
-** Histogram now exposes the total sum of recorded values (https://github.com/eclipse/microprofile-metrics/issues/597[#297)
-*** In OpenMetric's format the `sum` value is included under the `summary` type
+** Histogram and Timer now exposes the total sum of recorded values as a `sum` value (https://github.com/eclipse/microprofile-metrics/issues/597[#597])
 
 === TCK enhancement
 ** Improved TCK - Use newly introduced `MetricRegistry` methods to retrieve single metrics and avoid use of the `getMetrics()` and `getMetadata()` methods
