@@ -116,7 +116,7 @@ public class SimplyTimedMethodBeanLookupTest {
 
         // Make sure that the simpleTimer has been called
         assertThat("SimplyTimed count is incorrect", simpleTimer.getCount(), is(equalTo(SIMPLE_TIMER_COUNT.incrementAndGet())));
-        TestUtils.assertEqualsWithTolerance(2000000000L,  simpleTimer.getSum().toNanos());
+        TestUtils.assertEqualsWithTolerance(2000000000L,  simpleTimer.getElapsedTime().toNanos());
     }
 
     @Test

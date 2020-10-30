@@ -110,7 +110,7 @@ public class SimplyTimedMethodBeanTest {
 
         // Make sure that the simpleTimer has been called
         assertThat("SimpleTimer count is incorrect", simpleTimer.getCount(), is(equalTo(SIMPLE_TIMER_COUNT.incrementAndGet())));
-        TestUtils.assertEqualsWithTolerance(2000000000L,  simpleTimer.getSum().toNanos());
+        TestUtils.assertEqualsWithTolerance(2000000000L,  simpleTimer.getElapsedTime().toNanos());
     }
 
     @Test

@@ -94,7 +94,7 @@ public interface SimpleTimer extends Metric, Counting {
      * 
      * @return the elapsed time {@link java.time.Duration duration}
      */
-    Duration getSum();
+    Duration getElapsedTime();
 
     @Override
     long getCount();

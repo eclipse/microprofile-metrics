@@ -292,7 +292,7 @@ The JSON node is named `<metric-name>`. The JSON leafs are named `<key>[';'<tag-
 | JSON Key | Value (Equivalent Timer method)
 
 | `count` | `getCount()`
-| `sum` | `getSum()`
+| `elapsedTime` | `getElapsedTime()`
 | `meanRate` | `getMeanRate()`
 | `oneMinRate` | `getOneMinuteRate()`
 | `fiveMinRate` | `getFiveMinuteRate()`
@@ -315,7 +315,7 @@ The JSON node is named `<metric-name>`. The JSON leafs are named `<key>[';'<tag-
 {
   "responseTime": {
     "count": 29382,
-    "sum": 25608694,
+    "elapsedTime": 25608694,
     "meanRate": 12.185627192860734,
     "oneMinRate": 12.563,
     "fiveMinRate": 12.364,
@@ -331,7 +331,7 @@ The JSON node is named `<metric-name>`. The JSON leafs are named `<key>[';'<tag-
     "p99": 5608694.0,
     "p999": 5608694.0,
     "count;servlet=two": 29382,
-    "sum;servlet=two": 25608694,
+    "elapsedTime;servlet=two": 25608694,
     "meanRate;servlet=two":12.185627192860734,
     "oneMinRate;servlet=two": 12.563,
     "fiveMinRate;servlet=two": 12.364,
@@ -361,7 +361,7 @@ The JSON node is named `<metric-name>`. The JSON leafs are named `<key>[';'<tag-
 | JSON Key | Value (Equivalent SimpleTimer method)
 
 | `count`                 | `getCount()`
-| `elapsedTime`           | `getSum()`
+| `elapsedTime`           | `getElapsedTime()`
 | `maxTimeDuration`       | `getMaxTimeDuration()`
 | `minTimeDuration`       | `getMinTimeDuration()`
 |===
@@ -729,7 +729,7 @@ The `quantile` OpenMetrics label is merged with the metric's tags.
 | `mean_seconds`                  | Gauge   | `getSnapshot().getMean()`           | SECONDS^1^
 | `stddev_seconds`                | Gauge   | `getSnapshot().getStdDev()`         | SECONDS^1^
 | `seconds_count`^2^              | Summary | `getCount()`                        | N/A
-| `seconds_sum`^2^                | Summary | `getSum()`                          | SECONDS^1^
+| `seconds_sum`^2^                | Summary | `getElapsedTime()`                  | SECONDS^1^
 | `seconds{quantile="0.5"}`^2^    | Summary | `getSnapshot().getMedian()`         | SECONDS^1^
 | `seconds{quantile="0.75"}`^2^   | Summary | `getSnapshot().get75thPercentile()` | SECONDS^1^
 | `seconds{quantile="0.95"}`^2^   | Summary | `getSnapshot().get95thPercentile()` | SECONDS^1^
@@ -785,7 +785,7 @@ The OpenMetrics name is composed `<scope>_<metric-name>_<suffix>`.
 |===
 | Suffix{label}                   | TYPE    | Value (SimpleTimer method)                | Units
 | `total`                         | Counter | `getCount()`                              | N/A
-| `elapsedTime_seconds`           | Gauge   | `getSum()`                                | SECONDS^1^
+| `elapsedTime_seconds`           | Gauge   | `getElapsedTime()`                        | SECONDS^1^
 | `maxTimeDuration_seconds`       | Gauge   | `getMaxTimeDuration()`                    | SECONDS^1^
 | `minTimeDuration_seconds`       | Gauge   | `getMinTimeDuration()`                    | SECONDS^1^
 |===

@@ -95,7 +95,7 @@ public interface Timer extends Metered, Sampling {
      * 
      * @return the elapsed time {@link java.time.Duration duration}
      */
-    Duration getSum();
+    Duration getElapsedTime();
 
     @Override
     long getCount();

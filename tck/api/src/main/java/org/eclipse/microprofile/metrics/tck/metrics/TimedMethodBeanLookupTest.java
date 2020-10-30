@@ -108,7 +108,7 @@ public class TimedMethodBeanLookupTest {
 
         // Make sure that the timer has been called
         assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(TIMER_COUNT.incrementAndGet())));
-        TestUtils.assertEqualsWithTolerance(2000000000L,  timer.getSum().toNanos());
+        TestUtils.assertEqualsWithTolerance(2000000000L,  timer.getElapsedTime().toNanos());
     }
 
     @Test
