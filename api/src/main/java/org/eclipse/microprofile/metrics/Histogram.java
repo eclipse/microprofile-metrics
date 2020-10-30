@@ -28,7 +28,7 @@ package org.eclipse.microprofile.metrics;
  * @see <a href="http://www.johndcook.com/standard_deviation.html">Accurately computing running
  *      variance</a>
  */
-public interface Histogram extends Metric, Sampling, Counting, Summing {
+public interface Histogram extends Metric, Sampling, Counting {
   
     /**
      * Adds a recorded value.
@@ -52,7 +52,11 @@ public interface Histogram extends Metric, Sampling, Counting, Summing {
     @Override
     long getCount();
 
-    @Override
+    /**
+     * Returns the sum of values recorded.
+     *
+     * @return the sum of values recorded
+     */
     long getSum();
     
     @Override

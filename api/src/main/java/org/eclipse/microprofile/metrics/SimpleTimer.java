@@ -34,7 +34,7 @@ import java.util.concurrent.Callable;
  *
  * The simple timer measures duration in nanoseconds.
  */
-public interface SimpleTimer extends Metric, Counting, Summing {
+public interface SimpleTimer extends Metric, Counting {
     /**
      * A timing context.
      *
@@ -94,18 +94,10 @@ public interface SimpleTimer extends Metric, Counting, Summing {
      * 
      * @return the elapsed time {@link java.time.Duration duration}
      */
-    Duration getElapsedTime();
+    Duration getSum();
 
     @Override
     long getCount();
-
-    @Override
-    /**
-     * Returns the total elapsed timing durations of all completed timing events that are recorded, in nanoseconds
-     *
-     * @return the elapsed time in nanoseconds
-     */
-    long getSum();
     
     /**
      * Get the maximum recorded time duration of the SimpleTimer for the previously completed full minute.

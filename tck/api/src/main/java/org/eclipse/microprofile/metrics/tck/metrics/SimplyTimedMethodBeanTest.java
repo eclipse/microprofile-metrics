@@ -27,7 +27,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -111,9 +110,7 @@ public class SimplyTimedMethodBeanTest {
 
         // Make sure that the simpleTimer has been called
         assertThat("SimpleTimer count is incorrect", simpleTimer.getCount(), is(equalTo(SIMPLE_TIMER_COUNT.incrementAndGet())));
-        TestUtils.assertEqualsWithTolerance(2000000000L,  simpleTimer.getElapsedTime().toNanos());
-        assertEquals("The SimpleTimer's sum and elapsedTime values are supposed to be the same value", simpleTimer.getSum(),
-                simpleTimer.getElapsedTime().toNanos());
+        TestUtils.assertEqualsWithTolerance(2000000000L,  simpleTimer.getSum().toNanos());
     }
 
     @Test

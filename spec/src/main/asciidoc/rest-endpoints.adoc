@@ -361,7 +361,7 @@ The JSON node is named `<metric-name>`. The JSON leafs are named `<key>[';'<tag-
 | JSON Key | Value (Equivalent SimpleTimer method)
 
 | `count`                 | `getCount()`
-| `elapsedTime`           | `getElapsedTime()`
+| `elapsedTime`           | `getSum()`
 | `maxTimeDuration`       | `getMaxTimeDuration()`
 | `minTimeDuration`       | `getMinTimeDuration()`
 |===
@@ -785,7 +785,7 @@ The OpenMetrics name is composed `<scope>_<metric-name>_<suffix>`.
 |===
 | Suffix{label}                   | TYPE    | Value (SimpleTimer method)                | Units
 | `total`                         | Counter | `getCount()`                              | N/A
-| `elapsedTime_seconds`           | Gauge   | `getElapsedTime()`                        | SECONDS^1^
+| `elapsedTime_seconds`           | Gauge   | `getSum()`                                | SECONDS^1^
 | `maxTimeDuration_seconds`       | Gauge   | `getMaxTimeDuration()`                    | SECONDS^1^
 | `minTimeDuration_seconds`       | Gauge   | `getMinTimeDuration()`                    | SECONDS^1^
 |===

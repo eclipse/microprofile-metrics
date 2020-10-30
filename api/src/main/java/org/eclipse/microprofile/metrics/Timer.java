@@ -36,7 +36,7 @@ import java.time.Duration;
  *
  * The timer measures duration in nanoseconds.
  */
-public interface Timer extends Metered, Sampling, Summing {
+public interface Timer extends Metered, Sampling {
     /**
      * A timing context.
      *
@@ -95,18 +95,10 @@ public interface Timer extends Metered, Sampling, Summing {
      * 
      * @return the elapsed time {@link java.time.Duration duration}
      */
-    Duration getElapsedTime();
+    Duration getSum();
 
     @Override
     long getCount();
-
-    @Override
-    /**
-     * Returns the total elapsed timing durations of all completed timing events that are recorded, in nanoseconds
-     *
-     * @return the elapsed time in nanoseconds
-     */
-    long getSum();
 
     @Override
     double getFifteenMinuteRate();
