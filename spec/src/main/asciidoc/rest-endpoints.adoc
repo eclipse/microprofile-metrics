@@ -234,6 +234,7 @@ The JSON node is named `<metric-name>`. The JSON leafs are named `<key>[';'<tag-
 | JSON Key | Value (Equivalent Histogram method)
 
 | `count` | `getCount()`
+| `sum` | `getSum()`
 | `min` | `getSnapshot().getMin()`
 | `max` | `getSnapshot().getMax()`
 | `mean` | `getSnapshot().getMean()`
@@ -252,6 +253,7 @@ The JSON node is named `<metric-name>`. The JSON leafs are named `<key>[';'<tag-
 {
   "daily_value_changes": {
     "count": 2,
+    "sum": -1598,
     "min": -1624,
     "max": 26,
     "mean": -799.0,
@@ -263,6 +265,7 @@ The JSON node is named `<metric-name>`. The JSON leafs are named `<key>[';'<tag-
     "p99": 26.0,
     "p999": 26.0,
     "count;servlet=two": 2,
+    "sum;servlet=two": -1598,
     "min;servlet=two": -1624,
     "max;servlet=two": 26,
     "mean;servlet=two": -799.0,
@@ -667,6 +670,7 @@ The `quantile` OpenMetrics label is merged with the metric's tags.
 | `mean_<units>`                  | Gauge   | `getSnapshot().getMean()`           | <units>^1^
 | `stddev_<units>`                | Gauge   | `getSnapshot().getStdDev()`         | <units>^1^
 | `<units>_count`^2^              | Summary | `getCount()`                        | N/A
+| `<units>_sum`^2^                | Summary | `getSum()`                          | <units>^1^
 | `<units>{quantile="0.5"}`^2^    | Summary | `getSnapshot().getMedian()`         | <units>^1^
 | `<units>{quantile="0.75"}`^2^   | Summary | `getSnapshot().get75thPercentile()` | <units>^1^
 | `<units>{quantile="0.95"}`^2^   | Summary | `getSnapshot().get95thPercentile()` | <units>^1^
@@ -677,7 +681,7 @@ The `quantile` OpenMetrics label is merged with the metric's tags.
 
 ^1^ The implementation is expected to convert the result returned by the `Histogram` into the base unit (if known). The `<unit>` represents the base metric unit and is named according to  <<OpenMetrics_units>>.
 
-^2^ The `summary` type is a complex metric type for OpenMetrics which consists of the count and multiple quantile values.
+^2^ The `summary` type is a complex metric type for OpenMetrics which consists of the count, sum and multiple quantile values.
 
 .Example OpenMetrics text format for a Histogram with unit bytes.
 [source, ruby]
@@ -693,6 +697,7 @@ application_file_sizes_stddev_bytes 1054.7343037063602
 # TYPE application_file_sizes_bytes summary
 # HELP application_file_sizes_bytes Users file size
 application_file_sizes_bytes_count 2037
+application_file_sizes_bytes_sum 48123
 application_file_sizes_bytes{quantile="0.5"} 4201
 application_file_sizes_bytes{quantile="0.75"} 6175
 application_file_sizes_bytes{quantile="0.95"} 13560
@@ -719,12 +724,12 @@ The `quantile` OpenMetrics label is merged with the metric's tags.
 | `one_min_rate_per_second`       | Gauge   | `getOneMinuteRate()`                | PER_SECOND
 | `five_min_rate_per_second`      | Gauge   | `getFiveMinuteRate()`               | PER_SECOND
 | `fifteen_min_rate_per_second`   | Gauge   | `getFifteenMinuteRate()`            | PER_SECOND
-| `elapsedTime_seconds`           | Gauge   | `getElapsedTime()`                  | SECONDS^1^
 | `min_seconds`                   | Gauge   | `getSnapshot().getMin()`            | SECONDS^1^
 | `max_seconds`                   | Gauge   | `getSnapshot().getMax()`            | SECONDS^1^
 | `mean_seconds`                  | Gauge   | `getSnapshot().getMean()`           | SECONDS^1^
 | `stddev_seconds`                | Gauge   | `getSnapshot().getStdDev()`         | SECONDS^1^
 | `seconds_count`^2^              | Summary | `getCount()`                        | N/A
+| `seconds_sum`^2^                | Summary | `getElapsedTime()`                  | SECONDS^1^
 | `seconds{quantile="0.5"}`^2^    | Summary | `getSnapshot().getMedian()`         | SECONDS^1^
 | `seconds{quantile="0.75"}`^2^   | Summary | `getSnapshot().get75thPercentile()` | SECONDS^1^
 | `seconds{quantile="0.95"}`^2^   | Summary | `getSnapshot().get95thPercentile()` | SECONDS^1^
@@ -748,8 +753,6 @@ application_response_time_one_min_rate_per_second  2.794076465421066E-14
 application_response_time_five_min_rate_per_second  4.800392614619373E-4
 # TYPE application_response_time_fifteen_min_rate_per_second  gauge
 application_response_time_fifteen_min_rate_per_second  0.01063191047532505
-# TYPE application_response_time_elapsedTime_seconds gauge
-application_response_time_elapsedTime_seconds  0.023
 # TYPE application_response_time_mean_seconds gauge
 application_response_time_mean_seconds 0.000415041
 # TYPE application_response_time_max_seconds gauge
@@ -761,6 +764,7 @@ application_response_time_stddev_seconds 0.000652907
 # TYPE application_response_time_seconds summary
 # HELP application_response_time_seconds Server response time for /index.html
 application_response_time_seconds_count 80
+application_response_time_seconds_sum  0.023
 application_response_time_seconds{quantile="0.5"} 0.0002933240
 application_response_time_seconds{quantile="0.75"} 0.000344914
 application_response_time_seconds{quantile="0.95"} 0.000543647

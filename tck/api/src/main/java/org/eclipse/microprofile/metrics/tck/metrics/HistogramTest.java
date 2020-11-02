@@ -124,6 +124,12 @@ public class HistogramTest {
     }
 
     @Test
+    public void testSum() throws Exception {
+        Assert.assertEquals(10127, histogramInt.getSum());
+        Assert.assertEquals(101270, histogramLong.getSum());
+    }
+
+    @Test
     public void testSnapshotValues() throws Exception {
         Assert.assertArrayEquals(
                 "The histogramInt does not contain the expected values: " + Arrays.toString(SAMPLE_INT_DATA),

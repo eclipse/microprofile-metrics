@@ -52,6 +52,13 @@ public interface Histogram extends Metric, Sampling, Counting {
     @Override
     long getCount();
 
+    /**
+     * Returns the sum of values recorded.
+     *
+     * @return the sum of values recorded
+     */
+    long getSum();
+    
     @Override
     Snapshot getSnapshot();
 }
