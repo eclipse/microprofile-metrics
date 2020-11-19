@@ -44,8 +44,9 @@ ifndef::ebook-format[]
 :icons: font
 endif::[]
 
-
-include::license-alv2.asciidoc[]
+// == License
+:sectnums!:
+include::license-efsl.adoc[]
 
 include::intro.adoc[]
 

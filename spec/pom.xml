@@ -31,12 +31,12 @@
     <properties>
         <asciidoctor-maven.version>1.5.6</asciidoctor-maven.version>
         <asciidoctorj-pdf.version>1.5.0-alpha.16</asciidoctorj-pdf.version>
-	<asciidoctorj-epub3.version>1.5.0-alpha.8.1</asciidoctorj-epub3.version>
-        <license>Apache License v 2.0</license>
+	    <asciidoctorj-epub3.version>1.5.0-alpha.15</asciidoctorj-epub3.version>
         <maven.build.timestamp.format>MMMM dd, yyyy</maven.build.timestamp.format>
         <revisiondate>${maven.build.timestamp}</revisiondate>
-        <revremark>Draft</revremark>
         <gen-doc-dir>${project.build.directory}/generated-docs</gen-doc-dir>
+        <metrics.spec.pdf>${project.build.directory}/generated-docs/${project.build.finalName}.pdf</metrics.spec.pdf>
+        <metrics.spec.html>${project.build.directory}/generated-docs/${project.build.finalName}.html</metrics.spec.html>
     </properties>
 
     <build>
@@ -67,7 +67,7 @@
                         </goals>
                         <configuration>
                             <backend>pdf</backend>
-                            <outputFile>${gen-doc-dir}/microprofile-metrics-spec-${project.version}.pdf</outputFile>
+                            <outputFile>${metrics.spec.pdf}</outputFile>
                         </configuration>
                     </execution>
                     <execution>
@@ -78,18 +78,7 @@
                         </goals>
                         <configuration>
                             <backend>html5</backend>
-                            <outputFile>${gen-doc-dir}/microprofile-metrics-spec-${project.version}.html</outputFile>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>output-epub3</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>process-asciidoc</goal>
-                        </goals>
-                        <configuration>
-                            <backend>epub3</backend>
-                            <outputFile>${gen-doc-dir}/microprofile-metrics-spec-${project.version}.epub</outputFile>
+                            <outputFile>${metrics.spec.html}</outputFile>
                         </configuration>
                     </execution>
                 </executions>
@@ -103,6 +92,31 @@
                         <revdate>${revisiondate}</revdate>
                     </attributes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-artifacts</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${metrics.spec.pdf}</file>
+                                    <type>pdf</type>
+                                </artifact>
+                                <artifact>
+                                    <file>${metrics.spec.html}</file>
+                                    <type>html</type>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
