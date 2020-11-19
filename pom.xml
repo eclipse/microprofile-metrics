@@ -51,6 +51,11 @@
             <comments>A business-friendly OSS license</comments>
         </license>
     </licenses>
+    
+    <organization>
+        <name>Eclipse Foundation</name>
+        <url>http://www.eclipse.org/</url>
+    </organization>
 
     <developers>
         <developer>
