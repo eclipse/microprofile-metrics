@@ -39,6 +39,8 @@
         <version.osgi.versioning>1.0.0</version.osgi.versioning>
 
         <autorelease>false</autorelease>
+        <revremark>Draft</revremark>
+        <inceptionYear>2017</inceptionYear>
     </properties>
 
     <licenses>
@@ -49,6 +51,11 @@
             <comments>A business-friendly OSS license</comments>
         </license>
     </licenses>
+    
+    <organization>
+        <name>Eclipse Foundation</name>
+        <url>http://www.eclipse.org/</url>
+    </organization>
 
     <developers>
         <developer>
@@ -307,8 +314,31 @@
                         <exclude>**/*.iml</exclude>
                         <exclude>**/*.idea</exclude>
                         <exclude>**/*.ipr</exclude>
+                        <exclude>**/*.html</exclude>
+                        <exclude>**/license-efsl.adoc</exclude>
+                        <exclude>**/*.asciidoc</exclude>
+                        <exclude>**/*.md</exclude>
+                        <exclude>.vscode**</exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>1.12</version>
+                    <executions>
+                        <execution>
+                            <id>timestamp-property</id>
+                            <goals>
+                                <goal>timestamp-property</goal>
+                            </goals>
+                            <phase>validate</phase>
+                            <configuration>
+                                <name>currentYear</name>
+                                <pattern>yyyy</pattern>
+                            </configuration>
+                        </execution>
+                    </executions>
             </plugin>
 
         </plugins>
