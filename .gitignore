@@ -11,5 +11,6 @@ bumpVersion.sh
 tck/api/.classpath
 tck/api/.project
 tck/api/.settings/
+.vscode**
 # Ignore a release.conf for perform_release/* script usage
 release.conf
