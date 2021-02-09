@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2021 Contributors to the Eclipse Foundation
  *               2010-2013 Coda Hale, Yammer.com
  *
  * See the NOTICES file(s) distributed with this work for additional
@@ -92,7 +92,7 @@ public class TimerTest {
     @InSequence(1)
     public void testRate() throws Exception {
 
-        int markSeconds = 30;
+        int markSeconds = 60;
         int delaySeconds = 15;
         
         Timer timer = registry.timer("testRate");

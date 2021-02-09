@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2018, 2021 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -25,7 +25,7 @@ import org.junit.Assert;
 
 public class TestUtils {
     
-    public static final double TOLERANCE = 0.025;
+    public static final double TOLERANCE = 0.15;
     
     // private constructor
     private TestUtils() {
