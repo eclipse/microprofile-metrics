@@ -22,8 +22,8 @@
 
 package org.eclipse.microprofile.metrics.test;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.RestAssured.when;
+import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.when;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.hasKey;
@@ -36,10 +36,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-import com.jayway.restassured.response.Header;
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.path.json.JsonPath;
-import com.jayway.restassured.response.Response;
+import io.restassured.RestAssured;
+import io.restassured.http.Header;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;

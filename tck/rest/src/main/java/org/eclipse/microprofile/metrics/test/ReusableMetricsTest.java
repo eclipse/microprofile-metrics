@@ -25,10 +25,10 @@
 package org.eclipse.microprofile.metrics.test;
 
 import static org.hamcrest.Matchers.equalTo;
-import static com.jayway.restassured.RestAssured.given;
+import static io.restassured.RestAssured.given;
 
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.response.Header;
+import io.restassured.RestAssured;
+import io.restassured.http.Header;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javax.inject.Inject;
