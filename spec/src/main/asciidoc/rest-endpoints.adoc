@@ -138,7 +138,7 @@ The JSON leaf is named `<metric-name>[';'<tag-name>'='<tag-value>]+` with tags i
 ==== Counter JSON Format
 
 The value of the counter must be equivalent to a call to the instance Counter's `getCount()`.
-The JSON leaves is named `<metric-name>[';'<tag-name>'='<tag-value>]+` with tags in alphabetical order.
+The JSON leaf is named `<metric-name>[';'<tag-name>'='<tag-value>]+` with tags in alphabetical order.
 
 .Example Counter JSON GET Response
 [source, json]
