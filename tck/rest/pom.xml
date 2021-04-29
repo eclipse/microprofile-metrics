@@ -32,7 +32,7 @@
         <!-- TODO should come from parent pom -->
         <version.rest-assured>4.3.0</version.rest-assured>
         <version.junit>4.12</version.junit>
-        <version.jackson>2.9.9.1</version.jackson>
+        <version.jackson>2.9.10.7</version.jackson>
         <version.shrinkwrap>2.2.4</version.shrinkwrap>
 
         <maven.compiler.source>1.8</maven.compiler.source>
