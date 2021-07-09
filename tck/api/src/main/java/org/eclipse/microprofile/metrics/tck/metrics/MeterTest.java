@@ -23,7 +23,7 @@
 
 package org.eclipse.microprofile.metrics.tck.metrics;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Meter;
 import org.eclipse.microprofile.metrics.MetricRegistry;
@@ -83,9 +83,9 @@ public class MeterTest {
         int count = 100;
         int markSeconds = 60;
         int delaySeconds = 15;
-        
+
         Meter meter = registry.meter("testMeterRatesLong");
-        
+
         for (int i = 0; i < markSeconds; i++) {
             meter.mark(count);
             Thread.sleep(1000);
@@ -96,14 +96,14 @@ public class MeterTest {
         TestUtils.assertEqualsWithTolerance(count, meter.getOneMinuteRate());
         TestUtils.assertEqualsWithTolerance(count, meter.getFiveMinuteRate());
         TestUtils.assertEqualsWithTolerance(count, meter.getFifteenMinuteRate());
-                
+
         Thread.sleep(delaySeconds * 1000);
-        
+
         // Approximately calculate what the expected mean should be
         // and let the tolerance account for the delta
         double expectedMean = count * ((double) markSeconds/(markSeconds + delaySeconds));
         TestUtils.assertEqualsWithTolerance(expectedMean, meter.getMeanRate());
-        
+
         // After a delay, we expect some decay of values
         Assert.assertThat(meter.getOneMinuteRate(), lessThan((double)count));
         Assert.assertThat(meter.getFiveMinuteRate(), lessThan((double)count));

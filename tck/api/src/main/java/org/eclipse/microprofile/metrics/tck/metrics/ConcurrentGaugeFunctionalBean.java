@@ -26,7 +26,7 @@ package org.eclipse.microprofile.metrics.tck.metrics;
 import org.eclipse.microprofile.metrics.tck.util.BeanWithControlledInvocation;
 import org.eclipse.microprofile.metrics.annotation.ConcurrentGauge;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.util.concurrent.CountDownLatch;
 
 @ApplicationScoped

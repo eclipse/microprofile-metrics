@@ -49,7 +49,7 @@ import org.eclipse.microprofile.metrics.tck.util.MetricsUtil;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.ConcurrentGauge;

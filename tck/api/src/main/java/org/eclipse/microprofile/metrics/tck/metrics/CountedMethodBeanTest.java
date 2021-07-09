@@ -28,7 +28,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.MetricRegistry;
@@ -76,8 +76,8 @@ public class CountedMethodBeanTest {
          * Running a managed arquillian container will result
          * with the MetricID being created in a client process
          * that does not contain the MPConfig impl.
-         * 
-         * This will cause client instantiated MetricIDs to 
+         *
+         * This will cause client instantiated MetricIDs to
          * throw an exception. (i.e the global MetricIDs)
          */
         counterMetricID = new MetricID(COUNTER_NAME);

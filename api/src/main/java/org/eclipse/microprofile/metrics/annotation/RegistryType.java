@@ -27,7 +27,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.inject.Qualifier;
+import jakarta.inject.Qualifier;
 
 import org.eclipse.microprofile.metrics.MetricRegistry;
 
@@ -41,9 +41,9 @@ import org.eclipse.microprofile.metrics.MetricRegistry;
  *      {@literal @}RegistryType(type=MetricRegistry.Type.BASE)
  *      MetricRegistry baseRegistry;
  * </code></pre>
- * 
+ *
  * @see org.eclipse.microprofile.metrics.MetricRegistry.Type
- * 
+ *
  * @author Raymond Lam
  *
  */

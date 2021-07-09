@@ -27,13 +27,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.enterprise.util.Nonbinding;
-import javax.interceptor.InterceptorBinding;
+import jakarta.enterprise.util.Nonbinding;
+import jakarta.interceptor.InterceptorBinding;
 
 /**
  * An annotation for marking a method or field as a gauge.
  * The metric will be registered in the application MetricRegistry.
- * 
+ *
  * <p>
  * Given a method annotated with {@literal @}Gauge like this:
  * </p>
@@ -45,7 +45,7 @@ import javax.interceptor.InterceptorBinding;
  * </code></pre>
  * A gauge with the fully qualified class name + {@code queueSize} will be created which uses the
  * annotated method's return value as its value.
- * 
+ *
  */
 @InterceptorBinding
 @Retention(RetentionPolicy.RUNTIME)
@@ -63,7 +63,7 @@ public @interface Gauge {
      * The tags of the gauge.
      * @return The tags of the gauge. Each {@code String} tag must be in the form of 'key=value'. If the input is empty or does
      * not contain a '=' sign, the entry is ignored.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
@@ -76,31 +76,31 @@ public @interface Gauge {
      */
     @Nonbinding
     boolean absolute() default false;
-    
-    
+
+
     /**
      * The human readable display name of the gauge.
      * @return The display name of the gauge.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String displayName() default "";
-    
+
     /**
      * The description of the gauge.
      * @return The description of the gauge.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String description() default "";
-    
-    
+
+
     /**
      * The unit of the gauge.
      * @return (Required) The unit of the gauge.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      * @see org.eclipse.microprofile.metrics.MetricUnits
      */
