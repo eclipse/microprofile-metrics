@@ -16,6 +16,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.eclipse.microprofile</groupId>
+        <artifactId>microprofile-parent</artifactId>
+        <version>2.1</version>
+    </parent>
+
     <groupId>org.eclipse.microprofile.metrics</groupId>
     <artifactId>microprofile-metrics-parent</artifactId>
     <version>3.1-SNAPSHOT</version>
@@ -26,15 +32,8 @@
     <url>http://microprofile.io</url>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-
         <checkstyle.version>2.17</checkstyle.version>
         <checkstyle.methodNameFormat>^_?[a-z][a-zA-Z0-9]*$</checkstyle.methodNameFormat>
-
-        <version.jakarta.cdi>2.0.2</version.jakarta.cdi>
-        <version.jakarta.jaxrs>2.1.6</version.jakarta.jaxrs>
 
         <version.osgi.versioning>1.0.0</version.osgi.versioning>
 
@@ -51,7 +50,7 @@
             <comments>A business-friendly OSS license</comments>
         </license>
     </licenses>
-    
+
     <organization>
         <name>Eclipse Foundation</name>
         <url>http://www.eclipse.org/</url>
@@ -108,33 +107,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>jakarta.enterprise</groupId>
-                <artifactId>jakarta.enterprise.cdi-api</artifactId>
-                <version>${version.jakarta.cdi}</version>
-                <scope>provided</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>jakarta.el</groupId>
-                        <artifactId>jakarta.el-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>jakarta.annotation</groupId>
-                        <artifactId>jakarta.annotation-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>jakarta.ejb</groupId>
-                        <artifactId>jakarta.ejb-api</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.ws.rs</groupId>
-                <artifactId>jakarta.ws.rs-api</artifactId>
-                <version>${version.jakarta.jaxrs}</version>
-                <scope>provided</scope>
-            </dependency>
-
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.annotation.versioning</artifactId>
@@ -243,7 +215,7 @@
                                     <property name="format" value="^_?[A-Z][a-zA-Z0-9]*$|packageinfo" />
                                 </module>
                                 <module name="AvoidStarImport">
-                                    <property name="excludes" value="java.io,java.net,java.util,javax.enterprise.inject.spi,javax.enterprise.context" />
+                                    <property name="excludes" value="java.io,java.net,java.util,jakarta.enterprise.inject.spi,jakarta.enterprise.context" />
                                 </module>
                                 <module name="IllegalImport" />
                                 <module name="RedundantImport" />

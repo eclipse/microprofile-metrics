@@ -30,7 +30,7 @@ import static org.hamcrest.Matchers.equalTo;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;

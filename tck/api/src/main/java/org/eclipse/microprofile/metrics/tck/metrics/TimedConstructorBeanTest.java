@@ -20,8 +20,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
@@ -43,7 +43,7 @@ public class TimedConstructorBeanTest {
     private final static String TIMER_NAME = MetricRegistry.name(TimedConstructorBean.class, "timedConstructor");
 
     private static MetricID timerMID;
-    
+
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
@@ -59,7 +59,7 @@ public class TimedConstructorBeanTest {
     @Inject
     private Instance<TimedConstructorBean> instance;
 
-    //This test case becomes irrelevant as the registry already contains Timers from other test cases. 
+    //This test case becomes irrelevant as the registry already contains Timers from other test cases.
     /*
     @Test
     @InSequence(1)
@@ -67,7 +67,7 @@ public class TimedConstructorBeanTest {
         assertThat("Timer is not registered correctly", registry.getTimers().keySet(), is(empty()));
     }
     */
-    
+
     @Before
     public void instantiateTest() {
         /*
@@ -75,8 +75,8 @@ public class TimedConstructorBeanTest {
          * Running a managed arquillian container will result
          * with the MetricID being created in a client process
          * that does not contain the MPConfig impl.
-         * 
-         * This will cause client instantiated MetricIDs to 
+         *
+         * This will cause client instantiated MetricIDs to
          * throw an exception. (i.e the global MetricIDs)
          */
         timerMID = new MetricID(TIMER_NAME);

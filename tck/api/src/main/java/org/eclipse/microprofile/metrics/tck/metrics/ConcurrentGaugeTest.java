@@ -24,7 +24,7 @@
 
 package org.eclipse.microprofile.metrics.tck.metrics;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.eclipse.microprofile.metrics.ConcurrentGauge;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;

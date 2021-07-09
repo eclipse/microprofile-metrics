@@ -22,7 +22,7 @@
 
 package org.eclipse.microprofile.metrics.tck.metrics;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Counter;
 import org.jboss.arquillian.container.test.api.Deployment;

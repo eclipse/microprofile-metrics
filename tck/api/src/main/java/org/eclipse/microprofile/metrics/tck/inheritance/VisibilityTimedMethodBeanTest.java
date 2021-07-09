@@ -22,7 +22,7 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Set;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.Timer;
@@ -65,9 +65,9 @@ public class VisibilityTimedMethodBeanTest {
     @Test
     @InSequence(1)
     public void timedMethodsNotCalledYet() {
-        assertThat("Timers are not registered correctly", registry.getTimers().keySet(), 
+        assertThat("Timers are not registered correctly", registry.getTimers().keySet(),
             is(equalTo(MetricsUtil.createMetricIDs(absoluteMetricNames()))));
-        
+
         // Make sure that all the timers haven't been called yet
         assertThat("Timer counts are incorrect", registry.getTimers().values(), everyItem(Matchers.<Timer>hasProperty("count", equalTo(0L))));
     }
@@ -75,9 +75,9 @@ public class VisibilityTimedMethodBeanTest {
     @Test
     @InSequence(2)
     public void callTimedMethodsOnce() {
-        assertThat("Timers are not registered correctly", registry.getTimers().keySet(), 
+        assertThat("Timers are not registered correctly", registry.getTimers().keySet(),
             is(equalTo(MetricsUtil.createMetricIDs(absoluteMetricNames()))));
-        
+
         // Call the timed methods and assert they've all been timed once
         bean.publicTimedMethod();
         bean.protectedTimedMethod();

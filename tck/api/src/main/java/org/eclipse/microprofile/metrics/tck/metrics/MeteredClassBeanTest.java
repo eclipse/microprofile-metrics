@@ -24,7 +24,7 @@ import static org.junit.Assert.assertThat;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Meter;
 import org.eclipse.microprofile.metrics.Metric;
@@ -50,7 +50,7 @@ public class MeteredClassBeanTest {
     private static final String CONSTRUCTOR_NAME = "MeteredClassBean";
 
     private static final String CONSTRUCTOR_METER_NAME = MetricsUtil.absoluteMetricName(MeteredClassBean.class, "meteredClass", CONSTRUCTOR_NAME);
-    
+
     private static MetricID constructorMID;
 
     private static final String[] METHOD_NAMES = { "meteredMethodOne", "meteredMethodTwo", "meteredMethodProtected", "meteredMethodPackagedPrivate" };
@@ -68,7 +68,7 @@ public class MeteredClassBeanTest {
             CONSTRUCTOR_NAME);
 
     private static Set<MetricID> meterMIDs;
-            
+
     private final static AtomicLong METHOD_COUNT = new AtomicLong();
 
     @Deployment
@@ -79,7 +79,7 @@ public class MeteredClassBeanTest {
                 // Bean archive deployment descriptor
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
-    
+
     @Before
     public void instantiateTest() {
         /*
@@ -87,8 +87,8 @@ public class MeteredClassBeanTest {
          * Running a managed arquillian container will result
          * with the MetricID being created in a client process
          * that does not contain the MPConfig impl.
-         * 
-         * This will cause client instantiated MetricIDs to 
+         *
+         * This will cause client instantiated MetricIDs to
          * throw an exception. (i.e the global MetricIDs)
          */
         constructorMID = new MetricID(CONSTRUCTOR_METER_NAME);
@@ -107,16 +107,16 @@ public class MeteredClassBeanTest {
         assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(meterMIDs)));
 
         // Make sure that the method meters haven't been marked yet
-        assertThat("Method meter counts are incorrect", registry.getMeters(METHOD_METERS).values(), 
+        assertThat("Method meter counts are incorrect", registry.getMeters(METHOD_METERS).values(),
                 everyItem(Matchers.<Meter>hasProperty("count", equalTo(METHOD_COUNT.get()))));
 
     }
 
     @Test
     @InSequence(2)
-    public void callMeteredMethodsOnce() {        
+    public void callMeteredMethodsOnce() {
         assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(meterMIDs)));
-        
+
         // Call the metered methods and assert they've been marked
         bean.meteredMethodOne();
         bean.meteredMethodTwo();

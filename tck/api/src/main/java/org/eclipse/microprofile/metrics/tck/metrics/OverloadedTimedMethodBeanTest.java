@@ -22,7 +22,7 @@ import static org.junit.Assert.assertThat;
 import java.util.Arrays;
 import java.util.Set;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.Timer;
@@ -67,7 +67,7 @@ public class OverloadedTimedMethodBeanTest {
     @Test
     @InSequence(1)
     public void overloadedTimedMethodNotCalledYet() {
-        Assert.assertTrue("Metrics are not registered correctly", 
+        Assert.assertTrue("Metrics are not registered correctly",
             registry.getMetricIDs().containsAll(MetricsUtil.createMetricIDs(absoluteMetricNames())));
 
         // Make sure that all the timers haven't been called yet
@@ -77,7 +77,7 @@ public class OverloadedTimedMethodBeanTest {
     @Test
     @InSequence(2)
     public void callOverloadedTimedMethodOnce() {
-        Assert.assertTrue("Metrics are not registered correctly", 
+        Assert.assertTrue("Metrics are not registered correctly",
             registry.getMetricIDs().containsAll(MetricsUtil.createMetricIDs(absoluteMetricNames())));
 
         // Call the timed methods and assert they've all been timed once

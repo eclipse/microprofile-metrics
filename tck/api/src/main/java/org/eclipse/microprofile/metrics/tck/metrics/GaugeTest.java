@@ -25,7 +25,7 @@ package org.eclipse.microprofile.metrics.tck.metrics;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Gauge;
 import org.eclipse.microprofile.metrics.MetricID;
@@ -56,29 +56,29 @@ public class GaugeTest {
     public void testManualGauge() {
         MetricID supplierGaugeMetricID = new MetricID("tck.gaugetest.supplierGaugeManual");
         MetricID toDoubleFunctiongaugeMetricID = new MetricID("tck.gaugetest.toDoubleFunctionGaugeManual");
-        
-        Gauge<?> sGauge = metrics.getGauge(supplierGaugeMetricID);      
+
+        Gauge<?> sGauge = metrics.getGauge(supplierGaugeMetricID);
         Gauge<?> fGauge = metrics.getGauge(toDoubleFunctiongaugeMetricID);
-        
+
         Assert.assertNull(sGauge);
         Assert.assertNull(fGauge);
-        
+
         gaugeMe();
-        
+
         sGauge = metrics.getGauge(supplierGaugeMetricID);
         fGauge = metrics.getGauge(toDoubleFunctiongaugeMetricID);
-        
+
         Assert.assertEquals(0, sGauge.getValue());
         Assert.assertEquals(1, fGauge.getValue());
-        
+
         Assert.assertEquals(2, sGauge.getValue());
         Assert.assertEquals(3, fGauge.getValue());
     }
 
     public void gaugeMe() {
         metrics.gauge("tck.gaugetest.supplierGaugeManual", value::getAndIncrement, null);
-        
-        metrics.gauge("tck.gaugetest.toDoubleFunctionGaugeManual", value , 
+
+        metrics.gauge("tck.gaugetest.toDoubleFunctionGaugeManual", value ,
                 (atomicInteger) -> {
                     AtomicInteger myAtomicInteger= (AtomicInteger) atomicInteger;
                     return myAtomicInteger.getAndIncrement();
