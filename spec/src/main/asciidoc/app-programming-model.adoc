@@ -174,7 +174,7 @@ In case of constructors, "name of the method" is the short name of the declaring
 ----
 package com.example;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 
@@ -215,7 +215,7 @@ yellow
 ----
 package com.example;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 

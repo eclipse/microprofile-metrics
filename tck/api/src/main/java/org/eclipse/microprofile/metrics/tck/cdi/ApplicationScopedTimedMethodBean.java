@@ -17,7 +17,7 @@ package org.eclipse.microprofile.metrics.tck.cdi;
 
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class ApplicationScopedTimedMethodBean {

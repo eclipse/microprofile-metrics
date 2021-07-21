@@ -49,7 +49,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -91,10 +91,10 @@ public class MpMetricTest {
 
     private static final String APPLICATION_JSON = "application/json";
     private static final String TEXT_PLAIN = "text/plain";
-    
-    private static final String JSON_APP_LABEL_REGEX = ";_app=[-/A-Za-z0-9]+([;\\\"]?)"; 
+
+    private static final String JSON_APP_LABEL_REGEX = ";_app=[-/A-Za-z0-9]+([;\\\"]?)";
     private static final String JSON_APP_LABEL_REGEXS_SUB = "$1";
-    
+
     private static final String OPENMETRICS_APP_LABEL_REGEX = "_app=\"[-/A-Za-z0-9]+\"";
 
     private static final String DEFAULT_PROTOCOL = "http";
@@ -208,9 +208,9 @@ public class MpMetricTest {
         responseBuilder.clone(resp);
         responseBuilder.setBody(filteredJSONPath.prettify());
         resp = responseBuilder.build();
-        
+
         resp.then().statusCode(200).and()
-            .contentType(MpMetricTest.APPLICATION_JSON).and().body(containsString("thread.max.count;tier=integration"));        
+            .contentType(MpMetricTest.APPLICATION_JSON).and().body(containsString("thread.max.count;tier=integration"));
     }
 
     @Test
@@ -233,7 +233,7 @@ public class MpMetricTest {
     public void testBaseAttributeJson() {
         Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
         Header wantJson = new Header("Accept", APPLICATION_JSON);
-        
+
         Response resp = given().header(wantJson).get("/metrics/base/thread.max.count");
         JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
         ResponseBuilder responseBuilder = new ResponseBuilder();
@@ -253,18 +253,18 @@ public class MpMetricTest {
 
         JsonPath jsonPath = given().header(wantJson).get("/metrics/base").jsonPath();
         JsonPath filteredJSONPath = new JsonPath(jsonPath.prettify().replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB));
-        
+
         Map<String, Object> elements = filteredJSONPath.getMap(".");
-        
+
         List<String> missing = new ArrayList<>();
 
-        Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);       
-        
+        Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
+
         for (MiniMeta item : baseNames.values()) {
             if (item.name.startsWith("gc.")) {
                 continue;
             }
-                
+
             if (!elements.containsKey(item.toJSONName()) && !baseNames.get(item.name).optional) {
                 missing.add(item.toJSONName());
             }
@@ -471,14 +471,14 @@ public class MpMetricTest {
         metricAppBean.countMe();
         metricAppBean.countMeA();
         metricAppBean.countMeB();
-        
+
         metricAppBean.gaugeMe();
         metricAppBean.gaugeMeA();
         metricAppBean.gaugeMeB();
         metricAppBean.gaugeMeTagged();
         metricAppBean.gaugeMeTaggedOne();
         metricAppBean.gaugeMeTaggedTwo();
-        
+
         metricAppBean.histogramMe();
 
         metricAppBean.meterMe();
@@ -486,20 +486,20 @@ public class MpMetricTest {
 
         metricAppBean.timeMe();
         metricAppBean.timeMeA();
-        
+
         metricAppBean.simpleTimeMe();
         metricAppBean.simpleTimeMeA();
-        
+
         metricAppBean.concGaugeMeA();
 
     }
-    
+
     @Test
     @RunAsClient
     @InSequence(18)
     public void testApplicationMetricsJSON() {
         Header wantJson = new Header("Accept", APPLICATION_JSON);
-        
+
         Response resp = given().header(wantJson).get("/metrics/application");
         JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
         ResponseBuilder responseBuilder = new ResponseBuilder();
@@ -585,12 +585,12 @@ public class MpMetricTest {
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p99;tier=integration"))
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p999;tier=integration"))
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("stddev;tier=integration"))
-                
+
                 .body("'metricTest.test1.simpleTimer'.'count;tier=integration'", equalTo(1))
                 .body("'metricTest.test1.simpleTimer'", hasKey("elapsedTime;tier=integration"))
                 .body("'metricTest.test1.simpleTimer'", hasKey("minTimeDuration;tier=integration"))
                 .body("'metricTest.test1.simpleTimer'", hasKey("maxTimeDuration;tier=integration"))
-                
+
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA'.'count;tier=integration'", equalTo(1))
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA'", hasKey("elapsedTime;tier=integration"))
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA'", hasKey("minTimeDuration;tier=integration"))
@@ -606,7 +606,7 @@ public class MpMetricTest {
         JsonPath jsonPath = given().header(wantJson).options("/metrics/application").jsonPath();
 
         Map<String, Object> elements = jsonPath.getMap(".");
-        
+
         List<String> missing = new ArrayList<>();
 
         Map<String, MiniMeta> names = getExpectedMetadataFromXmlFile(MetricRegistry.Type.APPLICATION);
@@ -681,13 +681,13 @@ public class MpMetricTest {
     public void testApplicationTimerUnitOpenMetrics() {
 
         String prefix = "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_";
-        
+
         Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics/application/org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
-                
+
         resp.then().statusCode(200)
             .and()
             .body(containsString("# TYPE application_" + prefix + "seconds summary"))
@@ -722,7 +722,7 @@ public class MpMetricTest {
         responseBuilder.clone(resp);
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
-        
+
         resp.then().statusCode(200)
             .and()
             .body(containsString(prefix + "bytes_count"))
@@ -753,7 +753,7 @@ public class MpMetricTest {
         responseBuilder.clone(resp);
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
-        
+
         resp.then().statusCode(200)
             .and()
             .body(containsString(prefix + "_count"))
@@ -803,7 +803,7 @@ public class MpMetricTest {
     public void testNonStandardUnitsJSON() {
 
         Header wantJSONFormat = new Header("Accept", APPLICATION_JSON);
-        
+
         given().header(wantJSONFormat).options("/metrics/application/jellybeanHistogram").then().statusCode(200)
          .body("jellybeanHistogram.unit", equalTo("jellybeans"));
 
@@ -816,14 +816,14 @@ public class MpMetricTest {
 
         String prefix = "jellybeanHistogram_";
         Header wantOpenMetricsFormat = new Header("Accept", TEXT_PLAIN);
-        
+
         Response resp = given().header(wantOpenMetricsFormat).get("/metrics/application/jellybeanHistogram");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
-        
-        
+
+
         resp.then().statusCode(200)
         .and()
         .body(containsString(prefix + "jellybeans_count"))
@@ -1044,7 +1044,7 @@ public class MpMetricTest {
         }
         Assert.assertTrue("At least one metric named gc.time is expected", found);
     }
-    
+
     /**
      * Test that multi-dimensional metrics are represented properly
      * in JSON.
@@ -1054,37 +1054,37 @@ public class MpMetricTest {
     @InSequence(45)
     public void testMultipleTaggedMetricsJSON() {
         Header wantJson = new Header("Accept", APPLICATION_JSON);
-        
+
         Response resp = given().header(wantJson).get("/metrics/application");
         JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
         responseBuilder.setBody(filteredJSONPath.prettify());
         resp = responseBuilder.build();
-        
+
         /*
          * This test's primary objective is to ensure that the format is correct.
          */
-        
+
         resp.then().statusCode(200)
                 //counters
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.taggedCounter;tier=integration'", equalTo(0))
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.taggedCounter;number=one;tier=integration'", equalTo(0))
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.taggedCounter;number=two;tier=integration'", equalTo(0))
-                         
+
                 //ConcurrentGauge - ;number=one;tier=integration
-                .body("'taggedConcurrentGauge'.'current;number=one;tier=integration'", equalTo(0)) 
+                .body("'taggedConcurrentGauge'.'current;number=one;tier=integration'", equalTo(0))
                 .body("'taggedConcurrentGauge'.'min;number=one;tier=integration'", equalTo(0))
                 .body("'taggedConcurrentGauge'.'max;number=one;tier=integration'", equalTo(0))
                 //ConcurrentGauge - ;number=two;tier=integration
-                .body("'taggedConcurrentGauge'.'current;number=two;tier=integration'", equalTo(0)) 
+                .body("'taggedConcurrentGauge'.'current;number=two;tier=integration'", equalTo(0))
                 .body("'taggedConcurrentGauge'.'min;number=two;tier=integration'", equalTo(0))
                 .body("'taggedConcurrentGauge'.'max;number=two;tier=integration'", equalTo(0))
-                
+
                 //Gauge
                 .body("'taggedGauge;number=one;tier=integration'", equalTo(1000))
                 .body("'taggedGauge;number=two;tier=integration'", equalTo(1000))
-                
+
                 //histogram - ;tier=integration
                 .body("'taggedHistogram'.'count;tier=integration'", equalTo(0))
                 .body("'taggedHistogram'", hasKey("max;tier=integration"))
@@ -1097,7 +1097,7 @@ public class MpMetricTest {
                 .body("'taggedHistogram'", hasKey("p99;tier=integration"))
                 .body("'taggedHistogram'", hasKey("p999;tier=integration"))
                 .body("'taggedHistogram'", hasKey("stddev;tier=integration"))
-                
+
                 //histogram - ;number=one;tier=integration
                 .body("'taggedHistogram'.'count;number=one;tier=integration'", equalTo(0))
                 .body("'taggedHistogram'", hasKey("max;number=one;tier=integration"))
@@ -1110,7 +1110,7 @@ public class MpMetricTest {
                 .body("'taggedHistogram'", hasKey("p99;number=one;tier=integration"))
                 .body("'taggedHistogram'", hasKey("p999;number=one;tier=integration"))
                 .body("'taggedHistogram'", hasKey("stddev;number=one;tier=integration"))
-                
+
                  //histogram - ;number=two;tier=integration
                 .body("'taggedHistogram'.'count;number=two;tier=integration'", equalTo(0))
                 .body("'taggedHistogram'", hasKey("max;number=two;tier=integration"))
@@ -1123,7 +1123,7 @@ public class MpMetricTest {
                 .body("'taggedHistogram'", hasKey("p99;number=two;tier=integration"))
                 .body("'taggedHistogram'", hasKey("p999;number=two;tier=integration"))
                 .body("'taggedHistogram'", hasKey("stddev;number=two;tier=integration"))
-        
+
                 //timer - ;tier=integration
                 .body("'taggedTimer'.'count;tier=integration'", equalTo(0))
                 .body("'taggedTimer'", hasKey("fifteenMinRate;tier=integration"))
@@ -1175,8 +1175,8 @@ public class MpMetricTest {
                 .body("'taggedTimer'", hasKey("p99;number=two;tier=integration"))
                 .body("'taggedTimer'", hasKey("p999;number=two;tier=integration"))
                 .body("'taggedTimer'", hasKey("stddev;number=two;tier=integration"))
-        
-                
+
+
                 //SimpleTimer - ;tier=integration
                 .body("'taggedSimpleTimer'.'count;tier=integration'", equalTo(0))
                 .body("'taggedSimpleTimer'", hasKey("elapsedTime;tier=integration"))
@@ -1192,8 +1192,8 @@ public class MpMetricTest {
                 .body("'taggedSimpleTimer'", hasKey("elapsedTime;number=two;tier=integration"))
                 .body("'taggedSimpleTimer'", hasKey("maxTimeDuration;number=two;tier=integration"))
                 .body("'taggedSimpleTimer'", hasKey("minTimeDuration;number=two;tier=integration"))
-                
-                
+
+
                 //Meter - ;tier=integration
                 .body("'taggedMeter'.'count;tier=integration'", equalTo(0))
                 .body("'taggedMeter'", hasKey("fifteenMinRate;tier=integration"))
@@ -1212,9 +1212,9 @@ public class MpMetricTest {
                 .body("'taggedMeter'", hasKey("fiveMinRate;number=two;tier=integration"))
                 .body("'taggedMeter'", hasKey("meanRate;number=two;tier=integration"))
                 .body("'taggedMeter'", hasKey("oneMinRate;number=two;tier=integration"));
-                
+
     }
-    
+
     /**
      * Test that semicolons `;` in tag values are translated to underscores `_`
      * in the JSON output
@@ -1230,13 +1230,13 @@ public class MpMetricTest {
         responseBuilder.clone(resp);
         responseBuilder.setBody(filteredJSONPath.prettify());
         resp = responseBuilder.build();
-        
+
         resp.then().statusCode(200)
             .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.semiColonTaggedCounter;"
                     + "scTag=semi_colons_are_bad;tier=integration'", equalTo(0));
     }
-    
-    
+
+
     @Test
     @RunAsClient
     @InSequence(47)
@@ -1249,21 +1249,21 @@ public class MpMetricTest {
             .body(containsString("concGaugeMeA_min"))
             .body(containsString("concGaugeMeA_max"));
     }
-    
+
     @Test
     @RunAsClient
     @InSequence(48)
     public void testApplicationSimpleTimerUnitOpenMetrics() {
 
         String prefix = "org_eclipse_microprofile_metrics_test_MetricAppBean_simpleTimeMeA_";
-        
+
         Response resp = given().header("Accept", TEXT_PLAIN).
                 get("/metrics/application/org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
-                
+
         resp.then().statusCode(200)
             .and()
             .body(containsString("# TYPE application_" + prefix + "total counter"))
@@ -1273,8 +1273,8 @@ public class MpMetricTest {
             .body(containsString(prefix + "minTimeDuration_seconds"))
         ;
     }
-    
-    
+
+
     /**
      * Checks that the value is within tolerance of the expected value
      *
@@ -1354,7 +1354,7 @@ public class MpMetricTest {
         public MiniMeta() {
             tags.put("tier", "integration");
         }
-        
+
         String toPromString() {
             String out = name.replace('-', '_').replace('.', '_').replace(' ', '_');
             if (!unit.equals("none")) {
@@ -1365,7 +1365,7 @@ public class MpMetricTest {
 
             return out;
         }
-        
+
         String toJSONName() {
             return name + ";" + tags.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(";"));
         }

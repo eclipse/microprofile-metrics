@@ -36,7 +36,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.assertEquals;
@@ -81,12 +81,12 @@ public class SimpleTimerFunctionalTest {
         //The min and max values should NOT be null right now
         assertNotNull("Minimum should NOT be null", metricRegistry.getSimpleTimers().get(new MetricID("mySimplyTimed")).getMinTimeDuration());
         assertNotNull("Maximum should NOT be null", metricRegistry.getSimpleTimers().get(new MetricID("mySimplyTimed")).getMaxTimeDuration());
-    
+
         //The min and max values should be the SAME
         assertEquals("Minimum and Maximum should contain the same value ", metricRegistry.getSimpleTimers().
                 get(new MetricID("mySimplyTimed")).getMaxTimeDuration(),
                 metricRegistry.getSimpleTimers().get(new MetricID("mySimplyTimed")).getMinTimeDuration());
-        
+
     }
 
 }

@@ -27,7 +27,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.enterprise.util.Nonbinding;
+import jakarta.enterprise.util.Nonbinding;
 
 import org.eclipse.microprofile.metrics.MetricUnits;
 
@@ -63,7 +63,7 @@ public @interface Metric {
      * The tags of the metric.
      * @return The tags of the metric. Each {@code String} tag must be in the form of 'key=value'. If the input is empty or does
      * not contain a '=' sign, the entry is ignored.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
@@ -80,25 +80,25 @@ public @interface Metric {
     /**
      * The display name of the metric.
      * @return The display name of the metric.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String displayName() default "";
-    
+
     /**
      * The description of the metric.
      * @return The description of the metric.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String description() default "";
-    
+
     /**
      * The unit of the metric.
      * @return The unit of the metric. By default, the value is {@link MetricUnits#NONE}.
-     * 
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      * @see org.eclipse.microprofile.metrics.MetricUnits
      */

@@ -21,7 +21,7 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Set;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
@@ -76,7 +76,7 @@ public class MultipleMetricsMethodBeanTest {
     @Test
     @InSequence(1)
     public void metricsMethodNotCalledYet() {
-        assertThat("Metrics are not registered correctly", registry.getMetricIDs(), 
+        assertThat("Metrics are not registered correctly", registry.getMetricIDs(),
             is(equalTo(MetricsUtil.createMetricIDs(absoluteMetricNames()))));
     }
 

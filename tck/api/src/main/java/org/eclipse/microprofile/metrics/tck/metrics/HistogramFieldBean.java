@@ -18,7 +18,7 @@ package org.eclipse.microprofile.metrics.tck.metrics;
 import org.eclipse.microprofile.metrics.Histogram;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 public class HistogramFieldBean {
 

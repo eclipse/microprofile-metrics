@@ -24,7 +24,7 @@ package org.eclipse.microprofile.metrics.tck.tags;
 import org.eclipse.microprofile.metrics.Timer;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 public class TimerTagFieldBean {
 

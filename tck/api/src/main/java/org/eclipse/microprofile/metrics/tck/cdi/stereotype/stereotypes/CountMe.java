@@ -24,7 +24,7 @@ package org.eclipse.microprofile.metrics.tck.cdi.stereotype.stereotypes;
 
 import org.eclipse.microprofile.metrics.annotation.Counted;
 
-import javax.enterprise.inject.Stereotype;
+import jakarta.enterprise.inject.Stereotype;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

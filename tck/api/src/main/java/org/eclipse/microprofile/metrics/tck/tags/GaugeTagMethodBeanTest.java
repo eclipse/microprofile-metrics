@@ -26,7 +26,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Gauge;
 import org.eclipse.microprofile.metrics.MetricID;
@@ -50,10 +50,10 @@ public class GaugeTagMethodBeanTest {
 
     private final static Tag NUMBER_ONE_TAG = new Tag("number", "one");
     private final static Tag NUMBER_TWO_TAG = new Tag("number", "two");
-    
+
     private static MetricID gaugeOneMID;
     private static MetricID gaugeTwoMID;
-    
+
     @Deployment
     public static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
@@ -80,8 +80,8 @@ public class GaugeTagMethodBeanTest {
          * Running a managed arquillian container will result
          * with the MetricID being created in a client process
          * that does not contain the MPConfig impl.
-         * 
-         * This will cause client instantiated MetricIDs to 
+         *
+         * This will cause client instantiated MetricIDs to
          * throw an exception. (i.e the global MetricIDs)
          */
         gaugeOneMID = new MetricID(GAUGE_NAME, NUMBER_ONE_TAG);
@@ -119,10 +119,10 @@ public class GaugeTagMethodBeanTest {
         // Call the setter method and assert the gauge is up-to-date
         long value = Math.round(Math.random() * Long.MAX_VALUE);
         bean.setGaugeOne(value);
-        
+
         long secondValue = Math.round(Math.random() * Long.MAX_VALUE);
         bean.setGaugeTwo(secondValue);
-        
+
         assertThat("Gauge value is incorrect", gaugeOne.getValue(), is(equalTo(value)));
         assertThat("Gauge value is incorrect", gaugeTwo.getValue(), is(equalTo(secondValue)));
     }

@@ -24,7 +24,7 @@ package org.eclipse.microprofile.metrics.tck.tags;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
@@ -44,10 +44,10 @@ import org.junit.runner.RunWith;
 public class TimedTagMethodBeanTest {
 
     private final static String TIMER_NAME = MetricRegistry.name(TimedTagMethodBean.class, "timedMethod");
-    
+
     private final static Tag NUMBER_ONE_TAG = new Tag("number", "one");
     private final static Tag NUMBER_TWO_TAG = new Tag("number", "two");
-    
+
     private static MetricID timerOneMID;
     private static MetricID timerTwoMID;
 
@@ -73,15 +73,15 @@ public class TimedTagMethodBeanTest {
          * Running a managed arquillian container will result
          * with the MetricID being created in a client process
          * that does not contain the MPConfig impl.
-         * 
-         * This will cause client instantiated MetricIDs to 
+         *
+         * This will cause client instantiated MetricIDs to
          * throw an exception. (i.e the global MetricIDs)
          */
         timerOneMID = new MetricID(TIMER_NAME, NUMBER_ONE_TAG);
         timerTwoMID = new MetricID(TIMER_NAME, NUMBER_TWO_TAG);
 
     }
-    
+
     @Test
     @InSequence(1)
     public void timedTagMethodRegistered() {

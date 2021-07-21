@@ -22,7 +22,7 @@ import org.eclipse.microprofile.metrics.MetricID;
 
 import java.util.Arrays;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Gauge;
 import org.eclipse.microprofile.metrics.MetricRegistry;
@@ -43,10 +43,10 @@ public class InheritedGaugeMethodBeanTest {
 
     private final static String PARENT_GAUGE_NAME = MetricRegistry.name(InheritedParentGaugeMethodBean.class, "inheritedParentGaugeMethod");
     private final static String CHILD_GAUGE_NAME = MetricRegistry.name(InheritedChildGaugeMethodBean.class, "inheritedChildGaugeMethod");
-    
+
     private static MetricID parentMID;
     private static MetricID childMID;
-    
+
     @Deployment
     public static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
@@ -72,14 +72,14 @@ public class InheritedGaugeMethodBeanTest {
         // as only a proxy gets injected otherwise
         pBean.getGauge();
         bean.getChildGauge();
-        
+
         /*
          * The MetricID relies on the MicroProfile Config API.
          * Running a managed arquillian container will result
          * with the MetricID being created in a client process
          * that does not contain the MPConfig impl.
-         * 
-         * This will cause client instantiated MetricIDs to 
+         *
+         * This will cause client instantiated MetricIDs to
          * throw an exception. (i.e the global MetricIDs)
          */
         parentMID = new MetricID(PARENT_GAUGE_NAME);

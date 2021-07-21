@@ -32,7 +32,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Metric;
 import org.eclipse.microprofile.metrics.MetricID;
@@ -77,7 +77,7 @@ public class SimplyTimedClassBeanTest {
 
     private static final Set<String> SIMPLE_TIMER_NAMES = MetricsUtil.absoluteMetricNames(SimplyTimedClassBean.class,
             "simplyTimedClass", METHOD_NAMES, CONSTRUCTOR_NAME);
-            
+
     private static Set<MetricID> simpleTimerMIDs;
 
     // toString is overridden just to be able to trigger instantiation of the bean by calling it
@@ -112,8 +112,8 @@ public class SimplyTimedClassBeanTest {
          * Running a managed arquillian container will result
          * with the MetricID being created in a client process
          * that does not contain the MPConfig impl.
-         * 
-         * This will cause client instantiated MetricIDs to 
+         *
+         * This will cause client instantiated MetricIDs to
          * throw an exception. (i.e the global MetricIDs)
          */
         constructorMID = new MetricID(CONSTRUCTOR_SIMPLE_TIMER_NAME);
@@ -129,7 +129,7 @@ public class SimplyTimedClassBeanTest {
     @InSequence(1)
     public void simplyTimedMethodsNotCalledYet() {
         assertThat("SimpleTimers are not registered correctly", registry.getSimpleTimers().keySet(), is(equalTo(simpleTimerMIDsIncludingToString)));
-        
+
         assertThat("Constructor timer count is incorrect", registry.getSimpleTimer(constructorMID).getCount(), is(equalTo(1L)));
 
         // Make sure that the method timers haven't been simplyTimed yet
@@ -141,7 +141,7 @@ public class SimplyTimedClassBeanTest {
     @InSequence(2)
     public void callSimplyTimedMethodsOnce() {
         assertThat("SimpleTimers are not registered correctly", registry.getSimpleTimers().keySet(), is(equalTo(simpleTimerMIDsIncludingToString)));
-        
+
         assertThat("Constructor simple timer count is incorrect", registry.getSimpleTimer(constructorMID).getCount(), is(equalTo(1L)));
 
         // Call the simplyTimed methods and assert they've been simplyTimed

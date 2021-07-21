@@ -23,7 +23,7 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Set;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.Timer;
@@ -78,7 +78,7 @@ public class InheritedTimedMethodBeanTest {
 
     @Test
     @InSequence(2)
-    public void callTimedMethodsOnce() { 
+    public void callTimedMethodsOnce() {
         assertThat("Timers are not registered correctly", registry.getTimers().keySet(),
             is(equalTo(MetricsUtil.createMetricIDs(absoluteMetricNames()))));
 

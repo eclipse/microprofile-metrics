@@ -39,25 +39,25 @@ To enable the tests in your Arquillian based test project you need to add the fo
     <dependency>
         <groupId>org.eclipse.microprofile.metrics</groupId>
         <artifactId>microprofile-metrics-api</artifactId>
-        <version>2.3</version>
+        <version>3.0.0</version>
     </dependency>
 
     <dependency>
         <groupId>org.eclipse.microprofile.metrics</groupId>
         <artifactId>microprofile-metrics-rest-tck</artifactId>
-        <version>2.3</version>
+        <version>3.1</version>
     </dependency>
 
     <dependency>
         <groupId>org.eclipse.microprofile.metrics</groupId>
         <artifactId>microprofile-metrics-api-tck</artifactId>
-        <version>2.3</version>
+        <version>3.1</version>
     </dependency>
 
     <dependency>
-        <groupId>javax.enterprise</groupId>
-        <artifactId>cdi-api</artifactId>
-        <version>1.2</version>
+        <groupId>jakarta.enterprise</groupId>
+        <artifactId>jakarta.enterprise.cdi-api</artifactId>
+        <version>3.0.0</version>
         <scope>provided</scope>
     </dependency>
 
@@ -103,13 +103,13 @@ If running the optional TCK module you will need the below *additional* dependen
     <dependency>
         <groupId>org.eclipse.microprofile.metrics</groupId>
         <artifactId>microprofile-metrics-optional-tck</artifactId>
-        <version>2.3</version>
+        <version>3.1</version>
     </dependency>
 
     <dependency>
-        <groupId>javax.ws.rs</groupId>
-        <artifactId>javax.ws.rs-api</artifactId>
-        <version>2.0.1</version>
+        <groupId>jakarta.ws.rs</groupId>
+        <artifactId>jakarta.ws.rs-api</artifactId>
+        <version>3.0.0</version>
         <scope>provided</scope>
     </dependency>
 
@@ -182,7 +182,7 @@ mvn test -Dtest.url=http://localhost:9080
 If your server under test has basic authentication enabled, run the following command:
 ----
 # Modify the test.url variable to point to your server under test.  Modify the test.user and test.pwd variables to appropriate values for your server under test.
-mvn test -Dtest.url=https://localhost:9443 -Dtest.user=someUser -Dtest.pwd=somePassword 
+mvn test -Dtest.url=https://localhost:9443 -Dtest.user=someUser -Dtest.pwd=somePassword
 ----
 
 If you are testing with the Optional TCK module it will require the tests to send requests to the application deployed on your server. By default the tests will use the port defined in `test.url` as your application port. You can configure a separate application port by defining the `application.port` property.

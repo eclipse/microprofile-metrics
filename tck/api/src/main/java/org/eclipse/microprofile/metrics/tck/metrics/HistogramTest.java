@@ -28,7 +28,7 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Histogram;
 import org.eclipse.microprofile.metrics.MetricID;
@@ -204,6 +204,6 @@ public class HistogramTest {
         Assert.assertEquals(200, histogramInt.getSnapshot().size());
         Assert.assertEquals(200, histogramLong.getSnapshot().size());
     }
-    
+
 
 }

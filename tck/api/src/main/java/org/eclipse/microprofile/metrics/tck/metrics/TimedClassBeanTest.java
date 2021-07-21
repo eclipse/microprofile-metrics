@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Metric;
 import org.eclipse.microprofile.metrics.MetricID;
@@ -66,7 +66,7 @@ public class TimedClassBeanTest {
 
     private static final Set<String> TIMER_NAMES = MetricsUtil.absoluteMetricNames(TimedClassBean.class, "timedClass", METHOD_NAMES,
             CONSTRUCTOR_NAME);
-            
+
     private static Set<MetricID> timerMIDs;
 
     // toString is overridden just to be able to trigger instantiation of the bean by calling it
@@ -101,8 +101,8 @@ public class TimedClassBeanTest {
          * Running a managed arquillian container will result
          * with the MetricID being created in a client process
          * that does not contain the MPConfig impl.
-         * 
-         * This will cause client instantiated MetricIDs to 
+         *
+         * This will cause client instantiated MetricIDs to
          * throw an exception. (i.e the global MetricIDs)
          */
         constructorMID = new MetricID(CONSTRUCTOR_TIMER_NAME);
@@ -118,7 +118,7 @@ public class TimedClassBeanTest {
     @InSequence(1)
     public void timedMethodsNotCalledYet() {
         assertThat("Timers are not registered correctly", registry.getTimers().keySet(), is(equalTo(timerMIDsIncludingToString)));
-        
+
         assertThat("Constructor timer count is incorrect", registry.getTimer(constructorMID).getCount(), is(equalTo(1L)));
 
         // Make sure that the method timers haven't been timed yet
@@ -130,7 +130,7 @@ public class TimedClassBeanTest {
     @InSequence(2)
     public void callTimedMethodsOnce() {
         assertThat("Timers are not registered correctly", registry.getTimers().keySet(), is(equalTo(timerMIDsIncludingToString)));
-        
+
         assertThat("Constructor timer count is incorrect", registry.getTimer(constructorMID).getCount(), is(equalTo(1L)));
 
         // Call the timed methods and assert they've been timed

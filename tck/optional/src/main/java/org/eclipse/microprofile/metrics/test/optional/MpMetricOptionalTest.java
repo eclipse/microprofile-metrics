@@ -81,20 +81,20 @@ public class MpMetricOptionalTest {
     private static final String DOUBLE_PARAM = "_double";
     private static final String LONG_PARAM = "_long";
     private static final String BOOLEAN_PARAM = "_boolean";
-    private static final String HTTP_HEADERS_PARAM = "_javax.ws.rs.core.HttpHeaders";
-    private static final String REQUEST_PARAM = "_javax.ws.rs.core.Request";
-    private static final String URI_INFO_PARAM = "_javax.ws.rs.core.UriInfo";
-    private static final String RESOURCE_CONTEXT_PARAM = "_javax.ws.rs.container.ResourceContext";
-    private static final String PROVIDERS_PARAM = "_javax.ws.rs.ext.Providers";
-    private static final String APPLICATION_PARAM ="_javax.ws.rs.core.Application";
-    private static final String SECURITY_CONTEXT_PARAM ="_javax.ws.rs.core.SecurityContext";
-    private static final String CONFIGURATION_PARAM ="_javax.ws.rs.core.Configuration";
+    private static final String HTTP_HEADERS_PARAM = "_jakarta.ws.rs.core.HttpHeaders";
+    private static final String REQUEST_PARAM = "_jakarta.ws.rs.core.Request";
+    private static final String URI_INFO_PARAM = "_jakarta.ws.rs.core.UriInfo";
+    private static final String RESOURCE_CONTEXT_PARAM = "_jakarta.ws.rs.container.ResourceContext";
+    private static final String PROVIDERS_PARAM = "_jakarta.ws.rs.ext.Providers";
+    private static final String APPLICATION_PARAM ="_jakarta.ws.rs.core.Application";
+    private static final String SECURITY_CONTEXT_PARAM ="_jakarta.ws.rs.core.SecurityContext";
+    private static final String CONFIGURATION_PARAM ="_jakarta.ws.rs.core.Configuration";
     private static final String LIST_PARAM ="_java.util.List";
     private static final String SET_PARAM ="_java.util.Set";
     private static final String SORTED_SET_PARAM ="_java.util.SortedSet";
     private static final String OBJECT_PARAM ="_java.lang.Object";
     private static final String NAME_OBJECT_PARAM ="_org.eclipse.microprofile.metrics.test.optional.NameObject";
-    private static final String AYNC_RESP_PARAM ="_javax.ws.rs.container.AsyncResponse";
+    private static final String AYNC_RESP_PARAM ="_jakarta.ws.rs.container.AsyncResponse";
 
     private static final String JSON_BASE_REQUEST_COUNT_START =
             "'REST.request'.'count;class=org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional;method=";

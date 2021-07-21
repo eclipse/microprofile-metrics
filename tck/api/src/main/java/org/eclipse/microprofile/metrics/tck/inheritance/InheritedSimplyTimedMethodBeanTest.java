@@ -31,7 +31,7 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Set;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.SimpleTimer;
@@ -83,13 +83,13 @@ public class InheritedSimplyTimedMethodBeanTest {
             is(equalTo(MetricsUtil.createMetricIDs(absoluteMetricNames()))));
 
         // Make sure that all the timers haven't been called yet
-        assertThat("SimpleTimer counts are incorrect", registry.getSimpleTimers().values(), 
+        assertThat("SimpleTimer counts are incorrect", registry.getSimpleTimers().values(),
                 everyItem(Matchers.<SimpleTimer>hasProperty("count", equalTo(0L))));
     }
 
     @Test
     @InSequence(2)
-    public void callSimplyTimedMethodsOnce() { 
+    public void callSimplyTimedMethodsOnce() {
         assertThat("SimpleTimer are not registered correctly", registry.getSimpleTimers().keySet(),
             is(equalTo(MetricsUtil.createMetricIDs(absoluteMetricNames()))));
 

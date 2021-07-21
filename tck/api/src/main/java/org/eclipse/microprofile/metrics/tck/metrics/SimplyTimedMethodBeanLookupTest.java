@@ -32,8 +32,8 @@ import static org.junit.Assert.fail;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
@@ -54,7 +54,7 @@ import org.junit.runner.RunWith;
 public class SimplyTimedMethodBeanLookupTest {
 
     private final static String SIMPLE_TIMER_NAME = MetricRegistry.name(SimplyTimedMethodBean1.class, "simplyTimedMethod");
-    
+
     private static MetricID simpleTimerMID;
 
     private final static AtomicLong SIMPLE_TIMER_COUNT = new AtomicLong();
@@ -82,13 +82,13 @@ public class SimplyTimedMethodBeanLookupTest {
          * Running a managed arquillian container will result
          * with the MetricID being created in a client process
          * that does not contain the MPConfig impl.
-         * 
-         * This will cause client instantiated MetricIDs to 
+         *
+         * This will cause client instantiated MetricIDs to
          * throw an exception. (i.e the global MetricIDs)
          */
         simpleTimerMID = new MetricID(SIMPLE_TIMER_NAME);
     }
-    
+
     @Test
     @InSequence(1)
     public void simplyTimedMethodNotCalledYet() {

@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
@@ -44,7 +44,7 @@ public class ConcreteExtendedTimedBeanTest {
 
     private static MetricID timedMID;
     private static MetricID extendedTimedMID;
-    
+
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
@@ -64,8 +64,8 @@ public class ConcreteExtendedTimedBeanTest {
          * Running a managed arquillian container will result
          * with the MetricID being created in a client process
          * that does not contain the MPConfig impl.
-         * 
-         * This will cause client instantiated MetricIDs to 
+         *
+         * This will cause client instantiated MetricIDs to
          * throw an exception. (i.e the global MetricIDs)
          */
         timedMID = new MetricID(TIMED_NAME);
@@ -91,7 +91,7 @@ public class ConcreteExtendedTimedBeanTest {
         // Make sure that the timer hasn't been called yet
         assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(0L)));
     }
-    
+
     @Test
     @InSequence(3)
     public void callTimedMethodOnce(MetricRegistry registry) {
@@ -104,7 +104,7 @@ public class ConcreteExtendedTimedBeanTest {
         // Make sure that the timer has been called
         assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(1L)));
     }
-    
+
     @Test
     @InSequence(4)
     public void callExtendedTimedMethodOnce(MetricRegistry registry) {
