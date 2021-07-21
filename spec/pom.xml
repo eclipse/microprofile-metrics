@@ -35,8 +35,8 @@
         <maven.build.timestamp.format>MMMM dd, yyyy</maven.build.timestamp.format>
         <revisiondate>${maven.build.timestamp}</revisiondate>
         <gen-doc-dir>${project.build.directory}/generated-docs</gen-doc-dir>
-        <metrics.spec.pdf>${project.build.directory}/generated-docs/${project.build.finalName}.pdf</metrics.spec.pdf>
-        <metrics.spec.html>${project.build.directory}/generated-docs/${project.build.finalName}.html</metrics.spec.html>
+        <metrics.spec.pdf>${project.build.directory}/generated-docs/${project.artifactId}.pdf</metrics.spec.pdf>
+        <metrics.spec.html>${project.build.directory}/generated-docs/${project.artifactId}.html</metrics.spec.html>
     </properties>
 
     <build>
