@@ -25,8 +25,6 @@ package org.eclipse.microprofile.metrics.tck.metrics;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import jakarta.inject.Inject;
-
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.SimpleTimer;
@@ -41,6 +39,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import jakarta.inject.Inject;
 
 @RunWith(Arquillian.class)
 public class SimpleTimerTest {
@@ -81,7 +81,6 @@ public class SimpleTimerTest {
         double beforeStopTime = System.nanoTime();
         double time = context.stop();
         double afterStopTime = System.nanoTime();
-
 
         double delta = (afterStartTime - beforeStartTime) + (afterStopTime - beforeStopTime);
         Assert.assertEquals(beforeStopTime - beforeStartTime, time, delta);

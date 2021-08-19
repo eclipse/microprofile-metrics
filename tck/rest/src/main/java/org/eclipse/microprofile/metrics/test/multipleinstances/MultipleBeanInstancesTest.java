@@ -22,6 +22,10 @@
 
 package org.eclipse.microprofile.metrics.test.multipleinstances;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -35,13 +39,9 @@ import org.junit.runner.RunWith;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-
 /**
- * Validate that when metrics are used on beans that create multiple instances, the metric usages are
- * merged over all instances of that bean.
+ * Validate that when metrics are used on beans that create multiple instances, the metric usages are merged over all
+ * instances of that bean.
  */
 @RunWith(Arquillian.class)
 public class MultipleBeanInstancesTest {
@@ -49,7 +49,7 @@ public class MultipleBeanInstancesTest {
     @Deployment
     public static WebArchive createDeployment() {
         WebArchive archive = ShrinkWrap.create(WebArchive.class).addClass(DependentScopedBean.class)
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
         return archive;
     }
 
@@ -68,28 +68,33 @@ public class MultipleBeanInstancesTest {
         instance1 = bean.get();
         instance2 = bean.get();
         assertFalse("CDI container should return two different bean instances",
-            instance1.equals(instance2));
+                instance1.equals(instance2));
     }
 
     @Test
     public void testCounter() {
         instance1.countedMethod();
         instance2.countedMethod();
-        assertThat(registry.getCounters((id, metric) -> id.getName().equals("counter")).values().iterator().next().getCount(), is(2L));
+        assertThat(registry.getCounters((id, metric) -> id.getName().equals("counter")).values().iterator().next()
+                .getCount(), is(2L));
     }
 
     @Test
     public void testMeter() {
         instance1.meteredMethod();
         instance2.meteredMethod();
-        assertThat(registry.getMeters((id, metric) -> id.getName().equals("meter")).values().iterator().next().getCount(), is(2L));
+        assertThat(
+                registry.getMeters((id, metric) -> id.getName().equals("meter")).values().iterator().next().getCount(),
+                is(2L));
     }
 
     @Test
     public void testTimer() {
         instance1.timedMethod();
         instance2.timedMethod();
-        assertThat(registry.getTimers((id, metric) -> id.getName().equals("timer")).values().iterator().next().getCount(), is(2L));
+        assertThat(
+                registry.getTimers((id, metric) -> id.getName().equals("timer")).values().iterator().next().getCount(),
+                is(2L));
     }
 
 }

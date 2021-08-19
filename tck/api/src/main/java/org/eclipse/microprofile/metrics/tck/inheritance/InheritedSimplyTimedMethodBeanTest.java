@@ -24,14 +24,11 @@
 package org.eclipse.microprofile.metrics.tck.inheritance;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.everyItem;
-
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.Set;
-
-import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.SimpleTimer;
@@ -47,16 +44,21 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import jakarta.inject.Inject;
+
 @RunWith(Arquillian.class)
 public class InheritedSimplyTimedMethodBeanTest {
 
-    private static final String[] PARENT_SIMPLE_TIMER_NAMES = {"publicSimplyTimedMethod", "packagePrivateSimplyTimedMethod",
-            "protectedSimplyTimedMethod"};
-    private static final String[] CHILD_SIMPLE_TIMER_NAMES = {"simplyTimedMethodOne", "simplyTimedMethodTwo", "simplyTimedMethodProtected",
-            "simplyTimedMethodPackagedPrivate"};
+    private static final String[] PARENT_SIMPLE_TIMER_NAMES =
+            {"publicSimplyTimedMethod", "packagePrivateSimplyTimedMethod",
+                    "protectedSimplyTimedMethod"};
+    private static final String[] CHILD_SIMPLE_TIMER_NAMES =
+            {"simplyTimedMethodOne", "simplyTimedMethodTwo", "simplyTimedMethodProtected",
+                    "simplyTimedMethodPackagedPrivate"};
 
     private Set<String> absoluteMetricNames() {
-        Set<String> names = MetricsUtil.absoluteMetricNames(VisibilitySimplyTimedMethodBean.class, PARENT_SIMPLE_TIMER_NAMES);
+        Set<String> names =
+                MetricsUtil.absoluteMetricNames(VisibilitySimplyTimedMethodBean.class, PARENT_SIMPLE_TIMER_NAMES);
         names.addAll(MetricsUtil.absoluteMetricNames(InheritedSimplyTimedMethodBean.class, CHILD_SIMPLE_TIMER_NAMES));
         return names;
     }
@@ -64,10 +66,11 @@ public class InheritedSimplyTimedMethodBeanTest {
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
-            // Test bean
-            .addClasses(VisibilitySimplyTimedMethodBean.class, InheritedSimplyTimedMethodBean.class, MetricsUtil.class)
-            // Bean archive deployment descriptor
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClasses(VisibilitySimplyTimedMethodBean.class, InheritedSimplyTimedMethodBean.class,
+                        MetricsUtil.class)
+                // Bean archive deployment descriptor
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -80,7 +83,7 @@ public class InheritedSimplyTimedMethodBeanTest {
     @InSequence(1)
     public void simplyTimedMethodsNotCalledYet() {
         assertThat("SimpleTimer are not registered correctly", registry.getSimpleTimers().keySet(),
-            is(equalTo(MetricsUtil.createMetricIDs(absoluteMetricNames()))));
+                is(equalTo(MetricsUtil.createMetricIDs(absoluteMetricNames()))));
 
         // Make sure that all the timers haven't been called yet
         assertThat("SimpleTimer counts are incorrect", registry.getSimpleTimers().values(),
@@ -91,7 +94,7 @@ public class InheritedSimplyTimedMethodBeanTest {
     @InSequence(2)
     public void callSimplyTimedMethodsOnce() {
         assertThat("SimpleTimer are not registered correctly", registry.getSimpleTimers().keySet(),
-            is(equalTo(MetricsUtil.createMetricIDs(absoluteMetricNames()))));
+                is(equalTo(MetricsUtil.createMetricIDs(absoluteMetricNames()))));
 
         // Call the simplyTimed methods and assert they've all been simplyTimed once
         bean.publicSimplyTimedMethod();

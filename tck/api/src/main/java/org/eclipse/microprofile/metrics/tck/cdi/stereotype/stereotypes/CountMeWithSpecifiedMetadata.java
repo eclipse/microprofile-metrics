@@ -22,13 +22,14 @@
 
 package org.eclipse.microprofile.metrics.tck.cdi.stereotype.stereotypes;
 
-import org.eclipse.microprofile.metrics.annotation.Counted;
-
-import jakarta.enterprise.inject.Stereotype;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import org.eclipse.microprofile.metrics.annotation.Counted;
+
+import jakarta.enterprise.inject.Stereotype;
 
 @Stereotype
 @Retention(RetentionPolicy.RUNTIME)

@@ -30,8 +30,6 @@ import static org.hamcrest.Matchers.equalTo;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import jakarta.inject.Inject;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -48,6 +46,7 @@ import io.restassured.builder.ResponseBuilder;
 import io.restassured.http.Header;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+import jakarta.inject.Inject;
 
 /**
  * @author Heiko W. Rupp
@@ -55,15 +54,15 @@ import io.restassured.response.Response;
 @RunWith(Arquillian.class)
 public class ReusedMetricsTest {
 
-  private static final String JSON_APP_LABEL_REGEX = ";_app=[-/A-Za-z0-9]+([;\\\"]?)";
-  private static final String JSON_APP_LABEL_REGEXS_SUB = "$1";
+    private static final String JSON_APP_LABEL_REGEX = ";_app=[-/A-Za-z0-9]+([;\\\"]?)";
+    private static final String JSON_APP_LABEL_REGEXS_SUB = "$1";
 
-  private static final String APPLICATION_JSON = "application/json";
-  private static final String DEFAULT_PROTOCOL = "http";
-  private static final String DEFAULT_HOST = "localhost";
-  private static final int DEFAULT_PORT = 8080;
+    private static final String APPLICATION_JSON = "application/json";
+    private static final String DEFAULT_PROTOCOL = "http";
+    private static final String DEFAULT_HOST = "localhost";
+    private static final int DEFAULT_PORT = 8080;
 
-  @Inject
+    @Inject
     private MetricAppBean2 metricAppBean;
 
     @BeforeClass
@@ -95,33 +94,33 @@ public class ReusedMetricsTest {
 
     }
 
-  @Deployment
-  public static WebArchive createDeployment() {
-      WebArchive jar = ShrinkWrap.create(WebArchive.class).addClass(MetricAppBean2.class)
-              .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+    @Deployment
+    public static WebArchive createDeployment() {
+        WebArchive jar = ShrinkWrap.create(WebArchive.class).addClass(MetricAppBean2.class)
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 
-      return jar;
-  }
+        return jar;
+    }
 
+    @Test
+    @InSequence(1)
+    public void setA() {
+        metricAppBean.countMeA();
+        metricAppBean.meterMeA();
+        metricAppBean.timeMeA();
+        metricAppBean.simplyTimeMeA();
+    }
 
-  @Test
-  @InSequence(1)
-  public void setA() {
-    metricAppBean.countMeA();
-    metricAppBean.meterMeA();
-    metricAppBean.timeMeA();
-    metricAppBean.simplyTimeMeA();
-  }
-
-  @Test
-  @RunAsClient
-  @InSequence(2)
+    @Test
+    @RunAsClient
+    @InSequence(2)
     public void testSharedCounter() {
 
         Header acceptJson = new Header("Accept", APPLICATION_JSON);
 
         Response resp = given().header(acceptJson).get("/metrics/application");
-        JsonPath filteredJSONPath = new JsonPath(resp.jsonPath().prettify().replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB));
+        JsonPath filteredJSONPath =
+                new JsonPath(resp.jsonPath().prettify().replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB));
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
         responseBuilder.setBody(filteredJSONPath.prettify());
@@ -129,42 +128,46 @@ public class ReusedMetricsTest {
 
         resp.then()
                 .assertThat().body("'countMe2;tier=integration'", equalTo(1))
-                .assertThat().body("'org.eclipse.microprofile.metrics.test.MetricAppBean2.meterMe2'.'count;tier=integration'", equalTo(1))
+                .assertThat()
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean2.meterMe2'.'count;tier=integration'",
+                        equalTo(1))
                 .assertThat().body("'timeMe2'.'count;tier=integration'", equalTo(1))
                 .assertThat().body("'simplyTimeMe2'.'count;tier=integration'", equalTo(1));
 
-  }
+    }
 
-  @Test
-  @InSequence(3)
-  public void setB() {
-    metricAppBean.countMeB();
-    metricAppBean.meterMeB();
-    metricAppBean.timeMeB();
-    metricAppBean.simplyTimeMeB();
-  }
+    @Test
+    @InSequence(3)
+    public void setB() {
+        metricAppBean.countMeB();
+        metricAppBean.meterMeB();
+        metricAppBean.timeMeB();
+        metricAppBean.simplyTimeMeB();
+    }
 
-  @Test
-  @RunAsClient
-  @InSequence(4)
-  public void testSharedCounterAgain() {
+    @Test
+    @RunAsClient
+    @InSequence(4)
+    public void testSharedCounterAgain() {
 
-    Header acceptJson = new Header("Accept", APPLICATION_JSON);
+        Header acceptJson = new Header("Accept", APPLICATION_JSON);
 
-    Response resp = given().header(acceptJson).get("/metrics/application");
-    JsonPath filteredJSONPath = new JsonPath(resp.jsonPath().prettify().replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB));
-    ResponseBuilder responseBuilder = new ResponseBuilder();
-    responseBuilder.clone(resp);
-    responseBuilder.setBody(filteredJSONPath.prettify());
-    resp = responseBuilder.build();
+        Response resp = given().header(acceptJson).get("/metrics/application");
+        JsonPath filteredJSONPath =
+                new JsonPath(resp.jsonPath().prettify().replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB));
+        ResponseBuilder responseBuilder = new ResponseBuilder();
+        responseBuilder.clone(resp);
+        responseBuilder.setBody(filteredJSONPath.prettify());
+        resp = responseBuilder.build();
 
-    resp.then()
-    .assertThat().body("'countMe2;tier=integration'", equalTo(2))
-    .assertThat().body("'org.eclipse.microprofile.metrics.test.MetricAppBean2.meterMe2'.'count;tier=integration'", equalTo(2))
-    .assertThat().body("'timeMe2'.'count;tier=integration'", equalTo(2))
-    .assertThat().body("'simplyTimeMe2'.'count;tier=integration'", equalTo(2));
+        resp.then()
+                .assertThat().body("'countMe2;tier=integration'", equalTo(2))
+                .assertThat()
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean2.meterMe2'.'count;tier=integration'",
+                        equalTo(2))
+                .assertThat().body("'timeMe2'.'count;tier=integration'", equalTo(2))
+                .assertThat().body("'simplyTimeMe2'.'count;tier=integration'", equalTo(2));
 
-
-  }
+    }
 
 }

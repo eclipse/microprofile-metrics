@@ -24,8 +24,6 @@ import static org.junit.Assert.fail;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import jakarta.inject.Inject;
-
 import org.eclipse.microprofile.metrics.Meter;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
@@ -40,6 +38,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import jakarta.inject.Inject;
+
 @RunWith(Arquillian.class)
 public class MeteredMethodBeanTest {
 
@@ -51,10 +51,10 @@ public class MeteredMethodBeanTest {
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
-            // Test bean
-            .addClass(MeteredMethodBean1.class)
-            // Bean archive deployment descriptor
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClass(MeteredMethodBean1.class)
+                // Bean archive deployment descriptor
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -66,13 +66,10 @@ public class MeteredMethodBeanTest {
     @Before
     public void instantiateTest() {
         /*
-         * The MetricID relies on the MicroProfile Config API.
-         * Running a managed arquillian container will result
-         * with the MetricID being created in a client process
-         * that does not contain the MPConfig impl.
+         * The MetricID relies on the MicroProfile Config API. Running a managed arquillian container will result with
+         * the MetricID being created in a client process that does not contain the MPConfig impl.
          *
-         * This will cause client instantiated MetricIDs to
-         * throw an exception. (i.e the global MetricIDs)
+         * This will cause client instantiated MetricIDs to throw an exception. (i.e the global MetricIDs)
          */
         meterMID = new MetricID(METER_NAME);
     }
@@ -112,8 +109,7 @@ public class MeteredMethodBeanTest {
         try {
             // Call the metered method and assert an exception is thrown
             bean.meteredMethod();
-        }
-        catch (RuntimeException cause) {
+        } catch (RuntimeException cause) {
             assertThat(cause, is(instanceOf(IllegalStateException.class)));
             // Make sure that the meter hasn't been marked
             assertThat("Meter count is incorrect", meter.getCount(), is(equalTo(METER_COUNT.get())));

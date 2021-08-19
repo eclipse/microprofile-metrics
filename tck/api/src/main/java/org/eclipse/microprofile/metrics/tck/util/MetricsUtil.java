@@ -15,11 +15,11 @@
  */
 package org.eclipse.microprofile.metrics.tck.util;
 
-import org.eclipse.microprofile.metrics.MetricRegistry;
-
 import java.util.HashSet;
 import java.util.Set;
+
 import org.eclipse.microprofile.metrics.MetricID;
+import org.eclipse.microprofile.metrics.MetricRegistry;
 
 public final class MetricsUtil {
 
@@ -69,10 +69,10 @@ public final class MetricsUtil {
     public static String absoluteMetricName(Class<?> clazz, String metric, String name) {
         return MetricRegistry.name(clazz.getPackage().getName() + "." + metric, name);
     }
-    
-    public static Set<MetricID> createMetricIDs(Set<String> metricNames){
+
+    public static Set<MetricID> createMetricIDs(Set<String> metricNames) {
         Set<MetricID> metricIDSet = new HashSet<MetricID>();
-        for (String metricName : metricNames){
+        for (String metricName : metricNames) {
             metricIDSet.add(new MetricID(metricName));
         }
         return metricIDSet;

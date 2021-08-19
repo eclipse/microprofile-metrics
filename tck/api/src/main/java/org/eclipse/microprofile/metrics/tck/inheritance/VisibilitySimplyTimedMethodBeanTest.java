@@ -24,13 +24,11 @@
 package org.eclipse.microprofile.metrics.tck.inheritance;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.Set;
-
-import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.SimpleTimer;
@@ -46,10 +44,13 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import jakarta.inject.Inject;
+
 @RunWith(Arquillian.class)
 public class VisibilitySimplyTimedMethodBeanTest {
 
-    private static final String[] TIMER_NAMES = {"publicSimplyTimedMethod", "packagePrivateSimplyTimedMethod", "protectedSimplyTimedMethod"};
+    private static final String[] TIMER_NAMES =
+            {"publicSimplyTimedMethod", "packagePrivateSimplyTimedMethod", "protectedSimplyTimedMethod"};
 
     private Set<String> absoluteMetricNames() {
         return MetricsUtil.absoluteMetricNames(VisibilitySimplyTimedMethodBean.class, TIMER_NAMES);
@@ -58,10 +59,10 @@ public class VisibilitySimplyTimedMethodBeanTest {
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
-            // Test bean
-            .addClasses(VisibilitySimplyTimedMethodBean.class, MetricsUtil.class)
-            // Bean archive deployment descriptor
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClasses(VisibilitySimplyTimedMethodBean.class, MetricsUtil.class)
+                // Bean archive deployment descriptor
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -74,7 +75,7 @@ public class VisibilitySimplyTimedMethodBeanTest {
     @InSequence(1)
     public void simplyTimedMethodsNotCalledYet() {
         assertThat("SimpleTimers are not registered correctly", registry.getSimpleTimers().keySet(),
-            is(equalTo(MetricsUtil.createMetricIDs(absoluteMetricNames()))));
+                is(equalTo(MetricsUtil.createMetricIDs(absoluteMetricNames()))));
 
         // Make sure that all the SimpleTimers haven't been called yet
         assertThat("SimpleTimer counts are incorrect", registry.getSimpleTimers().values(),
@@ -85,7 +86,7 @@ public class VisibilitySimplyTimedMethodBeanTest {
     @InSequence(2)
     public void callSimplyTimedMethodsOnce() {
         assertThat("SimpleTimers are not registered correctly", registry.getSimpleTimers().keySet(),
-            is(equalTo(MetricsUtil.createMetricIDs(absoluteMetricNames()))));
+                is(equalTo(MetricsUtil.createMetricIDs(absoluteMetricNames()))));
 
         // Call the simplyTimed methods and assert they've all been timed once
         bean.publicSimplyTimedMethod();

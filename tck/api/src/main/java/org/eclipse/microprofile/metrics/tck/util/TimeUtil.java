@@ -57,7 +57,7 @@ public class TimeUtil {
         // then the timer's target time is actually in the past, but java.util.Timer, according to its javadoc,
         // should fire immediately in this case, so we should be fine and just continue.
         t.schedule(task, calendar.getTime());
-        if(!done.await(65, TimeUnit.SECONDS)) {
+        if (!done.await(65, TimeUnit.SECONDS)) {
             throw new TimeoutException();
         }
     }

@@ -26,8 +26,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import jakarta.inject.Inject;
-
 import org.eclipse.microprofile.metrics.Histogram;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
@@ -43,6 +41,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import jakarta.inject.Inject;
+
 @RunWith(Arquillian.class)
 public class HistogramTagFieldBeanTest {
 
@@ -57,10 +57,10 @@ public class HistogramTagFieldBeanTest {
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
-            // Test bean
-            .addClass(HistogramTagFieldBean.class)
-            // Bean archive deployment descriptor
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClass(HistogramTagFieldBean.class)
+                // Bean archive deployment descriptor
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -72,13 +72,10 @@ public class HistogramTagFieldBeanTest {
     @Before
     public void instantiateTest() {
         /*
-         * The MetricID relies on the MicroProfile Config API.
-         * Running a managed arquillian container will result
-         * with the MetricID being created in a client process
-         * that does not contain the MPConfig impl.
+         * The MetricID relies on the MicroProfile Config API. Running a managed arquillian container will result with
+         * the MetricID being created in a client process that does not contain the MPConfig impl.
          *
-         * This will cause client instantiated MetricIDs to
-         * throw an exception. (i.e the global MetricIDs)
+         * This will cause client instantiated MetricIDs to throw an exception. (i.e the global MetricIDs)
          */
         histogramOneMID = new MetricID(HISTOGRAM_NAME, NUMBER_ONE_TAG);
         histogramTwoMID = new MetricID(HISTOGRAM_NAME, NUMBER_TWO_TAG);
@@ -99,7 +96,6 @@ public class HistogramTagFieldBeanTest {
         assertThat("Histogram is not registered correctly", histogramOne, notNullValue());
         assertThat("Histogram is not registered correctly", histogramTwo, notNullValue());
 
-
         // Call the update method and assert the histogram is up-to-date
         long value = Math.round(Math.random() * Long.MAX_VALUE);
         bean.updateOne(value);
@@ -110,7 +106,6 @@ public class HistogramTagFieldBeanTest {
         assertThat("Histogram size is incorrect", histogramOne.getSnapshot().size(), is(equalTo(1)));
         assertThat("Histogram min value is incorrect", histogramOne.getSnapshot().getMin(), is(equalTo(value)));
         assertThat("Histogram max value is incorrect", histogramOne.getSnapshot().getMax(), is(equalTo(value)));
-
 
         assertThat("Histogram count is incorrect", histogramTwo.getCount(), is(equalTo(1L)));
         assertThat("Histogram size is incorrect", histogramTwo.getSnapshot().size(), is(equalTo(1)));

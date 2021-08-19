@@ -43,8 +43,8 @@ public interface SimpleTimer extends Metric, Counting {
     interface Context extends Closeable {
 
         /**
-         * Updates the simple timer with the difference between current and start time. Call to this method will
-         * not reset the start time. Multiple calls result in multiple updates.
+         * Updates the simple timer with the difference between current and start time. Call to this method will not
+         * reset the start time. Multiple calls result in multiple updates.
          *
          * @return the elapsed time in nanoseconds
          */
@@ -58,26 +58,31 @@ public interface SimpleTimer extends Metric, Counting {
     /**
      * Adds a recorded duration.
      *
-     * @param duration the length of the {@link java.time.Duration duration}
+     * @param duration
+     *            the length of the {@link java.time.Duration duration}
      */
     void update(Duration duration);
 
     /**
      * Times and records the duration of event.
      *
-     * @param event a {@link Callable} whose {@link Callable#call()} method implements a process
-     *                  whose duration should be timed
-     * @param <T>   the type of the value returned by {@code event}
+     * @param event
+     *            a {@link Callable} whose {@link Callable#call()} method implements a process whose duration should be
+     *            timed
+     * @param <T>
+     *            the type of the value returned by {@code event}
      * @return the value returned by {@code event}
-     * @throws Exception if {@code event} throws an {@link Exception}
+     * @throws Exception
+     *             if {@code event} throws an {@link Exception}
      */
     <T> T time(Callable<T> event) throws Exception;
 
     /**
      * Times and records the duration of event.
      *
-     * @param event a {@link Runnable} whose {@link Runnable#run()} method implements a process
-     *                  whose duration should be timed
+     * @param event
+     *            a {@link Runnable} whose {@link Runnable#run()} method implements a process whose duration should be
+     *            timed
      */
     void time(Runnable event);
 
@@ -90,7 +95,8 @@ public interface SimpleTimer extends Metric, Counting {
     Context time();
 
     /**
-     * Returns the total elapsed timing durations of all completed timing events that are recorded with {@link #update(Duration)}.
+     * Returns the total elapsed timing durations of all completed timing events that are recorded with
+     * {@link #update(Duration)}.
      * 
      * @return the elapsed time {@link java.time.Duration duration}
      */
@@ -98,32 +104,34 @@ public interface SimpleTimer extends Metric, Counting {
 
     @Override
     long getCount();
-    
+
     /**
      * Get the maximum recorded time duration of the SimpleTimer for the previously completed full minute.
      * <p>
      * This represents the highest timed duration in the last completed full minute. For example if the last completed
      * full minute recorded durations of 12 seconds, 9 seconds and 1 second the largest value is 12 seconds.
      * 
-     * If no time duration has been recorded in the last completed full minute then a null is returned.
-     * If there has only been one time duration recorded in the last completed full minute then this value will be returned
-     * by both {@link SimpleTimer#getMaxTimeDuration()} and {@link SimpleTimer#getMinTimeDuration()}
+     * If no time duration has been recorded in the last completed full minute then a null is returned. If there has
+     * only been one time duration recorded in the last completed full minute then this value will be returned by both
+     * {@link SimpleTimer#getMaxTimeDuration()} and {@link SimpleTimer#getMinTimeDuration()}
      *
-     * @return The maximum recorded time duration in the previously completed full minute or null if no values were recorded
+     * @return The maximum recorded time duration in the previously completed full minute or null if no values were
+     *         recorded
      */
     Duration getMaxTimeDuration();
 
     /**
      * Get the minimum recorded time duration of the SimpleTimer for the previously completed full minute.
      * <p>
-     * This represents the lowest  timed duration in the last completed full minute. For example if the last completed
+     * This represents the lowest timed duration in the last completed full minute. For example if the last completed
      * full minute recorded durations of 12 seconds, 9 seconds and 1 second the lowest value is 1 second.
      *
-     * If no time duration has been recorded in the last completed full minute then a null is returned.
-     * If there has only been one time duration recorded in the last completed full minute then this value will be returned
-     * by both {@link SimpleTimer#getMaxTimeDuration()} and {@link SimpleTimer#getMinTimeDuration()}
+     * If no time duration has been recorded in the last completed full minute then a null is returned. If there has
+     * only been one time duration recorded in the last completed full minute then this value will be returned by both
+     * {@link SimpleTimer#getMaxTimeDuration()} and {@link SimpleTimer#getMinTimeDuration()}
      *
-     * @return The minimum recorded time duration in the previously completed full minute or null if no values were recorded
+     * @return The minimum recorded time duration in the previously completed full minute or null if no values were
+     *         recorded
      */
     Duration getMinTimeDuration();
 

@@ -29,12 +29,11 @@ import jakarta.inject.Inject;
 public class HistogramTagFieldBean {
 
     @Inject
-    @Metric(name = "histogramName", tags= {"number=one"})
+    @Metric(name = "histogramName", tags = {"number=one"})
     private Histogram histogramOne;
 
-
     @Inject
-    @Metric(name = "histogramName", tags= {"number=two"})
+    @Metric(name = "histogramName", tags = {"number=two"})
     private Histogram histogramTwo;
 
     public void updateOne(long n) {

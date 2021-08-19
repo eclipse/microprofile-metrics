@@ -26,7 +26,7 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
 @Provider
-public class MpMetricsArithmeticExceptionMapper implements ExceptionMapper<ArithmeticException>{
+public class MpMetricsArithmeticExceptionMapper implements ExceptionMapper<ArithmeticException> {
 
     @Override
     public Response toResponse(ArithmeticException ex) {

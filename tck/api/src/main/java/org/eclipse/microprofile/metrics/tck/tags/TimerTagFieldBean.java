@@ -29,10 +29,10 @@ import jakarta.inject.Inject;
 public class TimerTagFieldBean {
 
     @Inject
-    @Metric(name = "timerName", absolute = true, tags= {"number=one"})
+    @Metric(name = "timerName", absolute = true, tags = {"number=one"})
     private Timer timerOne;
 
     @Inject
-    @Metric(name = "timerName", absolute = true, tags= {"number=two"})
+    @Metric(name = "timerName", absolute = true, tags = {"number=two"})
     private Timer timertwo;
 }

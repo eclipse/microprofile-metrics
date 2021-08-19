@@ -26,13 +26,10 @@
  *
  * <h2>Metric Annotation</h2>
  * <p>
- * The {@link org.eclipse.microprofile.metrics.annotation.Metric Metric}
- * annotation is used to provide metadata for the metric being injected. If a
- * metric with the same name exists in the
- * {@link org.eclipse.microprofile.metrics.MetricRegistry MetricRegistry}, the
- * metric is returned. Otherwise, a new metric is registered into the
- * MetricRegistry along with the metadata provided by the {@literal @}Metric
- * annotation.
+ * The {@link org.eclipse.microprofile.metrics.annotation.Metric Metric} annotation is used to provide metadata for the
+ * metric being injected. If a metric with the same name exists in the
+ * {@link org.eclipse.microprofile.metrics.MetricRegistry MetricRegistry}, the metric is returned. Otherwise, a new
+ * metric is registered into the MetricRegistry along with the metadata provided by the {@literal @}Metric annotation.
  * <p>
  * For example,
  *
@@ -46,9 +43,9 @@
  *
  * <h2>Interceptor Bindings</h2>
  * <p>
- * MicroProfile Metrics provides interceptor bindings which can be used to
- * instrument an application: {@literal @}Counted, {@literal @}Gauge,
- * {@literal @}Metered, {@literal @}Timed, {@literal @}SimplyTimed and {@literal @}ConcurrentGauge.
+ * MicroProfile Metrics provides interceptor bindings which can be used to instrument an application:
+ * {@literal @}Counted, {@literal @}Gauge, {@literal @}Metered, {@literal @}Timed, {@literal @}SimplyTimed and
+ * {@literal @}ConcurrentGauge.
  * <p>
  * An example using {@literal @}Counted,
  *
@@ -76,10 +73,9 @@
  *
  * <h2>CDI Qualifier</h2>
  * <p>
- * The {@link org.eclipse.microprofile.metrics.annotation.RegistryType
- * RegistryType} is used to identify which <code>MetricRegistry</code> (Application, Base, or
- * Vendor) should be injected. By default, no <code>RegistryType</code> will
- * inject the application <code>MetricRegistry</code>.
+ * The {@link org.eclipse.microprofile.metrics.annotation.RegistryType RegistryType} is used to identify which
+ * <code>MetricRegistry</code> (Application, Base, or Vendor) should be injected. By default, no
+ * <code>RegistryType</code> will inject the application <code>MetricRegistry</code>.
  *
  * <pre>
  * <code>
@@ -90,5 +86,5 @@
  * </pre>
  *
  */
-@org.osgi.annotation.versioning.Version("3.0")
+@org.osgi.annotation.versioning.Version("3.0.1")
 package org.eclipse.microprofile.metrics.annotation;

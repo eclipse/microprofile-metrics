@@ -32,12 +32,12 @@ public class GaugeTagMethodBean {
     private long gaugeOne;
     private long gaugeTwo;
 
-    @Gauge(name = "gaugeMethod", unit=MetricUnits.NONE, tags = {"number=one"})
+    @Gauge(name = "gaugeMethod", unit = MetricUnits.NONE, tags = {"number=one"})
     public long getGaugeOne() {
         return gaugeOne;
     }
 
-    @Gauge(name = "gaugeMethod", unit=MetricUnits.NONE, tags = {"number=two"})
+    @Gauge(name = "gaugeMethod", unit = MetricUnits.NONE, tags = {"number=two"})
     public long getGaugeTwo() {
         return gaugeTwo;
     }

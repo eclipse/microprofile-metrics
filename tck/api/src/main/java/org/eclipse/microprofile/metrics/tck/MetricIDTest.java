@@ -27,8 +27,6 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import jakarta.inject.Inject;
-
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
@@ -41,6 +39,8 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import jakarta.inject.Inject;
 
 @RunWith(Arquillian.class)
 public class MetricIDTest {
@@ -65,24 +65,24 @@ public class MetricIDTest {
         String counterName = "org.eclipse.microprofile.metrics.tck.MetricIDTest.counterColour";
 
         Counter counterColour = registry.counter(counterName);
-        Counter counterRed = registry.counter(counterName,tagEarth,tagRed);
-        Counter counterBlue = registry.counter(counterName,tagEarth,tagBlue);
+        Counter counterRed = registry.counter(counterName, tagEarth, tagRed);
+        Counter counterBlue = registry.counter(counterName, tagEarth, tagBlue);
 
         MetricID counterColourMID = new MetricID(counterName);
-        MetricID counterRedMID = new MetricID(counterName, tagEarth,tagRed);
-        MetricID counterBlueMID = new MetricID(counterName, tagEarth,tagRed);
+        MetricID counterRedMID = new MetricID(counterName, tagEarth, tagRed);
+        MetricID counterBlueMID = new MetricID(counterName, tagEarth, tagRed);
 
-        //check multi-dimensional metrics are registered
+        // check multi-dimensional metrics are registered
         assertThat("Counter is not registered correctly", registry.getCounter(counterColourMID), notNullValue());
         assertThat("Counter is not registered correctly", registry.getCounter(counterRedMID), notNullValue());
         assertThat("Counter is not registered correctly", registry.getCounter(counterBlueMID), notNullValue());
 
-        //remove one metric
+        // remove one metric
         registry.remove(counterColourMID);
         assertThat("Registry did not remove metric", registry.getCounters().size(), equalTo(2));
         assertThat("Counter is not registered correctly", registry.getCounter(counterColourMID), nullValue());
 
-        //remove all metrics with the given name
+        // remove all metrics with the given name
         registry.remove(counterName);
         assertThat("Counter is not registered correctly", registry.getCounter(counterRedMID), nullValue());
         assertThat("Counter is not registered correctly", registry.getCounter(counterBlueMID), nullValue());

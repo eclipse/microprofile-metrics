@@ -32,11 +32,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
-import jakarta.inject.Inject;
-
 import org.eclipse.microprofile.metrics.Metric;
-import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricFilter;
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.SimpleTimer;
 import org.eclipse.microprofile.metrics.tck.util.MetricsUtil;
@@ -52,21 +50,26 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import jakarta.inject.Inject;
+
 @RunWith(Arquillian.class)
 public class SimplyTimedClassBeanTest {
 
     private static final String CONSTRUCTOR_NAME = "SimplyTimedClassBean";
 
-    private static final String CONSTRUCTOR_SIMPLE_TIMER_NAME = MetricsUtil.absoluteMetricName(SimplyTimedClassBean.class,
-            "simplyTimedClass", CONSTRUCTOR_NAME);
+    private static final String CONSTRUCTOR_SIMPLE_TIMER_NAME =
+            MetricsUtil.absoluteMetricName(SimplyTimedClassBean.class,
+                    "simplyTimedClass", CONSTRUCTOR_NAME);
 
     private static MetricID constructorMID;
 
-    private static final String[] METHOD_NAMES = { "simplyTimedMethodOne", "simplyTimedMethodTwo", "simplyTimedMethodProtected",
-            "simplyTimedMethodPackagedPrivate" };
+    private static final String[] METHOD_NAMES =
+            {"simplyTimedMethodOne", "simplyTimedMethodTwo", "simplyTimedMethodProtected",
+                    "simplyTimedMethodPackagedPrivate"};
 
-    private static final Set<String> METHOD_SIMPLE_TIMER_NAMES = MetricsUtil.absoluteMetricNames(SimplyTimedClassBean.class,
-            "simplyTimedClass", METHOD_NAMES);
+    private static final Set<String> METHOD_SIMPLE_TIMER_NAMES =
+            MetricsUtil.absoluteMetricNames(SimplyTimedClassBean.class,
+                    "simplyTimedClass", METHOD_NAMES);
 
     private static final MetricFilter METHOD_SIMPLE_TIMERS = new MetricFilter() {
         @Override
@@ -108,13 +111,10 @@ public class SimplyTimedClassBeanTest {
         // as only a proxy gets injected otherwise
         bean.toString();
         /*
-         * The MetricID relies on the MicroProfile Config API.
-         * Running a managed arquillian container will result
-         * with the MetricID being created in a client process
-         * that does not contain the MPConfig impl.
+         * The MetricID relies on the MicroProfile Config API. Running a managed arquillian container will result with
+         * the MetricID being created in a client process that does not contain the MPConfig impl.
          *
-         * This will cause client instantiated MetricIDs to
-         * throw an exception. (i.e the global MetricIDs)
+         * This will cause client instantiated MetricIDs to throw an exception. (i.e the global MetricIDs)
          */
         constructorMID = new MetricID(CONSTRUCTOR_SIMPLE_TIMER_NAME);
         simpleTimerMIDs = MetricsUtil.createMetricIDs(SIMPLE_TIMER_NAMES);
@@ -122,27 +122,32 @@ public class SimplyTimedClassBeanTest {
         simpleTimerMIDsIncludingToString = new HashSet<>();
         simpleTimerMIDsIncludingToString.addAll(simpleTimerMIDs);
         simpleTimerMIDsIncludingToString.addAll(MetricsUtil.createMetricIDs(
-            MetricsUtil.absoluteMetricNames(SimplyTimedClassBean.class, "simplyTimedClass", new String[] {"toString"})));
+                MetricsUtil.absoluteMetricNames(SimplyTimedClassBean.class, "simplyTimedClass",
+                        new String[]{"toString"})));
     }
 
     @Test
     @InSequence(1)
     public void simplyTimedMethodsNotCalledYet() {
-        assertThat("SimpleTimers are not registered correctly", registry.getSimpleTimers().keySet(), is(equalTo(simpleTimerMIDsIncludingToString)));
+        assertThat("SimpleTimers are not registered correctly", registry.getSimpleTimers().keySet(),
+                is(equalTo(simpleTimerMIDsIncludingToString)));
 
-        assertThat("Constructor timer count is incorrect", registry.getSimpleTimer(constructorMID).getCount(), is(equalTo(1L)));
+        assertThat("Constructor timer count is incorrect", registry.getSimpleTimer(constructorMID).getCount(),
+                is(equalTo(1L)));
 
         // Make sure that the method timers haven't been simplyTimed yet
         assertThat("Method simple timer counts are incorrect", registry.getSimpleTimers(METHOD_SIMPLE_TIMERS).values(),
-                everyItem(Matchers.<SimpleTimer> hasProperty("count", equalTo(METHOD_COUNT.get()))));
+                everyItem(Matchers.<SimpleTimer>hasProperty("count", equalTo(METHOD_COUNT.get()))));
     }
 
     @Test
     @InSequence(2)
     public void callSimplyTimedMethodsOnce() {
-        assertThat("SimpleTimers are not registered correctly", registry.getSimpleTimers().keySet(), is(equalTo(simpleTimerMIDsIncludingToString)));
+        assertThat("SimpleTimers are not registered correctly", registry.getSimpleTimers().keySet(),
+                is(equalTo(simpleTimerMIDsIncludingToString)));
 
-        assertThat("Constructor simple timer count is incorrect", registry.getSimpleTimer(constructorMID).getCount(), is(equalTo(1L)));
+        assertThat("Constructor simple timer count is incorrect", registry.getSimpleTimer(constructorMID).getCount(),
+                is(equalTo(1L)));
 
         // Call the simplyTimed methods and assert they've been simplyTimed
         bean.simplyTimedMethodOne();
@@ -153,6 +158,6 @@ public class SimplyTimedClassBeanTest {
 
         // Make sure that the method timers have been simplyTimed
         assertThat("Method simple timer counts are incorrect", registry.getSimpleTimers(METHOD_SIMPLE_TIMERS).values(),
-                everyItem(Matchers.<SimpleTimer> hasProperty("count", equalTo(METHOD_COUNT.incrementAndGet()))));
+                everyItem(Matchers.<SimpleTimer>hasProperty("count", equalTo(METHOD_COUNT.incrementAndGet()))));
     }
 }

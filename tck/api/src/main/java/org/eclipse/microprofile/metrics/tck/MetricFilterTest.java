@@ -24,8 +24,8 @@
 package org.eclipse.microprofile.metrics.tck;
 
 import org.eclipse.microprofile.metrics.Metric;
-import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricFilter;
+import org.eclipse.microprofile.metrics.MetricID;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -43,7 +43,8 @@ public class MetricFilterTest {
         return ShrinkWrap.create(WebArchive.class).addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
-    private Metric metric = new Metric () { };
+    private Metric metric = new Metric() {
+    };
 
     @Test
     public void theAllFilterMatchesAllMetrics() throws Exception {

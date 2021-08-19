@@ -24,8 +24,6 @@ package org.eclipse.microprofile.metrics.tck.tags;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import jakarta.inject.Inject;
-
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.Tag;
@@ -39,6 +37,8 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import jakarta.inject.Inject;
 
 @RunWith(Arquillian.class)
 public class TimedTagMethodBeanTest {
@@ -54,10 +54,10 @@ public class TimedTagMethodBeanTest {
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
-            // Test bean
-            .addClass(TimedTagMethodBean.class)
-            // Bean archive deployment descriptor
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClass(TimedTagMethodBean.class)
+                // Bean archive deployment descriptor
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -69,13 +69,10 @@ public class TimedTagMethodBeanTest {
     @Before
     public void instantiateTest() {
         /*
-         * The MetricID relies on the MicroProfile Config API.
-         * Running a managed arquillian container will result
-         * with the MetricID being created in a client process
-         * that does not contain the MPConfig impl.
+         * The MetricID relies on the MicroProfile Config API. Running a managed arquillian container will result with
+         * the MetricID being created in a client process that does not contain the MPConfig impl.
          *
-         * This will cause client instantiated MetricIDs to
-         * throw an exception. (i.e the global MetricIDs)
+         * This will cause client instantiated MetricIDs to throw an exception. (i.e the global MetricIDs)
          */
         timerOneMID = new MetricID(TIMER_NAME, NUMBER_ONE_TAG);
         timerTwoMID = new MetricID(TIMER_NAME, NUMBER_TWO_TAG);
@@ -88,6 +85,5 @@ public class TimedTagMethodBeanTest {
         assertThat("Timer is not registered correctly", registry.getTimer(timerOneMID), notNullValue());
         assertThat("Timer is not registered correctly", registry.getTimer(timerTwoMID), notNullValue());
     }
-
 
 }

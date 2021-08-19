@@ -28,8 +28,7 @@ import java.util.Objects;
 /**
  * The {@link Metadata} builder.
  *
- * All values are considered "not present" by default.
- * Name must be set before {@link #build()} is called.
+ * All values are considered "not present" by default. Name must be set before {@link #build()} is called.
  */
 public class MetadataBuilder {
 
@@ -58,10 +57,13 @@ public class MetadataBuilder {
     /**
      * Sets the name. Does not accept null.
      *
-     * @param name the name
+     * @param name
+     *            the name
      * @return the builder instance
-     * @throws NullPointerException when name is null
-     * @throws IllegalArgumentException when name is empty
+     * @throws NullPointerException
+     *             when name is null
+     * @throws IllegalArgumentException
+     *             when name is empty
      */
     public MetadataBuilder withName(String name) {
         this.name = Objects.requireNonNull(name, "name is required");
@@ -74,7 +76,8 @@ public class MetadataBuilder {
     /**
      * Sets the displayName.
      *
-     * @param displayName the displayName, empty string is considered as "not present" (null)
+     * @param displayName
+     *            the displayName, empty string is considered as "not present" (null)
      * @return the builder instance
      */
     public MetadataBuilder withDisplayName(String displayName) {
@@ -85,7 +88,8 @@ public class MetadataBuilder {
     /**
      * Sets the description.
      *
-     * @param description the name, empty string is considered as "not present" (null)
+     * @param description
+     *            the name, empty string is considered as "not present" (null)
      * @return the builder instance
      */
     public MetadataBuilder withDescription(String description) {
@@ -96,7 +100,8 @@ public class MetadataBuilder {
     /**
      * Sets the type.
      *
-     * @param type the type, {@link MetricType#INVALID} is considered as "not present" (null)
+     * @param type
+     *            the type, {@link MetricType#INVALID} is considered as "not present" (null)
      * @return the builder instance
      */
     public MetadataBuilder withType(MetricType type) {
@@ -107,7 +112,8 @@ public class MetadataBuilder {
     /**
      * Sets the unit.
      *
-     * @param unit the unit, {@link MetricUnits#NONE} is considered as "not present" (null)
+     * @param unit
+     *            the unit, {@link MetricUnits#NONE} is considered as "not present" (null)
      * @return the builder instance
      */
     public MetadataBuilder withUnit(String unit) {
@@ -115,10 +121,10 @@ public class MetadataBuilder {
         return this;
     }
 
-
     /**
      * @return An object implementing {@link Metadata} from the provided properties
-     * @throws IllegalStateException when either name is null
+     * @throws IllegalStateException
+     *             when either name is null
      */
     public Metadata build() {
         if (Objects.isNull(name)) {

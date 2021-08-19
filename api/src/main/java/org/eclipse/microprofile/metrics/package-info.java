@@ -26,29 +26,24 @@
  * <h2>Rational</h2>
  *
  * <p>
- * To ensure reliable operation of software it is necessary to monitor essential
- * system parameters. There is already JMX as standard to expose metrics, but
- * remote-JMX is not easy to deal with and especially does not fit well in a
- * polyglot environment where other services are not running on the JVM. To
- * enable monitoring in an easy fashion, the MicroProfile Metrics specification
- * provides a standard to instrument an application with metrics and provides a
+ * To ensure reliable operation of software it is necessary to monitor essential system parameters. There is already JMX
+ * as standard to expose metrics, but remote-JMX is not easy to deal with and especially does not fit well in a polyglot
+ * environment where other services are not running on the JVM. To enable monitoring in an easy fashion, the
+ * MicroProfile Metrics specification provides a standard to instrument an application with metrics and provides a
  * simple REST endpoint for integration with monitoring services.
  *
  * <h2>Adding Metrics</h2>
  * <p>
- * MicroProfile Metrics provides 6 different metric types that can be used to
- * instrument an application. Developers can create an accompanying
- * {@link org.eclipse.microprofile.metrics.Metadata Metadata} object to supply
- * the metric's name, description, display name, and units. Once the
- * metric and the metadata are registered against the application
- * {@link org.eclipse.microprofile.metrics.MetricRegistry MetricRegistry}, the
- * metrics will be available in the REST endpoints.
+ * MicroProfile Metrics provides 6 different metric types that can be used to instrument an application. Developers can
+ * create an accompanying {@link org.eclipse.microprofile.metrics.Metadata Metadata} object to supply the metric's name,
+ * description, display name, and units. Once the metric and the metadata are registered against the application
+ * {@link org.eclipse.microprofile.metrics.MetricRegistry MetricRegistry}, the metrics will be available in the REST
+ * endpoints.
  *
  * <h2>Metric Types</h2>
  *
  * <p>
- * {@link org.eclipse.microprofile.metrics.Counter Counter} is used to measure
- * an increasing value.
+ * {@link org.eclipse.microprofile.metrics.Counter Counter} is used to measure an increasing value.
  * <p>
  * Example usage:
  *
@@ -60,8 +55,8 @@
  * </pre>
  *
  * <p>
- * {@link org.eclipse.microprofile.metrics.ConcurrentGauge ConcurrentGauge} is used
- * to monitor the number of concurrent invocations of a component.
+ * {@link org.eclipse.microprofile.metrics.ConcurrentGauge ConcurrentGauge} is used to monitor the number of concurrent
+ * invocations of a component.
  * <p>
  * Example usage:
  *
@@ -74,8 +69,7 @@
  * </code>
  * </pre>
  *
- * {@link org.eclipse.microprofile.metrics.Gauge Gauge} is used to provide the
- * immediate measurement of a value.
+ * {@link org.eclipse.microprofile.metrics.Gauge Gauge} is used to provide the immediate measurement of a value.
  * <p>
  * Example usage:
  *
@@ -91,8 +85,7 @@
  * </pre>
  *
  *
- * {@link org.eclipse.microprofile.metrics.Meter Meter} is used to measure the
- * frequency of an event.
+ * {@link org.eclipse.microprofile.metrics.Meter Meter} is used to measure the frequency of an event.
  * <p>
  * Example usage:
  *
@@ -104,8 +97,7 @@
  * </pre>
  *
  *
- * {@link org.eclipse.microprofile.metrics.Histogram Histogram} is used to
- * sample and compute the distribution of values
+ * {@link org.eclipse.microprofile.metrics.Histogram Histogram} is used to sample and compute the distribution of values
  * <p>
  * Example usage:
  *
@@ -116,8 +108,8 @@
  * </code>
  * </pre>
  *
- * {@link org.eclipse.microprofile.metrics.Timer Timer} is used to measure the
- * duration of an event as well as the frequency of occurrence.
+ * {@link org.eclipse.microprofile.metrics.Timer Timer} is used to measure the duration of an event as well as the
+ * frequency of occurrence.
  * <p>
  * Example usage:
  *
@@ -132,8 +124,7 @@
  * </code>
  * </pre>
  *
- * {@link org.eclipse.microprofile.metrics.SimpleTimer SimpleTimer} is used to measure the
- * duration of an event.
+ * {@link org.eclipse.microprofile.metrics.SimpleTimer SimpleTimer} is used to measure the duration of an event.
  * <p>
  * Example usage:
  *

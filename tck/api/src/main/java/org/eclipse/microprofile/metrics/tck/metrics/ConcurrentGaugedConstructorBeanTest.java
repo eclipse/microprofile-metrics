@@ -43,11 +43,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
-
-import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.ConcurrentGauge;
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -60,19 +57,23 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
+
 @RunWith(Arquillian.class)
 public class ConcurrentGaugedConstructorBeanTest {
 
-    private final static String COUNTER_NAME = MetricRegistry.name(ConcurrentGaugedConstructorBean.class, "cGaugedConstructor");
+    private final static String COUNTER_NAME =
+            MetricRegistry.name(ConcurrentGaugedConstructorBean.class, "cGaugedConstructor");
     private static MetricID counterMID;
 
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
-            // Test bean
-            .addClass(ConcurrentGaugedConstructorBean.class)
-            // Bean archive deployment descriptor
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClass(ConcurrentGaugedConstructorBean.class)
+                // Bean archive deployment descriptor
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -81,25 +82,21 @@ public class ConcurrentGaugedConstructorBeanTest {
     @Inject
     private Instance<ConcurrentGaugedConstructorBean> instance;
 
-    //This test case becomes irrelevant as the registry already contains Timers from other test cases.
+    // This test case becomes irrelevant as the registry already contains Timers from other test cases.
     /*
-    @Test
-    @InSequence(1)
-    public void countedConstructorNotCalledYet() {
-        assertThat("Counter is not registered correctly", registry.getCounters().keySet(), is(empty()));
-    }
-    */
+     * @Test
+     * 
+     * @InSequence(1) public void countedConstructorNotCalledYet() { assertThat("Counter is not registered correctly",
+     * registry.getCounters().keySet(), is(empty())); }
+     */
 
     @Before
     public void instantiateTest() {
         /*
-         * The MetricID relies on the MicroProfile Config API.
-         * Running a managed arquillian container will result
-         * with the MetricID being created in a client process
-         * that does not contain the MPConfig impl.
+         * The MetricID relies on the MicroProfile Config API. Running a managed arquillian container will result with
+         * the MetricID being created in a client process that does not contain the MPConfig impl.
          *
-         * This will cause client instantiated MetricIDs to
-         * throw an exception. (i.e the global MetricIDs)
+         * This will cause client instantiated MetricIDs to throw an exception. (i.e the global MetricIDs)
          */
         counterMID = new MetricID(COUNTER_NAME);
     }

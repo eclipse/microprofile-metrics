@@ -29,10 +29,10 @@ public class CountedMethodTagBean {
     public void countedMethodOne() {
 
     }
-    
+
     @Counted(name = "countedMethod", absolute = true, tags = {"number=two"})
     public void countedMethodTwo() {
 
     }
-    
+
 }

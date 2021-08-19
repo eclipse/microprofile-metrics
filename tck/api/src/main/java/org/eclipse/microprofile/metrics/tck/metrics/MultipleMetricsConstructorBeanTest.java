@@ -19,11 +19,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
-
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
+import org.eclipse.microprofile.metrics.tck.util.MetricsUtil;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -34,7 +32,8 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.eclipse.microprofile.metrics.tck.util.MetricsUtil;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
 @RunWith(Arquillian.class)
 public class MultipleMetricsConstructorBeanTest {

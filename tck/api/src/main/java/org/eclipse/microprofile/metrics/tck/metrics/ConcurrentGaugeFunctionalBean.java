@@ -23,11 +23,12 @@
  */
 package org.eclipse.microprofile.metrics.tck.metrics;
 
-import org.eclipse.microprofile.metrics.tck.util.BeanWithControlledInvocation;
+import java.util.concurrent.CountDownLatch;
+
 import org.eclipse.microprofile.metrics.annotation.ConcurrentGauge;
+import org.eclipse.microprofile.metrics.tck.util.BeanWithControlledInvocation;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import java.util.concurrent.CountDownLatch;
 
 @ApplicationScoped
 public class ConcurrentGaugeFunctionalBean implements BeanWithControlledInvocation {
@@ -38,8 +39,7 @@ public class ConcurrentGaugeFunctionalBean implements BeanWithControlledInvocati
         startMarker.countDown();
         try {
             endCommand.await();
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }

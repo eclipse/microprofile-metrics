@@ -18,13 +18,11 @@ package org.eclipse.microprofile.metrics.tck.inheritance;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import org.eclipse.microprofile.metrics.MetricID;
 
 import java.util.Arrays;
 
-import jakarta.inject.Inject;
-
 import org.eclipse.microprofile.metrics.Gauge;
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.tck.metrics.GaugeMethodBean;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -38,11 +36,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import jakarta.inject.Inject;
+
 @RunWith(Arquillian.class)
 public class InheritedGaugeMethodBeanTest {
 
-    private final static String PARENT_GAUGE_NAME = MetricRegistry.name(InheritedParentGaugeMethodBean.class, "inheritedParentGaugeMethod");
-    private final static String CHILD_GAUGE_NAME = MetricRegistry.name(InheritedChildGaugeMethodBean.class, "inheritedChildGaugeMethod");
+    private final static String PARENT_GAUGE_NAME =
+            MetricRegistry.name(InheritedParentGaugeMethodBean.class, "inheritedParentGaugeMethod");
+    private final static String CHILD_GAUGE_NAME =
+            MetricRegistry.name(InheritedChildGaugeMethodBean.class, "inheritedChildGaugeMethod");
 
     private static MetricID parentMID;
     private static MetricID childMID;
@@ -51,7 +53,8 @@ public class InheritedGaugeMethodBeanTest {
     public static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
                 // Test beans
-                .addClasses(GaugeMethodBean.class, InheritedParentGaugeMethodBean.class, InheritedChildGaugeMethodBean.class)
+                .addClasses(GaugeMethodBean.class, InheritedParentGaugeMethodBean.class,
+                        InheritedChildGaugeMethodBean.class)
                 // Bean archive deployment descriptor
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
@@ -74,13 +77,10 @@ public class InheritedGaugeMethodBeanTest {
         bean.getChildGauge();
 
         /*
-         * The MetricID relies on the MicroProfile Config API.
-         * Running a managed arquillian container will result
-         * with the MetricID being created in a client process
-         * that does not contain the MPConfig impl.
+         * The MetricID relies on the MicroProfile Config API. Running a managed arquillian container will result with
+         * the MetricID being created in a client process that does not contain the MPConfig impl.
          *
-         * This will cause client instantiated MetricIDs to
-         * throw an exception. (i.e the global MetricIDs)
+         * This will cause client instantiated MetricIDs to throw an exception. (i.e the global MetricIDs)
          */
         parentMID = new MetricID(PARENT_GAUGE_NAME);
         childMID = new MetricID(CHILD_GAUGE_NAME);
@@ -97,7 +97,8 @@ public class InheritedGaugeMethodBeanTest {
         assertThat("Gauges are not registered correctly", childGauge, notNullValue());
 
         // Make sure that the gauge has the expected value
-        assertThat("Gauge values are incorrect", Arrays.asList(parentGauge.getValue(), childGauge.getValue()), contains(0L, 0L));
+        assertThat("Gauge values are incorrect", Arrays.asList(parentGauge.getValue(), childGauge.getValue()),
+                contains(0L, 0L));
     }
 
     @Test
@@ -115,6 +116,7 @@ public class InheritedGaugeMethodBeanTest {
         pBean.setGauge(parentValue);
         long childValue = Math.round(Math.random() * Long.MAX_VALUE);
         bean.setChildGauge(childValue);
-        assertThat("Gauge values are incorrect", Arrays.asList(parentGauge.getValue(), childGauge.getValue()), contains(parentValue, childValue));
+        assertThat("Gauge values are incorrect", Arrays.asList(parentGauge.getValue(), childGauge.getValue()),
+                contains(parentValue, childValue));
     }
 }

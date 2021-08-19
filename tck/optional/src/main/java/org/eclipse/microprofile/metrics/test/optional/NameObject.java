@@ -24,7 +24,7 @@ package org.eclipse.microprofile.metrics.test.optional;
 public class NameObject {
 
     private String name;
-    
+
     public String getName() {
         return name;
     }
@@ -36,10 +36,10 @@ public class NameObject {
     public NameObject(String name) {
         this.name = name;
     }
-    
+
     @Override
     public String toString() {
         return name;
     }
-    
+
 }

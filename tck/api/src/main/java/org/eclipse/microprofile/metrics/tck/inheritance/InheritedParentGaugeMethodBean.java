@@ -25,7 +25,7 @@ public class InheritedParentGaugeMethodBean {
 
     private long gauge;
 
-    @Gauge(name = "inheritedParentGaugeMethod", unit=MetricUnits.NONE)
+    @Gauge(name = "inheritedParentGaugeMethod", unit = MetricUnits.NONE)
     public long getGauge() {
         return gauge;
     }
