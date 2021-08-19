@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Set;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.SimpleTimer;
@@ -73,9 +73,9 @@ public class VisibilitySimplyTimedMethodBeanTest {
     @Test
     @InSequence(1)
     public void simplyTimedMethodsNotCalledYet() {
-        assertThat("SimpleTimers are not registered correctly", registry.getSimpleTimers().keySet(), 
+        assertThat("SimpleTimers are not registered correctly", registry.getSimpleTimers().keySet(),
             is(equalTo(MetricsUtil.createMetricIDs(absoluteMetricNames()))));
-        
+
         // Make sure that all the SimpleTimers haven't been called yet
         assertThat("SimpleTimer counts are incorrect", registry.getSimpleTimers().values(),
                 everyItem(Matchers.<SimpleTimer>hasProperty("count", equalTo(0L))));
@@ -84,9 +84,9 @@ public class VisibilitySimplyTimedMethodBeanTest {
     @Test
     @InSequence(2)
     public void callSimplyTimedMethodsOnce() {
-        assertThat("SimpleTimers are not registered correctly", registry.getSimpleTimers().keySet(), 
+        assertThat("SimpleTimers are not registered correctly", registry.getSimpleTimers().keySet(),
             is(equalTo(MetricsUtil.createMetricIDs(absoluteMetricNames()))));
-        
+
         // Call the simplyTimed methods and assert they've all been timed once
         bean.publicSimplyTimedMethod();
         bean.protectedSimplyTimedMethod();

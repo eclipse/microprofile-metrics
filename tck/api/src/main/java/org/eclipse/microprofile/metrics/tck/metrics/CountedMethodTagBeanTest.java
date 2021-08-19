@@ -27,7 +27,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.MetricID;
@@ -49,14 +49,14 @@ import org.junit.runner.RunWith;
 public class CountedMethodTagBeanTest {
 
     private final static String COUNTER_NAME = "countedMethod";
-    
+
     private final static Tag NUMBER_ONE_TAG = new Tag("number", "one");
     private final static Tag NUMBER_TWO_TAG = new Tag("number", "two");
 
-    private static MetricID counterOneMID;   
+    private static MetricID counterOneMID;
     private static MetricID counterTwoMID;
 
-    
+
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
@@ -79,21 +79,21 @@ public class CountedMethodTagBeanTest {
          * Running a managed arquillian container will result
          * with the MetricID being created in a client process
          * that does not contain the MPConfig impl.
-         * 
-         * This will cause client instantiated MetricIDs to 
+         *
+         * This will cause client instantiated MetricIDs to
          * throw an exception. (i.e the global MetricIDs)
          */
         counterOneMID = new MetricID(COUNTER_NAME, NUMBER_ONE_TAG);
         counterTwoMID = new MetricID(COUNTER_NAME, NUMBER_TWO_TAG);
     }
-    
+
     @Test
     @InSequence(1)
     public void counterTagMethodsRegistered() {
         assertThat("Counter is not registered correctly", registry.getCounter(counterOneMID), notNullValue());
         assertThat("Counter is not registered correctly", registry.getCounter(counterTwoMID), notNullValue());
     }
-    
+
     @Test
     @InSequence(2)
     public void countedTagMethodNotCalledYet(@Metric(name = "countedMethod", absolute = true, tags = {"number=one"}) Counter instanceOne,

@@ -26,7 +26,7 @@ package org.eclipse.microprofile.metrics.tck.metrics;
 import java.util.Arrays;
 import java.util.Set;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -74,7 +74,7 @@ public class SimpleTimerFieldBeanTest {
 
     @Test
     public void simpleTimerFieldsWithDefaultNamingConvention() {
-        assertThat("SimpleTimers are not registered correctly", registry.getMetricIDs(), 
+        assertThat("SimpleTimers are not registered correctly", registry.getMetricIDs(),
             is(equalTo(MetricsUtil.createMetricIDs(metricNames()))));
     }
 }

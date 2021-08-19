@@ -21,7 +21,7 @@
  **********************************************************************/
 package org.eclipse.microprofile.metrics.tck.tags;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -48,7 +48,7 @@ public class TimerTagFieldBeanTest {
 
     private final static Tag NUMBER_ONE_TAG = new Tag("number", "one");
     private final static Tag NUMBER_TWO_TAG = new Tag("number", "two");
-    
+
     private static MetricID timerOneMID;
     private static MetricID timerTwoMID;
 
@@ -66,7 +66,7 @@ public class TimerTagFieldBeanTest {
 
     @Inject
     private TimerTagFieldBean bean;
-    
+
     @Before
     public void instantiateTest() {
         /*
@@ -74,15 +74,15 @@ public class TimerTagFieldBeanTest {
          * Running a managed arquillian container will result
          * with the MetricID being created in a client process
          * that does not contain the MPConfig impl.
-         * 
-         * This will cause client instantiated MetricIDs to 
+         *
+         * This will cause client instantiated MetricIDs to
          * throw an exception. (i.e the global MetricIDs)
          */
         timerOneMID = new MetricID(TIMER_NAME, NUMBER_ONE_TAG);
         timerTwoMID = new MetricID(TIMER_NAME, NUMBER_TWO_TAG);
 
     }
-    
+
     @Test
     public void timersTagFieldRegistered() {
         assertThat("Timer is not registered correctly", registry.getTimer(timerOneMID), notNullValue());

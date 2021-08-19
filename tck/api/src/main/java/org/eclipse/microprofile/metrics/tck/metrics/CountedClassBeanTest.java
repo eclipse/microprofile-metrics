@@ -23,7 +23,7 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Set;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.Metric;
@@ -52,7 +52,7 @@ public class CountedClassBeanTest {
             CONSTRUCTOR_NAME);
 
     private static MetricID constructorMID;
-            
+
     private static final String[] METHOD_NAMES = { "countedMethodOne", "countedMethodTwo", "countedMethodProtected", "countedMethodPackagedPrivate" };
 
     private static final Set<String> METHOD_COUNTER_NAMES = MetricsUtil.absoluteMetricNames(CountedClassBean.class, "countedClass",
@@ -62,7 +62,7 @@ public class CountedClassBeanTest {
             METHOD_NAMES, CONSTRUCTOR_NAME);
 
     private static Set<MetricID> counterMIDs;
-            
+
     private static final MetricFilter METHOD_COUNTERS = new MetricFilter() {
         @Override
         public boolean matches(MetricID metricID, Metric metric) {
@@ -92,14 +92,14 @@ public class CountedClassBeanTest {
          * Running a managed arquillian container will result
          * with the MetricID being created in a client process
          * that does not contain the MPConfig impl.
-         * 
-         * This will cause client instantiated MetricIDs to 
+         *
+         * This will cause client instantiated MetricIDs to
          * throw an exception. (i.e the global MetricIDs)
          */
         constructorMID = new MetricID(CONSTRUCTOR_COUNTER_NAME);
         counterMIDs = MetricsUtil.createMetricIDs(COUNTER_NAMES);
     }
-    
+
     @Test
     @InSequence(1)
     public void countedMethodsNotCalledYet() {
@@ -112,7 +112,7 @@ public class CountedClassBeanTest {
 
     @Test
     @InSequence(2)
-    public void callCountedMethodsOnce() { 
+    public void callCountedMethodsOnce() {
         assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(counterMIDs)));
 
         // Call the counted methods and assert they've been incremented

@@ -1,6 +1,6 @@
 -exportcontents: \
     org.eclipse.microprofile.*
-Import-Package: javax.enterprise.util.*;resolution:=optional, javax.inject.*;resolution:=optional, javax.interceptor.*;resolution:=optional, *
+Import-Package: jakarta.enterprise.util.*;resolution:=optional, jakarta.inject.*;resolution:=optional, jakarta.interceptor.*;resolution:=optional, *
 Bundle-SymbolicName: org.eclipse.microprofile.metrics
 Bundle-Name: MicroProfile Metrics Bundle
 Bundle-License: Apache License, Version 2.0

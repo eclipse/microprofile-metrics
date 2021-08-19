@@ -24,7 +24,7 @@ package org.eclipse.microprofile.metrics.tck.tags;
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 public class CounterFieldTagBean {
 
@@ -35,7 +35,7 @@ public class CounterFieldTagBean {
     @Inject
     @Metric(name = "counterName", tags= {"number=two", "colour=red"})
     private Counter counterTwo;
-    
+
     @Inject
     @Metric(name = "counterName", tags= {"number=three", "colour=blue"})
     private Counter counterThree;
@@ -43,11 +43,11 @@ public class CounterFieldTagBean {
     public void incrementOne(long n) {
         counterOne.inc(n);
     }
-    
+
     public void incrementTwo(long n) {
         counterTwo.inc(n);
     }
-    
+
     public void incrementThree(long n) {
         counterThree.inc(n);
     }

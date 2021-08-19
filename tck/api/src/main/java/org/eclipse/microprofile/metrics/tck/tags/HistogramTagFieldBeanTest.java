@@ -26,7 +26,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.metrics.Histogram;
 import org.eclipse.microprofile.metrics.MetricID;
@@ -50,10 +50,10 @@ public class HistogramTagFieldBeanTest {
 
     private final static Tag NUMBER_ONE_TAG = new Tag("number", "one");
     private final static Tag NUMBER_TWO_TAG = new Tag("number", "two");
-    
+
     private static MetricID histogramOneMID;
     private static MetricID histogramTwoMID;
-    
+
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
@@ -76,21 +76,21 @@ public class HistogramTagFieldBeanTest {
          * Running a managed arquillian container will result
          * with the MetricID being created in a client process
          * that does not contain the MPConfig impl.
-         * 
-         * This will cause client instantiated MetricIDs to 
+         *
+         * This will cause client instantiated MetricIDs to
          * throw an exception. (i.e the global MetricIDs)
          */
         histogramOneMID = new MetricID(HISTOGRAM_NAME, NUMBER_ONE_TAG);
         histogramTwoMID = new MetricID(HISTOGRAM_NAME, NUMBER_TWO_TAG);
     }
-    
+
     @Test
     @InSequence(1)
     public void histogramTagFieldRegistered() {
         assertThat("Histogram is not registered correctly", registry.getHistogram(histogramOneMID), notNullValue());
         assertThat("Histogram is not registered correctly", registry.getHistogram(histogramTwoMID), notNullValue());
     }
-    
+
     @Test
     @InSequence(2)
     public void updateHistogramTagField() {
@@ -98,19 +98,19 @@ public class HistogramTagFieldBeanTest {
         Histogram histogramTwo = registry.getHistogram(histogramTwoMID);
         assertThat("Histogram is not registered correctly", histogramOne, notNullValue());
         assertThat("Histogram is not registered correctly", histogramTwo, notNullValue());
-        
-        
+
+
         // Call the update method and assert the histogram is up-to-date
         long value = Math.round(Math.random() * Long.MAX_VALUE);
         bean.updateOne(value);
         long valueTwo = Math.round(Math.random() * Long.MAX_VALUE);
         bean.updateTwo(valueTwo);
-        
+
         assertThat("Histogram count is incorrect", histogramOne.getCount(), is(equalTo(1L)));
         assertThat("Histogram size is incorrect", histogramOne.getSnapshot().size(), is(equalTo(1)));
         assertThat("Histogram min value is incorrect", histogramOne.getSnapshot().getMin(), is(equalTo(value)));
         assertThat("Histogram max value is incorrect", histogramOne.getSnapshot().getMax(), is(equalTo(value)));
-        
+
 
         assertThat("Histogram count is incorrect", histogramTwo.getCount(), is(equalTo(1L)));
         assertThat("Histogram size is incorrect", histogramTwo.getSnapshot().size(), is(equalTo(1)));
