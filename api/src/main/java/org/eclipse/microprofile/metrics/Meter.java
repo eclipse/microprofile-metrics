@@ -23,12 +23,12 @@
 package org.eclipse.microprofile.metrics;
 
 /**
- * A meter metric which measures mean throughput and one-, five-, and fifteen-minute
- * exponentially-weighted moving average throughputs.
+ * A meter metric which measures mean throughput and one-, five-, and fifteen-minute exponentially-weighted moving
+ * average throughputs.
  *
  */
 public interface Meter extends Metered {
- 
+
     /**
      * Mark the occurrence of an event.
      */
@@ -37,7 +37,8 @@ public interface Meter extends Metered {
     /**
      * Mark the occurrence of a given number of events.
      *
-     * @param n the number of events
+     * @param n
+     *            the number of events
      */
     void mark(long n);
 

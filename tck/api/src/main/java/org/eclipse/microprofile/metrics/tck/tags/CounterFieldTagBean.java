@@ -33,11 +33,11 @@ public class CounterFieldTagBean {
     private Counter counterOne;
 
     @Inject
-    @Metric(name = "counterName", tags= {"number=two", "colour=red"})
+    @Metric(name = "counterName", tags = {"number=two", "colour=red"})
     private Counter counterTwo;
 
     @Inject
-    @Metric(name = "counterName", tags= {"number=three", "colour=blue"})
+    @Metric(name = "counterName", tags = {"number=three", "colour=blue"})
     private Counter counterThree;
 
     public void incrementOne(long n) {

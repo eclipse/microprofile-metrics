@@ -25,7 +25,7 @@ public class GaugeMethodBean {
 
     private long gauge;
 
-    @Gauge(name = "gaugeMethod", unit=MetricUnits.NONE)
+    @Gauge(name = "gaugeMethod", unit = MetricUnits.NONE)
     public long getGauge() {
         return gauge;
     }

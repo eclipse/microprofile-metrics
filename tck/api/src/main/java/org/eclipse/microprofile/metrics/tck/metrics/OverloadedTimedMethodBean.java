@@ -15,9 +15,9 @@
  */
 package org.eclipse.microprofile.metrics.tck.metrics;
 
-import org.eclipse.microprofile.metrics.annotation.Timed;
-
 import java.util.List;
+
+import org.eclipse.microprofile.metrics.annotation.Timed;
 
 public class OverloadedTimedMethodBean {
 

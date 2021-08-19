@@ -31,23 +31,13 @@ import java.util.Optional;
  * <p>
  * The metadata contains:
  * <ul>
- * <li>
- * {@code Name}: (Required) The name of the metric.
- * </li>
- * <li>
- * {@code Display name}: (Optional) The display (friendly) name of the metric.
- * By default, it is set to the {@code Name}.
- * </li>
- * <li>
- * {@code Description}: (Optional) A human readable description of the metric.
- * </li>
- * <li>
- * {@code Type}: (Required) The type of the metric. See {@link MetricType}.
- * </li>
- * <li>
- * {@code Unit}: (Optional) The unit of the metric.
- * The unit may be any unit specified as a String or one specified in {@link MetricUnits}.
- * </li>
+ * <li>{@code Name}: (Required) The name of the metric.</li>
+ * <li>{@code Display name}: (Optional) The display (friendly) name of the metric. By default, it is set to the
+ * {@code Name}.</li>
+ * <li>{@code Description}: (Optional) A human readable description of the metric.</li>
+ * <li>{@code Type}: (Required) The type of the metric. See {@link MetricType}.</li>
+ * <li>{@code Unit}: (Optional) The unit of the metric. The unit may be any unit specified as a String or one specified
+ * in {@link MetricUnits}.</li>
  * </ul>
  *
  * @author hrupp, Raymond Lam, Jan Bernitt
@@ -115,9 +105,11 @@ public interface Metadata {
     /**
      * Returns a new builder with the {@link Metadata} information
      *
-     * @param metadata the metadata
+     * @param metadata
+     *            the metadata
      * @return a new {@link MetadataBuilder} instance with the {@link Metadata} values
-     * @throws NullPointerException when metadata is null
+     * @throws NullPointerException
+     *             when metadata is null
      */
     static MetadataBuilder builder(Metadata metadata) {
         Objects.requireNonNull(metadata, "metadata is required");

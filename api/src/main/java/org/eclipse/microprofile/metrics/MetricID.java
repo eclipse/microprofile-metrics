@@ -36,20 +36,14 @@ import java.util.stream.Stream;
 
 /**
  *
- * A unique identifier for {@link Metric} and {@link Metadata} that are registered
- * in the {@link MetricRegistry}
+ * A unique identifier for {@link Metric} and {@link Metadata} that are registered in the {@link MetricRegistry}
  *
  * The MetricID contains:
  * <ul>
- * <li>
- * {@code Name}: (Required) The name of the metric.
- * </li>
- * <li>
- * {@code Tags}: (Optional) The tags (represented by {@link Tag} objects)
- * of the metric. The tag name
- * must match the regex `[a-zA-Z_][a-zA-Z0-9_]*` (Ascii alphabet, numbers and
- * underscore). The tag value may contain any UTF-8 encoded character.
- * </li>
+ * <li>{@code Name}: (Required) The name of the metric.</li>
+ * <li>{@code Tags}: (Optional) The tags (represented by {@link Tag} objects) of the metric. The tag name must match the
+ * regex `[a-zA-Z_][a-zA-Z0-9_]*` (Ascii alphabet, numbers and underscore). The tag value may contain any UTF-8 encoded
+ * character.</li>
  * </ul>
  */
 public class MetricID implements Comparable<MetricID> {
@@ -68,21 +62,24 @@ public class MetricID implements Comparable<MetricID> {
     private final Map<String, String> tags = new TreeMap<String, String>();
 
     /**
-     * Constructs a MetricID with the given metric name and no tags.
-     * If global tags are available then they will be appended to this MetricID.
+     * Constructs a MetricID with the given metric name and no tags. If global tags are available then they will be
+     * appended to this MetricID.
      *
-     * @param name the name of the metric
+     * @param name
+     *            the name of the metric
      */
     public MetricID(String name) {
         this(name, null);
     }
 
     /**
-     * Constructs a MetricID with the given metric name and {@link Tag}s.
-     * If global tags are available then they will be appended to this MetricID
+     * Constructs a MetricID with the given metric name and {@link Tag}s. If global tags are available then they will be
+     * appended to this MetricID
      *
-     * @param name the name of the metric
-     * @param tags the tags associated with this metric
+     * @param name
+     *            the name of the metric
+     * @param tags
+     *            the tags associated with this metric
      */
     public MetricID(String name, Tag... tags) {
         this.name = name;
@@ -113,7 +110,8 @@ public class MetricID implements Comparable<MetricID> {
      * @return a String containing the tags
      */
     public String getTagsAsString() {
-        return this.tags.entrySet().stream().map(e -> e.getKey() + "=\"" + e.getValue() + "\"").collect(Collectors.joining(","));
+        return this.tags.entrySet().stream().map(e -> e.getKey() + "=\"" + e.getValue() + "\"")
+                .collect(Collectors.joining(","));
     }
 
     /**
@@ -164,17 +162,17 @@ public class MetricID implements Comparable<MetricID> {
     @Override
     public String toString() {
         return "MetricID{" +
-            "name='" + name + '\'' +
-            ", tags=[" + getTagsAsString() +
-            "]}";
+                "name='" + name + '\'' +
+                ", tags=[" + getTagsAsString() +
+                "]}";
     }
 
     /**
-     * Add multiple {@link Tag} objects
-     * This method will call {@link #addTag(Tag)} on each tag.
-     * If a key already exists then it will be overwritten.
+     * Add multiple {@link Tag} objects This method will call {@link #addTag(Tag)} on each tag. If a key already exists
+     * then it will be overwritten.
      *
-     * @param tagArray an array of {@link Tag} objects
+     * @param tagArray
+     *            an array of {@link Tag} objects
      */
     private void addTags(Tag[] tagArray) {
         if (tagArray == null || tagArray.length == 0) {
@@ -184,11 +182,11 @@ public class MetricID implements Comparable<MetricID> {
     }
 
     /**
-     * Adds a singular {@link Tag} object into the MetricID.
-     * If the tag key/name already exists then it will be overwritten with
-     * the new value.
+     * Adds a singular {@link Tag} object into the MetricID. If the tag key/name already exists then it will be
+     * overwritten with the new value.
      *
-     * @param tag the {@link Tag} object
+     * @param tag
+     *            the {@link Tag} object
      */
     private void addTag(Tag tag) {
         if (tag == null || tag.getTagName() == null || tag.getTagValue() == null) {
@@ -198,29 +196,20 @@ public class MetricID implements Comparable<MetricID> {
     }
 
     /**
-     * Compares two MetricID objects through the following steps:
-     * <br>
+     * Compares two MetricID objects through the following steps: <br>
      * <ol>
-     * <li>
-     * Compares the names of the two MetricIDs lexicographically.
-     * </li>
-     * <li>
-     * If the names are equal: Compare the number of tags.
-     * </li>
-     * <li>
-     * If the tag lengths are equal: Compare the Tags (sorted by the Tag's key value)
+     * <li>Compares the names of the two MetricIDs lexicographically.</li>
+     * <li>If the names are equal: Compare the number of tags.</li>
+     * <li>If the tag lengths are equal: Compare the Tags (sorted by the Tag's key value)
      * <ul>
-     * <li>
-     * a) Compare the Tag names/keys lexicographically
-     * </li>
-     * <li>
-     * b) If keys are equal, compare the Tag values lexicographically
-     * </li>
+     * <li>a) Compare the Tag names/keys lexicographically</li>
+     * <li>b) If keys are equal, compare the Tag values lexicographically</li>
      * </ul>
      * </li>
      * </ol>
      *
-     * @param other the other MetricID
+     * @param other
+     *            the other MetricID
      */
     @Override
     public int compareTo(MetricID other) {
@@ -236,8 +225,7 @@ public class MetricID implements Comparable<MetricID> {
                     compareVal = thisEntry.getKey().compareTo(otherEntry.getKey());
                     if (compareVal != 0) {
                         return compareVal;
-                    }
-                    else {
+                    } else {
                         compareVal = thisEntry.getValue().compareTo(otherEntry.getValue());
                         if (compareVal != 0) {
                             return compareVal;

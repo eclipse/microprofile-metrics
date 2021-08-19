@@ -29,49 +29,57 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.eclipse.microprofile.metrics.MetricUnits;
+
 import jakarta.enterprise.util.Nonbinding;
 import jakarta.interceptor.InterceptorBinding;
 
-import org.eclipse.microprofile.metrics.MetricUnits;
-
 /**
- * An annotation for marking a method, constructor, or class as metered.
- * The metric will be registered in the application MetricRegistry.
+ * An annotation for marking a method, constructor, or class as metered. The metric will be registered in the
+ * application MetricRegistry.
  * <p>
  * Given a method annotated with {@literal @}Metered like this:
  * </p>
- * <pre><code>
+ * 
+ * <pre>
+ * <code>
  *     {@literal @}Metered(name = "fancyName")
  *     public String fancyName(String name) {
  *         return "Sir Captain " + name;
  *     }
- * </code></pre>
+ * </code>
+ * </pre>
+ * 
  * A meter with the fully qualified class name + {@code fancyName} will be created and each time the
- * {@code #fancyName(String)} method is invoked, the meter will be marked.
- * Similarly, the same applies for a constructor annotated with metered.
+ * {@code #fancyName(String)} method is invoked, the meter will be marked. Similarly, the same applies for a constructor
+ * annotated with metered.
  *
  * <p>
  * Given a class annotated with {@literal @}Metered like this:
  * </p>
- * <pre><code>
+ * 
+ * <pre>
+ * <code>
  *     {@literal @}Metered
  *     public class MeteredBean {
  *         public void meteredMethod1() {}
  *         public void meteredMethod2() {}
  *     }
- * </code></pre>
- * A meter for the defining class will be created for each of the constructors/methods.
- * Each time a constructor/method is invoked, the respective meter will be marked.
+ * </code>
+ * </pre>
+ * 
+ * A meter for the defining class will be created for each of the constructors/methods. Each time a constructor/method
+ * is invoked, the respective meter will be marked.
  *
- * This annotation will throw an IllegalStateException if the constructor/method is invoked, but the metric no
- * longer exists in the MetricRegistry.
+ * This annotation will throw an IllegalStateException if the constructor/method is invoked, but the metric no longer
+ * exists in the MetricRegistry.
  *
  */
 @Inherited
 @Documented
 @InterceptorBinding
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+@Target({ElementType.TYPE, ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 public @interface Metered {
 
     /**
@@ -81,8 +89,8 @@ public @interface Metered {
     String name() default "";
 
     /**
-     * @return The tags of the meter. Each {@code String} tag must be in the form of 'key=value'. If the input is empty or does
-     * not contain a '=' sign, the entry is ignored.
+     * @return The tags of the meter. Each {@code String} tag must be in the form of 'key=value'. If the input is empty
+     *         or does not contain a '=' sign, the entry is ignored.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
@@ -91,13 +99,14 @@ public @interface Metered {
 
     /**
      * @return If {@code true}, use the given name as an absolute name. If {@code false} (default), use the given name
-     * relative to the annotated class. When annotating a class, this must be {@code false}.
+     *         relative to the annotated class. When annotating a class, this must be {@code false}.
      */
     @Nonbinding
     boolean absolute() default false;
 
     /**
      * The display name of the meter.
+     * 
      * @return The display name of the meter.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -107,6 +116,7 @@ public @interface Metered {
 
     /**
      * The description of the meter.
+     * 
      * @return The description of the meter.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -116,6 +126,7 @@ public @interface Metered {
 
     /**
      * The unit of the meter.
+     * 
      * @return The unit of the meter. By default, the value is {@link MetricUnits#PER_SECOND}.
      *
      * @see org.eclipse.microprofile.metrics.Metadata

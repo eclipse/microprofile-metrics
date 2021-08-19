@@ -35,10 +35,10 @@ public interface Counter extends Metric, Counting {
     /**
      * Increment the counter by {@code n}.
      *
-     * @param n the amount by which the counter will be increased
+     * @param n
+     *            the amount by which the counter will be increased
      */
     void inc(long n);
-
 
     /**
      * Returns the counter's current value.

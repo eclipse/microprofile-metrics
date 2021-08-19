@@ -25,8 +25,6 @@ package org.eclipse.microprofile.metrics.tck.metrics;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import jakarta.inject.Inject;
-
 import org.eclipse.microprofile.metrics.Gauge;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
@@ -38,6 +36,8 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import jakarta.inject.Inject;
 
 @RunWith(Arquillian.class)
 public class GaugeTest {
@@ -78,11 +78,11 @@ public class GaugeTest {
     public void gaugeMe() {
         metrics.gauge("tck.gaugetest.supplierGaugeManual", value::getAndIncrement, null);
 
-        metrics.gauge("tck.gaugetest.toDoubleFunctionGaugeManual", value ,
+        metrics.gauge("tck.gaugetest.toDoubleFunctionGaugeManual", value,
                 (atomicInteger) -> {
-                    AtomicInteger myAtomicInteger= (AtomicInteger) atomicInteger;
+                    AtomicInteger myAtomicInteger = (AtomicInteger) atomicInteger;
                     return myAtomicInteger.getAndIncrement();
-                    }, null);
+                }, null);
 
     }
 

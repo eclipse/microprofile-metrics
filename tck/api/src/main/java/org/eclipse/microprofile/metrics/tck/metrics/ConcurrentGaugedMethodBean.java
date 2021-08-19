@@ -16,6 +16,7 @@
 package org.eclipse.microprofile.metrics.tck.metrics;
 
 import java.util.concurrent.Callable;
+
 import org.eclipse.microprofile.metrics.annotation.ConcurrentGauge;
 
 public class ConcurrentGaugedMethodBean<T> {
@@ -24,8 +25,7 @@ public class ConcurrentGaugedMethodBean<T> {
     public T countedMethod(Callable<T> callable) {
         try {
             return callable.call();
-        }
-        catch (Exception cause) {
+        } catch (Exception cause) {
             throw new RuntimeException(cause);
         }
     }

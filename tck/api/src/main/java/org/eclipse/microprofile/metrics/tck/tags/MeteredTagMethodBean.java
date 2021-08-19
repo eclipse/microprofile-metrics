@@ -25,11 +25,11 @@ import org.eclipse.microprofile.metrics.annotation.Metered;
 
 public class MeteredTagMethodBean {
 
-    @Metered(name = "meteredMethod", tags= {"number=one"})
+    @Metered(name = "meteredMethod", tags = {"number=one"})
     public void meteredMethodOne() {
     }
-    
-    @Metered(name = "meteredMethod", tags= {"number=two"})
+
+    @Metered(name = "meteredMethod", tags = {"number=two"})
     public void meteredMethodTwo() {
     }
 }

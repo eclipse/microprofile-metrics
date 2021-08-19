@@ -23,7 +23,7 @@
 
 package org.eclipse.microprofile.metrics.tck.metrics;
 
-import jakarta.inject.Inject;
+import static org.hamcrest.Matchers.lessThan;
 
 import org.eclipse.microprofile.metrics.Meter;
 import org.eclipse.microprofile.metrics.MetricRegistry;
@@ -37,8 +37,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.hamcrest.Matchers.lessThan;
-
+import jakarta.inject.Inject;
 
 @RunWith(Arquillian.class)
 public class MeterTest {
@@ -76,7 +75,6 @@ public class MeterTest {
         Assert.assertEquals(countBefore - 3, countAfter);
     }
 
-
     @Test
     public void testRates() throws Exception {
 
@@ -101,13 +99,13 @@ public class MeterTest {
 
         // Approximately calculate what the expected mean should be
         // and let the tolerance account for the delta
-        double expectedMean = count * ((double) markSeconds/(markSeconds + delaySeconds));
+        double expectedMean = count * ((double) markSeconds / (markSeconds + delaySeconds));
         TestUtils.assertEqualsWithTolerance(expectedMean, meter.getMeanRate());
 
         // After a delay, we expect some decay of values
-        Assert.assertThat(meter.getOneMinuteRate(), lessThan((double)count));
-        Assert.assertThat(meter.getFiveMinuteRate(), lessThan((double)count));
-        Assert.assertThat(meter.getFifteenMinuteRate(), lessThan((double)count));
+        Assert.assertThat(meter.getOneMinuteRate(), lessThan((double) count));
+        Assert.assertThat(meter.getFiveMinuteRate(), lessThan((double) count));
+        Assert.assertThat(meter.getFifteenMinuteRate(), lessThan((double) count));
 
     }
 }

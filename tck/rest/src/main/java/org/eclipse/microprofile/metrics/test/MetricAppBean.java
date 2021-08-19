@@ -62,7 +62,6 @@ public class MetricAppBean {
     public static final String TAGGED_GAUGE = "taggedGauge";
     public static final String TAGGED_CONCURRENTGAUGE = "taggedConcurrentGauge";
 
-
     @Inject
     @Metric(name = "semiColonTaggedCounter", tags = {"scTag=semi;colons;are;bad"})
     private Counter semiColonTaggedCounter;
@@ -72,11 +71,11 @@ public class MetricAppBean {
     private Counter counterNoTag;
 
     @Inject
-    @Metric(name = TAGGED_COUNTER, tags= {"number=one"})
+    @Metric(name = TAGGED_COUNTER, tags = {"number=one"})
     private Counter counterNumberOneTag;
 
     @Inject
-    @Metric(name = TAGGED_COUNTER, tags= {"number=two"})
+    @Metric(name = TAGGED_COUNTER, tags = {"number=two"})
     private Counter counterNumberTwoTag;
 
     @Inject
@@ -84,11 +83,11 @@ public class MetricAppBean {
     private Histogram histogramNoTag;
 
     @Inject
-    @Metric(name = TAGGED_HISTOGRAM, absolute = true, unit = "marshmellow", tags= {"number=one"})
+    @Metric(name = TAGGED_HISTOGRAM, absolute = true, unit = "marshmellow", tags = {"number=one"})
     private Histogram histogramOneTag;
 
     @Inject
-    @Metric(name = TAGGED_HISTOGRAM, absolute = true, unit = "marshmellow", tags= {"number=two"})
+    @Metric(name = TAGGED_HISTOGRAM, absolute = true, unit = "marshmellow", tags = {"number=two"})
     private Histogram histogramTwoTag;
 
     @Inject
@@ -96,11 +95,11 @@ public class MetricAppBean {
     private Timer timerNoTag;
 
     @Inject
-    @Metric(name = TAGGED_TIMER, absolute = true, tags= {"number=one"})
+    @Metric(name = TAGGED_TIMER, absolute = true, tags = {"number=one"})
     private Timer timerOneTag;
 
     @Inject
-    @Metric(name = TAGGED_TIMER, absolute = true, tags= {"number=two"})
+    @Metric(name = TAGGED_TIMER, absolute = true, tags = {"number=two"})
     private Timer timerTwoTag;
 
     @Inject
@@ -108,11 +107,11 @@ public class MetricAppBean {
     private SimpleTimer simpleTimerNoTag;
 
     @Inject
-    @Metric(name = TAGGED_SIMPLETIMER, absolute = true, tags= {"number=one"})
+    @Metric(name = TAGGED_SIMPLETIMER, absolute = true, tags = {"number=one"})
     private SimpleTimer simpleTimerOneTag;
 
     @Inject
-    @Metric(name = TAGGED_SIMPLETIMER, absolute = true, tags= {"number=two"})
+    @Metric(name = TAGGED_SIMPLETIMER, absolute = true, tags = {"number=two"})
     private SimpleTimer simpleTimerTwoTag;
 
     @Inject
@@ -120,27 +119,26 @@ public class MetricAppBean {
     private Meter meterNoTag;
 
     @Inject
-    @Metric(name = TAGGED_METER, absolute = true, tags= {"number=one"})
+    @Metric(name = TAGGED_METER, absolute = true, tags = {"number=one"})
     private Meter meterOneTag;
 
     @Inject
-    @Metric(name = TAGGED_METER, absolute = true, tags= {"number=two"})
+    @Metric(name = TAGGED_METER, absolute = true, tags = {"number=two"})
     private Meter meterTwoTag;
 
-    @org.eclipse.microprofile.metrics.annotation.Gauge(name = TAGGED_GAUGE,
-            absolute = true,unit = MetricUnits.NONE)
+    @org.eclipse.microprofile.metrics.annotation.Gauge(name = TAGGED_GAUGE, absolute = true, unit = MetricUnits.NONE)
     public long gaugeMeTagged() {
         return 1000L;
     }
 
-    @org.eclipse.microprofile.metrics.annotation.Gauge(name = TAGGED_GAUGE,
-            absolute = true,unit = MetricUnits.NONE, tags= {"number=one"})
+    @org.eclipse.microprofile.metrics.annotation.Gauge(name = TAGGED_GAUGE, absolute = true, unit = MetricUnits.NONE, tags = {
+            "number=one"})
     public long gaugeMeTaggedOne() {
         return 1000L;
     }
 
-    @org.eclipse.microprofile.metrics.annotation.Gauge(name = TAGGED_GAUGE,
-            absolute = true,unit = MetricUnits.NONE, tags= {"number=two"})
+    @org.eclipse.microprofile.metrics.annotation.Gauge(name = TAGGED_GAUGE, absolute = true, unit = MetricUnits.NONE, tags = {
+            "number=two"})
     public long gaugeMeTaggedTwo() {
         return 1000L;
     }
@@ -150,12 +148,12 @@ public class MetricAppBean {
 
     }
 
-    @ConcurrentGauge(name = TAGGED_CONCURRENTGAUGE, absolute = true, tags= {"number=one"})
+    @ConcurrentGauge(name = TAGGED_CONCURRENTGAUGE, absolute = true, tags = {"number=one"})
     public void concurrentGaugeMeTaggedOne() {
 
     }
 
-    @ConcurrentGauge(name = TAGGED_CONCURRENTGAUGE, absolute = true, tags= {"number=two"})
+    @ConcurrentGauge(name = TAGGED_CONCURRENTGAUGE, absolute = true, tags = {"number=two"})
     public void concurrentGaugeMeTaggedTwo() {
 
     }
@@ -206,13 +204,12 @@ public class MetricAppBean {
 
     }
 
-    @org.eclipse.microprofile.metrics.annotation.Gauge(unit = MetricUnits.KIBIBITS,
-        description = "gauge-me-a-description", displayName = "gauge-me-a-displayname")
+    @org.eclipse.microprofile.metrics.annotation.Gauge(unit = MetricUnits.KIBIBITS, description = "gauge-me-a-description", displayName = "gauge-me-a-displayname")
     public long gaugeMeA() {
         return 1000L;
     }
 
-        @org.eclipse.microprofile.metrics.annotation.Gauge(unit = "hands")
+    @org.eclipse.microprofile.metrics.annotation.Gauge(unit = "hands")
     public long gaugeMeB() {
         return 7777777;
     }
@@ -254,8 +251,7 @@ public class MetricAppBean {
         Timer.Context context = timer.time();
         try {
             Thread.sleep((long) (Math.random() * 1000));
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
         } finally {
             context.stop();
         }
@@ -274,8 +270,7 @@ public class MetricAppBean {
         SimpleTimer.Context context = simpleTimer.time();
         try {
             Thread.sleep((long) (Math.random() * 1000));
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
         } finally {
             context.stop();
         }
@@ -288,8 +283,7 @@ public class MetricAppBean {
     }
 
     /**
-     * We create a few metrics with names that are outside the
-     * characters that OpenMetrics allows which is [a-zA-Z0-9_]
+     * We create a few metrics with names that are outside the characters that OpenMetrics allows which is [a-zA-Z0-9_]
      */
     public void createPromMetrics() {
 

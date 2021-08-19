@@ -34,8 +34,10 @@ public interface MetricFilter {
     /**
      * Returns {@code true} if the metric matches the filter; {@code false} otherwise.
      *
-     * @param metricID the metric's {@link MetricID}
-     * @param metric the metric
+     * @param metricID
+     *            the metric's {@link MetricID}
+     * @param metric
+     *            the metric
      * @return {@code true} if the metric matches the filter
      */
     boolean matches(MetricID metricID, Metric metric);

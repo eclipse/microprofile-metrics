@@ -23,20 +23,22 @@
 
 package org.eclipse.microprofile.metrics;
 
-
 /**
- * A gauge metric is an instantaneous reading of a particular value. To instrument a queue's depth,
- * for example:<br>
- * <pre><code>
+ * A gauge metric is an instantaneous reading of a particular value. To instrument a queue's depth, for example:<br>
+ * 
+ * <pre>
+ * <code>
  * final Queue&lt;String&gt; queue = new ConcurrentLinkedQueue&lt;String&gt;();
  * final Gauge&lt;Integer&gt; queueDepth = new Gauge&lt;Integer&gt;() {
  *     public Integer getValue() {
  *         return queue.size();
  *     }
  * };
- * </code></pre>
+ * </code>
+ * </pre>
  *
- * @param <T> the type of the metric's value
+ * @param <T>
+ *            the type of the metric's value
  */
 @FunctionalInterface
 public interface Gauge<T> extends Metric {

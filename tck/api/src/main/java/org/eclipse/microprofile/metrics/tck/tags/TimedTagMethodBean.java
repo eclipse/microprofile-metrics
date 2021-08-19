@@ -25,11 +25,11 @@ import org.eclipse.microprofile.metrics.annotation.Timed;
 
 public class TimedTagMethodBean {
 
-    @Timed(name = "timedMethod", tags= {"number=one"})
+    @Timed(name = "timedMethod", tags = {"number=one"})
     public void timedMethodOne() {
     }
 
-    @Timed(name = "timedMethod", tags= {"number=two"})
+    @Timed(name = "timedMethod", tags = {"number=two"})
     public void timedMethodTwo() {
     }
 }

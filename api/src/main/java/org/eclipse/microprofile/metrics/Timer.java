@@ -23,16 +23,14 @@
 package org.eclipse.microprofile.metrics;
 
 import java.io.Closeable;
-import java.util.concurrent.Callable;
 import java.time.Duration;
-
+import java.util.concurrent.Callable;
 
 /**
- * A timer metric which aggregates timing durations and provides duration statistics, plus
- * throughput statistics via {@link Meter}.
+ * A timer metric which aggregates timing durations and provides duration statistics, plus throughput statistics via
+ * {@link Meter}.
  * 
- * See {@link SimpleTimer} for a lightweight alternative that only tracks elapsed time
- * duration and count.
+ * See {@link SimpleTimer} for a lightweight alternative that only tracks elapsed time duration and count.
  *
  * The timer measures duration in nanoseconds.
  */
@@ -45,8 +43,9 @@ public interface Timer extends Metered, Sampling {
     interface Context extends Closeable {
 
         /**
-         * Updates the timer with the difference between current and start time. Call to this method will
-         * not reset the start time. Multiple calls result in multiple updates.
+         * Updates the timer with the difference between current and start time. Call to this method will not reset the
+         * start time. Multiple calls result in multiple updates.
+         * 
          * @return the elapsed time in nanoseconds
          */
         long stop();
@@ -59,26 +58,31 @@ public interface Timer extends Metered, Sampling {
     /**
      * Adds a recorded duration.
      *
-     * @param duration the length of the {@link java.time.Duration duration}
+     * @param duration
+     *            the length of the {@link java.time.Duration duration}
      */
     void update(Duration duration);
 
     /**
      * Times and records the duration of event.
      *
-     * @param event a {@link Callable} whose {@link Callable#call()} method implements a process
-     *              whose duration should be timed
-     * @param <T>   the type of the value returned by {@code event}
+     * @param event
+     *            a {@link Callable} whose {@link Callable#call()} method implements a process whose duration should be
+     *            timed
+     * @param <T>
+     *            the type of the value returned by {@code event}
      * @return the value returned by {@code event}
-     * @throws Exception if {@code event} throws an {@link Exception}
+     * @throws Exception
+     *             if {@code event} throws an {@link Exception}
      */
     <T> T time(Callable<T> event) throws Exception;
 
     /**
      * Times and records the duration of event.
      *
-     * @param event a {@link Runnable} whose {@link Runnable#run()} method implements a process
-     *              whose duration should be timed
+     * @param event
+     *            a {@link Runnable} whose {@link Runnable#run()} method implements a process whose duration should be
+     *            timed
      */
     void time(Runnable event);
 
@@ -91,7 +95,8 @@ public interface Timer extends Metered, Sampling {
     Context time();
 
     /**
-     * Returns the total elapsed timing durations of all completed timing events that are recorded with {@link #update(Duration)}.
+     * Returns the total elapsed timing durations of all completed timing events that are recorded with
+     * {@link #update(Duration)}.
      * 
      * @return the elapsed time {@link java.time.Duration duration}
      */

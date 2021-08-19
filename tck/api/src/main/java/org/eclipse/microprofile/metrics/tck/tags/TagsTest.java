@@ -27,8 +27,6 @@ import static org.hamcrest.Matchers.hasValue;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import jakarta.inject.Inject;
-
 import org.eclipse.microprofile.metrics.ConcurrentGauge;
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.Histogram;
@@ -36,17 +34,18 @@ import org.eclipse.microprofile.metrics.Meter;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.SimpleTimer;
-import org.eclipse.microprofile.metrics.Timer;
 import org.eclipse.microprofile.metrics.Tag;
+import org.eclipse.microprofile.metrics.Timer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import jakarta.inject.Inject;
 
 @RunWith(Arquillian.class)
 public class TagsTest {
@@ -77,16 +76,16 @@ public class TagsTest {
     @InSequence(2)
     public void lastTagValueTest() {
 
-        Tag tagColour = new Tag("colour","red");
-        Tag tagColourTwo = new Tag("colour","blue");
+        Tag tagColour = new Tag("colour", "red");
+        Tag tagColourTwo = new Tag("colour", "blue");
 
         String counterName = "org.eclipse.microprofile.metrics.tck.TagTest.counter";
         Counter counter = registry.counter(counterName, tagColour, tagColourTwo);
 
-        //MetricID that only has colour=blue... the last tag value to be passed in
+        // MetricID that only has colour=blue... the last tag value to be passed in
         MetricID counterMID = new MetricID(counterName, tagColourTwo);
 
-        //check the metric is registered
+        // check the metric is registered
         assertThat("Counter is not registered correctly", registry.getCounter(counterMID), notNullValue());
     }
 
@@ -101,14 +100,14 @@ public class TagsTest {
         String counterName = "org.eclipse.microprofile.metrics.tck.TagTest.counterColour";
 
         Counter counterColour = registry.counter(counterName);
-        Counter counterRed = registry.counter(counterName,tagEarth,tagRed);
-        Counter counterBlue = registry.counter(counterName,tagEarth,tagBlue);
+        Counter counterRed = registry.counter(counterName, tagEarth, tagRed);
+        Counter counterBlue = registry.counter(counterName, tagEarth, tagBlue);
 
         MetricID counterColourMID = new MetricID(counterName);
-        MetricID counterRedMID = new MetricID(counterName, tagEarth,tagRed);
-        MetricID counterBlueMID = new MetricID(counterName, tagEarth,tagBlue);
+        MetricID counterRedMID = new MetricID(counterName, tagEarth, tagRed);
+        MetricID counterBlueMID = new MetricID(counterName, tagEarth, tagBlue);
 
-        //check multi-dimensional metrics are registered
+        // check multi-dimensional metrics are registered
         assertThat("Counter is not registered correctly", registry.getCounter(counterColourMID), notNullValue());
         assertThat("Counter is not registered correctly", registry.getCounter(counterRedMID), notNullValue());
         assertThat("Counter is not registered correctly", registry.getCounter(counterBlueMID), notNullValue());
@@ -125,14 +124,14 @@ public class TagsTest {
         String meterName = "org.eclipse.microprofile.metrics.tck.TagTest.meterColour";
 
         Meter meterColour = registry.meter(meterName);
-        Meter meterRed = registry.meter(meterName,tagEarth,tagRed);
-        Meter meterBlue = registry.meter(meterName,tagEarth,tagBlue);
+        Meter meterRed = registry.meter(meterName, tagEarth, tagRed);
+        Meter meterBlue = registry.meter(meterName, tagEarth, tagBlue);
 
         MetricID meterColourMID = new MetricID(meterName);
-        MetricID meterRedMID = new MetricID(meterName, tagEarth,tagRed);
-        MetricID meterBlueMID = new MetricID(meterName, tagEarth,tagBlue);
+        MetricID meterRedMID = new MetricID(meterName, tagEarth, tagRed);
+        MetricID meterBlueMID = new MetricID(meterName, tagEarth, tagBlue);
 
-        //check multi-dimensional metrics are registered
+        // check multi-dimensional metrics are registered
         assertThat("Meter is not registered correctly", registry.getMeter(meterColourMID), notNullValue());
         assertThat("Meter is not registered correctly", registry.getMeter(meterRedMID), notNullValue());
         assertThat("Meter is not registered correctly", registry.getMeter(meterBlueMID), notNullValue());
@@ -149,14 +148,14 @@ public class TagsTest {
         String timerName = "org.eclipse.microprofile.metrics.tck.TagTest.timerColour";
 
         Timer timerColour = registry.timer(timerName);
-        Timer timerRed = registry.timer(timerName,tagEarth,tagRed);
-        Timer timerBlue = registry.timer(timerName,tagEarth,tagBlue);
+        Timer timerRed = registry.timer(timerName, tagEarth, tagRed);
+        Timer timerBlue = registry.timer(timerName, tagEarth, tagBlue);
 
         MetricID timerColourMID = new MetricID(timerName);
-        MetricID timerRedMID = new MetricID(timerName, tagEarth,tagRed);
-        MetricID timerBlueMID = new MetricID(timerName, tagEarth,tagBlue);
+        MetricID timerRedMID = new MetricID(timerName, tagEarth, tagRed);
+        MetricID timerBlueMID = new MetricID(timerName, tagEarth, tagBlue);
 
-        //check multi-dimensional metrics are registered
+        // check multi-dimensional metrics are registered
         assertThat("Timer is not registered correctly", registry.getTimer(timerColourMID), notNullValue());
         assertThat("Timer is not registered correctly", registry.getTimer(timerRedMID), notNullValue());
         assertThat("Timer is not registered correctly", registry.getTimer(timerBlueMID), notNullValue());
@@ -173,14 +172,14 @@ public class TagsTest {
         String histogramName = "org.eclipse.microprofile.metrics.tck.TagTest.histogramColour";
 
         Histogram histogramColour = registry.histogram(histogramName);
-        Histogram histogramRed = registry.histogram(histogramName,tagEarth,tagRed);
-        Histogram histogramBlue = registry.histogram(histogramName,tagEarth,tagBlue);
+        Histogram histogramRed = registry.histogram(histogramName, tagEarth, tagRed);
+        Histogram histogramBlue = registry.histogram(histogramName, tagEarth, tagBlue);
 
         MetricID histogramColourMID = new MetricID(histogramName);
-        MetricID histogramRedMID = new MetricID(histogramName, tagEarth,tagRed);
-        MetricID histogramBlueMID = new MetricID(histogramName, tagEarth,tagBlue);
+        MetricID histogramRedMID = new MetricID(histogramName, tagEarth, tagRed);
+        MetricID histogramBlueMID = new MetricID(histogramName, tagEarth, tagBlue);
 
-        //check multi-dimensional metrics are registered
+        // check multi-dimensional metrics are registered
         assertThat("Histogram is not registered correctly", registry.getHistogram(histogramColourMID), notNullValue());
         assertThat("Histogram is not registered correctly", registry.getHistogram(histogramRedMID), notNullValue());
         assertThat("Histogram is not registered correctly", registry.getHistogram(histogramBlueMID), notNullValue());
@@ -197,17 +196,20 @@ public class TagsTest {
         String simpleTimerName = "org.eclipse.microprofile.metrics.tck.TagTest.simpleTimerColour";
 
         SimpleTimer simpleTimerColour = registry.simpleTimer(simpleTimerName);
-        SimpleTimer simpleTimerRed = registry.simpleTimer(simpleTimerName,tagEarth,tagRed);
-        SimpleTimer simpleTimerBlue = registry.simpleTimer(simpleTimerName,tagEarth,tagBlue);
+        SimpleTimer simpleTimerRed = registry.simpleTimer(simpleTimerName, tagEarth, tagRed);
+        SimpleTimer simpleTimerBlue = registry.simpleTimer(simpleTimerName, tagEarth, tagBlue);
 
         MetricID simpleTimerColourMID = new MetricID(simpleTimerName);
-        MetricID simpleTimerRedMID = new MetricID(simpleTimerName, tagEarth,tagRed);
-        MetricID simpleTimerBlueMID = new MetricID(simpleTimerName, tagEarth,tagBlue);
+        MetricID simpleTimerRedMID = new MetricID(simpleTimerName, tagEarth, tagRed);
+        MetricID simpleTimerBlueMID = new MetricID(simpleTimerName, tagEarth, tagBlue);
 
-        //check multi-dimensional metrics are registered
-        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimer(simpleTimerColourMID), notNullValue());
-        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimer(simpleTimerRedMID), notNullValue());
-        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimer(simpleTimerBlueMID), notNullValue());
+        // check multi-dimensional metrics are registered
+        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimer(simpleTimerColourMID),
+                notNullValue());
+        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimer(simpleTimerRedMID),
+                notNullValue());
+        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimer(simpleTimerBlueMID),
+                notNullValue());
     }
 
     @Test
@@ -221,16 +223,19 @@ public class TagsTest {
         String concurrentGaugeName = "org.eclipse.microprofile.metrics.tck.TagTest.concurrentGaugeColour";
 
         ConcurrentGauge concurrentGaugeColour = registry.concurrentGauge(concurrentGaugeName);
-        ConcurrentGauge concurrentGaugeRed = registry.concurrentGauge(concurrentGaugeName,tagEarth,tagRed);
-        ConcurrentGauge concurrentGaugeBlue = registry.concurrentGauge(concurrentGaugeName,tagEarth,tagBlue);
+        ConcurrentGauge concurrentGaugeRed = registry.concurrentGauge(concurrentGaugeName, tagEarth, tagRed);
+        ConcurrentGauge concurrentGaugeBlue = registry.concurrentGauge(concurrentGaugeName, tagEarth, tagBlue);
 
         MetricID concurrentGaugeColourMID = new MetricID(concurrentGaugeName);
-        MetricID concurrentGaugeRedMID = new MetricID(concurrentGaugeName, tagEarth,tagRed);
-        MetricID concurrentGaugeBlueMID = new MetricID(concurrentGaugeName, tagEarth,tagBlue);
+        MetricID concurrentGaugeRedMID = new MetricID(concurrentGaugeName, tagEarth, tagRed);
+        MetricID concurrentGaugeBlueMID = new MetricID(concurrentGaugeName, tagEarth, tagBlue);
 
-        //check multi-dimensional metrics are registered
-        assertThat("ConcurrentGauge is not registered correctly", registry.getConcurrentGauge(concurrentGaugeColourMID), notNullValue());
-        assertThat("ConcurrentGauge is not registered correctly", registry.getConcurrentGauge(concurrentGaugeRedMID), notNullValue());
-        assertThat("ConcurrentGauge is not registered correctly", registry.getConcurrentGauge(concurrentGaugeBlueMID), notNullValue());
+        // check multi-dimensional metrics are registered
+        assertThat("ConcurrentGauge is not registered correctly", registry.getConcurrentGauge(concurrentGaugeColourMID),
+                notNullValue());
+        assertThat("ConcurrentGauge is not registered correctly", registry.getConcurrentGauge(concurrentGaugeRedMID),
+                notNullValue());
+        assertThat("ConcurrentGauge is not registered correctly", registry.getConcurrentGauge(concurrentGaugeBlueMID),
+                notNullValue());
     }
 }

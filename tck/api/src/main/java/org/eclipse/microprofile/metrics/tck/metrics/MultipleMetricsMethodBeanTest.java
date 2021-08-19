@@ -21,8 +21,6 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Set;
 
-import jakarta.inject.Inject;
-
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.tck.util.MetricsUtil;
@@ -37,10 +35,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import jakarta.inject.Inject;
+
 @RunWith(Arquillian.class)
 public class MultipleMetricsMethodBeanTest {
 
-    private final static String[] METRIC_NAMES = { "counter", "gauge", "meter", "timer" };
+    private final static String[] METRIC_NAMES = {"counter", "gauge", "meter", "timer"};
 
     private Set<String> absoluteMetricNames() {
         return MetricsUtil.absoluteMetricNames(MultipleMetricsMethodBean.class, METRIC_NAMES);
@@ -77,14 +77,14 @@ public class MultipleMetricsMethodBeanTest {
     @InSequence(1)
     public void metricsMethodNotCalledYet() {
         assertThat("Metrics are not registered correctly", registry.getMetricIDs(),
-            is(equalTo(MetricsUtil.createMetricIDs(absoluteMetricNames()))));
+                is(equalTo(MetricsUtil.createMetricIDs(absoluteMetricNames()))));
     }
 
     @Test
     @InSequence(2)
     public void callMetricsMethodOnce() {
         assertThat("Metrics are not registered correctly", registry.getMetricIDs(),
-            is(equalTo(MetricsUtil.createMetricIDs(absoluteMetricNames()))));
+                is(equalTo(MetricsUtil.createMetricIDs(absoluteMetricNames()))));
 
         // Call the monitored method and assert it's been instrumented
         bean.metricsMethod();

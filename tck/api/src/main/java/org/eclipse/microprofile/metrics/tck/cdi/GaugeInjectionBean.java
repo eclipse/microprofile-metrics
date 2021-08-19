@@ -25,7 +25,7 @@ public class GaugeInjectionBean {
 
     private long gauge;
 
-    @Gauge(name = "gaugeInjection", unit=MetricUnits.NONE)
+    @Gauge(name = "gaugeInjection", unit = MetricUnits.NONE)
     public long getGauge() {
         return gauge;
     }

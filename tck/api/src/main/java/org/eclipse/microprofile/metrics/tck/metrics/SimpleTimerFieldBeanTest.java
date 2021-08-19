@@ -23,33 +23,35 @@
  */
 package org.eclipse.microprofile.metrics.tck.metrics;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.util.Arrays;
 import java.util.Set;
 
-import jakarta.inject.Inject;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
 import org.eclipse.microprofile.metrics.MetricRegistry;
+import org.eclipse.microprofile.metrics.tck.util.MetricsUtil;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.eclipse.microprofile.metrics.tck.util.MetricsUtil;
+import jakarta.inject.Inject;
 
 @RunWith(Arquillian.class)
 public class SimpleTimerFieldBeanTest {
 
-    private final static String[] METRIC_NAMES = {"simpleTimerWithoutAnnotation", "simpleTimerWithExplicitNonAbsoluteName",
-            "simpleTimerWithNoName", "simpleTimerName"};
+    private final static String[] METRIC_NAMES =
+            {"simpleTimerWithoutAnnotation", "simpleTimerWithExplicitNonAbsoluteName",
+                    "simpleTimerWithNoName", "simpleTimerName"};
 
-    private final static String[] ABSOLUTE_METRIC_NAMES = {"simpleTimerWithAbsoluteDefaultName", "simpleTimerAbsoluteName"};
+    private final static String[] ABSOLUTE_METRIC_NAMES =
+            {"simpleTimerWithAbsoluteDefaultName", "simpleTimerAbsoluteName"};
 
     private Set<String> metricNames() {
         Set<String> names = MetricsUtil.absoluteMetricNames(SimpleTimerFieldBean.class, METRIC_NAMES);
@@ -60,10 +62,10 @@ public class SimpleTimerFieldBeanTest {
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
-            // Test bean
-            .addClasses(SimpleTimerFieldBean.class, MetricsUtil.class)
-            // Bean archive deployment descriptor
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClasses(SimpleTimerFieldBean.class, MetricsUtil.class)
+                // Bean archive deployment descriptor
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -75,6 +77,6 @@ public class SimpleTimerFieldBeanTest {
     @Test
     public void simpleTimerFieldsWithDefaultNamingConvention() {
         assertThat("SimpleTimers are not registered correctly", registry.getMetricIDs(),
-            is(equalTo(MetricsUtil.createMetricIDs(metricNames()))));
+                is(equalTo(MetricsUtil.createMetricIDs(metricNames()))));
     }
 }
