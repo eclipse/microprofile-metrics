@@ -25,11 +25,11 @@ import org.eclipse.microprofile.metrics.annotation.SimplyTimed;
 
 public class SimplyTimedTagMethodBean {
 
-    @SimplyTimed(name = "simplyTimedMethod", tags= {"number=one"})
+    @SimplyTimed(name = "simplyTimedMethod", tags = {"number=one"})
     public void simplyTimedMethodOne() {
     }
 
-    @SimplyTimed(name = "simplyTimedMethod", tags= {"number=two"})
+    @SimplyTimed(name = "simplyTimedMethod", tags = {"number=two"})
     public void simplyTimedMethodTwo() {
     }
 }

@@ -28,12 +28,10 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.inject.Inject;
-
 import org.eclipse.microprofile.metrics.Counter;
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.annotation.Metric;
-import org.eclipse.microprofile.metrics.MetricID;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -42,25 +40,27 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Test;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import jakarta.inject.Inject;
 
 @RunWith(Arquillian.class)
 public class CountedMethodBeanTest {
 
     private final static String COUNTER_NAME = "countedMethod";
-    private static MetricID counterMetricID; //new MetricID(COUNTER_NAME);
+    private static MetricID counterMetricID; // new MetricID(COUNTER_NAME);
 
     private final static AtomicLong COUNTER_COUNT = new AtomicLong();
 
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
-            // Test bean
-            .addClass(CountedMethodBean.class)
-            // Bean archive deployment descriptor
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClass(CountedMethodBean.class)
+                // Bean archive deployment descriptor
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -72,13 +72,10 @@ public class CountedMethodBeanTest {
     @Before
     public void instantiateTest() {
         /*
-         * The MetricID relies on the MicroProfile Config API.
-         * Running a managed arquillian container will result
-         * with the MetricID being created in a client process
-         * that does not contain the MPConfig impl.
-         * 
-         * This will cause client instantiated MetricIDs to 
-         * throw an exception. (i.e the global MetricIDs)
+         * The MetricID relies on the MicroProfile Config API. Running a managed arquillian container will result with
+         * the MetricID being created in a client process that does not contain the MPConfig impl.
+         *
+         * This will cause client instantiated MetricIDs to throw an exception. (i.e the global MetricIDs)
          */
         counterMetricID = new MetricID(COUNTER_NAME);
     }
@@ -122,8 +119,7 @@ public class CountedMethodBeanTest {
                             return exchanger.exchange(0L);
                         }
                     }));
-                }
-                catch (InterruptedException cause) {
+                } catch (InterruptedException cause) {
                     throw new RuntimeException(cause);
                 }
             }
@@ -174,8 +170,7 @@ public class CountedMethodBeanTest {
                     return null;
                 }
             });
-        }
-        catch (Exception cause) {
+        } catch (Exception cause) {
             assertThat(cause, is(Matchers.<Exception>instanceOf(IllegalStateException.class)));
             // Make sure that the counter hasn't been called
             assertThat("Counter count is incorrect", counter.getCount(), is(equalTo(COUNTER_COUNT.get())));

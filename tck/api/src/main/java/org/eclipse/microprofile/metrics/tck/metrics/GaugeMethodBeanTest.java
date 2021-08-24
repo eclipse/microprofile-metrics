@@ -20,8 +20,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import javax.inject.Inject;
-
 import org.eclipse.microprofile.metrics.Gauge;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
@@ -36,20 +34,22 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import jakarta.inject.Inject;
+
 @RunWith(Arquillian.class)
 public class GaugeMethodBeanTest {
 
     private final static String GAUGE_NAME = MetricRegistry.name(GaugeMethodBean.class, "gaugeMethod");
 
     private static MetricID gaugeMID;
-    
+
     @Deployment
     public static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
-            // Test bean
-            .addClass(GaugeMethodBean.class)
-            // Bean archive deployment descriptor
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClass(GaugeMethodBean.class)
+                // Bean archive deployment descriptor
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -64,15 +64,12 @@ public class GaugeMethodBeanTest {
         // as only a proxy gets injected otherwise
         bean.getGauge();
         /*
-         * The MetricID relies on the MicroProfile Config API.
-         * Running a managed arquillian container will result
-         * with the MetricID being created in a client process
-         * that does not contain the MPConfig impl.
-         * 
-         * This will cause client instantiated MetricIDs to 
-         * throw an exception. (i.e the global MetricIDs)
+         * The MetricID relies on the MicroProfile Config API. Running a managed arquillian container will result with
+         * the MetricID being created in a client process that does not contain the MPConfig impl.
+         *
+         * This will cause client instantiated MetricIDs to throw an exception. (i.e the global MetricIDs)
          */
-         gaugeMID = new MetricID(GAUGE_NAME);
+        gaugeMID = new MetricID(GAUGE_NAME);
     }
 
     @Test

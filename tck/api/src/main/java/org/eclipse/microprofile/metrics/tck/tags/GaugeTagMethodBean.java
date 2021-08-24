@@ -24,7 +24,7 @@ package org.eclipse.microprofile.metrics.tck.tags;
 import org.eclipse.microprofile.metrics.MetricUnits;
 import org.eclipse.microprofile.metrics.annotation.Gauge;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class GaugeTagMethodBean {
@@ -32,12 +32,12 @@ public class GaugeTagMethodBean {
     private long gaugeOne;
     private long gaugeTwo;
 
-    @Gauge(name = "gaugeMethod", unit=MetricUnits.NONE, tags = {"number=one"})
+    @Gauge(name = "gaugeMethod", unit = MetricUnits.NONE, tags = {"number=one"})
     public long getGaugeOne() {
         return gaugeOne;
     }
-    
-    @Gauge(name = "gaugeMethod", unit=MetricUnits.NONE, tags = {"number=two"})
+
+    @Gauge(name = "gaugeMethod", unit = MetricUnits.NONE, tags = {"number=two"})
     public long getGaugeTwo() {
         return gaugeTwo;
     }
@@ -45,7 +45,7 @@ public class GaugeTagMethodBean {
     public void setGaugeOne(long gauge) {
         this.gaugeOne = gauge;
     }
-    
+
     public void setGaugeTwo(long gauge) {
         this.gaugeTwo = gauge;
     }

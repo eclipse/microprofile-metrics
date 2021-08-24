@@ -19,8 +19,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import javax.inject.Inject;
-
 import org.eclipse.microprofile.metrics.Meter;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 import org.eclipse.microprofile.metrics.tck.metrics.MeteredMethodBean2;
@@ -34,16 +32,18 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import jakarta.inject.Inject;
+
 @RunWith(Arquillian.class)
 public class MeterInjectionBeanTest {
 
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
-            // Test bean
-            .addClass(MeteredMethodBean2.class)
-            // Bean archive deployment descriptor
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClass(MeteredMethodBean2.class)
+                // Bean archive deployment descriptor
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject

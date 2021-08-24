@@ -30,50 +30,57 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.enterprise.util.Nonbinding;
-import javax.interceptor.InterceptorBinding;
-
 import org.eclipse.microprofile.metrics.MetricUnits;
 
+import jakarta.enterprise.util.Nonbinding;
+import jakarta.interceptor.InterceptorBinding;
+
 /**
- * An annotation for marking a method, constructor, or class as simply timed.
- * The underlying {@link org.eclipse.microprofile.metrics.SimpleTimer SimpleTimer} metric
- * tracks elapsed time duration and count. This is a lightweight alternative to
- * {@link org.eclipse.microprofile.metrics.Timer timer} (@{@link Timed}). The
- * metric will be registered in the application MetricRegistry.
+ * An annotation for marking a method, constructor, or class as simply timed. The underlying
+ * {@link org.eclipse.microprofile.metrics.SimpleTimer SimpleTimer} metric tracks elapsed time duration and count. This
+ * is a lightweight alternative to {@link org.eclipse.microprofile.metrics.Timer timer} (@{@link Timed}). The metric
+ * will be registered in the application MetricRegistry.
  * <p>
  * Given a method annotated with {@literal @}SimplyTimed like this:
  * </p>
- * <pre><code>
+ * 
+ * <pre>
+ * <code>
  *     {@literal @}SimplyTimed(name = "fancyName")
  *     public String fancyName(String name) {
  *         return "Sir Captain " + name;
  *     }
- * </code></pre>
+ * </code>
+ * </pre>
+ * 
  * A simple timer with the fully qualified class name + {@code fancyName} will be created and each time the
  * {@code #fancyName(String)} method is invoked, the method's execution will be timed.
  *
  * <p>
  * Given a class annotated with {@literal @}SimplyTimed like this:
  * </p>
- * <pre><code>
+ * 
+ * <pre>
+ * <code>
  *     {@literal @}SimplyTimed
  *     public class SimplyTimedBean {
  *         public void simplyTimedMethod1() {}
  *         public void simplyTimedMethod2() {}
  *     }
- * </code></pre>
- * A simple timer for the defining class will be created for each of the constructors/methods.
- * Each time a constructor/method is invoked, the execution will be timed with the respective simple timer.
+ * </code>
+ * </pre>
+ * 
+ * A simple timer for the defining class will be created for each of the constructors/methods. Each time a
+ * constructor/method is invoked, the execution will be timed with the respective simple timer.
  *
- * This annotation will throw an IllegalStateException if the constructor/method is invoked, but the metric no
- * longer exists in the MetricRegistry.
+ * This annotation will throw an IllegalStateException if the constructor/method is invoked, but the metric no longer
+ * exists in the MetricRegistry.
  */
 @Inherited
 @Documented
 @InterceptorBinding
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+@Target({ElementType.TYPE, ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 public @interface SimplyTimed {
 
     /**
@@ -83,8 +90,8 @@ public @interface SimplyTimed {
     String name() default "";
 
     /**
-     * @return The tags of the simple timer. Each {@code String} tag must be in the form of 'key=value'. If the input is empty or does
-     * not contain a '=' sign, the entry is ignored.
+     * @return The tags of the simple timer. Each {@code String} tag must be in the form of 'key=value'. If the input is
+     *         empty or does not contain a '=' sign, the entry is ignored.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
@@ -93,7 +100,7 @@ public @interface SimplyTimed {
 
     /**
      * @return If {@code true}, use the given name as an absolute name. If {@code false} (default), use the given name
-     * relative to the annotated class. When annotating a class, this must be {@code false}.
+     *         relative to the annotated class. When annotating a class, this must be {@code false}.
      */
     @Nonbinding
     boolean absolute() default false;
@@ -113,12 +120,12 @@ public @interface SimplyTimed {
     @Nonbinding
     String description() default "";
 
-   /**
-    * @return The unit of the simple timer. By default, the value is {@link MetricUnits#NANOSECONDS}.
-    *
+    /**
+     * @return The unit of the simple timer. By default, the value is {@link MetricUnits#NANOSECONDS}.
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      * @see org.eclipse.microprofile.metrics.MetricUnits
-    */
+     */
     @Nonbinding
     String unit() default MetricUnits.NANOSECONDS;
 

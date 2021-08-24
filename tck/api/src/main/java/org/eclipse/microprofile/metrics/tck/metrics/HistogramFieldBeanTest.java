@@ -20,8 +20,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import javax.inject.Inject;
-
 import org.eclipse.microprofile.metrics.Histogram;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
@@ -36,6 +34,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import jakarta.inject.Inject;
+
 @RunWith(Arquillian.class)
 public class HistogramFieldBeanTest {
 
@@ -45,10 +45,10 @@ public class HistogramFieldBeanTest {
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
-            // Test bean
-            .addClass(HistogramFieldBean.class)
-            // Bean archive deployment descriptor
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClass(HistogramFieldBean.class)
+                // Bean archive deployment descriptor
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -60,17 +60,14 @@ public class HistogramFieldBeanTest {
     @Before
     public void instantiateTest() {
         /*
-         * The MetricID relies on the MicroProfile Config API.
-         * Running a managed arquillian container will result
-         * with the MetricID being created in a client process
-         * that does not contain the MPConfig impl.
-         * 
-         * This will cause client instantiated MetricIDs to 
-         * throw an exception. (i.e the global MetricIDs)
+         * The MetricID relies on the MicroProfile Config API. Running a managed arquillian container will result with
+         * the MetricID being created in a client process that does not contain the MPConfig impl.
+         *
+         * This will cause client instantiated MetricIDs to throw an exception. (i.e the global MetricIDs)
          */
         histogramMID = new MetricID(HISTOGRAM_NAME);
     }
-    
+
     @Test
     @InSequence(1)
     public void histogramFieldRegistered() {

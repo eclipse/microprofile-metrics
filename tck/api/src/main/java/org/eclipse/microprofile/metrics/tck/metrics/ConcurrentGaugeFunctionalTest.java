@@ -23,12 +23,16 @@
  */
 package org.eclipse.microprofile.metrics.tck.metrics;
 
-import org.eclipse.microprofile.metrics.tck.util.ControlledInvocation;
-import org.eclipse.microprofile.metrics.tck.util.BeanWithControlledInvocation;
-import org.eclipse.microprofile.metrics.tck.util.TimeUtil;
+import static org.junit.Assert.assertEquals;
+
+import java.util.concurrent.TimeoutException;
+
 import org.eclipse.microprofile.metrics.ConcurrentGauge;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
+import org.eclipse.microprofile.metrics.tck.util.BeanWithControlledInvocation;
+import org.eclipse.microprofile.metrics.tck.util.ControlledInvocation;
+import org.eclipse.microprofile.metrics.tck.util.TimeUtil;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -39,10 +43,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.inject.Inject;
-import java.util.concurrent.TimeoutException;
-
-import static org.junit.Assert.assertEquals;
+import jakarta.inject.Inject;
 
 @RunWith(Arquillian.class)
 public class ConcurrentGaugeFunctionalTest {
@@ -50,12 +51,12 @@ public class ConcurrentGaugeFunctionalTest {
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
-            .addClass(ConcurrentGaugeFunctionalTest.class)
-            .addClass(ConcurrentGaugeFunctionalBean.class)
-            .addClass(BeanWithControlledInvocation.class)
-            .addClass(ControlledInvocation.class)
-            .addClass(TimeUtil.class)
-            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+                .addClass(ConcurrentGaugeFunctionalTest.class)
+                .addClass(ConcurrentGaugeFunctionalBean.class)
+                .addClass(BeanWithControlledInvocation.class)
+                .addClass(ControlledInvocation.class)
+                .addClass(TimeUtil.class)
+                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -66,21 +67,16 @@ public class ConcurrentGaugeFunctionalTest {
 
     static final int NUMBER_OF_INVOCATIONS = 20;
 
-
     /**
-     * To test the 'min' and 'max' values we have to do this:
-     * - run invocation1 and keep it running
-     * - wait until the next minute starts
-     * - run invocation2 and stop it right away
-     * - wait until the next minute starts
-     * - stop invocation1
-     * - after this, 'min' should be 1 and 'max' should be 2
+     * To test the 'min' and 'max' values we have to do this: - run invocation1 and keep it running - wait until the
+     * next minute starts - run invocation2 and stop it right away - wait until the next minute starts - stop
+     * invocation1 - after this, 'min' should be 1 and 'max' should be 2
      */
     @Test
     @InSequence(1)
     public void testMinMax() throws TimeoutException, InterruptedException {
         ControlledInvocation invocation1 = new ControlledInvocation(bean);
-        ControlledInvocation invocation2 =  new ControlledInvocation(bean);
+        ControlledInvocation invocation2 = new ControlledInvocation(bean);
         invocation1.start();
         try {
             TimeUtil.waitForNextMinute();
@@ -92,17 +88,16 @@ public class ConcurrentGaugeFunctionalTest {
             ConcurrentGauge cGauge = metricRegistry.getConcurrentGauge(new MetricID("mygauge"));
             assertEquals("Minimum should be 1 ", 1, cGauge.getMin());
             assertEquals("Maximum should be 2", 2, cGauge.getMax());
-        }
-        finally {
+        } finally {
             invocation1.stop();
             invocation2.stop();
         }
     }
 
     /**
-     * Over time, run multiple invocations on the bean (so that at one point, all are running at the same time).
-     * Over time, check that the concurrent gauge's value is updated properly.
-     * After that, start stopping the invocations one by one, and again, check that the concurrent gauge is updated.
+     * Over time, run multiple invocations on the bean (so that at one point, all are running at the same time). Over
+     * time, check that the concurrent gauge's value is updated properly. After that, start stopping the invocations one
+     * by one, and again, check that the concurrent gauge is updated.
      */
     @Test
     @InSequence(2)
@@ -121,14 +116,12 @@ public class ConcurrentGaugeFunctionalTest {
                 invocations[i].stop();
                 assertEquals(NUMBER_OF_INVOCATIONS - i - 1, cGauge.getCount());
             }
-        }
-        finally {
+        } finally {
             try {
-                for(ControlledInvocation invocation : invocations) {
+                for (ControlledInvocation invocation : invocations) {
                     invocation.stop();
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

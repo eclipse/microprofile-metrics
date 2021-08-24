@@ -24,8 +24,6 @@ package org.eclipse.microprofile.metrics.tck;
 
 import static org.junit.Assert.assertNotNull;
 
-import javax.inject.Inject;
-
 import org.eclipse.microprofile.metrics.ConcurrentGauge;
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.Histogram;
@@ -48,6 +46,8 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import jakarta.inject.Inject;
 
 @RunWith(Arquillian.class)
 public class MetricRegistryTest {
@@ -132,18 +132,19 @@ public class MetricRegistryTest {
         String displayName = "displayCounterFoo";
         String metricName = "counterFoo";
 
-        //first to register a "complex" metadata
-        metrics.counter(Metadata.builder().withName(metricName).withDisplayName(displayName).withType(MetricType.COUNTER).build());
+        // first to register a "complex" metadata
+        metrics.counter(Metadata.builder().withName(metricName).withDisplayName(displayName)
+                .withType(MetricType.COUNTER).build());
 
-        Tag purpleTag = new Tag("colour","purple");
-        //creates with a simple/template metadata or uses an existing one.
+        Tag purpleTag = new Tag("colour", "purple");
+        // creates with a simple/template metadata or uses an existing one.
         metrics.counter(metricName, purpleTag);
 
-        //check both counters have been registered
+        // check both counters have been registered
         assertExists(Counter.class, new MetricID(metricName));
         assertExists(Counter.class, new MetricID(metricName, purpleTag));
 
-        //check that the "original" metadata wasn't replaced by the empty default metadata
+        // check that the "original" metadata wasn't replaced by the empty default metadata
         Assert.assertEquals(metrics.getMetadata(metricName).getDisplayName(), displayName);
     }
 
@@ -160,9 +161,8 @@ public class MetricRegistryTest {
     }
 
     /**
-     * The implementation has to sanitize Metadata passed to registration methods
-     * if the application does not supply the metric type explicitly, but the type is implied
-     * by the used method.
+     * The implementation has to sanitize Metadata passed to registration methods if the application does not supply the
+     * metric type explicitly, but the type is implied by the used method.
      */
     @Test
     @InSequence(6)
@@ -174,8 +174,8 @@ public class MetricRegistryTest {
     }
 
     /**
-     * if there is a mismatch because the type specified in the `Metadata` is different than the one
-     * implied by the method name, an exception must be thrown
+     * if there is a mismatch because the type specified in the `Metadata` is different than the one implied by the
+     * method name, an exception must be thrown
      */
     @Test(expected = Exception.class)
     @InSequence(7)

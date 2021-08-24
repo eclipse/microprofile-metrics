@@ -41,8 +41,7 @@ public interface ConcurrentGauge extends Metric {
     /**
      * Get the maximum value of the ConcurrentGauge for the previously completed full minute.
      * <p>
-     * This represents the highest number of concurrent
-     * invocations in the last complete full minute.
+     * This represents the highest number of concurrent invocations in the last complete full minute.
      *
      * @return The maximum value in the previously completed full minute.
      */
@@ -51,8 +50,7 @@ public interface ConcurrentGauge extends Metric {
     /**
      * Get the minimum value of the ConcurrentGauge for the previously completed full minute.
      * <p>
-     * This represents the lowest number of concurrent
-     * invocations in the last complete full minute.
+     * This represents the lowest number of concurrent invocations in the last complete full minute.
      *
      * @return The minimum value in the previously completed full minute.
      */

@@ -26,8 +26,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import javax.inject.Inject;
-
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
@@ -43,6 +41,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import jakarta.inject.Inject;
+
 @RunWith(Arquillian.class)
 public class CounterFieldTagBeanTest {
 
@@ -54,17 +54,17 @@ public class CounterFieldTagBeanTest {
     private final static Tag COLOUR_RED_TAG = new Tag("colour", "red");
     private final static Tag COLOUR_BLUE_TAG = new Tag("colour", "blue");
 
-    private static MetricID counterMID ;
+    private static MetricID counterMID;
     private static MetricID counterTwoMID;
     private static MetricID counterThreeMID;
 
     @Deployment
     public static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
-            // Test bean
-            .addClass(CounterFieldTagBean.class)
-            // Bean archive deployment descriptor
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClass(CounterFieldTagBean.class)
+                // Bean archive deployment descriptor
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -76,13 +76,10 @@ public class CounterFieldTagBeanTest {
     @Before
     public void instantiateTest() {
         /*
-         * The MetricID relies on the MicroProfile Config API.
-         * Running a managed arquillian container will result
-         * with the MetricID being created in a client process
-         * that does not contain the MPConfig impl.
+         * The MetricID relies on the MicroProfile Config API. Running a managed arquillian container will result with
+         * the MetricID being created in a client process that does not contain the MPConfig impl.
          *
-         * This will cause client instantiated MetricIDs to
-         * throw an exception. (i.e the global MetricIDs)
+         * This will cause client instantiated MetricIDs to throw an exception. (i.e the global MetricIDs)
          */
         counterMID = new MetricID(COUNTER_NAME);
         counterTwoMID = new MetricID(COUNTER_NAME, NUMBER_TWO_TAG, COLOUR_RED_TAG);

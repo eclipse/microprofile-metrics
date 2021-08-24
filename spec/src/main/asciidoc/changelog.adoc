@@ -164,7 +164,7 @@ A full list of changes may be found on the link:https://github.com/eclipse/micro
 ** TCKs are updated to use RestAssured 4.0
 
 === Miscellaneous
-** Explicitly excluded the transitive dependency on `javax.el-api` from the build of the specification. It wasn't actually used anywhere in the build so there should be no impact.
+** Explicitly excluded the transitive dependency on `jakarta.el-api` from the build of the specification. It wasn't actually used anywhere in the build so there should be no impact.
 Implementations can still support the Expression Language if they choose to. (https://github.com/eclipse/microprofile-metrics/issues/417[#417])
 
 [[release_notes_2_0]]

@@ -18,14 +18,14 @@ package org.eclipse.microprofile.metrics.tck.inheritance;
 import org.eclipse.microprofile.metrics.MetricUnits;
 import org.eclipse.microprofile.metrics.annotation.Gauge;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class InheritedParentGaugeMethodBean {
 
     private long gauge;
 
-    @Gauge(name = "inheritedParentGaugeMethod", unit=MetricUnits.NONE)
+    @Gauge(name = "inheritedParentGaugeMethod", unit = MetricUnits.NONE)
     public long getGauge() {
         return gauge;
     }

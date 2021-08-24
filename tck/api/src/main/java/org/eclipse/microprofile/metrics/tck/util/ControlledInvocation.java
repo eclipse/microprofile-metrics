@@ -54,12 +54,11 @@ public class ControlledInvocation {
      */
     public void start() throws InterruptedException, TimeoutException {
         new Thread(
-            () -> {
-                bean.controlledMethod(startMarker, endCommand);
-                endMarker.countDown();
-            }
-        ).start();
-        if(!startMarker.await(5, TimeUnit.SECONDS)) {
+                () -> {
+                    bean.controlledMethod(startMarker, endCommand);
+                    endMarker.countDown();
+                }).start();
+        if (!startMarker.await(5, TimeUnit.SECONDS)) {
             throw new TimeoutException();
         }
     }
@@ -77,8 +76,7 @@ public class ControlledInvocation {
                     throw new TimeoutException();
                 }
             }
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

@@ -33,27 +33,23 @@ import java.util.EnumSet;
 public enum MetricType {
 
     /**
-     * A concurrent gauge counts the number of parallel invocations of
-     * a target (method). Upon entering the target the value is increased.
-     * It is decreased again upon exiting the target.
+     * A concurrent gauge counts the number of parallel invocations of a target (method). Upon entering the target the
+     * value is increased. It is decreased again upon exiting the target.
      */
 
     CONCURRENT_GAUGE("concurrent gauge", ConcurrentGauge.class),
     /**
-     * A Counter monotonically increases its values.
-     * An example could be the number of Transactions committed.
+     * A Counter monotonically increases its values. An example could be the number of Transactions committed.
      */
     COUNTER("counter", Counter.class),
 
     /**
-     * A Gauge has values that 'arbitrarily' goes up/down at each
-     * sampling. An example could be CPU load
+     * A Gauge has values that 'arbitrarily' goes up/down at each sampling. An example could be CPU load
      */
     GAUGE("gauge", Gauge.class),
 
     /**
-     * A Meter measures the rate at which a set of events occur.
-     * An example could be amount of Transactions per Hour.
+     * A Meter measures the rate at which a set of events occur. An example could be amount of Transactions per Hour.
      */
     METERED("meter", Meter.class),
 
@@ -63,8 +59,7 @@ public enum MetricType {
     HISTOGRAM("histogram", Histogram.class),
 
     /**
-     * A timer aggregates timing durations and provides duration
-     * statistics, plus throughput statistics
+     * A timer aggregates timing durations and provides duration statistics, plus throughput statistics
      */
     TIMER("timer", Timer.class),
 
@@ -77,7 +72,6 @@ public enum MetricType {
      * Invalid - Placeholder
      */
     INVALID("invalid", null);
-
 
     private String type;
     private Class<?> classtype;
@@ -96,9 +90,11 @@ public enum MetricType {
     /**
      * Convert the string representation into an enum
      *
-     * @param in the String representation (NOT the class name but rather a string like "counter", "gauge",...)
+     * @param in
+     *            the String representation (NOT the class name but rather a string like "counter", "gauge",...)
      * @return the matching Enum
-     * @throws IllegalArgumentException if in is not a valid enum value
+     * @throws IllegalArgumentException
+     *             if in is not a valid enum value
      */
     public static MetricType from(String in) {
         for (MetricType u : METRIC_TYPES) {
@@ -112,9 +108,11 @@ public enum MetricType {
     /**
      * Convert the metric Java class into a MetricType
      *
-     * @param in The metric class
+     * @param in
+     *            The metric class
      * @return the matching MetricType value
-     * @throws IllegalArgumentException if in is not a valid metric class
+     * @throws IllegalArgumentException
+     *             if in is not a valid metric class
      */
     public static MetricType from(Class<?> in) {
         for (MetricType u : METRIC_TYPES) {
@@ -128,9 +126,11 @@ public enum MetricType {
     /**
      * Convert the metric Java class name into a MetricType
      *
-     * @param className The name of a metric class
+     * @param className
+     *            The name of a metric class
      * @return the matching MetricType value
-     * @throws IllegalArgumentException if className is not a valid metric class
+     * @throws IllegalArgumentException
+     *             if className is not a valid metric class
      */
     public static MetricType fromClassName(String className) {
         for (MetricType u : METRIC_TYPES) {

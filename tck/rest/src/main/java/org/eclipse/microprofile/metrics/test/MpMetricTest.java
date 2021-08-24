@@ -26,10 +26,10 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.lessThan;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -49,7 +49,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -78,6 +77,7 @@ import io.restassured.builder.ResponseBuilder;
 import io.restassured.http.Header;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+import jakarta.inject.Inject;
 
 /**
  * Rest Test Kit
@@ -91,10 +91,10 @@ public class MpMetricTest {
 
     private static final String APPLICATION_JSON = "application/json";
     private static final String TEXT_PLAIN = "text/plain";
-    
-    private static final String JSON_APP_LABEL_REGEX = ";_app=[-/A-Za-z0-9]+([;\\\"]?)"; 
+
+    private static final String JSON_APP_LABEL_REGEX = ";_app=[-/A-Za-z0-9]+([;\\\"]?)";
     private static final String JSON_APP_LABEL_REGEXS_SUB = "$1";
-    
+
     private static final String OPENMETRICS_APP_LABEL_REGEX = "_app=\"[-/A-Za-z0-9]+\"";
 
     private static final String DEFAULT_PROTOCOL = "http";
@@ -103,11 +103,11 @@ public class MpMetricTest {
 
     public static final double TOLERANCE = 0.025;
 
-    private static String filterOutAppLabelJSON(String responseBody){
+    private static String filterOutAppLabelJSON(String responseBody) {
         return responseBody.replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB);
     }
 
-    private static String  filterOutAppLabelOpenMetrics(String responseBody) {
+    private static String filterOutAppLabelOpenMetrics(String responseBody) {
         return responseBody.replaceAll(OPENMETRICS_APP_LABEL_REGEX, "").replaceAll("\\{,", "{").replaceAll(",\\}", "}");
     }
 
@@ -192,8 +192,8 @@ public class MpMetricTest {
 
         // There may be application metrics, so check if the key exists and bail if it has no data
         if (response.containsKey("application")) {
-          Map applicationData = (Map) response.get("application");
-          assertThat(applicationData.size(), greaterThan(0));
+            Map applicationData = (Map) response.get("application");
+            assertThat(applicationData.size(), greaterThan(0));
         }
     }
 
@@ -208,9 +208,10 @@ public class MpMetricTest {
         responseBuilder.clone(resp);
         responseBuilder.setBody(filteredJSONPath.prettify());
         resp = responseBuilder.build();
-        
+
         resp.then().statusCode(200).and()
-            .contentType(MpMetricTest.APPLICATION_JSON).and().body(containsString("thread.max.count;tier=integration"));        
+                .contentType(MpMetricTest.APPLICATION_JSON).and()
+                .body(containsString("thread.max.count;tier=integration"));
     }
 
     @Test
@@ -224,7 +225,8 @@ public class MpMetricTest {
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).and().contentType(TEXT_PLAIN).and()
-            .body(containsString("# TYPE base_thread_max_count"), containsString("base_thread_max_count{tier=\"integration\"}"));
+                .body(containsString("# TYPE base_thread_max_count"),
+                        containsString("base_thread_max_count{tier=\"integration\"}"));
     }
 
     @Test
@@ -233,7 +235,7 @@ public class MpMetricTest {
     public void testBaseAttributeJson() {
         Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
         Header wantJson = new Header("Accept", APPLICATION_JSON);
-        
+
         Response resp = given().header(wantJson).get("/metrics/base/thread.max.count");
         JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
         ResponseBuilder responseBuilder = new ResponseBuilder();
@@ -241,7 +243,8 @@ public class MpMetricTest {
         responseBuilder.setBody(filteredJSONPath.prettify());
         resp = responseBuilder.build();
         resp.then().statusCode(200).and()
-                .contentType(MpMetricTest.APPLICATION_JSON).and().body(containsString("thread.max.count;tier=integration"));
+                .contentType(MpMetricTest.APPLICATION_JSON).and()
+                .body(containsString("thread.max.count;tier=integration"));
     }
 
     @Test
@@ -252,19 +255,20 @@ public class MpMetricTest {
         Header wantJson = new Header("Accept", APPLICATION_JSON);
 
         JsonPath jsonPath = given().header(wantJson).get("/metrics/base").jsonPath();
-        JsonPath filteredJSONPath = new JsonPath(jsonPath.prettify().replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB));
-        
+        JsonPath filteredJSONPath =
+                new JsonPath(jsonPath.prettify().replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB));
+
         Map<String, Object> elements = filteredJSONPath.getMap(".");
-        
+
         List<String> missing = new ArrayList<>();
 
-        Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);       
-        
+        Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
+
         for (MiniMeta item : baseNames.values()) {
             if (item.name.startsWith("gc.")) {
                 continue;
             }
-                
+
             if (!elements.containsKey(item.toJSONName()) && !baseNames.get(item.name).optional) {
                 missing.add(item.toJSONName());
             }
@@ -284,8 +288,8 @@ public class MpMetricTest {
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).and()
-        .contentType(TEXT_PLAIN).and().body(containsString("# TYPE base_thread_max_count"),
-                containsString("base_thread_max_count{tier=\"integration\"}"));
+                .contentType(TEXT_PLAIN).and().body(containsString("# TYPE base_thread_max_count"),
+                        containsString("base_thread_max_count{tier=\"integration\"}"));
     }
 
     @Test
@@ -337,11 +341,12 @@ public class MpMetricTest {
         Map<String, Map<String, Object>> elements = jsonPath.getMap(".");
 
         Map<String, MiniMeta> expectedMetadata = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
-              checkMetadataPresent(elements, expectedMetadata);
+        checkMetadataPresent(elements, expectedMetadata);
 
     }
 
-    private void checkMetadataPresent(Map<String, Map<String, Object>> elements, Map<String, MiniMeta> expectedMetadata) {
+    private void checkMetadataPresent(Map<String, Map<String, Object>> elements,
+            Map<String, MiniMeta> expectedMetadata) {
         for (Map.Entry<String, MiniMeta> entry : expectedMetadata.entrySet()) {
             MiniMeta item = entry.getValue();
             if (item.name.startsWith("gc.") || expectedMetadata.get(item.name).optional) {
@@ -353,15 +358,15 @@ public class MpMetricTest {
                     + fromServer.get("type") + " for type of metric " + item.name, item.type, fromServer.get("type"));
             assertEquals("expected " + item.unit + " but got "
                     + fromServer.get("unit") + " for unit of metric " + item.name, item.unit, fromServer.get("unit"));
-            if(item.description != null && !item.description.isEmpty()) {
+            if (item.description != null && !item.description.isEmpty()) {
                 assertEquals("expected " + item.description + " but got "
-                    + fromServer.get("description") + " for description of metric " + item.name,
-                    item.description, fromServer.get("description"));
+                        + fromServer.get("description") + " for description of metric " + item.name,
+                        item.description, fromServer.get("description"));
             }
-            if(item.displayName != null && !item.displayName.isEmpty()) {
+            if (item.displayName != null && !item.displayName.isEmpty()) {
                 assertEquals("expected " + item.displayName + " but got "
                         + fromServer.get("displayName") + " for displayName of " + item.name,
-                    item.displayName, fromServer.get("displayName"));
+                        item.displayName, fromServer.get("displayName"));
             }
         }
     }
@@ -381,16 +386,16 @@ public class MpMetricTest {
                 continue;
             }
             String nameAndTagsPart = line.substring(0, line.lastIndexOf(" "));
-            String namePart = nameAndTagsPart.contains("{") ?
-                nameAndTagsPart.substring(0, nameAndTagsPart.lastIndexOf("{")) : nameAndTagsPart;
+            String namePart = nameAndTagsPart.contains("{")
+                    ? nameAndTagsPart.substring(0, nameAndTagsPart.lastIndexOf("{"))
+                    : nameAndTagsPart;
             assertFalse("Name has illegal chars " + line, namePart.matches(".*[-.].*"));
             assertFalse("Found __ in " + line, line.matches(".*__.*"));
         }
     }
 
     /*
-     * Technically OpenMetrics has no metadata call and this is included inline
-     * in the response.
+     * Technically OpenMetrics has no metadata call and this is included inline in the response.
      */
     @Test
     @RunAsClient
@@ -471,14 +476,14 @@ public class MpMetricTest {
         metricAppBean.countMe();
         metricAppBean.countMeA();
         metricAppBean.countMeB();
-        
+
         metricAppBean.gaugeMe();
         metricAppBean.gaugeMeA();
         metricAppBean.gaugeMeB();
         metricAppBean.gaugeMeTagged();
         metricAppBean.gaugeMeTaggedOne();
         metricAppBean.gaugeMeTaggedTwo();
-        
+
         metricAppBean.histogramMe();
 
         metricAppBean.meterMe();
@@ -486,20 +491,20 @@ public class MpMetricTest {
 
         metricAppBean.timeMe();
         metricAppBean.timeMeA();
-        
+
         metricAppBean.simpleTimeMe();
         metricAppBean.simpleTimeMeA();
-        
+
         metricAppBean.concGaugeMeA();
 
     }
-    
+
     @Test
     @RunAsClient
     @InSequence(18)
     public void testApplicationMetricsJSON() {
         Header wantJson = new Header("Accept", APPLICATION_JSON);
-        
+
         Response resp = given().header(wantJson).get("/metrics/application");
         JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
         ResponseBuilder responseBuilder = new ResponseBuilder();
@@ -525,7 +530,8 @@ public class MpMetricTest {
                 .body("'metricTest.test1.gauge;tier=integration'", equalTo(19))
 
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeA;tier=integration'", equalTo(1000))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeB;tier=integration'", equalTo(7777777))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeB;tier=integration'",
+                        equalTo(7777777))
 
                 .body("'metricTest.test1.histogram'.'count;tier=integration'", equalTo(1000))
                 .body("'metricTest.test1.histogram'.'sum;tier=integration'", equalTo(499500))
@@ -569,12 +575,18 @@ public class MpMetricTest {
                 .body("'metricTest.test1.timer'", hasKey("p999;tier=integration"))
                 .body("'metricTest.test1.timer'", hasKey("stddev;tier=integration"))
 
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'.'count;tier=integration'", equalTo(1))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("fifteenMinRate;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("fiveMinRate;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("meanRate;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("oneMinRate;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("elapsedTime;tier=integration"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'.'count;tier=integration'",
+                        equalTo(1))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'",
+                        hasKey("fifteenMinRate;tier=integration"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'",
+                        hasKey("fiveMinRate;tier=integration"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'",
+                        hasKey("meanRate;tier=integration"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'",
+                        hasKey("oneMinRate;tier=integration"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'",
+                        hasKey("elapsedTime;tier=integration"))
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("max;tier=integration"))
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("mean;tier=integration"))
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("min;tier=integration"))
@@ -584,17 +596,22 @@ public class MpMetricTest {
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p98;tier=integration"))
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p99;tier=integration"))
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p999;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("stddev;tier=integration"))
-                
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'",
+                        hasKey("stddev;tier=integration"))
+
                 .body("'metricTest.test1.simpleTimer'.'count;tier=integration'", equalTo(1))
                 .body("'metricTest.test1.simpleTimer'", hasKey("elapsedTime;tier=integration"))
                 .body("'metricTest.test1.simpleTimer'", hasKey("minTimeDuration;tier=integration"))
                 .body("'metricTest.test1.simpleTimer'", hasKey("maxTimeDuration;tier=integration"))
-                
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA'.'count;tier=integration'", equalTo(1))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA'", hasKey("elapsedTime;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA'", hasKey("minTimeDuration;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA'", hasKey("maxTimeDuration;tier=integration"));
+
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA'.'count;tier=integration'",
+                        equalTo(1))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA'",
+                        hasKey("elapsedTime;tier=integration"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA'",
+                        hasKey("minTimeDuration;tier=integration"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA'",
+                        hasKey("maxTimeDuration;tier=integration"));
     }
 
     @Test
@@ -606,7 +623,7 @@ public class MpMetricTest {
         JsonPath jsonPath = given().header(wantJson).options("/metrics/application").jsonPath();
 
         Map<String, Object> elements = jsonPath.getMap(".");
-        
+
         List<String> missing = new ArrayList<>();
 
         Map<String, MiniMeta> names = getExpectedMetadataFromXmlFile(MetricRegistry.Type.APPLICATION);
@@ -639,8 +656,8 @@ public class MpMetricTest {
     public void testApplicationTagJson() {
 
         JsonPath jsonPath = given().header("Accept", APPLICATION_JSON)
-            .when()
-            .options("/metrics/application/purple").jsonPath();
+                .when()
+                .options("/metrics/application/purple").jsonPath();
         String tags = jsonPath.getString("purple.tags");
         assertNotNull(tags);
         assertTrue(tags.contains("app=myShop"));
@@ -653,10 +670,10 @@ public class MpMetricTest {
     public void testApplicationTagOpenMetrics() {
 
         given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/purple")
-            .then().statusCode(200)
-            .and()
-            .body(containsString("tier=\"integration\""))
-            .body(containsString("app=\"myShop\""));
+                .then().statusCode(200)
+                .and()
+                .body(containsString("tier=\"integration\""))
+                .body(containsString("app=\"myShop\""));
     }
 
     @Test
@@ -666,13 +683,13 @@ public class MpMetricTest {
 
         String prefix = "meterMeA_";
         given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/meterMeA")
-            .then().statusCode(200)
-            .and()
-            .body(containsString(prefix + "total"))
-            .body(containsString(prefix + "rate_per_second"))
-            .body(containsString(prefix + "one_min_rate_per_second"))
-            .body(containsString(prefix + "five_min_rate_per_second"))
-            .body(containsString(prefix + "fifteen_min_rate_per_second"));
+                .then().statusCode(200)
+                .and()
+                .body(containsString(prefix + "total"))
+                .body(containsString(prefix + "rate_per_second"))
+                .body(containsString(prefix + "one_min_rate_per_second"))
+                .body(containsString(prefix + "five_min_rate_per_second"))
+                .body(containsString(prefix + "fifteen_min_rate_per_second"));
     }
 
     @Test
@@ -681,33 +698,33 @@ public class MpMetricTest {
     public void testApplicationTimerUnitOpenMetrics() {
 
         String prefix = "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_";
-        
-        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics/application/org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA");
+
+        Response resp = given().header("Accept", TEXT_PLAIN)
+                .get("/metrics/application/org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
-                
+
         resp.then().statusCode(200)
-            .and()
-            .body(containsString("# TYPE application_" + prefix + "seconds summary"))
-            .body(containsString(prefix + "seconds_count"))
-            .body(containsString(prefix + "seconds_sum"))
-            .body(containsString(prefix + "rate_per_second"))
-            .body(containsString(prefix + "one_min_rate_per_second"))
-            .body(containsString(prefix + "five_min_rate_per_second"))
-            .body(containsString(prefix + "fifteen_min_rate_per_second"))
-            .body(containsString(prefix + "mean_seconds"))
-            .body(containsString(prefix + "min_seconds"))
-            .body(containsString(prefix + "max_seconds"))
-            .body(containsString(prefix + "stddev_second"))
-            .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.5\"}"))
-            .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.75\"}"))
-            .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.95\"}"))
-            .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.98\"}"))
-            .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.99\"}"))
-            .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.999\"}"))
-        ;
+                .and()
+                .body(containsString("# TYPE application_" + prefix + "seconds summary"))
+                .body(containsString(prefix + "seconds_count"))
+                .body(containsString(prefix + "seconds_sum"))
+                .body(containsString(prefix + "rate_per_second"))
+                .body(containsString(prefix + "one_min_rate_per_second"))
+                .body(containsString(prefix + "five_min_rate_per_second"))
+                .body(containsString(prefix + "fifteen_min_rate_per_second"))
+                .body(containsString(prefix + "mean_seconds"))
+                .body(containsString(prefix + "min_seconds"))
+                .body(containsString(prefix + "max_seconds"))
+                .body(containsString(prefix + "stddev_second"))
+                .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.5\"}"))
+                .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.75\"}"))
+                .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.95\"}"))
+                .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.98\"}"))
+                .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.99\"}"))
+                .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.999\"}"));
     }
 
     @Test
@@ -722,23 +739,22 @@ public class MpMetricTest {
         responseBuilder.clone(resp);
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
-        
+
         resp.then().statusCode(200)
-            .and()
-            .body(containsString(prefix + "bytes_count"))
-            .body(containsString(prefix + "bytes_sum"))
-            .body(containsString("# TYPE application_" + prefix + "bytes summary"))
-            .body(containsString(prefix + "mean_bytes"))
-            .body(containsString(prefix + "min_bytes"))
-            .body(containsString(prefix + "max_bytes"))
-            .body(containsString(prefix + "stddev_bytes"))
-            .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.5\"}"))
-            .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.75\"}"))
-            .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.95\"}"))
-            .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.98\"}"))
-            .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.99\"}"))
-            .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.999\"}"))
-        ;
+                .and()
+                .body(containsString(prefix + "bytes_count"))
+                .body(containsString(prefix + "bytes_sum"))
+                .body(containsString("# TYPE application_" + prefix + "bytes summary"))
+                .body(containsString(prefix + "mean_bytes"))
+                .body(containsString(prefix + "min_bytes"))
+                .body(containsString(prefix + "max_bytes"))
+                .body(containsString(prefix + "stddev_bytes"))
+                .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.5\"}"))
+                .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.75\"}"))
+                .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.95\"}"))
+                .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.98\"}"))
+                .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.99\"}"))
+                .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.999\"}"));
     }
 
     @Test
@@ -753,23 +769,22 @@ public class MpMetricTest {
         responseBuilder.clone(resp);
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
-        
+
         resp.then().statusCode(200)
-            .and()
-            .body(containsString(prefix + "_count"))
-            .body(containsString(prefix + "_sum"))
-            .body(containsString("# TYPE application_" + prefix + " summary"))
-            .body(containsString(prefix + "_mean"))
-            .body(containsString(prefix + "_min"))
-            .body(containsString(prefix + "_max"))
-            .body(containsString(prefix + "_stddev"))
-            .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.5\"}"))
-            .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.75\"}"))
-            .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.95\"}"))
-            .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.98\"}"))
-            .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.99\"}"))
-            .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.999\"}"))
-        ;
+                .and()
+                .body(containsString(prefix + "_count"))
+                .body(containsString(prefix + "_sum"))
+                .body(containsString("# TYPE application_" + prefix + " summary"))
+                .body(containsString(prefix + "_mean"))
+                .body(containsString(prefix + "_min"))
+                .body(containsString(prefix + "_max"))
+                .body(containsString(prefix + "_stddev"))
+                .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.5\"}"))
+                .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.75\"}"))
+                .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.95\"}"))
+                .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.98\"}"))
+                .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.99\"}"))
+                .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.999\"}"));
     }
 
     @Test
@@ -777,11 +792,11 @@ public class MpMetricTest {
     @InSequence(27)
     public void testOpenMetrics406ForOptions() {
         given()
-            .header("Accept", TEXT_PLAIN)
-        .when()
-            .options("/metrics/application/metricTest.test1.histogram2")
-        .then()
-            .statusCode(406);
+                .header("Accept", TEXT_PLAIN)
+                .when()
+                .options("/metrics/application/metricTest.test1.histogram2")
+                .then()
+                .statusCode(406);
     }
 
     @Test
@@ -790,10 +805,9 @@ public class MpMetricTest {
     public void testConvertingToBaseUnit() {
         Header wantOpenMetricsFormat = new Header("Accept", TEXT_PLAIN);
         given().header(wantOpenMetricsFormat).get("/metrics/application").then().statusCode(200)
-        .and().body(containsString(
-            "TYPE application_org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeA_bytes gauge"))
-        .and().body(containsString("TYPE application_metricTest_test1_gauge_bytes gauge"));
-
+                .and().body(containsString(
+                        "TYPE application_org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeA_bytes gauge"))
+                .and().body(containsString("TYPE application_metricTest_test1_gauge_bytes gauge"));
 
     }
 
@@ -803,9 +817,9 @@ public class MpMetricTest {
     public void testNonStandardUnitsJSON() {
 
         Header wantJSONFormat = new Header("Accept", APPLICATION_JSON);
-        
+
         given().header(wantJSONFormat).options("/metrics/application/jellybeanHistogram").then().statusCode(200)
-         .body("jellybeanHistogram.unit", equalTo("jellybeans"));
+                .body("jellybeanHistogram.unit", equalTo("jellybeans"));
 
     }
 
@@ -816,28 +830,27 @@ public class MpMetricTest {
 
         String prefix = "jellybeanHistogram_";
         Header wantOpenMetricsFormat = new Header("Accept", TEXT_PLAIN);
-        
+
         Response resp = given().header(wantOpenMetricsFormat).get("/metrics/application/jellybeanHistogram");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
-        
-        
+
         resp.then().statusCode(200)
-        .and()
-        .body(containsString(prefix + "jellybeans_count"))
-        .body(containsString("# TYPE application_" + prefix + "jellybeans summary"))
-        .body(containsString(prefix + "mean_jellybeans"))
-        .body(containsString(prefix + "min_jellybeans"))
-        .body(containsString(prefix + "max_jellybeans"))
-        .body(containsString(prefix + "stddev_jellybeans"))
-        .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.5\"}"))
-        .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.75\"}"))
-        .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.95\"}"))
-        .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.98\"}"))
-        .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.99\"}"))
-        .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.999\"}"));
+                .and()
+                .body(containsString(prefix + "jellybeans_count"))
+                .body(containsString("# TYPE application_" + prefix + "jellybeans summary"))
+                .body(containsString(prefix + "mean_jellybeans"))
+                .body(containsString(prefix + "min_jellybeans"))
+                .body(containsString(prefix + "max_jellybeans"))
+                .body(containsString(prefix + "stddev_jellybeans"))
+                .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.5\"}"))
+                .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.75\"}"))
+                .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.95\"}"))
+                .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.98\"}"))
+                .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.99\"}"))
+                .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.999\"}"));
     }
 
     @Test
@@ -855,12 +868,12 @@ public class MpMetricTest {
         for (MiniMeta item : names.values()) {
             if (elements.containsKey(item.toJSONName()) && names.get(item.name).optional) {
                 String prefix = names.get(item.name).name;
-                String type = "'"+item.toJSONName()+"'"+".type";
-                String unit= "'"+item.toJSONName()+"'"+".unit";
+                String type = "'" + item.toJSONName() + "'" + ".type";
+                String unit = "'" + item.toJSONName() + "'" + ".unit";
 
-                given().header(wantJson).options("/metrics/base/"+prefix).then().statusCode(200)
-                .body(type, equalTo(names.get(item.name).type))
-                .body(unit, equalTo(names.get(item.name).unit));
+                given().header(wantJson).options("/metrics/base/" + prefix).then().statusCode(200)
+                        .body(type, equalTo(names.get(item.name).type))
+                        .body(unit, equalTo(names.get(item.name).unit));
             }
         }
 
@@ -877,38 +890,38 @@ public class MpMetricTest {
     @InSequence(34)
     public void testPromNoBadCharsInNames() {
         given().header("Accept", TEXT_PLAIN).when().get("/metrics/application")
-            .then().statusCode(200)
-            .and()
+                .then().statusCode(200)
+                .and()
                 // metrics.counter("pm_counter-with-dashes");
-            .body(containsString("pm_counter_with_dashes"))
+                .body(containsString("pm_counter_with_dashes"))
                 // metrics.counter("pm_counter#hash_x'y_");
-            .body(containsString("pm_counter_hash_x_y_"))
+                .body(containsString("pm_counter_hash_x_y_"))
                 // metrics.counter("pm_counter-umlaut-äöü");
-            .body(containsString("pm_counter_umlaut_"))
+                .body(containsString("pm_counter_umlaut_"))
                 // metrics.counter("pm_counter+accent_ê_");
-            .body(containsString("pm_counter_accent_"));
+                .body(containsString("pm_counter_accent_"));
     }
 
     @Test
     @RunAsClient
     @InSequence(35)
     public void testAccept1() {
-        given().header("Accept","application/json;q=0.5,text/plain;q=0.5")
-            .when().get("/metrics/application")
-            .then().statusCode(200)
-            .and()
-            .contentType(TEXT_PLAIN);
+        given().header("Accept", "application/json;q=0.5,text/plain;q=0.5")
+                .when().get("/metrics/application")
+                .then().statusCode(200)
+                .and()
+                .contentType(TEXT_PLAIN);
     }
 
     @Test
     @RunAsClient
     @InSequence(36)
     public void testAccept2() {
-        given().header("Accept","application/json;q=0.1,text/plain;q=0.9")
-            .when().get("/metrics/application")
-            .then().statusCode(200)
-            .and()
-            .contentType(TEXT_PLAIN);
+        given().header("Accept", "application/json;q=0.1,text/plain;q=0.9")
+                .when().get("/metrics/application")
+                .then().statusCode(200)
+                .and()
+                .contentType(TEXT_PLAIN);
 
     }
 
@@ -916,31 +929,31 @@ public class MpMetricTest {
     @RunAsClient
     @InSequence(37)
     public void testAccept3() {
-        given().header("Accept","image/png,image/jpeg")
-            .when().get("/metrics/application")
-            .then().statusCode(406);
+        given().header("Accept", "image/png,image/jpeg")
+                .when().get("/metrics/application")
+                .then().statusCode(406);
     }
 
     @Test
     @RunAsClient
     @InSequence(38)
     public void testAccept4() {
-        given().header("Accept","*/*")
-            .when().get("/metrics/application")
-            .then().statusCode(200)
-            .and()
-            .contentType(TEXT_PLAIN);
+        given().header("Accept", "*/*")
+                .when().get("/metrics/application")
+                .then().statusCode(200)
+                .and()
+                .contentType(TEXT_PLAIN);
     }
 
     @Test
     @RunAsClient
     @InSequence(39)
     public void testAccept5() {
-        given().header("Accept","image/png;q=1,*/*;q=0.1")
-            .when().get("/metrics/application")
-            .then().statusCode(200)
-            .and()
-            .contentType(TEXT_PLAIN);
+        given().header("Accept", "image/png;q=1,*/*;q=0.1")
+                .when().get("/metrics/application")
+                .then().statusCode(200)
+                .and()
+                .contentType(TEXT_PLAIN);
     }
 
     @Test
@@ -948,9 +961,9 @@ public class MpMetricTest {
     @InSequence(40)
     public void testNoAcceptHeader() {
         when().get("/metrics/application")
-            .then().statusCode(200)
-            .and()
-            .contentType(TEXT_PLAIN);
+                .then().statusCode(200)
+                .and()
+                .contentType(TEXT_PLAIN);
     }
 
     @Test
@@ -959,7 +972,8 @@ public class MpMetricTest {
     public void testCustomUnitAppendToGaugeName() {
         Header wantOpenMetricsFormat = new Header("Accept", TEXT_PLAIN);
         given().header(wantOpenMetricsFormat).get("/metrics/application").then().statusCode(200)
-        .and().body(containsString("TYPE application_org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeB_hands gauge"));
+                .and().body(containsString(
+                        "TYPE application_org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeB_hands gauge"));
     }
 
     @Test
@@ -968,12 +982,12 @@ public class MpMetricTest {
     public void testNoCustomUnitForCounter() {
         Header wantOpenMetricsFormat = new Header("Accept", TEXT_PLAIN);
         given().header(wantOpenMetricsFormat).get("/metrics/application").then().statusCode(200)
-        .and().body(containsString("TYPE application_metricTest_test1_countMeB_total counter"));
+                .and().body(containsString("TYPE application_metricTest_test1_countMeB_total counter"));
     }
 
     /**
-     * Check that there is at least one metric named gc.total and that they all contain
-     * expected tags (actually this is just 'name' for now).
+     * Check that there is at least one metric named gc.total and that they all contain expected tags (actually this is
+     * just 'name' for now).
      */
     @Test
     @RunAsClient
@@ -991,17 +1005,17 @@ public class MpMetricTest {
         Map<String, Object> elements = jsonPath.getMap(".");
         boolean found = false;
         for (Map.Entry<String, Object> metricEntry : elements.entrySet()) {
-            if(metricEntry.getKey().startsWith("gc.total")) {
+            if (metricEntry.getKey().startsWith("gc.total")) {
                 // We found a metric named gc.total. Now check that it contains all expected tags
-                for(String expectedTag : expectedTags) {
+                for (String expectedTag : expectedTags) {
                     assertThat("The metric should contain a " + expectedTag + " tag",
-                        metricEntry.getKey(), containsString(expectedTag + "="));
+                            metricEntry.getKey(), containsString(expectedTag + "="));
                 }
                 // check that the metric has a reasonable value - it should at least be numeric and not negative
                 Assert.assertTrue("gc.total value should be numeric",
-                    metricEntry.getValue() instanceof Number);
+                        metricEntry.getValue() instanceof Number);
                 Assert.assertTrue("gc.total value should not be a negative number",
-                    (Integer)metricEntry.getValue() >= 0);
+                        (Integer) metricEntry.getValue() >= 0);
                 found = true;
             }
         }
@@ -1009,8 +1023,8 @@ public class MpMetricTest {
     }
 
     /**
-     * Check that there is at least one metric named gc.time and that they all contain
-     * expected tags (actually this is just 'name' for now).
+     * Check that there is at least one metric named gc.time and that they all contain expected tags (actually this is
+     * just 'name' for now).
      */
     @Test
     @RunAsClient
@@ -1028,64 +1042,66 @@ public class MpMetricTest {
         Map<String, Object> elements = jsonPath.getMap(".");
         boolean found = false;
         for (Map.Entry<String, Object> metricEntry : elements.entrySet()) {
-            if(metricEntry.getKey().startsWith("gc.time")) {
+            if (metricEntry.getKey().startsWith("gc.time")) {
                 // We found a metric named gc.time. Now check that it contains all expected tags
-                for(String expectedTag : expectedTags) {
+                for (String expectedTag : expectedTags) {
                     assertThat("The metric should contain a " + expectedTag + " tag",
-                        metricEntry.getKey(), containsString(expectedTag + "="));
+                            metricEntry.getKey(), containsString(expectedTag + "="));
                 }
                 // check that the metric has a reasonable value - it should at least be numeric and not negative
                 Assert.assertTrue("gc.time value should be numeric",
-                    metricEntry.getValue() instanceof Number);
+                        metricEntry.getValue() instanceof Number);
                 Assert.assertTrue("gc.time value should not be a negative number",
-                    (Integer)metricEntry.getValue() >= 0);
+                        (Integer) metricEntry.getValue() >= 0);
                 found = true;
             }
         }
         Assert.assertTrue("At least one metric named gc.time is expected", found);
     }
-    
+
     /**
-     * Test that multi-dimensional metrics are represented properly
-     * in JSON.
+     * Test that multi-dimensional metrics are represented properly in JSON.
      */
     @Test
     @RunAsClient
     @InSequence(45)
     public void testMultipleTaggedMetricsJSON() {
         Header wantJson = new Header("Accept", APPLICATION_JSON);
-        
+
         Response resp = given().header(wantJson).get("/metrics/application");
         JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
         responseBuilder.setBody(filteredJSONPath.prettify());
         resp = responseBuilder.build();
-        
+
         /*
          * This test's primary objective is to ensure that the format is correct.
          */
-        
+
         resp.then().statusCode(200)
-                //counters
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.taggedCounter;tier=integration'", equalTo(0))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.taggedCounter;number=one;tier=integration'", equalTo(0))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.taggedCounter;number=two;tier=integration'", equalTo(0))
-                         
-                //ConcurrentGauge - ;number=one;tier=integration
-                .body("'taggedConcurrentGauge'.'current;number=one;tier=integration'", equalTo(0)) 
+                // counters
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.taggedCounter;tier=integration'",
+                        equalTo(0))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.taggedCounter;number=one;tier=integration'",
+                        equalTo(0))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.taggedCounter;number=two;tier=integration'",
+                        equalTo(0))
+
+                // ConcurrentGauge - ;number=one;tier=integration
+                .body("'taggedConcurrentGauge'.'current;number=one;tier=integration'", equalTo(0))
                 .body("'taggedConcurrentGauge'.'min;number=one;tier=integration'", equalTo(0))
                 .body("'taggedConcurrentGauge'.'max;number=one;tier=integration'", equalTo(0))
-                //ConcurrentGauge - ;number=two;tier=integration
-                .body("'taggedConcurrentGauge'.'current;number=two;tier=integration'", equalTo(0)) 
+                // ConcurrentGauge - ;number=two;tier=integration
+                .body("'taggedConcurrentGauge'.'current;number=two;tier=integration'", equalTo(0))
                 .body("'taggedConcurrentGauge'.'min;number=two;tier=integration'", equalTo(0))
                 .body("'taggedConcurrentGauge'.'max;number=two;tier=integration'", equalTo(0))
-                
-                //Gauge
+
+                // Gauge
                 .body("'taggedGauge;number=one;tier=integration'", equalTo(1000))
                 .body("'taggedGauge;number=two;tier=integration'", equalTo(1000))
-                
-                //histogram - ;tier=integration
+
+                // histogram - ;tier=integration
                 .body("'taggedHistogram'.'count;tier=integration'", equalTo(0))
                 .body("'taggedHistogram'", hasKey("max;tier=integration"))
                 .body("'taggedHistogram'", hasKey("mean;tier=integration"))
@@ -1097,8 +1113,8 @@ public class MpMetricTest {
                 .body("'taggedHistogram'", hasKey("p99;tier=integration"))
                 .body("'taggedHistogram'", hasKey("p999;tier=integration"))
                 .body("'taggedHistogram'", hasKey("stddev;tier=integration"))
-                
-                //histogram - ;number=one;tier=integration
+
+                // histogram - ;number=one;tier=integration
                 .body("'taggedHistogram'.'count;number=one;tier=integration'", equalTo(0))
                 .body("'taggedHistogram'", hasKey("max;number=one;tier=integration"))
                 .body("'taggedHistogram'", hasKey("mean;number=one;tier=integration"))
@@ -1110,8 +1126,8 @@ public class MpMetricTest {
                 .body("'taggedHistogram'", hasKey("p99;number=one;tier=integration"))
                 .body("'taggedHistogram'", hasKey("p999;number=one;tier=integration"))
                 .body("'taggedHistogram'", hasKey("stddev;number=one;tier=integration"))
-                
-                 //histogram - ;number=two;tier=integration
+
+                // histogram - ;number=two;tier=integration
                 .body("'taggedHistogram'.'count;number=two;tier=integration'", equalTo(0))
                 .body("'taggedHistogram'", hasKey("max;number=two;tier=integration"))
                 .body("'taggedHistogram'", hasKey("mean;number=two;tier=integration"))
@@ -1123,8 +1139,8 @@ public class MpMetricTest {
                 .body("'taggedHistogram'", hasKey("p99;number=two;tier=integration"))
                 .body("'taggedHistogram'", hasKey("p999;number=two;tier=integration"))
                 .body("'taggedHistogram'", hasKey("stddev;number=two;tier=integration"))
-        
-                //timer - ;tier=integration
+
+                // timer - ;tier=integration
                 .body("'taggedTimer'.'count;tier=integration'", equalTo(0))
                 .body("'taggedTimer'", hasKey("fifteenMinRate;tier=integration"))
                 .body("'taggedTimer'", hasKey("fiveMinRate;tier=integration"))
@@ -1141,7 +1157,7 @@ public class MpMetricTest {
                 .body("'taggedTimer'", hasKey("p99;tier=integration"))
                 .body("'taggedTimer'", hasKey("p999;tier=integration"))
                 .body("'taggedTimer'", hasKey("stddev;tier=integration"))
-                //timer - ;number=one;tier=integration
+                // timer - ;number=one;tier=integration
                 .body("'taggedTimer'.'count;number=one;tier=integration'", equalTo(0))
                 .body("'taggedTimer'", hasKey("fifteenMinRate;number=one;tier=integration"))
                 .body("'taggedTimer'", hasKey("fiveMinRate;number=one;tier=integration"))
@@ -1158,7 +1174,7 @@ public class MpMetricTest {
                 .body("'taggedTimer'", hasKey("p99;number=one;tier=integration"))
                 .body("'taggedTimer'", hasKey("p999;number=one;tier=integration"))
                 .body("'taggedTimer'", hasKey("stddev;number=one;tier=integration"))
-                //timer - ;number=two;tier=integration
+                // timer - ;number=two;tier=integration
                 .body("'taggedTimer'.'count;number=two;tier=integration'", equalTo(0))
                 .body("'taggedTimer'", hasKey("fifteenMinRate;number=two;tier=integration"))
                 .body("'taggedTimer'", hasKey("fiveMinRate;number=two;tier=integration"))
@@ -1175,49 +1191,46 @@ public class MpMetricTest {
                 .body("'taggedTimer'", hasKey("p99;number=two;tier=integration"))
                 .body("'taggedTimer'", hasKey("p999;number=two;tier=integration"))
                 .body("'taggedTimer'", hasKey("stddev;number=two;tier=integration"))
-        
-                
-                //SimpleTimer - ;tier=integration
+
+                // SimpleTimer - ;tier=integration
                 .body("'taggedSimpleTimer'.'count;tier=integration'", equalTo(0))
                 .body("'taggedSimpleTimer'", hasKey("elapsedTime;tier=integration"))
                 .body("'taggedSimpleTimer'", hasKey("maxTimeDuration;tier=integration"))
                 .body("'taggedSimpleTimer'", hasKey("minTimeDuration;tier=integration"))
-                //SimpleTimer - ;number=one;tier=integration
+                // SimpleTimer - ;number=one;tier=integration
                 .body("'taggedSimpleTimer'.'count;number=one;tier=integration'", equalTo(0))
                 .body("'taggedSimpleTimer'", hasKey("elapsedTime;number=one;tier=integration"))
                 .body("'taggedSimpleTimer'", hasKey("maxTimeDuration;number=one;tier=integration"))
                 .body("'taggedSimpleTimer'", hasKey("minTimeDuration;number=one;tier=integration"))
-                //SimpleTimer - ;number=two;tier=integration
+                // SimpleTimer - ;number=two;tier=integration
                 .body("'taggedSimpleTimer'.'count;number=two;tier=integration'", equalTo(0))
                 .body("'taggedSimpleTimer'", hasKey("elapsedTime;number=two;tier=integration"))
                 .body("'taggedSimpleTimer'", hasKey("maxTimeDuration;number=two;tier=integration"))
                 .body("'taggedSimpleTimer'", hasKey("minTimeDuration;number=two;tier=integration"))
-                
-                
-                //Meter - ;tier=integration
+
+                // Meter - ;tier=integration
                 .body("'taggedMeter'.'count;tier=integration'", equalTo(0))
                 .body("'taggedMeter'", hasKey("fifteenMinRate;tier=integration"))
                 .body("'taggedMeter'", hasKey("fiveMinRate;tier=integration"))
                 .body("'taggedMeter'", hasKey("meanRate;tier=integration"))
                 .body("'taggedMeter'", hasKey("oneMinRate;tier=integration"))
-                //Meter - ;number=one;tier=integration
+                // Meter - ;number=one;tier=integration
                 .body("'taggedMeter'.'count;number=one;tier=integration'", equalTo(0))
                 .body("'taggedMeter'", hasKey("fifteenMinRate;number=one;tier=integration"))
                 .body("'taggedMeter'", hasKey("fiveMinRate;number=one;tier=integration"))
                 .body("'taggedMeter'", hasKey("meanRate;number=one;tier=integration"))
                 .body("'taggedMeter'", hasKey("oneMinRate;number=one;tier=integration"))
-                //Meter - ;number=two;tier=integration
+                // Meter - ;number=two;tier=integration
                 .body("'taggedMeter'.'count;number=two;tier=integration'", equalTo(0))
                 .body("'taggedMeter'", hasKey("fifteenMinRate;number=two;tier=integration"))
                 .body("'taggedMeter'", hasKey("fiveMinRate;number=two;tier=integration"))
                 .body("'taggedMeter'", hasKey("meanRate;number=two;tier=integration"))
                 .body("'taggedMeter'", hasKey("oneMinRate;number=two;tier=integration"));
-                
+
     }
-    
+
     /**
-     * Test that semicolons `;` in tag values are translated to underscores `_`
-     * in the JSON output
+     * Test that semicolons `;` in tag values are translated to underscores `_` in the JSON output
      */
     @Test
     @RunAsClient
@@ -1230,115 +1243,112 @@ public class MpMetricTest {
         responseBuilder.clone(resp);
         responseBuilder.setBody(filteredJSONPath.prettify());
         resp = responseBuilder.build();
-        
+
         resp.then().statusCode(200)
-            .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.semiColonTaggedCounter;"
-                    + "scTag=semi_colons_are_bad;tier=integration'", equalTo(0));
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.semiColonTaggedCounter;"
+                        + "scTag=semi_colons_are_bad;tier=integration'", equalTo(0));
     }
-    
-    
+
     @Test
     @RunAsClient
     @InSequence(47)
     public void testApplicationConcurrentGaugeOpenMetrics() {
 
         given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/concGaugeMeA")
-            .then().statusCode(200)
-            .and()
-            .body(containsString("concGaugeMeA_current"))
-            .body(containsString("concGaugeMeA_min"))
-            .body(containsString("concGaugeMeA_max"));
+                .then().statusCode(200)
+                .and()
+                .body(containsString("concGaugeMeA_current"))
+                .body(containsString("concGaugeMeA_min"))
+                .body(containsString("concGaugeMeA_max"));
     }
-    
+
     @Test
     @RunAsClient
     @InSequence(48)
     public void testApplicationSimpleTimerUnitOpenMetrics() {
 
         String prefix = "org_eclipse_microprofile_metrics_test_MetricAppBean_simpleTimeMeA_";
-        
-        Response resp = given().header("Accept", TEXT_PLAIN).
-                get("/metrics/application/org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA");
+
+        Response resp = given().header("Accept", TEXT_PLAIN)
+                .get("/metrics/application/org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
-                
+
         resp.then().statusCode(200)
-            .and()
-            .body(containsString("# TYPE application_" + prefix + "total counter"))
-            .body(containsString(prefix + "total"))
-            .body(containsString(prefix + "elapsedTime_seconds"))
-            .body(containsString(prefix + "maxTimeDuration_seconds"))
-            .body(containsString(prefix + "minTimeDuration_seconds"))
-        ;
+                .and()
+                .body(containsString("# TYPE application_" + prefix + "total counter"))
+                .body(containsString(prefix + "total"))
+                .body(containsString(prefix + "elapsedTime_seconds"))
+                .body(containsString(prefix + "maxTimeDuration_seconds"))
+                .body(containsString(prefix + "minTimeDuration_seconds"));
     }
-    
-    
+
     /**
      * Checks that the value is within tolerance of the expected value
      *
-     * Note: The JSON parser only returns float for earlier versions of restassured,
-     * so we need to return a float Matcher.
+     * Note: The JSON parser only returns float for earlier versions of restassured, so we need to return a float
+     * Matcher.
+     * 
      * @param operand
      * @return
      */
-    private Matcher<Float> closeTo (double operand) {
+    private Matcher<Float> closeTo(double operand) {
         double delta = Math.abs(operand) * TOLERANCE;
         return allOf(greaterThan((float) (operand - delta)), lessThan((float) (operand + delta)));
     }
 
     private Map<String, MiniMeta> getExpectedMetadataFromXmlFile(MetricRegistry.Type scope) {
-      ClassLoader cl = this.getClass().getClassLoader();
-      String fileName;
-      switch (scope) {
-          case BASE:
-              fileName = "base_metrics.xml";
-              break;
-          case APPLICATION:
-              fileName = "application_metrics.xml";
-              break;
-          default:
-              throw new IllegalArgumentException("No definitions for " + scope.getName() + " supported");
-      }
-      InputStream is = cl.getResourceAsStream(fileName);
+        ClassLoader cl = this.getClass().getClassLoader();
+        String fileName;
+        switch (scope) {
+            case BASE :
+                fileName = "base_metrics.xml";
+                break;
+            case APPLICATION :
+                fileName = "application_metrics.xml";
+                break;
+            default :
+                throw new IllegalArgumentException("No definitions for " + scope.getName() + " supported");
+        }
+        InputStream is = cl.getResourceAsStream(fileName);
 
-      DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
-      DocumentBuilder builder;
-      Document document;
-      try {
-          builder = fac.newDocumentBuilder();
-          document = builder.parse(is);
-      }
-      catch (ParserConfigurationException | SAXException | IOException e) {
-          throw new RuntimeException(e);
-      }
+        DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        Document document;
+        try {
+            builder = fac.newDocumentBuilder();
+            document = builder.parse(is);
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            throw new RuntimeException(e);
+        }
 
-      Element root = (Element) document.getElementsByTagName("config").item(0);
-      NodeList metrics = root.getElementsByTagName("metric");
-      Map<String, MiniMeta> metaMap = new HashMap<>(metrics.getLength());
-      for (int i = 0; i < metrics.getLength(); i++) {
-          Element metric = (Element) metrics.item(i);
-          MiniMeta mm = new MiniMeta();
-          mm.multi = Boolean.parseBoolean(metric.getAttribute("multi"));
-          mm.name = metric.getAttribute("name");
-          mm.type = metric.getAttribute("type");
-          mm.unit = metric.getAttribute("unit");
-          mm.description = metric.getAttribute("description");
-          mm.displayName = metric.getAttribute("display-name");
-          mm.optional = Boolean.parseBoolean(metric.getAttribute("optional"));
-          String tags = metric.getAttribute("tags");
-          if (!(tags == null || tags.length() == 0)){
-              for (String tag: tags.split(",")) {
-                 String[] str = tag.split("=");
-                 mm.tags.put(str[0], str[1]);
-               }
-          }
-          metaMap.put(mm.name, mm);
-      }
-      return metaMap;
+        Element root = (Element) document.getElementsByTagName("config").item(0);
+        NodeList metrics = root.getElementsByTagName("metric");
+        Map<String, MiniMeta> metaMap = new HashMap<>(metrics.getLength());
+        for (int i = 0; i < metrics.getLength(); i++) {
+            Element metric = (Element) metrics.item(i);
+            MiniMeta mm = new MiniMeta();
+            mm.multi = Boolean.parseBoolean(metric.getAttribute("multi"));
+            mm.name = metric.getAttribute("name");
+            mm.type = metric.getAttribute("type");
+            mm.unit = metric.getAttribute("unit");
+            mm.description = metric.getAttribute("description");
+            mm.displayName = metric.getAttribute("display-name");
+            mm.optional = Boolean.parseBoolean(metric.getAttribute("optional"));
+            String tags = metric.getAttribute("tags");
+            if (!(tags == null || tags.length() == 0)) {
+                for (String tag : tags.split(",")) {
+                    String[] str = tag.split("=");
+                    mm.tags.put(str[0], str[1]);
+                }
+            }
+            metaMap.put(mm.name, mm);
+        }
+        return metaMap;
 
-  }
+    }
 
     @SuppressWarnings("StringBufferReplaceableByString")
     private static class MiniMeta {
@@ -1354,7 +1364,7 @@ public class MpMetricTest {
         public MiniMeta() {
             tags.put("tier", "integration");
         }
-        
+
         String toPromString() {
             String out = name.replace('-', '_').replace('.', '_').replace(' ', '_');
             if (!unit.equals("none")) {
@@ -1365,26 +1375,27 @@ public class MpMetricTest {
 
             return out;
         }
-        
+
         String toJSONName() {
-            return name + ";" + tags.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(";"));
+            return name + ";" + tags.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue())
+                    .collect(Collectors.joining(";"));
         }
 
         private String getBaseUnitAsOpenMetricsString(String unit) {
             String out;
             switch (unit) {
-            case "milliseconds":
-                out = "seconds";
-                break;
-            case "bytes":
-                out = "bytes";
-                break;
-            case "percent":
-                out = "percent";
-                break;
+                case "milliseconds" :
+                    out = "seconds";
+                    break;
+                case "bytes" :
+                    out = "bytes";
+                    break;
+                case "percent" :
+                    out = "percent";
+                    break;
 
-            default:
-                out = "none";
+                default :
+                    out = "none";
             }
 
             return out;

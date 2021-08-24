@@ -32,9 +32,6 @@ import static org.junit.Assert.fail;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
-
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.SimpleTimer;
@@ -50,11 +47,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
+
 @RunWith(Arquillian.class)
 public class SimplyTimedMethodBeanLookupTest {
 
-    private final static String SIMPLE_TIMER_NAME = MetricRegistry.name(SimplyTimedMethodBean1.class, "simplyTimedMethod");
-    
+    private final static String SIMPLE_TIMER_NAME =
+            MetricRegistry.name(SimplyTimedMethodBean1.class, "simplyTimedMethod");
+
     private static MetricID simpleTimerMID;
 
     private final static AtomicLong SIMPLE_TIMER_COUNT = new AtomicLong();
@@ -62,11 +63,11 @@ public class SimplyTimedMethodBeanLookupTest {
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
-            // Test bean
-            .addClass(SimplyTimedMethodBean1.class)
-            .addClass(TestUtils.class)
-            // Bean archive deployment descriptor
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClass(SimplyTimedMethodBean1.class)
+                .addClass(TestUtils.class)
+                // Bean archive deployment descriptor
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -78,17 +79,14 @@ public class SimplyTimedMethodBeanLookupTest {
     @Before
     public void instantiateTest() {
         /*
-         * The MetricID relies on the MicroProfile Config API.
-         * Running a managed arquillian container will result
-         * with the MetricID being created in a client process
-         * that does not contain the MPConfig impl.
-         * 
-         * This will cause client instantiated MetricIDs to 
-         * throw an exception. (i.e the global MetricIDs)
+         * The MetricID relies on the MicroProfile Config API. Running a managed arquillian container will result with
+         * the MetricID being created in a client process that does not contain the MPConfig impl.
+         *
+         * This will cause client instantiated MetricIDs to throw an exception. (i.e the global MetricIDs)
          */
         simpleTimerMID = new MetricID(SIMPLE_TIMER_NAME);
     }
-    
+
     @Test
     @InSequence(1)
     public void simplyTimedMethodNotCalledYet() {
@@ -115,8 +113,9 @@ public class SimplyTimedMethodBeanLookupTest {
         bean.simplyTimedMethod();
 
         // Make sure that the simpleTimer has been called
-        assertThat("SimplyTimed count is incorrect", simpleTimer.getCount(), is(equalTo(SIMPLE_TIMER_COUNT.incrementAndGet())));
-        TestUtils.assertEqualsWithTolerance(2000000000L,  simpleTimer.getElapsedTime().toNanos());
+        assertThat("SimplyTimed count is incorrect", simpleTimer.getCount(),
+                is(equalTo(SIMPLE_TIMER_COUNT.incrementAndGet())));
+        TestUtils.assertEqualsWithTolerance(2000000000L, simpleTimer.getElapsedTime().toNanos());
     }
 
     @Test
@@ -134,8 +133,7 @@ public class SimplyTimedMethodBeanLookupTest {
         try {
             // Call the simplyTimed method and assert an exception is thrown
             bean.simplyTimedMethod();
-        }
-        catch (RuntimeException cause) {
+        } catch (RuntimeException cause) {
             assertThat(cause, is(instanceOf(IllegalStateException.class)));
             // Make sure that the simpleTimer hasn't been called
             assertThat("SimplyTimed count is incorrect", simpleTimer.getCount(), is(equalTo(SIMPLE_TIMER_COUNT.get())));

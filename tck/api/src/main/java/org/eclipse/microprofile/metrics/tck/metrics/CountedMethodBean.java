@@ -15,9 +15,9 @@
  */
 package org.eclipse.microprofile.metrics.tck.metrics;
 
-import org.eclipse.microprofile.metrics.annotation.Counted;
-
 import java.util.concurrent.Callable;
+
+import org.eclipse.microprofile.metrics.annotation.Counted;
 
 public class CountedMethodBean<T> {
 
@@ -25,8 +25,7 @@ public class CountedMethodBean<T> {
     public T countedMethod(Callable<T> callable) {
         try {
             return callable.call();
-        }
-        catch (Exception cause) {
+        } catch (Exception cause) {
             throw new RuntimeException(cause);
         }
     }

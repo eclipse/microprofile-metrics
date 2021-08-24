@@ -32,7 +32,8 @@ public abstract class Snapshot {
     /**
      * Returns the value at the given quantile.
      *
-     * @param quantile    a given quantile, in {@code [0..1]}
+     * @param quantile
+     *            a given quantile, in {@code [0..1]}
      * @return the value in the distribution at {@code quantile}
      */
     public abstract double getValue(double quantile);
@@ -50,7 +51,7 @@ public abstract class Snapshot {
      * @return the number of values
      */
     public abstract int size();
-    
+
     /**
      * Returns the median value in the distribution.
      *
@@ -136,8 +137,9 @@ public abstract class Snapshot {
     /**
      * Writes the values of the snapshot to the given stream.
      *
-     * @param output an output stream
+     * @param output
+     *            an output stream
      */
     public abstract void dump(OutputStream output);
-   
+
 }

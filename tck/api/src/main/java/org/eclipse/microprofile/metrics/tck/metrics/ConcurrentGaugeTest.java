@@ -24,7 +24,6 @@
 
 package org.eclipse.microprofile.metrics.tck.metrics;
 
-import javax.inject.Inject;
 import org.eclipse.microprofile.metrics.ConcurrentGauge;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -35,6 +34,8 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import jakarta.inject.Inject;
 
 @RunWith(Arquillian.class)
 public class ConcurrentGaugeTest {

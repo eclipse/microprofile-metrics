@@ -31,12 +31,8 @@ import java.util.regex.Pattern;
  *
  * The Tag contains:
  * <ul>
- * <li>
- * {@code TagName}: (Required) The name of the tag. Must match the regex [a-zA-Z_][a-zA-Z0-9_]*.
- * </li>
- * <li>
- * {@code TagValue}: (Required) The value of the tag.
- * </li>
+ * <li>{@code TagName}: (Required) The name of the tag. Must match the regex [a-zA-Z_][a-zA-Z0-9_]*.</li>
+ * <li>{@code TagValue}: (Required) The value of the tag.</li>
  * </ul>
  *
  */
@@ -65,15 +61,19 @@ public class Tag {
     /**
      * Constructs the Tag object with the given tag name and tag value
      *
-     * @param tagName The tag name, must match the regex [a-zA-Z_][a-zA-Z0-9_]*.
-     * @param tagValue The tag value
-     * @throws IllegalArgumentException If the tagName does not match [a-zA-Z_][a-zA-Z0-9_]*
+     * @param tagName
+     *            The tag name, must match the regex [a-zA-Z_][a-zA-Z0-9_]*.
+     * @param tagValue
+     *            The tag value
+     * @throws IllegalArgumentException
+     *             If the tagName does not match [a-zA-Z_][a-zA-Z0-9_]*
      */
     public Tag(String tagName, String tagValue) throws IllegalArgumentException {
         if (tagName == null ||
-            tagValue == null ||
-            !PATTERN.matcher(tagName).matches()) {
-            throw new IllegalArgumentException("Invalid Tag name. Tag names must match the following regex [a-zA-Z_][a-zA-Z0-9_]*");
+                tagValue == null ||
+                !PATTERN.matcher(tagName).matches()) {
+            throw new IllegalArgumentException(
+                    "Invalid Tag name. Tag names must match the following regex [a-zA-Z_][a-zA-Z0-9_]*");
         }
         this.tagName = tagName;
         this.tagValue = tagValue;
@@ -115,8 +115,8 @@ public class Tag {
     @Override
     public String toString() {
         return "Tag{"
-            + tagName + '=' + tagValue
-            + '}';
+                + tagName + '=' + tagValue
+                + '}';
     }
 
 }

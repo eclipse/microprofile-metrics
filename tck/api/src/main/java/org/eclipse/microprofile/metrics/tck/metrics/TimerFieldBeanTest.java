@@ -15,30 +15,31 @@
  */
 package org.eclipse.microprofile.metrics.tck.metrics;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.util.Arrays;
 import java.util.Set;
 
-import javax.inject.Inject;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
 import org.eclipse.microprofile.metrics.MetricRegistry;
+import org.eclipse.microprofile.metrics.tck.util.MetricsUtil;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.eclipse.microprofile.metrics.tck.util.MetricsUtil;
+import jakarta.inject.Inject;
 
 @RunWith(Arquillian.class)
 public class TimerFieldBeanTest {
 
-    private final static String[] METRIC_NAMES = {"timerWithoutAnnotation", "timerWithExplicitNonAbsoluteName", "timerWithNoName", "timerName"};
+    private final static String[] METRIC_NAMES =
+            {"timerWithoutAnnotation", "timerWithExplicitNonAbsoluteName", "timerWithNoName", "timerName"};
 
     private final static String[] ABSOLUTE_METRIC_NAMES = {"timerWithAbsoluteDefaultName", "timerAbsoluteName"};
 
@@ -51,10 +52,10 @@ public class TimerFieldBeanTest {
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
-            // Test bean
-            .addClasses(TimerFieldBean.class, MetricsUtil.class)
-            // Bean archive deployment descriptor
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClasses(TimerFieldBean.class, MetricsUtil.class)
+                // Bean archive deployment descriptor
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -65,7 +66,7 @@ public class TimerFieldBeanTest {
 
     @Test
     public void timerFieldsWithDefaultNamingConvention() {
-        assertThat("Timers are not registered correctly", registry.getMetricIDs(), 
-            is(equalTo(MetricsUtil.createMetricIDs(metricNames()))));
+        assertThat("Timers are not registered correctly", registry.getMetricIDs(),
+                is(equalTo(MetricsUtil.createMetricIDs(metricNames()))));
     }
 }

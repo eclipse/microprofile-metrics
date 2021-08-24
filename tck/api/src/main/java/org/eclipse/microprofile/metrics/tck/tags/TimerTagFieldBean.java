@@ -24,15 +24,15 @@ package org.eclipse.microprofile.metrics.tck.tags;
 import org.eclipse.microprofile.metrics.Timer;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 public class TimerTagFieldBean {
 
     @Inject
-    @Metric(name = "timerName", absolute = true, tags= {"number=one"})
+    @Metric(name = "timerName", absolute = true, tags = {"number=one"})
     private Timer timerOne;
 
     @Inject
-    @Metric(name = "timerName", absolute = true, tags= {"number=two"})
+    @Metric(name = "timerName", absolute = true, tags = {"number=two"})
     private Timer timertwo;
 }

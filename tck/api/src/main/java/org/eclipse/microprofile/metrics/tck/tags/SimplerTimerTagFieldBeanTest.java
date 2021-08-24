@@ -21,9 +21,8 @@
  **********************************************************************/
 package org.eclipse.microprofile.metrics.tck.tags;
 
-import javax.inject.Inject;
-
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
@@ -35,11 +34,11 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import static org.junit.Assert.assertThat;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import jakarta.inject.Inject;
 
 @RunWith(Arquillian.class)
 public class SimplerTimerTagFieldBeanTest {
@@ -48,17 +47,17 @@ public class SimplerTimerTagFieldBeanTest {
 
     private final static Tag NUMBER_ONE_TAG = new Tag("number", "one");
     private final static Tag NUMBER_TWO_TAG = new Tag("number", "two");
-    
+
     private static MetricID simpleTimerOneMID;
     private static MetricID simpleTimerTwoMID;
 
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
-            // Test bean
-            .addClasses(SimpleTimerTagFieldBean.class, MetricsUtil.class)
-            // Bean archive deployment descriptor
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClasses(SimpleTimerTagFieldBean.class, MetricsUtil.class)
+                // Bean archive deployment descriptor
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -66,26 +65,25 @@ public class SimplerTimerTagFieldBeanTest {
 
     @Inject
     private SimpleTimerTagFieldBean bean;
-    
+
     @Before
     public void instantiateTest() {
         /*
-         * The MetricID relies on the MicroProfile Config API.
-         * Running a managed arquillian container will result
-         * with the MetricID being created in a client process
-         * that does not contain the MPConfig impl.
-         * 
-         * This will cause client instantiated MetricIDs to 
-         * throw an exception. (i.e the global MetricIDs)
+         * The MetricID relies on the MicroProfile Config API. Running a managed arquillian container will result with
+         * the MetricID being created in a client process that does not contain the MPConfig impl.
+         *
+         * This will cause client instantiated MetricIDs to throw an exception. (i.e the global MetricIDs)
          */
         simpleTimerOneMID = new MetricID(SIMPLE_TIMER_NAME, NUMBER_ONE_TAG);
         simpleTimerTwoMID = new MetricID(SIMPLE_TIMER_NAME, NUMBER_TWO_TAG);
 
     }
-    
+
     @Test
     public void simpleTimersTagFieldRegistered() {
-        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimer(simpleTimerOneMID), notNullValue());
-        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimer(simpleTimerTwoMID), notNullValue());
+        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimer(simpleTimerOneMID),
+                notNullValue());
+        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimer(simpleTimerTwoMID),
+                notNullValue());
     }
 }

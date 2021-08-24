@@ -24,18 +24,20 @@ package org.eclipse.microprofile.metrics.tck.util;
 import org.junit.Assert;
 
 public class TestUtils {
-    
+
     public static final double TOLERANCE = 0.15;
-    
+
     // private constructor
     private TestUtils() {
     }
-    
+
     /**
      * Assert equals with a tolerance factor of {@link #TOLERANCE} times the expected value
      * 
-     * @param expected expected value
-     * @param actual the actual value
+     * @param expected
+     *            expected value
+     * @param actual
+     *            the actual value
      */
     public static void assertEqualsWithTolerance(double expected, double actual) {
         Assert.assertEquals(expected, actual, expected * TOLERANCE);

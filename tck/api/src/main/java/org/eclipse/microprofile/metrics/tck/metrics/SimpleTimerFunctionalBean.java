@@ -24,10 +24,11 @@
 package org.eclipse.microprofile.metrics.tck.metrics;
 
 import org.eclipse.microprofile.metrics.annotation.SimplyTimed;
-import javax.enterprise.context.ApplicationScoped;
+
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class SimpleTimerFunctionalBean{
+public class SimpleTimerFunctionalBean {
 
     @SimplyTimed(name = "mySimplyTimed", absolute = true)
     public void doSomething() {

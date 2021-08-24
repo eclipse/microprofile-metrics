@@ -27,35 +27,39 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.inject.Qualifier;
-
 import org.eclipse.microprofile.metrics.MetricRegistry;
+
+import jakarta.inject.Qualifier;
 
 /**
  * Qualifies the type of Metric Registry to inject.
  * <p>
  * This can be used to obtain the respective scoped {@link MetricRegistry}:
  * </p>
- * <pre><code>
+ * 
+ * <pre>
+ * <code>
  *      {@literal @}Inject
  *      {@literal @}RegistryType(type=MetricRegistry.Type.BASE)
  *      MetricRegistry baseRegistry;
- * </code></pre>
- * 
+ * </code>
+ * </pre>
+ *
  * @see org.eclipse.microprofile.metrics.MetricRegistry.Type
- * 
+ *
  * @author Raymond Lam
  *
  */
 @Qualifier
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
 public @interface RegistryType {
     /**
      * The scope of the MetricRegistry.
-     * @return Returns the scope of the MetricRegistry. The {@link MetricRegistry.Type} can be {@code APPLICATION}, {@code BASE}, or
-     * {@code VENDOR}.
+     * 
+     * @return Returns the scope of the MetricRegistry. The {@link MetricRegistry.Type} can be {@code APPLICATION},
+     *         {@code BASE}, or {@code VENDOR}.
      * @see org.eclipse.microprofile.metrics.MetricRegistry.Type
      */
     MetricRegistry.Type type() default MetricRegistry.Type.APPLICATION;

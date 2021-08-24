@@ -42,8 +42,8 @@ public class DefaultMetadata implements Metadata {
     /**
      * Display name of the metric. If not set, the name is taken.
      * <p>
-     * An optional field which holds the display (Friendly) name of the metric object.
-     * By default it is set to the name of the metric object.
+     * An optional field which holds the display (Friendly) name of the metric object. By default it is set to the name
+     * of the metric object.
      * </p>
      */
     private final String displayName;
@@ -72,7 +72,7 @@ public class DefaultMetadata implements Metadata {
     private final String unit;
 
     protected DefaultMetadata(String name, String displayName, String description,
-                              MetricType type, String unit) {
+            MetricType type, String unit) {
         this.name = name;
         this.displayName = displayName;
         this.description = description;
@@ -135,7 +135,7 @@ public class DefaultMetadata implements Metadata {
         }
         Metadata that = (Metadata) o;
 
-        //Use getters to compare the effective values
+        // Use getters to compare the effective values
         return Objects.equals(name, that.getName()) &&
                 Objects.equals(this.getDisplayName(), that.getDisplayName()) &&
                 Objects.equals(this.getDescription(), that.getDescription()) &&
@@ -154,16 +154,14 @@ public class DefaultMetadata implements Metadata {
         sb.append("name='").append(name).append('\'');
         sb.append(", type=").append(type);
         sb.append(", unit='").append(unit).append('\'');
-        if(description != null) {
+        if (description != null) {
             sb.append(", description='").append(description).append('\'');
-        }
-        else {
+        } else {
             sb.append(", description=null");
         }
-        if(displayName != null) {
+        if (displayName != null) {
             sb.append(", displayName='").append(displayName).append('\'');
-        }
-        else {
+        } else {
             sb.append(", displayName=null");
         }
         sb.append('}');

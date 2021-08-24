@@ -25,22 +25,23 @@ package org.eclipse.microprofile.metrics;
 /**
  * A metric which calculates the distribution of a value.
  *
- * @see <a href="http://www.johndcook.com/standard_deviation.html">Accurately computing running
- *      variance</a>
+ * @see <a href="http://www.johndcook.com/standard_deviation.html">Accurately computing running variance</a>
  */
 public interface Histogram extends Metric, Sampling, Counting {
-  
+
     /**
      * Adds a recorded value.
      *
-     * @param value the length of the value
+     * @param value
+     *            the length of the value
      */
     void update(int value);
 
     /**
      * Adds a recorded value.
      *
-     * @param value the length of the value
+     * @param value
+     *            the length of the value
      */
     void update(long value);
 
@@ -58,7 +59,7 @@ public interface Histogram extends Metric, Sampling, Counting {
      * @return the sum of values recorded
      */
     long getSum();
-    
+
     @Override
     Snapshot getSnapshot();
 }

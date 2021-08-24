@@ -21,6 +21,9 @@
  **********************************************************************/
 package org.eclipse.microprofile.metrics.tck.cdi.stereotype;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import org.eclipse.microprofile.metrics.Metadata;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
@@ -34,10 +37,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.inject.Inject;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import jakarta.inject.Inject;
 
 @RunWith(Arquillian.class)
 public class StereotypeCountedClassBeanTest {
@@ -47,9 +47,9 @@ public class StereotypeCountedClassBeanTest {
         return ShrinkWrap.create(WebArchive.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
                 .addClasses(StereotypeCountedClassBean.class,
-                    StereotypeCountedClassBeanWithSpecifiedMetadata.class,
-                    CountMe.class,
-                    CountMeWithSpecifiedMetadata.class);
+                        StereotypeCountedClassBeanWithSpecifiedMetadata.class,
+                        CountMe.class,
+                        CountMeWithSpecifiedMetadata.class);
     }
 
     @Inject
@@ -63,7 +63,8 @@ public class StereotypeCountedClassBeanTest {
 
     @Test
     public void testPlainAnnotation() {
-        MetricID constructorMetricId = new MetricID(StereotypeCountedClassBean.class.getName() + ".StereotypeCountedClassBean");
+        MetricID constructorMetricId =
+                new MetricID(StereotypeCountedClassBean.class.getName() + ".StereotypeCountedClassBean");
         assertNotNull(metricRegistry.getCounter(constructorMetricId));
         MetricID methodMetricId = new MetricID(StereotypeCountedClassBean.class.getName() + ".foo");
         assertNotNull(metricRegistry.getCounter(methodMetricId));
@@ -73,7 +74,8 @@ public class StereotypeCountedClassBeanTest {
 
     @Test
     public void testWithMetadata() {
-        String constructorMetricName = "org.eclipse.microprofile.metrics.tck.cdi.stereotype.bloop.StereotypeCountedClassBeanWithSpecifiedMetadata";
+        String constructorMetricName =
+                "org.eclipse.microprofile.metrics.tck.cdi.stereotype.bloop.StereotypeCountedClassBeanWithSpecifiedMetadata";
         MetricID constructorMetricId = new MetricID(constructorMetricName);
         assertNotNull(metricRegistry.getCounter(constructorMetricId));
         Metadata constructorMetadata = metricRegistry.getMetadata(constructorMetricName);

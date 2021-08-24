@@ -52,10 +52,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.inject.Inject;
-
-import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.ConcurrentGauge;
+import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -69,6 +67,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import jakarta.inject.Inject;
+
 @RunWith(Arquillian.class)
 public class ConcurrentGaugedMethodBeanTest {
 
@@ -80,10 +80,10 @@ public class ConcurrentGaugedMethodBeanTest {
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
-            // Test bean
-            .addClass(ConcurrentGaugedMethodBean.class)
-            // Bean archive deployment descriptor
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClass(ConcurrentGaugedMethodBean.class)
+                // Bean archive deployment descriptor
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -95,17 +95,14 @@ public class ConcurrentGaugedMethodBeanTest {
     @Before
     public void instantiateTest() {
         /*
-         * The MetricID relies on the MicroProfile Config API.
-         * Running a managed arquillian container will result
-         * with the MetricID being created in a client process
-         * that does not contain the MPConfig impl.
-         * 
-         * This will cause client instantiated MetricIDs to 
-         * throw an exception. (i.e the global MetricIDs)
+         * The MetricID relies on the MicroProfile Config API. Running a managed arquillian container will result with
+         * the MetricID being created in a client process that does not contain the MPConfig impl.
+         *
+         * This will cause client instantiated MetricIDs to throw an exception. (i.e the global MetricIDs)
          */
         cGaugeMID = new MetricID(C_GAUGE_NAME);
     }
-    
+
     @Test
     @InSequence(1)
     public void countedMethodNotCalledYet() {
@@ -145,8 +142,7 @@ public class ConcurrentGaugedMethodBeanTest {
                             return exchanger.exchange(0L);
                         }
                     }));
-                }
-                catch (InterruptedException cause) {
+                } catch (InterruptedException cause) {
                     throw new RuntimeException(cause);
                 }
             }
@@ -162,7 +158,8 @@ public class ConcurrentGaugedMethodBeanTest {
 
         // Wait until the method is executing and make sure that the counter has been incremented
         exchanger.exchange(0L, 5L, TimeUnit.SECONDS);
-        assertThat("Concurrent Gauges count is incorrect", cGauge.getCount(), is(equalTo(COUNTER_COUNT.incrementAndGet())));
+        assertThat("Concurrent Gauges count is incorrect", cGauge.getCount(),
+                is(equalTo(COUNTER_COUNT.incrementAndGet())));
 
         // Exchange the result and unblock the method execution
         Long random = 1 + Math.round(Math.random() * (Long.MAX_VALUE - 1));
@@ -172,7 +169,8 @@ public class ConcurrentGaugedMethodBeanTest {
         assertThat("Concurrent Gauges method return value is incorrect", exchanger.exchange(0L), is(equalTo(random)));
 
         // Then make sure that the counter has been decremented
-        assertThat("Concurrent Gauges count is incorrect", cGauge.getCount(), is(equalTo(COUNTER_COUNT.decrementAndGet())));
+        assertThat("Concurrent Gauges count is incorrect", cGauge.getCount(),
+                is(equalTo(COUNTER_COUNT.decrementAndGet())));
 
         // Finally make sure calling thread is returns correctly
         thread.join();
@@ -196,8 +194,7 @@ public class ConcurrentGaugedMethodBeanTest {
                     return null;
                 }
             });
-        }
-        catch (Exception cause) {
+        } catch (Exception cause) {
             assertThat(cause, is(instanceOf(IllegalStateException.class)));
             // Make sure that the counter hasn't been called
             assertThat("Concurrent Gauges count is incorrect", cGauge.getCount(), is(equalTo(COUNTER_COUNT.get())));

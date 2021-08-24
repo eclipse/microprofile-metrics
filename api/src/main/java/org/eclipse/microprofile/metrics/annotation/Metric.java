@@ -27,33 +27,37 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.enterprise.util.Nonbinding;
-
 import org.eclipse.microprofile.metrics.MetricUnits;
 
+import jakarta.enterprise.util.Nonbinding;
+
 /**
- * An annotation requesting that a metric be injected or registered.
- * The metric will be registered in the application MetricRegistry.
+ * An annotation requesting that a metric be injected or registered. The metric will be registered in the application
+ * MetricRegistry.
  *
  * Given an injected field annotated with {@literal @}Metric like this:
- * <pre><code>
+ * 
+ * <pre>
+ * <code>
  *     {@literal @}Inject
  *     {@literal @}Metric(name="histogram")
  *     public Histogram histogram;
- * </code></pre>
- * A meter of the field's type will be created and injected into managed objects.
- * It will be up to the user to interact with the metric. This annotation
- * can be used on fields of type Meter, Timer, SimpleTimer, Counter, and Histogram.
+ * </code>
+ * </pre>
+ * 
+ * A meter of the field's type will be created and injected into managed objects. It will be up to the user to interact
+ * with the metric. This annotation can be used on fields of type Meter, Timer, SimpleTimer, Counter, and Histogram.
  * <p>
  * This may also be used to register a metric.
  * </p>
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
+@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
 public @interface Metric {
 
     /**
      * The name of the metric.
+     * 
      * @return The name of the metric.
      */
     @Nonbinding
@@ -61,9 +65,10 @@ public @interface Metric {
 
     /**
      * The tags of the metric.
-     * @return The tags of the metric. Each {@code String} tag must be in the form of 'key=value'. If the input is empty or does
-     * not contain a '=' sign, the entry is ignored.
      * 
+     * @return The tags of the metric. Each {@code String} tag must be in the form of 'key=value'. If the input is empty
+     *         or does not contain a '=' sign, the entry is ignored.
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
@@ -71,34 +76,38 @@ public @interface Metric {
 
     /**
      * Denotes whether to use the absolute name or use the default given name relative to the annotated class.
-     * @return If {@code true}, use the given name as an absolute name. If {@code false} (default),
-     * use the given name relative to the annotated class.
+     * 
+     * @return If {@code true}, use the given name as an absolute name. If {@code false} (default), use the given name
+     *         relative to the annotated class.
      */
     @Nonbinding
     boolean absolute() default false;
 
     /**
      * The display name of the metric.
-     * @return The display name of the metric.
      * 
+     * @return The display name of the metric.
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String displayName() default "";
-    
+
     /**
      * The description of the metric.
-     * @return The description of the metric.
      * 
+     * @return The description of the metric.
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      */
     @Nonbinding
     String description() default "";
-    
+
     /**
      * The unit of the metric.
-     * @return The unit of the metric. By default, the value is {@link MetricUnits#NONE}.
      * 
+     * @return The unit of the metric. By default, the value is {@link MetricUnits#NONE}.
+     *
      * @see org.eclipse.microprofile.metrics.Metadata
      * @see org.eclipse.microprofile.metrics.MetricUnits
      */

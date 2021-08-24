@@ -30,8 +30,6 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.inject.Inject;
-
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.Timer;
@@ -47,6 +45,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import jakarta.inject.Inject;
 
 @RunWith(Arquillian.class)
 public class TimerTest {
@@ -64,7 +64,7 @@ public class TimerTest {
 
     private static boolean isInitialized = false;
 
-    final static long[] SAMPLE_LONG_DATA = { 0, 10, 20, 20, 20, 30, 30, 30, 30, 30, 40, 50, 50, 60, 70, 70, 70, 80, 90,
+    final static long[] SAMPLE_LONG_DATA = {0, 10, 20, 20, 20, 30, 30, 30, 30, 30, 40, 50, 50, 60, 70, 70, 70, 80, 90,
             90, 100, 110, 110, 120, 120, 120, 120, 130, 130, 130, 130, 140, 140, 150, 150, 170, 180, 180, 200, 200, 200,
             210, 220, 220, 220, 240, 240, 250, 250, 270, 270, 270, 270, 270, 270, 270, 280, 280, 290, 300, 310, 310,
             320, 320, 330, 330, 360, 360, 360, 360, 370, 380, 380, 380, 390, 400, 400, 410, 420, 420, 420, 430, 440,
@@ -73,7 +73,7 @@ public class TimerTest {
             640, 650, 660, 660, 660, 670, 670, 680, 680, 700, 710, 710, 710, 710, 720, 720, 720, 720, 730, 730, 740,
             740, 740, 750, 750, 760, 760, 760, 770, 780, 780, 780, 800, 800, 810, 820, 820, 820, 830, 830, 840, 840,
             850, 870, 870, 880, 880, 880, 890, 890, 890, 890, 900, 910, 920, 920, 920, 930, 940, 950, 950, 950, 960,
-            960, 960, 960, 970, 970, 970, 970, 980, 980, 980, 990, 990 };
+            960, 960, 960, 970, 970, 970, 970, 980, 980, 980, 990, 990};
 
     @Before
     public void initData() {
@@ -114,7 +114,7 @@ public class TimerTest {
 
         // Approximately calculate what the expected mean should be
         // and let the tolerance account for the delta
-        double expectedMean = ((double) markSeconds/(markSeconds + delaySeconds));
+        double expectedMean = ((double) markSeconds / (markSeconds + delaySeconds));
         TestUtils.assertEqualsWithTolerance(expectedMean, timer.getMeanRate());
 
         // After a delay, we expect some decay of values
@@ -136,7 +136,6 @@ public class TimerTest {
         double beforeStopTime = System.nanoTime();
         double time = context.stop();
         double afterStopTime = System.nanoTime();
-
 
         double delta = (afterStartTime - beforeStartTime) + (afterStopTime - beforeStopTime);
         Assert.assertEquals(beforeStopTime - beforeStartTime, time, delta);

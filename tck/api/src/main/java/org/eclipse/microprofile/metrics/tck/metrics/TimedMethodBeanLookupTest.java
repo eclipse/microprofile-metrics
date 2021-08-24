@@ -24,9 +24,6 @@ import static org.junit.Assert.fail;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
-
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.Timer;
@@ -42,11 +39,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
+
 @RunWith(Arquillian.class)
 public class TimedMethodBeanLookupTest {
 
     private final static String TIMER_NAME = MetricRegistry.name(TimedMethodBean1.class, "timedMethod");
-    
+
     private static MetricID timerMID;
 
     private final static AtomicLong TIMER_COUNT = new AtomicLong();
@@ -54,11 +54,11 @@ public class TimedMethodBeanLookupTest {
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
-            // Test bean
-            .addClass(TimedMethodBean1.class)
-            .addClass(TestUtils.class)
-            // Bean archive deployment descriptor
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+                // Test bean
+                .addClass(TimedMethodBean1.class)
+                .addClass(TestUtils.class)
+                // Bean archive deployment descriptor
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
@@ -70,17 +70,14 @@ public class TimedMethodBeanLookupTest {
     @Before
     public void instantiateTest() {
         /*
-         * The MetricID relies on the MicroProfile Config API.
-         * Running a managed arquillian container will result
-         * with the MetricID being created in a client process
-         * that does not contain the MPConfig impl.
-         * 
-         * This will cause client instantiated MetricIDs to 
-         * throw an exception. (i.e the global MetricIDs)
+         * The MetricID relies on the MicroProfile Config API. Running a managed arquillian container will result with
+         * the MetricID being created in a client process that does not contain the MPConfig impl.
+         *
+         * This will cause client instantiated MetricIDs to throw an exception. (i.e the global MetricIDs)
          */
         timerMID = new MetricID(TIMER_NAME);
     }
-    
+
     @Test
     @InSequence(1)
     public void timedMethodNotCalledYet() {
@@ -108,7 +105,7 @@ public class TimedMethodBeanLookupTest {
 
         // Make sure that the timer has been called
         assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(TIMER_COUNT.incrementAndGet())));
-        TestUtils.assertEqualsWithTolerance(2000000000L,  timer.getElapsedTime().toNanos());
+        TestUtils.assertEqualsWithTolerance(2000000000L, timer.getElapsedTime().toNanos());
     }
 
     @Test
@@ -126,8 +123,7 @@ public class TimedMethodBeanLookupTest {
         try {
             // Call the timed method and assert an exception is thrown
             bean.timedMethod();
-        }
-        catch (RuntimeException cause) {
+        } catch (RuntimeException cause) {
             assertThat(cause, is(instanceOf(IllegalStateException.class)));
             // Make sure that the timer hasn't been called
             assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(TIMER_COUNT.get())));

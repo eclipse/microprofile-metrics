@@ -15,12 +15,12 @@
  */
 package org.eclipse.microprofile.metrics.tck.metrics;
 
-import java.util.Arrays;
-import java.util.Set;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import javax.inject.Inject;
+
+import java.util.Arrays;
+import java.util.Set;
 
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.tck.util.MetricsUtil;
@@ -33,13 +33,17 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import jakarta.inject.Inject;
+
 @RunWith(Arquillian.class)
 public class DefaultNameMetricMethodBeanTest {
 
-    private final static String[] METRIC_NAMES = { "defaultNameCountedMethod", "defaultNameMeteredMethod", "defaultNameTimedMethod" };
+    private final static String[] METRIC_NAMES =
+            {"defaultNameCountedMethod", "defaultNameMeteredMethod", "defaultNameTimedMethod"};
 
-    private final static String[] ABSOLUTE_METRIC_NAMES = { "absoluteDefaultNameCountedMethod", "absoluteDefaultNameMeteredMethod",
-            "absoluteDefaultNameTimedMethod" };
+    private final static String[] ABSOLUTE_METRIC_NAMES =
+            {"absoluteDefaultNameCountedMethod", "absoluteDefaultNameMeteredMethod",
+                    "absoluteDefaultNameTimedMethod"};
 
     private Set<String> metricNames() {
         Set<String> names = MetricsUtil.absoluteMetricNames(DefaultNameMetricMethodBean.class, METRIC_NAMES);
@@ -64,6 +68,7 @@ public class DefaultNameMetricMethodBeanTest {
 
     @Test
     public void metricMethodsWithDefaultNamingConvention() {
-        assertThat("Metrics are not registered correctly", registry.getMetricIDs(), is(equalTo(MetricsUtil.createMetricIDs(metricNames()))));
+        assertThat("Metrics are not registered correctly", registry.getMetricIDs(),
+                is(equalTo(MetricsUtil.createMetricIDs(metricNames()))));
     }
 }

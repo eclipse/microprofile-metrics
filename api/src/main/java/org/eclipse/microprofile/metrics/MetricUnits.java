@@ -24,8 +24,8 @@
 package org.eclipse.microprofile.metrics;
 
 /**
- * Standard units constants for metric's {@link Metadata}.
- * This class provides a list of common metric units and is not meant to be a complete list of possible units.
+ * Standard units constants for metric's {@link Metadata}. This class provides a list of common metric units and is not
+ * meant to be a complete list of possible units.
  *
  * @see Metadata
  *
@@ -46,7 +46,7 @@ public final class MetricUnits {
     public static final String GIGABITS = "gigabits";
     /** 1024 {@link #BITS} */
     public static final String KIBIBITS = "kibibits";
-    /** 1024 {@link #KIBIBITS}  */
+    /** 1024 {@link #KIBIBITS} */
     public static final String MEBIBITS = "mebibits";
     /** 1024 {@link #MEBIBITS} */
     public static final String GIBIBITS = "gibibits";
@@ -78,10 +78,10 @@ public final class MetricUnits {
     /** Represents percentage */
     public static final String PERCENT = "percent";
 
-    /** Represent per second  */
+    /** Represent per second */
     public static final String PER_SECOND = "per_second";
 
-
-    private MetricUnits() {}
+    private MetricUnits() {
+    }
 
 }

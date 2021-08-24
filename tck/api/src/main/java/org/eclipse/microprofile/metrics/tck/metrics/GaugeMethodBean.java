@@ -18,14 +18,14 @@ package org.eclipse.microprofile.metrics.tck.metrics;
 import org.eclipse.microprofile.metrics.MetricUnits;
 import org.eclipse.microprofile.metrics.annotation.Gauge;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class GaugeMethodBean {
 
     private long gauge;
 
-    @Gauge(name = "gaugeMethod", unit=MetricUnits.NONE)
+    @Gauge(name = "gaugeMethod", unit = MetricUnits.NONE)
     public long getGauge() {
         return gauge;
     }
