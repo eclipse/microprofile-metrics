@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016, 2020 Contributors to the Eclipse Foundation
+// Copyright (c) 2016, 2021 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -20,6 +20,13 @@
 //
 
 = Release Notes
+
+
+[[release_notes_4_0]]
+== Changes in 4.0
+
+=== Breaking changes
+** This release aligns with Jakarta EE 9.1, so it won’t work with earlier versions of Jakarta or Java EE (https://github.com/eclipse/microprofile-metrics/issues/639[#639])
 
 [[release_notes_3_0]]
 == Changes in 3.0
