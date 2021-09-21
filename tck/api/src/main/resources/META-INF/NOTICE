@@ -1,0 +1,22 @@
+=========================================================================
+==  NOTICE file corresponding to section 4(d) of the Apache License,   ==
+==  Version 2.0, in this case for Microprofile Metrics                 ==
+=========================================================================
+
+
+SPDXVersion: SPDX-2.1
+PackageName: Eclipse Microprofile
+PackageHomePage: http://www.eclipse.org/microprofile
+PackageLicenseDeclared: Apache-2.0
+
+PackageCopyrightText: <text>
+Heiko Rupp hrupp@redhat.com,
+Raymond Lam lamr@ca.ibm.com,
+Brennan Nichyporuk brennan.nichyporuk@gmail.com,
+David Chan chdavid@ca.ibm.com,
+Don Bourne dbourne@ca.ibm.com,
+Antonin Stefanutti antonin@stefanutti.fr,
+Mike Croft mike.croft@payara.fish,
+Werner Keil werner@catmedia.us,
+Jan Martiska jmartisk@redhat.com
+</text>

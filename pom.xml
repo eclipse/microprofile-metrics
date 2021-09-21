@@ -32,8 +32,8 @@
     <url>http://microprofile.io</url>
 
     <properties>
-        <version.osgi.versioning>1.0.0</version.osgi.versioning>
-
+        <version.osgi.versioning>1.1.0</version.osgi.versioning>
+        <inceptionYear>2017</inceptionYear>
         <autorelease>false</autorelease>
     </properties>
 

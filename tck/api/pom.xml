@@ -59,4 +59,26 @@
         </dependency>
 
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.coderplus.maven.plugins</groupId>
+                <artifactId>copy-rename-maven-plugin</artifactId>
+                <version>${version.plugin.copy.rename}</version>
+                <executions>
+                    <execution>
+                        <id>copy-readme</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                                    <sourceFile>../README.adoc</sourceFile>
+                                    <destinationFile>target/classes/README.adoc</destinationFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
