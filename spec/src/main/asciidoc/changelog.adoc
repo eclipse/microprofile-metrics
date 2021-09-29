@@ -25,7 +25,7 @@
 [[release_notes_4_0]]
 == Changes in 4.0
 
-=== Breaking changes
+=== Incompatible Changes
 ** This release aligns with Jakarta EE 9.1, so it won’t work with earlier versions of Jakarta or Java EE (https://github.com/eclipse/microprofile-metrics/issues/639[#639])
 
 [[release_notes_3_0]]
