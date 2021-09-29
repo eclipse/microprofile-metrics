@@ -86,5 +86,5 @@
  * </pre>
  *
  */
-@org.osgi.annotation.versioning.Version("3.0.1")
+@org.osgi.annotation.versioning.Version("4.0")
 package org.eclipse.microprofile.metrics.annotation;
