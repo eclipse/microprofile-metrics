@@ -34,7 +34,7 @@ import java.util.concurrent.Callable;
  *
  * The timer measures duration in nanoseconds.
  */
-public interface Timer extends Metered, Sampling {
+public interface Timer extends Sampling {
     /**
      * A timing context.
      *
@@ -101,21 +101,6 @@ public interface Timer extends Metered, Sampling {
      * @return the elapsed time {@link java.time.Duration duration}
      */
     Duration getElapsedTime();
-
-    @Override
-    long getCount();
-
-    @Override
-    double getFifteenMinuteRate();
-
-    @Override
-    double getFiveMinuteRate();
-
-    @Override
-    double getMeanRate();
-
-    @Override
-    double getOneMinuteRate();
 
     @Override
     Snapshot getSnapshot();
