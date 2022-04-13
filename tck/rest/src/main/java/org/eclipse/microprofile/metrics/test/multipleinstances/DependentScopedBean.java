@@ -26,6 +26,9 @@ import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.Metered;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
+import jakarta.enterprise.context.Dependent;
+
+@Dependent
 public class DependentScopedBean {
 
     @Counted(name = "counter", absolute = true)

@@ -19,6 +19,9 @@ import java.util.List;
 
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
+import jakarta.enterprise.context.Dependent;
+
+@Dependent
 public class OverloadedTimedMethodBean {
 
     @Timed(name = "overloadedTimedMethodWithNoArguments")

@@ -23,6 +23,9 @@ package org.eclipse.microprofile.metrics.tck.metrics;
 
 import org.eclipse.microprofile.metrics.annotation.Counted;
 
+import jakarta.enterprise.context.Dependent;
+
+@Dependent
 public class CountedMethodTagBean {
 
     @Counted(name = "countedMethod", absolute = true, tags = {"number=one"})

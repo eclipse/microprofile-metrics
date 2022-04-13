@@ -17,6 +17,9 @@ package org.eclipse.microprofile.metrics.tck.inheritance;
 
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
+import jakarta.enterprise.context.Dependent;
+
+@Dependent
 public class InheritedTimedMethodBean extends VisibilityTimedMethodBean {
 
     @Timed

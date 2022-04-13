@@ -25,6 +25,9 @@ package org.eclipse.microprofile.metrics.tck.metrics;
 
 import org.eclipse.microprofile.metrics.annotation.SimplyTimed;
 
+import jakarta.enterprise.context.Dependent;
+
+@Dependent
 public class SimplyTimedMethodBean3 {
 
     @SimplyTimed(name = "simplyTimedMethod")

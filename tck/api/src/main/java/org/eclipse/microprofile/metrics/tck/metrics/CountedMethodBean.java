@@ -19,6 +19,9 @@ import java.util.concurrent.Callable;
 
 import org.eclipse.microprofile.metrics.annotation.Counted;
 
+import jakarta.enterprise.context.Dependent;
+
+@Dependent
 public class CountedMethodBean<T> {
 
     @Counted(name = "countedMethod", absolute = true)
