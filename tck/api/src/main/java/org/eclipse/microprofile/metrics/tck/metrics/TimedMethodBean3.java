@@ -17,6 +17,9 @@ package org.eclipse.microprofile.metrics.tck.metrics;
 
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
+import jakarta.enterprise.context.Dependent;
+
+@Dependent
 public class TimedMethodBean3 {
 
     @Timed(name = "timedMethod")

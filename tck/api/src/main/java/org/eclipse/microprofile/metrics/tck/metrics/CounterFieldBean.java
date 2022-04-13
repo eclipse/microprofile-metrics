@@ -18,8 +18,10 @@ package org.eclipse.microprofile.metrics.tck.metrics;
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 
+import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
 
+@Dependent
 public class CounterFieldBean {
 
     @Inject

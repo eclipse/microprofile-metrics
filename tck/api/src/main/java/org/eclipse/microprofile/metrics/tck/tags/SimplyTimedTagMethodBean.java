@@ -23,6 +23,9 @@ package org.eclipse.microprofile.metrics.tck.tags;
 
 import org.eclipse.microprofile.metrics.annotation.SimplyTimed;
 
+import jakarta.enterprise.context.Dependent;
+
+@Dependent
 public class SimplyTimedTagMethodBean {
 
     @SimplyTimed(name = "simplyTimedMethod", tags = {"number=one"})

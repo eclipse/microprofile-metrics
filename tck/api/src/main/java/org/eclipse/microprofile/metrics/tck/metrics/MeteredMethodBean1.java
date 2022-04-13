@@ -17,6 +17,9 @@ package org.eclipse.microprofile.metrics.tck.metrics;
 
 import org.eclipse.microprofile.metrics.annotation.Metered;
 
+import jakarta.enterprise.context.Dependent;
+
+@Dependent
 public class MeteredMethodBean1 {
 
     @Metered(name = "meteredMethod")

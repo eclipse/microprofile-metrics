@@ -15,6 +15,9 @@
  */
 package org.eclipse.microprofile.metrics.tck.metrics;
 
+import jakarta.enterprise.context.Dependent;
+
+@Dependent
 public class ConcreteExtendedTimedBean extends AbstractTimedBean {
 
     public void anotherTimedMethod() {

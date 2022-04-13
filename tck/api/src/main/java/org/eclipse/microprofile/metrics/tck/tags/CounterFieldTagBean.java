@@ -24,8 +24,10 @@ package org.eclipse.microprofile.metrics.tck.tags;
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 
+import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
 
+@Dependent
 public class CounterFieldTagBean {
 
     @Inject

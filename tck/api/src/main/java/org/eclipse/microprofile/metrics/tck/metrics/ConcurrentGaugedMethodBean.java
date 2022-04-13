@@ -19,6 +19,9 @@ import java.util.concurrent.Callable;
 
 import org.eclipse.microprofile.metrics.annotation.ConcurrentGauge;
 
+import jakarta.enterprise.context.Dependent;
+
+@Dependent
 public class ConcurrentGaugedMethodBean<T> {
 
     @ConcurrentGauge(name = "cGaugedMethod", absolute = true)

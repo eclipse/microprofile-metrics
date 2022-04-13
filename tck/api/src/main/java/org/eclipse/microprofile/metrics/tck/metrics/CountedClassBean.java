@@ -17,6 +17,9 @@ package org.eclipse.microprofile.metrics.tck.metrics;
 
 import org.eclipse.microprofile.metrics.annotation.Counted;
 
+import jakarta.enterprise.context.Dependent;
+
+@Dependent
 @Counted(name = "countedClass")
 public class CountedClassBean {
 

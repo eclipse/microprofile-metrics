@@ -23,6 +23,9 @@ package org.eclipse.microprofile.metrics.tck.tags;
 
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
+import jakarta.enterprise.context.Dependent;
+
+@Dependent
 public class TimedTagMethodBean {
 
     @Timed(name = "timedMethod", tags = {"number=one"})

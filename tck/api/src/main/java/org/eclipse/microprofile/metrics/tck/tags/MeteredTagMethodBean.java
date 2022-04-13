@@ -23,6 +23,9 @@ package org.eclipse.microprofile.metrics.tck.tags;
 
 import org.eclipse.microprofile.metrics.annotation.Metered;
 
+import jakarta.enterprise.context.Dependent;
+
+@Dependent
 public class MeteredTagMethodBean {
 
     @Metered(name = "meteredMethod", tags = {"number=one"})
