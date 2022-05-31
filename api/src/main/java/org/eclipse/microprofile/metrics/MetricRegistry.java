@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017, 2020 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
  *               2010, 2013 Coda Hale, Yammer.com
  *
  * See the NOTICES file(s) distributed with this work for additional
@@ -108,73 +108,6 @@ public interface MetricRegistry {
     static String name(Class<?> klass, String... names) {
         return name(klass.getCanonicalName(), names);
     }
-
-    /**
-     * Given a {@link Metric}, registers it under a {@link MetricID} with the given name and with no tags. A
-     * {@link Metadata} object will be registered with the name and type. However, if a {@link Metadata} object is
-     * already registered with this metric name and is not equal to the created {@link Metadata} object then an
-     * exception will be thrown.
-     *
-     * @param name
-     *            the name of the metric
-     * @param metric
-     *            the metric
-     * @param <T>
-     *            the type of the metric
-     * @return {@code metric}
-     * @throws IllegalArgumentException
-     *             if the name is already registered or if Metadata with different values has already been registered
-     *             with the name
-     */
-    <T extends Metric> T register(String name, T metric) throws IllegalArgumentException;
-
-    /**
-     * Given a {@link Metric} and {@link Metadata}, registers the metric with a {@link MetricID} with the name provided
-     * by the {@link Metadata} and with no tags.
-     * <p>
-     * Note: If a {@link Metadata} object is already registered under this metric name and is not equal to the provided
-     * {@link Metadata} object then an exception will be thrown.
-     * </p>
-     *
-     * @param metadata
-     *            the metadata
-     * @param metric
-     *            the metric
-     * @param <T>
-     *            the type of the metric
-     * @return {@code metric}
-     * @throws IllegalArgumentException
-     *             if the name is already registered or if Metadata with different values has already been registered
-     *             with the name
-     *
-     * @since 1.1
-     */
-    <T extends Metric> T register(Metadata metadata, T metric) throws IllegalArgumentException;
-
-    /**
-     * Given a {@link Metric} and {@link Metadata}, registers both under a {@link MetricID} with the name provided by
-     * the {@link Metadata} and with the provided {@link Tag}s.
-     * <p>
-     * Note: If a {@link Metadata} object is already registered under this metric name and is not equal to the provided
-     * {@link Metadata} object then an exception will be thrown.
-     * </p>
-     *
-     * @param metadata
-     *            the metadata
-     * @param metric
-     *            the metric
-     * @param <T>
-     *            the type of the metric
-     * @param tags
-     *            the tags of the metric
-     * @return {@code metric}
-     * @throws IllegalArgumentException
-     *             if the name is already registered or if Metadata with different values has already been registered
-     *             with the name
-     *
-     * @since 2.0
-     */
-    <T extends Metric> T register(Metadata metadata, T metric, Tag... tags) throws IllegalArgumentException;
 
     /**
      * Return the {@link Counter} registered under the {@link MetricID} with this name and with no tags; or create and
