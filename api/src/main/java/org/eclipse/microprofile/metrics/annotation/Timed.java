@@ -38,8 +38,6 @@ import jakarta.interceptor.InterceptorBinding;
  * An annotation for marking a method, constructor, or class as timed. The underlying
  * {@link org.eclipse.microprofile.metrics.Timer Timer} metric aggregates timing durations and provides duration
  * statistics, plus throughput statistics. There is a lightweight alternative
- * {@link org.eclipse.microprofile.metrics.SimpleTimer SimpleTimer} (@{@link SimplyTimed}) that only tracks elapsed time
- * duration and count. The metric will be registered in the application MetricRegistry.
  * <p>
  * Given a method annotated with {@literal @}Timed like this:
  * </p>

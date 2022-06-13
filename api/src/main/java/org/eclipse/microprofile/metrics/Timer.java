@@ -27,14 +27,11 @@ import java.time.Duration;
 import java.util.concurrent.Callable;
 
 /**
- * A timer metric which aggregates timing durations and provides duration statistics, plus throughput statistics via
- * {@link Meter}.
- * 
- * See {@link SimpleTimer} for a lightweight alternative that only tracks elapsed time duration and count.
+ * A timer metric which aggregates timing durations and provides duration statistics
  *
  * The timer measures duration in nanoseconds.
  */
-public interface Timer extends Sampling {
+public interface Timer extends Metric, Sampling {
     /**
      * A timing context.
      *
@@ -101,6 +98,8 @@ public interface Timer extends Sampling {
      * @return the elapsed time {@link java.time.Duration duration}
      */
     Duration getElapsedTime();
+
+    long getCount();
 
     @Override
     Snapshot getSnapshot();
