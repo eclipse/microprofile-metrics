@@ -80,15 +80,6 @@ public class MultipleBeanInstancesTest {
     }
 
     @Test
-    public void testMeter() {
-        instance1.meteredMethod();
-        instance2.meteredMethod();
-        assertThat(
-                registry.getMeters((id, metric) -> id.getName().equals("meter")).values().iterator().next().getCount(),
-                is(2L));
-    }
-
-    @Test
     public void testTimer() {
         instance1.timedMethod();
         instance2.timedMethod();

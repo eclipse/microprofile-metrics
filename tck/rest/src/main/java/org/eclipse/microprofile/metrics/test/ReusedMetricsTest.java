@@ -106,9 +106,7 @@ public class ReusedMetricsTest {
     @InSequence(1)
     public void setA() {
         metricAppBean.countMeA();
-        metricAppBean.meterMeA();
         metricAppBean.timeMeA();
-        metricAppBean.simplyTimeMeA();
     }
 
     @Test
@@ -128,11 +126,7 @@ public class ReusedMetricsTest {
 
         resp.then()
                 .assertThat().body("'countMe2;tier=integration'", equalTo(1))
-                .assertThat()
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean2.meterMe2'.'count;tier=integration'",
-                        equalTo(1))
-                .assertThat().body("'timeMe2'.'count;tier=integration'", equalTo(1))
-                .assertThat().body("'simplyTimeMe2'.'count;tier=integration'", equalTo(1));
+                .assertThat().body("'timeMe2'.'count;tier=integration'", equalTo(1));
 
     }
 
@@ -140,9 +134,7 @@ public class ReusedMetricsTest {
     @InSequence(3)
     public void setB() {
         metricAppBean.countMeB();
-        metricAppBean.meterMeB();
         metricAppBean.timeMeB();
-        metricAppBean.simplyTimeMeB();
     }
 
     @Test
@@ -162,11 +154,7 @@ public class ReusedMetricsTest {
 
         resp.then()
                 .assertThat().body("'countMe2;tier=integration'", equalTo(2))
-                .assertThat()
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean2.meterMe2'.'count;tier=integration'",
-                        equalTo(2))
-                .assertThat().body("'timeMe2'.'count;tier=integration'", equalTo(2))
-                .assertThat().body("'simplyTimeMe2'.'count;tier=integration'", equalTo(2));
+                .assertThat().body("'timeMe2'.'count;tier=integration'", equalTo(2));
 
     }
 

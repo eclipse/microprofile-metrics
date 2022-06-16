@@ -75,8 +75,6 @@ public class MultipleMetricsConstructorBeanTest {
         // Make sure that the metrics have been called
         assertThat("Counter count is incorrect", registry.getCounter(
                 new MetricID(absoluteMetricName("counter"))).getCount(), is(equalTo(count)));
-        assertThat("Meter count is incorrect", registry.getMeter(
-                new MetricID(absoluteMetricName("meter"))).getCount(), is(equalTo(count)));
         assertThat("Timer count is incorrect", registry.getTimer(
                 new MetricID(absoluteMetricName("timer"))).getCount(), is(equalTo(count)));
     }

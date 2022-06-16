@@ -23,18 +23,12 @@
 package org.eclipse.microprofile.metrics.test.multipleinstances;
 
 import org.eclipse.microprofile.metrics.annotation.Counted;
-import org.eclipse.microprofile.metrics.annotation.Metered;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
 public class DependentScopedBean {
 
     @Counted(name = "counter", absolute = true)
     public void countedMethod() {
-
-    }
-
-    @Metered(name = "meter", absolute = true)
-    public void meteredMethod() {
 
     }
 

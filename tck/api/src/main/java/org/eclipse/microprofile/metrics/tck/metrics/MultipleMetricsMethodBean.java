@@ -18,7 +18,6 @@ package org.eclipse.microprofile.metrics.tck.metrics;
 import org.eclipse.microprofile.metrics.MetricUnits;
 import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.Gauge;
-import org.eclipse.microprofile.metrics.annotation.Metered;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -28,7 +27,6 @@ public class MultipleMetricsMethodBean {
 
     @Counted(name = "counter")
     @Gauge(name = "gauge", unit = MetricUnits.NONE)
-    @Metered(name = "meter")
     @Timed(name = "timer")
     public Long metricsMethod() {
         return 1234L;

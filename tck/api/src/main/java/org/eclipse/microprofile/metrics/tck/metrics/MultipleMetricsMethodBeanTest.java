@@ -92,8 +92,6 @@ public class MultipleMetricsMethodBeanTest {
         // Make sure that the metrics have been called
         assertThat("Counter count is incorrect", registry.getCounter(
                 new MetricID(absoluteMetricName("counter"))).getCount(), is(equalTo(1L)));
-        assertThat("Meter count is incorrect", registry.getMeter(
-                new MetricID(absoluteMetricName("meter"))).getCount(), is(equalTo(1L)));
         assertThat("Timer count is incorrect", registry.getTimer(
                 new MetricID(absoluteMetricName("timer"))).getCount(), is(equalTo(1L)));
         // Let's call the gauge at the end as Weld is intercepting the gauge

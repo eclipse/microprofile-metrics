@@ -16,13 +16,11 @@
 package org.eclipse.microprofile.metrics.tck.metrics;
 
 import org.eclipse.microprofile.metrics.annotation.Counted;
-import org.eclipse.microprofile.metrics.annotation.Metered;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
 public class MultipleMetricsConstructorBean {
 
     @Counted(name = "counter")
-    @Metered(name = "meter")
     @Timed(name = "timer")
     public MultipleMetricsConstructorBean() {
     }

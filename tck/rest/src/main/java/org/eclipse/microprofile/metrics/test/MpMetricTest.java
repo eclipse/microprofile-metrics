@@ -486,16 +486,8 @@ public class MpMetricTest {
 
         metricAppBean.histogramMe();
 
-        metricAppBean.meterMe();
-        metricAppBean.meterMeA();
-
         metricAppBean.timeMe();
         metricAppBean.timeMeA();
-
-        metricAppBean.simpleTimeMe();
-        metricAppBean.simpleTimeMeA();
-
-        metricAppBean.concGaugeMeA();
 
     }
 
@@ -536,82 +528,35 @@ public class MpMetricTest {
                 .body("'metricTest.test1.histogram'.'count;tier=integration'", equalTo(1000))
                 .body("'metricTest.test1.histogram'.'sum;tier=integration'", equalTo(499500))
                 .body("'metricTest.test1.histogram'.'max;tier=integration'", equalTo(999))
-                .body("'metricTest.test1.histogram'.'mean;tier=integration'", closeTo(499.5))
-                .body("'metricTest.test1.histogram'.'min;tier=integration'", equalTo(0))
                 .body("'metricTest.test1.histogram'.'p50;tier=integration'", closeTo(499.0))
                 .body("'metricTest.test1.histogram'.'p75;tier=integration'", closeTo(749))
                 .body("'metricTest.test1.histogram'.'p95;tier=integration'", closeTo(949))
                 .body("'metricTest.test1.histogram'.'p98;tier=integration'", closeTo(979))
                 .body("'metricTest.test1.histogram'.'p99;tier=integration'", closeTo(989))
                 .body("'metricTest.test1.histogram'.'p999;tier=integration'", closeTo(998))
-                .body("'metricTest.test1.histogram'", hasKey("stddev;tier=integration"))
-
-                .body("'metricTest.test1.meter'.'count;tier=integration'", equalTo(1))
-                .body("'metricTest.test1.meter'", hasKey("fifteenMinRate;tier=integration"))
-                .body("'metricTest.test1.meter'", hasKey("fiveMinRate;tier=integration"))
-                .body("'metricTest.test1.meter'", hasKey("meanRate;tier=integration"))
-                .body("'metricTest.test1.meter'", hasKey("oneMinRate;tier=integration"))
-
-                .body("'meterMeA'.'count;tier=integration'", equalTo(1))
-                .body("'meterMeA'", hasKey("fifteenMinRate;tier=integration"))
-                .body("'meterMeA'", hasKey("fiveMinRate;tier=integration"))
-                .body("'meterMeA'", hasKey("meanRate;tier=integration"))
-                .body("'meterMeA'", hasKey("oneMinRate;tier=integration"))
 
                 .body("'metricTest.test1.timer'.'count;tier=integration'", equalTo(1))
-                .body("'metricTest.test1.timer'", hasKey("fifteenMinRate;tier=integration"))
-                .body("'metricTest.test1.timer'", hasKey("fiveMinRate;tier=integration"))
-                .body("'metricTest.test1.timer'", hasKey("meanRate;tier=integration"))
-                .body("'metricTest.test1.timer'", hasKey("oneMinRate;tier=integration"))
-                .body("'metricTest.test1.timer'", hasKey("elapsedTime;tier=integration"))
+                .body("'metricTest.test1.timer'", hasKey("sum;tier=integration"))
                 .body("'metricTest.test1.timer'", hasKey("max;tier=integration"))
-                .body("'metricTest.test1.timer'", hasKey("mean;tier=integration"))
-                .body("'metricTest.test1.timer'", hasKey("min;tier=integration"))
                 .body("'metricTest.test1.timer'", hasKey("p50;tier=integration"))
                 .body("'metricTest.test1.timer'", hasKey("p75;tier=integration"))
                 .body("'metricTest.test1.timer'", hasKey("p95;tier=integration"))
                 .body("'metricTest.test1.timer'", hasKey("p98;tier=integration"))
                 .body("'metricTest.test1.timer'", hasKey("p99;tier=integration"))
                 .body("'metricTest.test1.timer'", hasKey("p999;tier=integration"))
-                .body("'metricTest.test1.timer'", hasKey("stddev;tier=integration"))
 
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'.'count;tier=integration'",
                         equalTo(1))
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'",
-                        hasKey("fifteenMinRate;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'",
-                        hasKey("fiveMinRate;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'",
-                        hasKey("meanRate;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'",
-                        hasKey("oneMinRate;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'",
-                        hasKey("elapsedTime;tier=integration"))
+                        hasKey("sum;tier=integration"))
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("max;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("mean;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("min;tier=integration"))
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p50;tier=integration"))
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p75;tier=integration"))
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p95;tier=integration"))
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p98;tier=integration"))
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p99;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p999;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'",
-                        hasKey("stddev;tier=integration"))
+                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p999;tier=integration"));
 
-                .body("'metricTest.test1.simpleTimer'.'count;tier=integration'", equalTo(1))
-                .body("'metricTest.test1.simpleTimer'", hasKey("elapsedTime;tier=integration"))
-                .body("'metricTest.test1.simpleTimer'", hasKey("minTimeDuration;tier=integration"))
-                .body("'metricTest.test1.simpleTimer'", hasKey("maxTimeDuration;tier=integration"))
-
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA'.'count;tier=integration'",
-                        equalTo(1))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA'",
-                        hasKey("elapsedTime;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA'",
-                        hasKey("minTimeDuration;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA'",
-                        hasKey("maxTimeDuration;tier=integration"));
     }
 
     @Test
@@ -678,22 +623,6 @@ public class MpMetricTest {
 
     @Test
     @RunAsClient
-    @InSequence(23)
-    public void testApplicationMeterUnitOpenMetrics() {
-
-        String prefix = "meterMeA_";
-        given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/meterMeA")
-                .then().statusCode(200)
-                .and()
-                .body(containsString(prefix + "total"))
-                .body(containsString(prefix + "rate_per_second"))
-                .body(containsString(prefix + "one_min_rate_per_second"))
-                .body(containsString(prefix + "five_min_rate_per_second"))
-                .body(containsString(prefix + "fifteen_min_rate_per_second"));
-    }
-
-    @Test
-    @RunAsClient
     @InSequence(24)
     public void testApplicationTimerUnitOpenMetrics() {
 
@@ -711,14 +640,7 @@ public class MpMetricTest {
                 .body(containsString("# TYPE application_" + prefix + "seconds summary"))
                 .body(containsString(prefix + "seconds_count"))
                 .body(containsString(prefix + "seconds_sum"))
-                .body(containsString(prefix + "rate_per_second"))
-                .body(containsString(prefix + "one_min_rate_per_second"))
-                .body(containsString(prefix + "five_min_rate_per_second"))
-                .body(containsString(prefix + "fifteen_min_rate_per_second"))
-                .body(containsString(prefix + "mean_seconds"))
-                .body(containsString(prefix + "min_seconds"))
-                .body(containsString(prefix + "max_seconds"))
-                .body(containsString(prefix + "stddev_second"))
+                .body(containsString(prefix + "seconds_max"))
                 .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.5\"}"))
                 .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.75\"}"))
                 .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.95\"}"))
@@ -745,10 +667,7 @@ public class MpMetricTest {
                 .body(containsString(prefix + "bytes_count"))
                 .body(containsString(prefix + "bytes_sum"))
                 .body(containsString("# TYPE application_" + prefix + "bytes summary"))
-                .body(containsString(prefix + "mean_bytes"))
-                .body(containsString(prefix + "min_bytes"))
-                .body(containsString(prefix + "max_bytes"))
-                .body(containsString(prefix + "stddev_bytes"))
+                .body(containsString(prefix + "bytes_max"))
                 .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.5\"}"))
                 .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.75\"}"))
                 .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.95\"}"))
@@ -775,10 +694,7 @@ public class MpMetricTest {
                 .body(containsString(prefix + "_count"))
                 .body(containsString(prefix + "_sum"))
                 .body(containsString("# TYPE application_" + prefix + " summary"))
-                .body(containsString(prefix + "_mean"))
-                .body(containsString(prefix + "_min"))
                 .body(containsString(prefix + "_max"))
-                .body(containsString(prefix + "_stddev"))
                 .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.5\"}"))
                 .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.75\"}"))
                 .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.95\"}"))
@@ -841,10 +757,8 @@ public class MpMetricTest {
                 .and()
                 .body(containsString(prefix + "jellybeans_count"))
                 .body(containsString("# TYPE application_" + prefix + "jellybeans summary"))
-                .body(containsString(prefix + "mean_jellybeans"))
-                .body(containsString(prefix + "min_jellybeans"))
-                .body(containsString(prefix + "max_jellybeans"))
-                .body(containsString(prefix + "stddev_jellybeans"))
+                .body(containsString(prefix + "jellybeans_sum"))
+                .body(containsString(prefix + "jellybeans_max"))
                 .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.5\"}"))
                 .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.75\"}"))
                 .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.95\"}"))
@@ -1088,144 +1002,76 @@ public class MpMetricTest {
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.taggedCounter;number=two;tier=integration'",
                         equalTo(0))
 
-                // ConcurrentGauge - ;number=one;tier=integration
-                .body("'taggedConcurrentGauge'.'current;number=one;tier=integration'", equalTo(0))
-                .body("'taggedConcurrentGauge'.'min;number=one;tier=integration'", equalTo(0))
-                .body("'taggedConcurrentGauge'.'max;number=one;tier=integration'", equalTo(0))
-                // ConcurrentGauge - ;number=two;tier=integration
-                .body("'taggedConcurrentGauge'.'current;number=two;tier=integration'", equalTo(0))
-                .body("'taggedConcurrentGauge'.'min;number=two;tier=integration'", equalTo(0))
-                .body("'taggedConcurrentGauge'.'max;number=two;tier=integration'", equalTo(0))
-
                 // Gauge
                 .body("'taggedGauge;number=one;tier=integration'", equalTo(1000))
                 .body("'taggedGauge;number=two;tier=integration'", equalTo(1000))
 
                 // histogram - ;tier=integration
                 .body("'taggedHistogram'.'count;tier=integration'", equalTo(0))
+                .body("'taggedHistogram'", hasKey("sum;tier=integration"))
                 .body("'taggedHistogram'", hasKey("max;tier=integration"))
-                .body("'taggedHistogram'", hasKey("mean;tier=integration"))
-                .body("'taggedHistogram'", hasKey("min;tier=integration"))
                 .body("'taggedHistogram'", hasKey("p50;tier=integration"))
                 .body("'taggedHistogram'", hasKey("p75;tier=integration"))
                 .body("'taggedHistogram'", hasKey("p95;tier=integration"))
                 .body("'taggedHistogram'", hasKey("p98;tier=integration"))
                 .body("'taggedHistogram'", hasKey("p99;tier=integration"))
                 .body("'taggedHistogram'", hasKey("p999;tier=integration"))
-                .body("'taggedHistogram'", hasKey("stddev;tier=integration"))
 
                 // histogram - ;number=one;tier=integration
                 .body("'taggedHistogram'.'count;number=one;tier=integration'", equalTo(0))
+                .body("'taggedHistogram'", hasKey("sum;number=one;tier=integration"))
                 .body("'taggedHistogram'", hasKey("max;number=one;tier=integration"))
-                .body("'taggedHistogram'", hasKey("mean;number=one;tier=integration"))
-                .body("'taggedHistogram'", hasKey("min;number=one;tier=integration"))
                 .body("'taggedHistogram'", hasKey("p50;number=one;tier=integration"))
                 .body("'taggedHistogram'", hasKey("p75;number=one;tier=integration"))
                 .body("'taggedHistogram'", hasKey("p95;number=one;tier=integration"))
                 .body("'taggedHistogram'", hasKey("p98;number=one;tier=integration"))
                 .body("'taggedHistogram'", hasKey("p99;number=one;tier=integration"))
                 .body("'taggedHistogram'", hasKey("p999;number=one;tier=integration"))
-                .body("'taggedHistogram'", hasKey("stddev;number=one;tier=integration"))
 
                 // histogram - ;number=two;tier=integration
                 .body("'taggedHistogram'.'count;number=two;tier=integration'", equalTo(0))
+                .body("'taggedHistogram'", hasKey("sum;number=two;tier=integration"))
                 .body("'taggedHistogram'", hasKey("max;number=two;tier=integration"))
-                .body("'taggedHistogram'", hasKey("mean;number=two;tier=integration"))
-                .body("'taggedHistogram'", hasKey("min;number=two;tier=integration"))
                 .body("'taggedHistogram'", hasKey("p50;number=two;tier=integration"))
                 .body("'taggedHistogram'", hasKey("p75;number=two;tier=integration"))
                 .body("'taggedHistogram'", hasKey("p95;number=two;tier=integration"))
                 .body("'taggedHistogram'", hasKey("p98;number=two;tier=integration"))
                 .body("'taggedHistogram'", hasKey("p99;number=two;tier=integration"))
                 .body("'taggedHistogram'", hasKey("p999;number=two;tier=integration"))
-                .body("'taggedHistogram'", hasKey("stddev;number=two;tier=integration"))
 
                 // timer - ;tier=integration
                 .body("'taggedTimer'.'count;tier=integration'", equalTo(0))
-                .body("'taggedTimer'", hasKey("fifteenMinRate;tier=integration"))
-                .body("'taggedTimer'", hasKey("fiveMinRate;tier=integration"))
-                .body("'taggedTimer'", hasKey("meanRate;tier=integration"))
-                .body("'taggedTimer'", hasKey("oneMinRate;tier=integration"))
-                .body("'taggedTimer'", hasKey("elapsedTime;tier=integration"))
+                .body("'taggedTimer'", hasKey("count;tier=integration"))
+                .body("'taggedTimer'", hasKey("sum;tier=integration"))
                 .body("'taggedTimer'", hasKey("max;tier=integration"))
-                .body("'taggedTimer'", hasKey("mean;tier=integration"))
-                .body("'taggedTimer'", hasKey("min;tier=integration"))
                 .body("'taggedTimer'", hasKey("p50;tier=integration"))
                 .body("'taggedTimer'", hasKey("p75;tier=integration"))
                 .body("'taggedTimer'", hasKey("p95;tier=integration"))
                 .body("'taggedTimer'", hasKey("p98;tier=integration"))
                 .body("'taggedTimer'", hasKey("p99;tier=integration"))
                 .body("'taggedTimer'", hasKey("p999;tier=integration"))
-                .body("'taggedTimer'", hasKey("stddev;tier=integration"))
                 // timer - ;number=one;tier=integration
                 .body("'taggedTimer'.'count;number=one;tier=integration'", equalTo(0))
-                .body("'taggedTimer'", hasKey("fifteenMinRate;number=one;tier=integration"))
-                .body("'taggedTimer'", hasKey("fiveMinRate;number=one;tier=integration"))
-                .body("'taggedTimer'", hasKey("meanRate;number=one;tier=integration"))
-                .body("'taggedTimer'", hasKey("oneMinRate;number=one;tier=integration"))
-                .body("'taggedTimer'", hasKey("elapsedTime;number=one;tier=integration"))
+                .body("'taggedTimer'", hasKey("count;number=one;tier=integration"))
+                .body("'taggedTimer'", hasKey("sum;number=one;tier=integration"))
                 .body("'taggedTimer'", hasKey("max;number=one;tier=integration"))
-                .body("'taggedTimer'", hasKey("mean;number=one;tier=integration"))
-                .body("'taggedTimer'", hasKey("min;number=one;tier=integration"))
                 .body("'taggedTimer'", hasKey("p50;number=one;tier=integration"))
                 .body("'taggedTimer'", hasKey("p75;number=one;tier=integration"))
                 .body("'taggedTimer'", hasKey("p95;number=one;tier=integration"))
                 .body("'taggedTimer'", hasKey("p98;number=one;tier=integration"))
                 .body("'taggedTimer'", hasKey("p99;number=one;tier=integration"))
                 .body("'taggedTimer'", hasKey("p999;number=one;tier=integration"))
-                .body("'taggedTimer'", hasKey("stddev;number=one;tier=integration"))
                 // timer - ;number=two;tier=integration
                 .body("'taggedTimer'.'count;number=two;tier=integration'", equalTo(0))
-                .body("'taggedTimer'", hasKey("fifteenMinRate;number=two;tier=integration"))
-                .body("'taggedTimer'", hasKey("fiveMinRate;number=two;tier=integration"))
-                .body("'taggedTimer'", hasKey("meanRate;number=two;tier=integration"))
-                .body("'taggedTimer'", hasKey("oneMinRate;number=two;tier=integration"))
-                .body("'taggedTimer'", hasKey("elapsedTime;number=two;tier=integration"))
+                .body("'taggedTimer'", hasKey("count;number=two;tier=integration"))
+                .body("'taggedTimer'", hasKey("sum;number=two;tier=integration"))
                 .body("'taggedTimer'", hasKey("max;number=two;tier=integration"))
-                .body("'taggedTimer'", hasKey("mean;number=two;tier=integration"))
-                .body("'taggedTimer'", hasKey("min;number=two;tier=integration"))
                 .body("'taggedTimer'", hasKey("p50;number=two;tier=integration"))
                 .body("'taggedTimer'", hasKey("p75;number=two;tier=integration"))
                 .body("'taggedTimer'", hasKey("p95;number=two;tier=integration"))
                 .body("'taggedTimer'", hasKey("p98;number=two;tier=integration"))
                 .body("'taggedTimer'", hasKey("p99;number=two;tier=integration"))
-                .body("'taggedTimer'", hasKey("p999;number=two;tier=integration"))
-                .body("'taggedTimer'", hasKey("stddev;number=two;tier=integration"))
-
-                // SimpleTimer - ;tier=integration
-                .body("'taggedSimpleTimer'.'count;tier=integration'", equalTo(0))
-                .body("'taggedSimpleTimer'", hasKey("elapsedTime;tier=integration"))
-                .body("'taggedSimpleTimer'", hasKey("maxTimeDuration;tier=integration"))
-                .body("'taggedSimpleTimer'", hasKey("minTimeDuration;tier=integration"))
-                // SimpleTimer - ;number=one;tier=integration
-                .body("'taggedSimpleTimer'.'count;number=one;tier=integration'", equalTo(0))
-                .body("'taggedSimpleTimer'", hasKey("elapsedTime;number=one;tier=integration"))
-                .body("'taggedSimpleTimer'", hasKey("maxTimeDuration;number=one;tier=integration"))
-                .body("'taggedSimpleTimer'", hasKey("minTimeDuration;number=one;tier=integration"))
-                // SimpleTimer - ;number=two;tier=integration
-                .body("'taggedSimpleTimer'.'count;number=two;tier=integration'", equalTo(0))
-                .body("'taggedSimpleTimer'", hasKey("elapsedTime;number=two;tier=integration"))
-                .body("'taggedSimpleTimer'", hasKey("maxTimeDuration;number=two;tier=integration"))
-                .body("'taggedSimpleTimer'", hasKey("minTimeDuration;number=two;tier=integration"))
-
-                // Meter - ;tier=integration
-                .body("'taggedMeter'.'count;tier=integration'", equalTo(0))
-                .body("'taggedMeter'", hasKey("fifteenMinRate;tier=integration"))
-                .body("'taggedMeter'", hasKey("fiveMinRate;tier=integration"))
-                .body("'taggedMeter'", hasKey("meanRate;tier=integration"))
-                .body("'taggedMeter'", hasKey("oneMinRate;tier=integration"))
-                // Meter - ;number=one;tier=integration
-                .body("'taggedMeter'.'count;number=one;tier=integration'", equalTo(0))
-                .body("'taggedMeter'", hasKey("fifteenMinRate;number=one;tier=integration"))
-                .body("'taggedMeter'", hasKey("fiveMinRate;number=one;tier=integration"))
-                .body("'taggedMeter'", hasKey("meanRate;number=one;tier=integration"))
-                .body("'taggedMeter'", hasKey("oneMinRate;number=one;tier=integration"))
-                // Meter - ;number=two;tier=integration
-                .body("'taggedMeter'.'count;number=two;tier=integration'", equalTo(0))
-                .body("'taggedMeter'", hasKey("fifteenMinRate;number=two;tier=integration"))
-                .body("'taggedMeter'", hasKey("fiveMinRate;number=two;tier=integration"))
-                .body("'taggedMeter'", hasKey("meanRate;number=two;tier=integration"))
-                .body("'taggedMeter'", hasKey("oneMinRate;number=two;tier=integration"));
+                .body("'taggedTimer'", hasKey("p999;number=two;tier=integration"));
 
     }
 
@@ -1247,42 +1093,6 @@ public class MpMetricTest {
         resp.then().statusCode(200)
                 .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.semiColonTaggedCounter;"
                         + "scTag=semi_colons_are_bad;tier=integration'", equalTo(0));
-    }
-
-    @Test
-    @RunAsClient
-    @InSequence(47)
-    public void testApplicationConcurrentGaugeOpenMetrics() {
-
-        given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/concGaugeMeA")
-                .then().statusCode(200)
-                .and()
-                .body(containsString("concGaugeMeA_current"))
-                .body(containsString("concGaugeMeA_min"))
-                .body(containsString("concGaugeMeA_max"));
-    }
-
-    @Test
-    @RunAsClient
-    @InSequence(48)
-    public void testApplicationSimpleTimerUnitOpenMetrics() {
-
-        String prefix = "org_eclipse_microprofile_metrics_test_MetricAppBean_simpleTimeMeA_";
-
-        Response resp = given().header("Accept", TEXT_PLAIN)
-                .get("/metrics/application/org.eclipse.microprofile.metrics.test.MetricAppBean.simpleTimeMeA");
-        ResponseBuilder responseBuilder = new ResponseBuilder();
-        responseBuilder.clone(resp);
-        responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
-        resp = responseBuilder.build();
-
-        resp.then().statusCode(200)
-                .and()
-                .body(containsString("# TYPE application_" + prefix + "total counter"))
-                .body(containsString(prefix + "total"))
-                .body(containsString(prefix + "elapsedTime_seconds"))
-                .body(containsString(prefix + "maxTimeDuration_seconds"))
-                .body(containsString(prefix + "minTimeDuration_seconds"));
     }
 
     /**

@@ -24,17 +24,12 @@ package org.eclipse.microprofile.metrics.tck;
 
 import static org.junit.Assert.assertNotNull;
 
-import org.eclipse.microprofile.metrics.ConcurrentGauge;
 import org.eclipse.microprofile.metrics.Counter;
-import org.eclipse.microprofile.metrics.Histogram;
 import org.eclipse.microprofile.metrics.Metadata;
-import org.eclipse.microprofile.metrics.Meter;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.MetricType;
-import org.eclipse.microprofile.metrics.SimpleTimer;
 import org.eclipse.microprofile.metrics.Tag;
-import org.eclipse.microprofile.metrics.Timer;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 import org.eclipse.microprofile.metrics.annotation.RegistryType;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -57,24 +52,6 @@ public class MetricRegistryTest {
     private Counter nameTest;
 
     @Inject
-    private Counter countTemp;
-
-    @Inject
-    private Histogram histoTemp;
-
-    @Inject
-    private Timer timerTemp;
-
-    @Inject
-    private SimpleTimer simpleTimerTemp;
-
-    @Inject
-    private ConcurrentGauge concurrentGaugeTemp;
-
-    @Inject
-    private Meter meterTemp;
-
-    @Inject
     private MetricRegistry metrics;
 
     @Inject
@@ -95,28 +72,6 @@ public class MetricRegistryTest {
     public void nameTest() {
         Assert.assertNotNull(metrics);
         Assert.assertNotNull(metrics.getMetadata("nameTest"));
-    }
-
-    @Test
-    @InSequence(2)
-    public void registerTest() {
-        metrics.register("regCountTemp", countTemp);
-        assertExists(Counter.class, new MetricID("regCountTemp"));
-
-        metrics.register("regHistoTemp", histoTemp);
-        assertExists(Histogram.class, new MetricID("regHistoTemp"));
-
-        metrics.register("regTimerTemp", timerTemp);
-        assertExists(Timer.class, new MetricID("regTimerTemp"));
-
-        metrics.register("regSimpleTimerTemp", simpleTimerTemp);
-        assertExists(SimpleTimer.class, new MetricID("regSimpleTimerTemp"));
-
-        metrics.register("regConcurrentGaugeTemp", concurrentGaugeTemp);
-        assertExists(ConcurrentGauge.class, new MetricID("regConcurrentGaugeTemp"));
-
-        metrics.register("regMeterTemp", meterTemp);
-        assertExists(Meter.class, new MetricID("regMeterTemp"));
     }
 
     @Test
@@ -181,7 +136,7 @@ public class MetricRegistryTest {
     @InSequence(7)
     public void conflictingMetadataTest() {
         Metadata metadata = Metadata.builder().withName("metric1").withType(MetricType.COUNTER).build();
-        metrics.meter(metadata);
+        metrics.timer(metadata);
     }
 
 }

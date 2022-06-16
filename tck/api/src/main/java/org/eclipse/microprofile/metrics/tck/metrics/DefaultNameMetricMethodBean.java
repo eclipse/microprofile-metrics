@@ -16,7 +16,6 @@
 package org.eclipse.microprofile.metrics.tck.metrics;
 
 import org.eclipse.microprofile.metrics.annotation.Counted;
-import org.eclipse.microprofile.metrics.annotation.Metered;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
 public class DefaultNameMetricMethodBean {
@@ -27,14 +26,6 @@ public class DefaultNameMetricMethodBean {
 
     @Counted(absolute = true)
     public void absoluteDefaultNameCountedMethod() {
-    }
-
-    @Metered
-    public void defaultNameMeteredMethod() {
-    }
-
-    @Metered(absolute = true)
-    public void absoluteDefaultNameMeteredMethod() {
     }
 
     @Timed
