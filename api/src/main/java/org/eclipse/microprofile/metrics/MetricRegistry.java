@@ -755,6 +755,6 @@ public interface MetricRegistry {
      *
      * @return Type of this registry (VENDOR, BASE, APPLICATION)
      */
-    Type getType();
+    String getType();
 
 }
