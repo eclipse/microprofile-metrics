@@ -29,10 +29,8 @@ import java.lang.annotation.Target;
 
 import org.eclipse.microprofile.metrics.MetricRegistry;
 
-import jakarta.inject.Qualifier;
-
 /**
- * Qualifies the type of Metric Registry to inject.
+ * The type of Metric Registry to inject.
  * <p>
  * This can be used to obtain the respective scoped {@link MetricRegistry}:
  * </p>
@@ -40,17 +38,21 @@ import jakarta.inject.Qualifier;
  * <pre>
  * <code>
  *      {@literal @}Inject
- *      {@literal @}RegistryType(type=MetricRegistry.Type.BASE)
- *      MetricRegistry baseRegistry;
+ *      {@literal @}RegistryType(type=MetricRegistry.APPLICATION_SCOPE)
+ *      MetricRegistry appRegistry;
+ * 
+ *      {@literal @}Inject
+ *      {@literal @}RegistryType(type="customScope")
+ *      MetricRegistry appRegistry;
  * </code>
  * </pre>
  *
- * @see org.eclipse.microprofile.metrics.MetricRegistry.Type
+ * see {@link MetricRegistry.APPLICATION_SCOPE}, {@link MetricRegistry.BASE_SCOPE} and
+ * {@link MetricRegistry.VEDNOR_SCOPE}
  *
  * @author Raymond Lam
  *
  */
-@Qualifier
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
@@ -58,9 +60,11 @@ public @interface RegistryType {
     /**
      * The scope of the MetricRegistry.
      * 
-     * @return Returns the scope of the MetricRegistry. The {@link MetricRegistry.Type} can be {@code APPLICATION},
-     *         {@code BASE}, or {@code VENDOR}.
-     * @see org.eclipse.microprofile.metrics.MetricRegistry.Type
+     * @return Returns or creates the scope of the MetricRegistry. The MicroProfile runtimes provides
+     *         {@code application}, {@code base} and {@code vendor} scopes as part of the runtime.
+     * 
+     *         see {@link MetricRegistry.APPLICATION_SCOPE}, {@link MetricRegistry.BASE_SCOPE} and
+     *         {@link MetricRegistry.VEDNOR_SCOPE}
      */
-    MetricRegistry.Type type() default MetricRegistry.Type.APPLICATION;
+    String scope() default MetricRegistry.APPLICATION_SCOPE;
 }

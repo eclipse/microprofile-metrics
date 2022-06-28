@@ -27,6 +27,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.eclipse.microprofile.metrics.MetricRegistry;
+
 import jakarta.enterprise.util.Nonbinding;
 import jakarta.interceptor.InterceptorBinding;
 
@@ -114,5 +116,14 @@ public @interface Gauge {
      */
     @Nonbinding
     String unit();
+
+    /**
+     * The scope that this gauge belongs to.
+     * 
+     * @return The scope this gauge belongs to. By default, the value is {@link MetricRegistry.APPLICATION_SCOPE}.
+     *
+     */
+    @Nonbinding
+    String scope() default MetricRegistry.APPLICATION_SCOPE;
 
 }

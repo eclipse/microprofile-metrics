@@ -89,29 +89,17 @@ This configuration can be backed into the runtime or be provided via an external
 public class MetricRegistryFactory {
 
     @Produces
-    public static MetricRegistry getDefaultRegistry() {
-        return getApplicationRegistry();
-    }
+    @Default
+    public MetricRegistry getApplicationRegistry(InjectionPoint ip) {
 
-    @Produces
-    @RegistryType(type = Type.APPLICATION)
-    public static MetricRegistry getApplicationRegistry() {
-        // Returns the static instance of the Application MetricRegistry
-        [...]
-    }
+        RegistryType registryTypeAnnotation = ip.getAnnotated().getAnnotation(RegistryType.class);
 
-    @Produces
-    @RegistryType(type = Type.BASE)
-    public static MetricRegistry getBaseRegistry() {
-        // Returns the static instance of the Base MetricRegistry
-        [...]
-    }
-
-    @Produces
-    @RegistryType(type = Type.VENDOR)
-    public static MetricRegistry getVendorRegistry() {
-        // Returns the static instance of the Vendor MetricRegistry
-        [...]
+        if (registryTypeAnnotation == null) {
+            return getOrCreate(MetricRegistry.APPLICATION_SCOPE);
+        } else {
+            String annoScope = registryTypeAnnotation.scope();
+            return getOrCreate(annoScope);
+        }
     }
 
 }

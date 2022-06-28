@@ -493,7 +493,7 @@ MetricRegistry metricRegistry;
 [source, java]
 ----
 @Inject
-@RegistryType(type=MetricRegistry.Type.APPLICATION)
+@RegistryType(scope=MetricRegistry.APPLICATION_SCOPE)
 MetricRegistry metricRegistry;
 ----
 
@@ -504,7 +504,7 @@ The implementation must produce the _base_ `MetricRegistry` when the `RegistryTy
 [source, java]
 ----
 @Inject
-@RegistryType(type=MetricRegistry.Type.BASE)
+@RegistryType(scope=MetricRegistry.BASE_SCOPE)
 MetricRegistry baseRegistry;
 ----
 
@@ -515,7 +515,7 @@ The implementation must produce the _vendor_ `MetricRegistry` when the `Registry
 [source, java]
 ----
 @Inject
-@RegistryType(type=MetricRegistry.Type.VENDOR)
+@RegistryType(scope=MetricRegistry.VENDOR_SCOPE)
 MetricRegistry vendorRegistry;
 ----
 

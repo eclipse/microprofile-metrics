@@ -79,7 +79,7 @@
  * <pre>
  * <code>
  *      {@literal @}Inject
- *      {@literal @}RegistryType(type=MetricRegistry.Type.BASE)
+ *      {@literal @}RegistryType(type=MetricRegistry.BASE_SCOPE)
  *      MetricRegistry baseRegistry;
  * </code>
  * </pre>

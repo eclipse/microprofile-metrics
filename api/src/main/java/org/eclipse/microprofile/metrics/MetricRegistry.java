@@ -42,43 +42,11 @@ import java.util.function.Supplier;
  */
 public interface MetricRegistry {
 
-    /**
-     * An enumeration representing the scopes of the MetricRegistry
-     */
-    enum Type {
-        /**
-         * The Application (default) scoped MetricRegistry. Any metric registered/accessed via CDI will use this
-         * MetricRegistry.
-         */
-        APPLICATION("application"),
+    public static final String APPLICATION_SCOPE = "application";
 
-        /**
-         * The Base scoped MetricRegistry. This MetricRegistry will contain required metrics specified in the
-         * MicroProfile Metrics specification.
-         */
-        BASE("base"),
+    public static final String VENDOR_SCOPE = "vendor";
 
-        /**
-         * The Vendor scoped MetricRegistry. This MetricRegistry will contain vendor provided metrics which may vary
-         * between different vendors.
-         */
-        VENDOR("vendor");
-
-        private final String name;
-
-        Type(String name) {
-            this.name = name;
-        }
-
-        /**
-         * Returns the name of the MetricRegistry scope.
-         *
-         * @return the scope
-         */
-        public String getName() {
-            return name;
-        }
-    }
+    public static final String BASE_SCOPE = "base";
 
     /**
      * Concatenates elements to form a dotted name, eliding any null values or empty strings.
@@ -755,6 +723,6 @@ public interface MetricRegistry {
      *
      * @return Type of this registry (VENDOR, BASE, APPLICATION)
      */
-    String getType();
+    String getScope();
 
 }

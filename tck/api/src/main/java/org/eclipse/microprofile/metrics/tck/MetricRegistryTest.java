@@ -55,11 +55,11 @@ public class MetricRegistryTest {
     private MetricRegistry metrics;
 
     @Inject
-    @RegistryType(type = MetricRegistry.Type.BASE)
+    @RegistryType(scope = MetricRegistry.BASE_SCOPE)
     private MetricRegistry baseMetrics;
 
     @Inject
-    @RegistryType(type = MetricRegistry.Type.VENDOR)
+    @RegistryType(scope = MetricRegistry.VENDOR_SCOPE)
     private MetricRegistry vendorMetrics;
 
     @Deployment
@@ -106,9 +106,9 @@ public class MetricRegistryTest {
     @Test
     @InSequence(5)
     public void testMetricRegistryType() {
-        Assert.assertEquals(MetricRegistry.Type.APPLICATION, metrics.getType());
-        Assert.assertEquals(MetricRegistry.Type.BASE, baseMetrics.getType());
-        Assert.assertEquals(MetricRegistry.Type.VENDOR, vendorMetrics.getType());
+        Assert.assertEquals(MetricRegistry.APPLICATION_SCOPE, metrics.getScope());
+        Assert.assertEquals(MetricRegistry.BASE_SCOPE, baseMetrics.getScope());
+        Assert.assertEquals(MetricRegistry.VENDOR_SCOPE, vendorMetrics.getScope());
     }
 
     private void assertExists(Class<? extends org.eclipse.microprofile.metrics.Metric> expected, MetricID metricID) {
