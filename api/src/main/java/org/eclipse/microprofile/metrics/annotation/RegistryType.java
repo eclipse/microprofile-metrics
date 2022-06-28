@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 
 /**
- * The type of Metric Registry to inject.
+ * The scope of Metric Registry to inject.
  * <p>
  * This can be used to obtain the respective scoped {@link MetricRegistry}:
  * </p>
@@ -38,17 +38,18 @@ import org.eclipse.microprofile.metrics.MetricRegistry;
  * <pre>
  * <code>
  *      {@literal @}Inject
- *      {@literal @}RegistryType(type=MetricRegistry.APPLICATION_SCOPE)
+ *      {@literal @}RegistryType(scope=MetricRegistry.APPLICATION_SCOPE)
  *      MetricRegistry appRegistry;
  * 
  *      {@literal @}Inject
- *      {@literal @}RegistryType(type="customScope")
- *      MetricRegistry appRegistry;
+ *      {@literal @}RegistryType(scope="customScope")
+ *      MetricRegistry customRegistry;
+ * 
  * </code>
  * </pre>
  *
  * see {@link MetricRegistry.APPLICATION_SCOPE}, {@link MetricRegistry.BASE_SCOPE} and
- * {@link MetricRegistry.VEDNOR_SCOPE}
+ * {@link MetricRegistry.VENDOR_SCOPE}
  *
  * @author Raymond Lam
  *
@@ -64,7 +65,7 @@ public @interface RegistryType {
      *         {@code application}, {@code base} and {@code vendor} scopes as part of the runtime.
      * 
      *         see {@link MetricRegistry.APPLICATION_SCOPE}, {@link MetricRegistry.BASE_SCOPE} and
-     *         {@link MetricRegistry.VEDNOR_SCOPE}
+     *         {@link MetricRegistry.VENDOR_SCOPE}
      */
     String scope() default MetricRegistry.APPLICATION_SCOPE;
 }

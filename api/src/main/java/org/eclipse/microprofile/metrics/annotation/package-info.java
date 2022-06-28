@@ -70,17 +70,17 @@
  * </pre>
  *
  *
- * <h2>CDI Qualifier</h2>
+ * <h2>RegistryType annotation</h2>
  * <p>
  * The {@link org.eclipse.microprofile.metrics.annotation.RegistryType RegistryType} is used to identify which
- * <code>MetricRegistry</code> (Application, Base, or Vendor) should be injected. By default, no
- * <code>RegistryType</code> will inject the application <code>MetricRegistry</code>.
+ * <code>MetricRegistry</code> (Application, Base, Vendor or a user defined scope) should be injected. By default
+ * no <code>RegistryType</code> will inject the application <code>MetricRegistry</code>.
  *
  * <pre>
  * <code>
  *      {@literal @}Inject
- *      {@literal @}RegistryType(type=MetricRegistry.BASE_SCOPE)
- *      MetricRegistry baseRegistry;
+ *      {@literal @}RegistryType(scope=MetricRegistry.APPLICATION_SCOPE)
+ *      MetricRegistry appRegistry;
  * </code>
  * </pre>
  *

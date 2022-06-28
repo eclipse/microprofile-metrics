@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017, 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
  *               2012 Ryan W Tenney (ryan@10e.us)
  *
  * See the NOTICES file(s) distributed with this work for additional
