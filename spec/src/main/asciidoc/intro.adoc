@@ -27,12 +27,12 @@ endpoints and metrics for each process adhering to the Eclipse MicroProfile stan
 This proposal does not talk about health checks. There is a separate specification for
 https://github.com/eclipse/microprofile-health[Health Checks].
 
-=== Future Direction
-
-Over the last few months the group involved in metrics has been investigating https://micrometer.io/[Micrometer].
-This investigation will lead to changes to MP Metrics for releases in 2021.
-What exactly will change in the specification and what level of compatibility will be maintained between MP Metrics 3.0 and 4.x releases hasn't been determined.
-The intent will be to shift towards Micrometer as a solution suited to providing metrics for Site Reliability tooling.
+In the previous release we mentioned our intent to investigate https://micrometer.io/[Micrometer]. 
+This has led to key changes in this specification, and the corresponding API, to allow for a variety
+of possible implementations. As examples, it should be possible to implement this specification
+using metrics libraries from Micrometer or Open https://opentelemetry.io/[Open Telemetry]. The modifications to the API, since
+the previous release, have been made in consideration of maintaining backwards compatibility, as much
+as possible, but while removing parts of the API that limited the ability to plug in new implementations.
 
 === Motivation
 

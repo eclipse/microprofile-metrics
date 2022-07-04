@@ -22,6 +22,52 @@
 = Release Notes
 
 
+[[release_notes_5_0]]
+== Changes in 5.0
+
+=== Breaking changes
+
+=== API/SPI Changes
+* Updated Timer class
+** Removed `getFifteenMinuteRate()` method
+** Removed `getFiveMinuteRate()` method
+** Removed `getMeanMinuteRate()` method
+** Removed `getOneMinuteRate()` method
+
+* Updated MetricRegistry class
+** Removed `register(String name, T metric)` method
+** Removed `register(Metadata metadata, T metric)` method
+** Removed `register(Metadata metadata, T metric, Tag... tags)` method
+** Removed `concurrentGauge(String name)` method
+** Removed `concurrentGauge(String name, Tag... tags)` method
+** Removed `concurrentGauge(MetricID metricID)` method
+** Removed `concurrentGauge(Metadata metadata)` method
+** Removed `concurrentGauge(Metadata metadata, Tag... tags)` method
+** Removed `meter(String name)` method
+** Removed `meter(String name, Tag... tags)` method
+** Removed `meter(MetricID metricID)` method
+** Removed `meter(Metadata metadata)` method
+** Removed `meter(Metadata metadata, Tag... tags)` method
+** Removed `simpleTimer(String name)` method
+** Removed `simpleTimer(String name, Tag... tags)` method
+** Removed `simpleTimer(MetricID metricID)` method
+** Removed `simpleTimer(Metadata metadata)` method
+** Removed `simpleTimer(Metadata metadata, Tag... tags)` method
+** Removed `getConcurrentGauge(MetricID metricID)` method
+** Removed `getConcurrentGauges()` method
+** Removed `getConcurrentGauges(MetricFilter filter)` method
+** Removed `getMeter(MetricID metricID)` method
+** Removed `getMeters()` method
+** Removed `getMeters(MetricFilter filter)` method
+** Removed `getSimpleTimer(MetricID metricID)` method
+** Removed `getSimpleTimers()` method
+** Removed `getSimpleTimers(MetricFilter filter)` method
+
+* Updated MetricType class
+** Removed `CONCURRENT_GAUGE("concurrent gauge", ConcurrentGauge.class)` enum
+** Removed `METERED("meter", Meter.class)` enum
+** Removed `SIMPLE_TIMER("simple timer", SimpleTimer.class)` enum
+
 [[release_notes_4_0]]
 == Changes in 4.0
 

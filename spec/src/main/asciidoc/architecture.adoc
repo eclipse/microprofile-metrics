@@ -54,12 +54,12 @@ Section <<required-metrics#required-metrics>> lists the required metrics. This l
 These are listed here as they are dependent on the underlying JVM and not the server and thus fit better in _base_ scope
 than the _vendor_ one.
 
-The optional REST metrics are listed as base metrics as they are expected to be portable between different implementations. If the implementation provides REST metrics, it is up to the implementation to decide how to enable the REST metrics.
+The implementation must tag base metrics with `scope=base`.
 
-Required base metrics are exposed under `/metrics/base`.
+Required base metrics are exposed under `/metrics?scope=base`.
 
 The `base` scope is used for, and only for, any metrics that are defined in MicroProfile specifications. 
-Metrics in the base scope are intended to be portable between different MicroProfile-compatible runtimes.
+Metrics in the base scope are intended to be portable between different MicroProfile-compatible runtimes at the same version.
 
 ===== Application metrics
 
@@ -69,14 +69,23 @@ can expose the same metrics on a different compliant server without change.
 
 Details of this Java API are described in <<app-programming-model#app-programming-model>>.
 
-Application specific metrics are exposed under `/metrics/application`.
+The implementation must automatically tag application metrics with `scope=application`, except where the metric already has a `scope` tag. 
 
+Metrics with application scope are exposed under `/metrics?scope=application`.
+
+Applications may also define their own scope names by tagging metrics with another 
+`scope` (other than `base`, `vendor`, `application`). Metrics with custom scopes are exposed 
+under `/metrics?scope=scope_name` where scope_name is defined by the application. Scope names must match the regex `[a-zA-Z_][a-zA-Z0-9_]*`. If an illegal character is used, the implementation must
+throw an `IllegalArgumentException`.
+
+Metrics with application-defined scopes are exposed under `/metrics?scope=scope_name`
 
 ===== Vendor specific Metrics
 
 It is possible for MicroProfile server implementors to supply their specific metrics data on top
 of the basic set of required metrics.
-Vendor specific metrics are exposed under `/metrics/vendor`.
+
+Vendor specific metrics are exposed under `/metrics?scope=vendor`.
 
 Examples for vendor specific data could be metrics like:
 
@@ -89,10 +98,12 @@ the same application framework.
 Vendor specific metrics are not supposed to be portable between different implementations
 of MicroProfile servers, even if they are compliant with the same version of this specification.
 
+Vendors are encouraged to use metric names consistent with the https://opentelemetry.io/docs/reference/specification/metrics/semantic_conventions/[Open Telemetry Metrics Semantic Conventions] where applicable.
+
 [[metric_tags]]
 ==== Tags
 
-Tags (or labels) play an important role in modern microservices and microservice scheduling systems (like e.g. Kubernetes).
+Tags (also known as labels) play an important role in modern microservices and microservice scheduling systems (like e.g. Kubernetes).
 Application code can run on any node and can be re-scheduled to a different node at any time. Each container in such
 an environment gets its own ID; when the container is stopped and a new one started for the same image, it will get a
 different id. The classical mapping of host/node and application runtime on it, therefore no longer works.
@@ -159,17 +170,9 @@ The Metadata:
 * unit: a fixed set of string units
 * type:
 ** counter: a monotonically increasing numeric value (e.g. total number of requests received).
-** concurrent gauge: an incrementally increasing or decreasing numeric value (e.g. number of parallel invocations of a method).
-+
-This type exposes three values: current count, highest count within the previous completed full minute and lowest count within the
-previous completed full minute.
-+
-Full minute is the minute from second 0 to just before second 0 on the next minute ( eg. from [10:46:00-10:46:59.99999999] ).
 ** gauge: a metric that is sampled to obtain its value (e.g. cpu temperature or disk usage).
-** meter: a metric which tracks mean throughput and one-, five-, and fifteen-minute exponentially-weighted moving average throughput.
 ** histogram: a metric which calculates the distribution of a value.
-** timer: a metric which aggregates timing durations and provides duration statistics, plus throughput statistics.
-** simple timer: a lightweight alternative to the timer metric that only tracks the elapsed time duration, invocation counts, highest recorded time duration within the previous completed full minute and lowest recorded time duration within the previous completed full minute. The simple timer may be preferrable over the timer when used with Prometheus as the statistical calculations can be deferred to Prometheus using the simple timer's available values.
+** timer: a metric which aggregates timing durations and provides duration statistics.
 * description (optional): A human readable description of the metric.
 * displayName (optional): A human readable name of the metric for display purposes if the metric name is not
 human readable. This could e.g. be the case when the metric name is a uuid.
@@ -187,7 +190,7 @@ an overall view if the same metric has different metadata.
 
 === Metric Registry
 The `MetricRegistry` stores the metrics and metadata information.
-There is one `MetricRegistry` instance for each of the scopes listed in <<scopes>>.
+There is one `MetricRegistry` instance for each of the predefined scopes listed in <<scopes>>.
 
 Metrics can be added to or retrieved from the registry either using the `@Metric` annotation
 (see <<app-programming-model#api-annotations, Metrics Annotations>>) or using the `MetricRegistry` object directly.
@@ -236,9 +239,8 @@ In these cases, where multiple bean instances exist, only one instance of the co
 to that metric will be combined from all related invocations regardless of the bean instance where the invocation happens. 
 For example, calls to a method annotated with `@Counted` will increase the value of the same counter no matter which bean 
 instance is the one where the counted method is being invoked.
-Concurrent gauges will watch the number of parallel invocations of a method even if the invocations are on different instances.
 
-The only exception from this are gauges (not concurrent gauges), which don't support multiple instances of the underlying bean to be created,
+The only exception from this are gauges, which don't support multiple instances of the underlying bean to be created,
 because in that case it would not be clear which instance should be used for obtaining the gauge value. For this reason,
 gauges should only be used with beans that create only one instance, in CDI terms this means `@ApplicationScoped` and `@Singleton` beans.
 The implementation may employ validation checks that throw an error eagerly when it is detected that there is a `@Gauge` on a bean
@@ -277,11 +279,11 @@ The API MUST NOT return a 500 Internal Server Error code to represent a non-exis
 | Endpoint | Request Type | Supported Formats | Description
 
 | `/metrics` | GET | JSON, OpenMetrics | Returns all registered metrics
-| `/metrics/<scope>` | GET | JSON, OpenMetrics | Returns metrics registered for the respective scope. Scopes are listed in <<metrics-setup>>
-| `/metrics/<scope>/<metric_name>` | GET | JSON, OpenMetrics | Returns the metric that matches the metric name for the respective scope
+| `/metrics?scope=<scope_name>` | GET | JSON, OpenMetrics | Returns metrics registered for the respective scope. Scopes are listed in <<metrics-setup>>
+| `/metrics?scope=<scope_name>&name=<metric_name>` | GET | JSON, OpenMetrics | Returns metrics that match the metric name for the respective scope
 | `/metrics` | OPTIONS | JSON | Returns all registered metrics' metadata
-| `/metrics/<scope>` | OPTIONS | JSON | Returns metrics' metadata registered for the respective scope. Scopes are listed in <<metrics-setup>>
-| `/metrics/<scope>/<metric_name>` | OPTIONS | JSON | Returns the metric's metadata that matches the metric name for the respective scope
+| `/metrics?scope=<scope_name>` | OPTIONS | JSON | Returns metrics' metadata registered for the respective scope. Scopes are listed in <<metrics-setup>>
+| `/metrics/scope=<scope_name>&name=<metric_name>` | OPTIONS | JSON | Returns the metric's metadata that matches the metric name for the respective scope
 |===
 
 NOTE: The implementation must return a 406 response code if the request's HTTP Accept header for an OPTIONS request
@@ -295,7 +297,7 @@ how such application servers should behave if they want to support MicroProfile 
 Metrics from all applications and scopes should be available under a single REST endpoint ending with `/metrics` similarly as
 in case of single-application deployments (microservices).
 
-To help distinguish between metrics pertaining to each deployed application, a tag named `_app` should be appended to each metric. 
+To help distinguish between metrics pertaining to each deployed application, a tag named `_app` should be added to each metric. 
 
 The value of the `_app` tag should be passed by the application server to the application via a MicroProfile Config property named `mp.metrics.appName`.
 It should be possible to override this value by bundling the file `META-INF/microprofile-config.properties` within the application archive

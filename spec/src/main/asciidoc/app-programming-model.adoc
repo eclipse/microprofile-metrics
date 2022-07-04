@@ -44,10 +44,6 @@ public int getQueueSize() {
 }
 ----
 
-- NOTE: The programming API was inspired by Dropwizard Metrics 3.2.3 API, with some changes.
-It is expected that many existing DropWizard Metrics based applications can easily be
-ported over by switching the package names.
-
 - NOTE: There are no hard limits on the number of metrics, but it is often not a good practice to 
 create a huge number of metrics, because the downstream time series databases
 that need to store the metrics may not deal well with this amount of data.
@@ -68,22 +64,13 @@ and throw an `IllegalArgumentException` if such duplicate exists
 * The implementation must flag and reject metrics upon registration if the metadata information being registered is not equivalent to the metadata information that has already been registered under the given metric name (if it already exists).
 ** All metrics of a given metric name must be associated with the same metadata information
 ** The implementation must throw an `IllegalArgumentException` when the metric is rejected.
-* The implementation must throw an `IllegalStateException` if an annotated metric is invoked, but the metric no longer exists in the MetricRegistry. This applies to the following annotations : @Timed, @SimplyTimed, @Counted, @ConcurrentGauge, @Metered
+* The implementation must throw an `IllegalStateException` if an annotated metric is invoked, but the metric no longer exists in the MetricRegistry. This applies to the following annotations : @Timed, @Counted
 * The implementation must make sure that metric registries are thread-safe, in other words, concurrent calls to methods of `MetricRegistry` must not leave the registry in an inconsistent state.
 
 
 === Base Package
 
 All Java-Classes are in the top-level package `org.eclipse.microprofile.metrics` or one of its sub-packages.
-
-[TIP]
-====
-The `org.eclipse.microprofile.metrics` package was influenced by the Drop Wizard Metrics project release 3.2.3.
-
-Implementors can consult this project for implementation ideas.
-
-See <<appendix#references>> for more information.
-====
 
 [[api-annotations]]
 === Annotations
@@ -101,14 +88,6 @@ Both the Java Interceptors and CDI specifications set restrictions about the typ
 That implies only _managed beans_ whose bean types are _proxyable_ can be instrumented using the Metrics annotations.
 ====
 
-[TIP]
-====
-The `org.eclipse.microprofile.metrics.annotation` package was influenced by the CDI extension for Dropwizard Metric project release 1.4.0.
-
-Implementors can consult this project for implementation ideas.
-
-See <<appendix#references>> for more information.
-====
 The following Annotations exist, see below for common fields:
 
 [cols="1,1,3,2"]
@@ -116,12 +95,9 @@ The following Annotations exist, see below for common fields:
 |Annotation | Applies to |  Description | Default Unit
 
 |@Counted | M, C, T | Denotes a counter, which counts the invocations of the annotated object. | MetricUnits.NONE
-|@ConcurrentGauge | M, C, T | Denotes a gauge which counts the parallel invocations of the annotated object. | MetricUnits.NONE
 |@Gauge   | M | Denotes a gauge, which samples the value of the annotated object.  | _no default_, must be supplied by the user
-|@Metered | M, C, T  | Denotes a meter, which tracks the frequency of invocations of the annotated object. | MetricUnits.PER_SECOND
 |@Metric  | F, P | An annotation that contains the metadata information when requesting a metric to be injected. | MetricUnits.NONE
 |@Timed   | M, C, T | Denotes a timer, which tracks duration of the annotated object. | MetricUnits.NANOSECONDS
-|@SimplyTimed   | M, C, T | Denotes a simple timer, which tracks duration and invocations of the annotated object. | MetricUnits.NANOSECONDS
 |===
 (C=Constructor, F=Field, M=Method, P=Parameter, T=Type)
 
@@ -256,7 +232,6 @@ The implementation must support the following annotation targets:
   * `TYPE`
 
 NOTE: This annotation has changed in MicroProfile Metrics 2.0: Counters now always increase monotonically upon invocation.
-The old behaviour pre 2.0 can now be achieved with `@ConcurrentGauge`.
 
 If the metric no longer exists in the `MetricRegistry` when the annotated element is invoked then an `IllegalStateException` will be thrown.
 
@@ -305,66 +280,6 @@ public class CounterBean {
 }
 ----
 
-[[ConcurrentGaugeDef]]
-==== @ConcurrentGauge
-An annotation for marking a method, constructor, or type as a parallel invocation counted.
-The semantics is such that upon entering a marked item, the parallel count is increased by one and upon
-exit again decreased by one. The purpose of this annotation is to gauge the number of parallel
-invocations of the marked methods or constructors.
-
-The implementation must support the following annotation targets:
-
-  * `CONSTRUCTOR`
-  * `METHOD`
-  * `TYPE`
-
-If the metric no longer exists in the `MetricRegistry` when the annotated element is invoked then an `IllegalStateException` will be thrown.
-
-The following lists the behavior for each annotation target.
-
-===== CONSTRUCTOR
-
-When a constructor is annotated, the implementation must register gauges, representing the current,
-previous minute maximum, and previous minute minimum values for the constructor using the <<annotated-naming-convention>>.
-
-.Example of an annotated constructor
-[source, java]
-----
-@ConcurrentGauge
-public CounterBean() {
-}
-----
-
-===== METHOD
-
-When a non-private method is annotated, the implementation must register gauges, representing the current,
-previous minute maximum, and previous minute minimum values for the method using the <<annotated-naming-convention>>.
-
-.Example of an annotated method
-[source, java]
-----
-@ConcurrentGauge
-public void run() {
-}
-----
-
-===== TYPE
-When a type/class is annotated, the implementation must register gauges, representing the current,
-previous minute maximum, and previous minute minimum values for each of the constructors and non-private methods
-using the <<annotated-naming-convention>>.
-
-.Example of an annotated type/class
-[source, java]
-----
-@ConcurrentGauge
-public class CounterBean {
-
-  public void countMethod1() {}
-  public void countMethod2() {}
-
-}
-----
-
 ==== @Gauge
 An annotation for marking a method as a gauge. No default `MetricUnit` is supplied, so the `unit` must always be specified explicitly.
 
@@ -385,113 +300,6 @@ When a non-private method is annotated, the implementation must register a gauge
 @Gauge(unit = MetricUnits.NONE)
 public long getValue() {
   return value;
-}
-----
-
-
-==== @Metered
-An annotation for marking a constructor or method as metered. The meter counts the invocations
-of the constructor or method and tracks how frequently they are called.
-
-The implementation must support the following annotation targets:
-
-  * `CONSTRUCTOR`
-  * `METHOD`
-  * `TYPE`
-
-If the metric no longer exists in the `MetricRegistry` when the annotated element is invoked then an `IllegalStateException` will be thrown.
-
-The following lists the behavior for each annotation target.
-
-===== CONSTRUCTOR
-
-When a constructor is annotated, the implementation must register a meter for the constructor using the <<annotated-naming-convention>>. The meter is marked each time the constructor is invoked.
-
-.Example of an annotated constructor
-[source, java]
-----
-@Metered
-public MeteredBean() {
-}
-----
-
-===== METHOD
-
-When a non-private method is annotated, the implementation must register a meter for the method using the <<annotated-naming-convention>>. The meter is marked each time the method is invoked.
-
-.Example of an annotated method
-[source, java]
-----
-@Metered
-public void run() {
-}
-----
-
-===== TYPE
-When a type/class is annotated, the implementation must register a meter for each of the constructors and non-private methods using the <<annotated-naming-convention>>. The meters are marked each time the corresponding constructor/method is invoked.
-
-.Example of an annotated type/class
-[source, java]
-----
-@Metered
-public class MeteredBean {
-
-  public void meteredMethod1() {}
-  public void meteredMethod2() {}
-
-}
-----
-
-==== @SimplyTimed
-An annotation for marking a constructor or method of an annotated object as simply timed.
-The metric of type SimpleTimer tracks the count of invocations of the annotated object and tracks how long it took the invocations to complete.
-
-The implementation must support the following annotation targets:
-
-  * `CONSTRUCTOR`
-  * `METHOD`
-  * `TYPE`
-
-If the metric no longer exists in the `MetricRegistry` when the annotated element is invoked then an `IllegalStateException` will be thrown.
-
-The following lists the behavior for each annotation target.
-
-===== CONSTRUCTOR
-
-When a constructor is annotated, the implementation must register a simple timer for the constructor using the <<annotated-naming-convention>>. Each time the constructor is invoked, the execution will be timed.
-
-.Example of an annotated constructor
-[source, java]
-----
-@SimplyTimed
-public SimplyTimedBean() {
-}
-----
-
-===== METHOD
-
-When a non-private method is annotated, the implementation must register a simple timer for the method using the <<annotated-naming-convention>>. Each time the method is invoked, the execution will be timed.
-
-.Example of an annotated method
-[source, java]
-----
-@SimplyTimed
-public void run() {
-}
-----
-
-===== TYPE
-When a type/class is annotated, the implementation must register a simple timer for each of the constructors and non-private methods using the <<annotated-naming-convention>>. Each time a constructor/method is invoked, the execution will be timed with the corresponding simple timer.
-
-.Example of an annotated type/class
-[source, java]
-----
-@SimplyTimed
-public class SimplyTimedBean {
-
-  public void simplyTimedMethod1() {}
-  public void simplyTimedMethod2() {}
-
 }
 ----
 
@@ -610,29 +418,14 @@ lots of annotations in the code. The two approaches can also be combined if nece
 |`counter(String name, Tag... tags)` | Counter with given name and tags
 |`counter(Metadata metadata)` | Counter from given `Metadata` object
 |`counter(Metadata metadata, Tag... tags)` | Counter from given `Metadata` object with given tags
-|`concurrentGauge(String name)` | Concurrent gauge with given name and no tags
-|`concurrentGauge(String name, Tag... tags)` | Concurrent gauge with given name and tags
-|`concurrentGauge(Metadata metadata)` | Concurrent gauge from given `Metadata` object
-|`concurrentGauge(Metadata metadata, Tag... tags)` | Concurrent gauge from given `Metadata` object with given tags
 |`histogram(String name)` | Histogram with given name and no tags
 |`histogram(String name, Tag... tags)` | Histogram with given name and tags
 |`histogram(Metadata metadata)` | Histogram from given `Metadata` object
 |`histogram(Metadata metadata, Tag... tags)` | Histogram from given `Metadata` object with given tags
-|`meter(String name)` | Meter with given name and no tags
-|`meter(String name, Tag... tags)` | Meter with given name and tags
-|`meter(Metadata metadata)` | Meter from given `Metadata` object 
-|`meter(Metadata metadata, Tag... tags)` | Meter from given `Metadata` object with given tags
 |`timer(String name)` | Timer with given name and no tags
 |`timer(String name, Tag... tags)` | Timer with given name and tags
 |`timer(Metadata metadata)` | Timer from given `Metadata` object
 |`timer(Metadata metadata, Tag... tags)` | Timer from given `Metadata` object with given tags
-|`simpleTimer(String name)` | SimpleTimer with given name and no tags
-|`simpleTimer(String name, Tag... tags)` | SimpleTimer with given name and tags
-|`simpleTimer(Metadata metadata)` | SimpleTimer from given `Metadata` object
-|`simpleTimer(Metadata metadata, Tag... tags)` | SimpleTimer from given `Metadata` object with given tags
-|`register(String name, T metric)` | Registers the given metric instance under the given name 
-|`register(Metadata metadata, T metric)` | Registers the given metric instance using the given metadata object
-|`register(Metadata metadata, T metric, Tag... tags)` | Registers the given metric instance using the given metadata object and given tags
 |===
 
 All metrics in the table above, except the variants of `register`, exhibit the _get-or-create_ semantics, 
@@ -671,10 +464,11 @@ it is still possible to dynamically remove metrics from metric registries at run
 === Metric Registries
 
 The `MetricRegistry` is used to maintain a collection of metrics along with their <<pgm-metadata,metadata>>.
-There is one shared singleton of the `MetricRegistry` per scope (_application_, _base_, and _vendor_).
-When metrics are registered using annotations, the metrics are registered in the _application_ `MetricRegistry` (and thus the _application_ scope).
+There is one shared singleton of the `MetricRegistry` per pre-defined scope (_application_, _base_, and _vendor_).
+There is also one shared singleton of the `MetricRegistry` per custom scope.
+When metrics are registered using annotations and no scope is provided, the metrics are registered in the _application_ `MetricRegistry` (and thus the _application_ scope).
 
-When injected, the `@RegistryType` is used as a qualifier to selectively inject either the `APPLICATION`, `BASE`, or `VENDOR` registry.
+When injected, the `@RegistryType` is used as a qualifier to selectively inject one of the `APPLICATION`, `BASE`, `VENDOR` or custom registries.
 If no qualifier is used, the default `MetricRegistry` returned is the `APPLICATION` registry.
 
 Implementations may choose to use a Factory class to produce the injectable `MetricRegistry` bean via CDI. See <<appendix#metric-registry-factory>>. Note: The factory would be an internal class and not exposed to the application.
@@ -724,6 +518,19 @@ The implementation must produce the _vendor_ `MetricRegistry` when the `Registry
 @RegistryType(type=MetricRegistry.Type.VENDOR)
 MetricRegistry vendorRegistry;
 ----
+
+==== Custom Metric Registries
+The implementation must produce the `MetricRegistry` corresponding to the custom-named registry when the `RegistryType` is a custom value. If the custom-named MetricRegistry does not yet exist the implementation must create a `MetricRegistry` with the specified name.
+
+.Example of the application injecting a custom-named registry
+[source, java]
+----
+@Inject
+@RegistryType(type="motorguide")
+MetricRegistry motorGuideRegistry;
+----
+
+
 
 [[pgm-metadata]]
 ==== Metadata

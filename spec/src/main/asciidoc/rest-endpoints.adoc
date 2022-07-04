@@ -45,17 +45,21 @@ For example:
 {
  "carsCounter;colour=red": 0,
  "carsCounter;car=sedan;colour=blue": 0,
- "carsMeter": {
-    "count;colour=red": 0,
-    "meanRate;colour=red": 0,
-    "oneMinRate;colour=red": 0,
-    "fiveMinRate;colour=red": 0,
-    "fifteenMinRate;colour=red": 0,
-    "count;colour=blue": 0,
-    "meanRate;colour=blue": 0,
-    "oneMinRate;colour=blue": 0,
-    "fiveMinRate;colour=blue": 0,
-    "fifteenMinRate;colour=blue": 0
+ "carsSpeed": {
+    "count;colour=red": 324,
+    "percentile;colour=red;_p=50": 110,
+    "percentile;colour=red;_p=75": 122,
+    "percentile;colour=red;_p=95": 135,
+    "percentile;colour=red;_p=98": 138,
+    "percentile;colour=red;_p=99": 141,
+    "percentile;colour=red;_p=99.9": 155,
+    "count;colour=blue": 199,
+    "percentile;colour=blue;_p=50": 105,
+    "percentile;colour=blue;_p=75": 118,
+    "percentile;colour=blue;_p=95": 133,
+    "percentile;colour=blue;_p=98": 139,
+    "percentile;colour=blue;_p=99": 140,
+    "percentile;colour=blue;_p=99.9": 152        
  }
 }
 ----
@@ -113,7 +117,10 @@ In case `/metrics` is requested, then the data for the scopes are wrapped in the
      "thread.count": 33,
      "thread.max.count": 47
   },
-  "vendor": {...}
+  "vendor": {...},
+  "someCustomScope": {
+    "myCounter": 22
+  }
 }
 ----
 
@@ -150,79 +157,6 @@ The JSON leaf is named `<metric-name>[';'<tag-name>'='<tag-value>]+` with tags i
 }
 ----
 
-==== Concurrent Gauge JSON Format
-
-`ConcurrentGauge` is a complex metric type comprised of multiple key/values. The format is specified by the table below.
-The JSON node is named `<metric-name>`. The JSON leaves are named `<key>[';'<tag-name>'='<tag-value>]+` with tags in alphabetical order and keys according to below table.
-
-.JSON mapping for a ConcurrentGauge metric
-[cols="1,4"]
-|===
-| JSON Key | Value (Equivalent ConcurrentGauge method)
-
-| `current` | `getValue()`
-| `min` | `getMin()`
-| `max` | `getMax()`
-|===
-
-.Example ConcurrentGauge JSON GET Response
-[source, json]
-----
-{
-  "callCount": {
-      "current" : 48,
-      "min": 4,
-      "max": 50,
-      "current;component=backend" : 23,
-      "min;component=backend": 1,
-      "max;component=backend": 29
-  }
-}
-----
-
-
-==== Meter JSON Format
-
-`Meter` is a complex metric type comprised of multiple key/values. The format is specified by the table below.
-The JSON node is named `<metric-name>`. The JSON leafs are named `<key>[';'<tag-name>'='<tag-value>]+` with tags in alphabetical order and keys according to below table.
-
-.JSON mapping for a Meter metric
-[cols="1,4"]
-|===
-| JSON Key | Value (Equivalent Meter method)
-
-| `count` | `getCount()`
-| `meanRate` | `getMeanRate()`
-| `oneMinRate` | `getOneMinuteRate()`
-| `fiveMinRate` | `getFiveMinuteRate()`
-| `fifteenMinRate` | `getFifteenMinuteRate()`
-|===
-
-.Example Meter JSON GET Response
-[source, json]
-----
-{
-  "requests": {
-    "count": 29382,
-    "meanRate": 12.223,
-    "oneMinRate": 12.563,
-    "fiveMinRate": 12.364,
-    "fifteenMinRate": 12.126,
-    "count;servlet=one": 29382,
-    "meanRate;servlet=one": 12.223,
-    "oneMinRate;servlet=one": 12.563,
-    "fiveMinRate;servlet=one": 12.364,
-    "fifteenMinRate;servlet=one": 12.126,
-    "count;servlet=two": 29382,
-    "meanRate;servlet=two": 12.223,
-    "oneMinRate;servlet=two": 12.563,
-    "fiveMinRate;servlet=two": 12.364,
-    "fifteenMinRate;servlet=two": 12.126
-  }
-}
-----
-
-
 ==== Histogram JSON Format
 
 `Histogram` is a complex metric type comprised of multiple key/values. The format is specified by the table below.
@@ -237,8 +171,6 @@ The JSON node is named `<metric-name>`. The JSON leaves are named `<key>[';'<tag
 | `sum` | `getSum()`
 | `min` | `getSnapshot().getMin()`
 | `max` | `getSnapshot().getMax()`
-| `mean` | `getSnapshot().getMean()`
-| `stddev` | `getSnapshot().getStdDev()`
 | `p50` | `getSnapshot().getMedian()`
 | `p75` | `getSnapshot().get75thPercentile()`
 | `p95` | `getSnapshot().get95thPercentile()`
@@ -256,8 +188,6 @@ The JSON node is named `<metric-name>`. The JSON leaves are named `<key>[';'<tag
     "sum": -1598,
     "min": -1624,
     "max": 26,
-    "mean": -799.0,
-    "stddev": 825.0,
     "p50": 26.0,
     "p75": 26.0,
     "p95": 26.0,
@@ -268,8 +198,6 @@ The JSON node is named `<metric-name>`. The JSON leaves are named `<key>[';'<tag
     "sum;servlet=two": -1598,
     "min;servlet=two": -1624,
     "max;servlet=two": 26,
-    "mean;servlet=two": -799.0,
-    "stddev;servlet=two": 825.0,
     "p50;servlet=two": 26.0,
     "p75;servlet=two": 26.0,
     "p95;servlet=two": 26.0,
@@ -293,14 +221,8 @@ The JSON node is named `<metric-name>`. The JSON leaves are named `<key>[';'<tag
 
 | `count` | `getCount()`
 | `elapsedTime` | `getElapsedTime()`
-| `meanRate` | `getMeanRate()`
-| `oneMinRate` | `getOneMinuteRate()`
-| `fiveMinRate` | `getFiveMinuteRate()`
-| `fifteenMinRate` | `getFifteenMinuteRate()`
 | `min` | `getSnapshot().getMin()`
 | `max` | `getSnapshot().getMax()`
-| `mean` | `getSnapshot().getMean()`
-| `stddev` | `getSnapshot().getStdDev()`
 | `p50` | `getSnapshot().getMedian()`
 | `p75` | `getSnapshot().get75thPercentile()`
 | `p95` | `getSnapshot().get95thPercentile()`
@@ -316,14 +238,8 @@ The JSON node is named `<metric-name>`. The JSON leaves are named `<key>[';'<tag
   "responseTime": {
     "count": 29382,
     "elapsedTime": 25608694,
-    "meanRate": 12.185627192860734,
-    "oneMinRate": 12.563,
-    "fiveMinRate": 12.364,
-    "fifteenMinRate": 12.126,
     "min": 169916,
     "max": 5608694,
-    "mean": 415041.00024926325,
-    "stddev": 652907.9633011606,
     "p50": 293324.0,
     "p75": 344914.0,
     "p95": 543647.0,
@@ -332,14 +248,8 @@ The JSON node is named `<metric-name>`. The JSON leaves are named `<key>[';'<tag
     "p999": 5608694.0,
     "count;servlet=two": 29382,
     "elapsedTime;servlet=two": 25608694,
-    "meanRate;servlet=two":12.185627192860734,
-    "oneMinRate;servlet=two": 12.563,
-    "fiveMinRate;servlet=two": 12.364,
-    "fifteenMinRate;servlet=two": 12.126,
     "min;servlet=two": 169916,
     "max;servlet=two": 5608694,
-    "mean;servlet=two": 415041.00024926325,
-    "stddev;servlet=two": 652907.9633011606,
     "p50;servlet=two": 293324.0,
     "p75;servlet=two": 344914.0,
     "p95;servlet=two": 543647.0,
@@ -349,37 +259,6 @@ The JSON node is named `<metric-name>`. The JSON leaves are named `<key>[';'<tag
   }
 }
 ----
-
-==== Simple Timer JSON Format
-
-`Simple Timer` is a complex metric type comprised of multiple key/values. The format is specified by the table below.
-The JSON node is named `<metric-name>`. The JSON leaves are named `<key>[';'<tag-name>'='<tag-value>]+` with tags in alphabetical order and keys according to below table.
-
-.JSON mapping for a Simple Timer metric
-[cols="1,4"]
-|===
-| JSON Key | Value (Equivalent SimpleTimer method)
-
-| `count`                 | `getCount()`
-| `elapsedTime`           | `getElapsedTime()`
-| `maxTimeDuration`       | `getMaxTimeDuration()`
-| `minTimeDuration`       | `getMinTimeDuration()`
-|===
-
-.Example Simple Timer JSON GET Response
-[source, json]
-----
-{
-  "simple_responseTime": {
-    "count": 1,
-    "elapsedTime": 12300000000,
-    "maxTimeDuration": 3231000000,   //(1)
-    "minTimeDuration": 25600000      //(1)
-  }
-}
-----
-
-<1> The `minTimeDuration` and `maxTimeDuration` will display a `null` value if no values were recorded.
 
 ==== Metadata
 
@@ -498,7 +377,7 @@ Characters allowed are `[a-zA-Z0-9_]` (Ascii alphabet, numbers and underscore). 
 follow the pattern `[a-zA-Z_][a-zA-Z0-9_]*`.
 
 * Characters that do not fall in above category are translated to underscore (`_`).
-* Scope is always specified at the start of the metric name.
+* Scope is stored as a tag (eg. scope=base or scope=vendor or scope=app or scope=bananas)
 * Scope and name are separated by underscore (`_`).
 * Double underscore is translated to single underscore
 * The unit is appended to the name, separated by underscore. See <<OpenMetrics_units>>
@@ -585,73 +464,6 @@ The OpenMetrics name is composed `<scope>_<metric-name>_<suffix>`.
 application_visitors_total 80
 ----
 
-==== Concurrent Gauge OpenMetrics Text Format
-
-`ConcurrentGauge` is a complex metric type comprised of multiple key/values. Each key will require a suffix to be appended to the metric name. The format is specified by the table below.
-
-.OpenMetrics text mapping for a ConcurrentGauge metric
-[cols="2,1,2,1"]
-|===
-| Suffix{label}   | TYPE    | Value (Meter method)     | Units
-
-| `current`       | Gauge   | `getCount()`             | N/A
-| `min`           | Gauge   | `getMin()`               | N/A
-| `max`           | Gauge   | `getMax()`               | N/A
-|===
-
-Concurrent gauges do not have a suffix for the unit.
-The OpenMetrics name is composed `<scope>_<metric-name>_<suffix>`.
-
-.Example OpenMetrics text format for a Concurrent Gauge
-[source, ruby]
-----
-# TYPE application_method_a_invocations_current gauge
-# HELP application_method_a_invocations_current The number of parallel invocations of methodA() #<1>
-application_method_a_invocations_current 80
-# TYPE application_method_a_invocations_min gauge
-application_method_a_invocations_min 20
-# TYPE application_method_a_invocations_max gauge
-application_method_a_invocations_max 100
-----
-<1> Note help is only emitted for the metric related to `getCount()`, but not for _min and _max.
-
-==== Meter OpenMetrics Text Format
-
-`Meter` is a complex metric type comprised of multiple key/values. Each key will require a suffix to be appended to the metric name. The format is specified by the table below.
-
-The `# HELP` description line is only required for the `total` value as shown below.
-
-.OpenMetrics text mapping for a Meter metric
-[cols="2,1,2,1"]
-|===
-| Suffix{label}                   | TYPE    | Value (Meter method)                | Units
-
-| `total`                         | Counter | `getCount()`                        | N/A
-| `rate_per_second`               | Gauge   | `getMeanRate()`                     | PER_SECOND
-| `one_min_rate_per_second`       | Gauge   | `getOneMinuteRate()`                | PER_SECOND
-| `five_min_rate_per_second`      | Gauge   | `getFiveMinuteRate()`               | PER_SECOND
-| `fifteen_min_rate_per_second`   | Gauge   | `getFifteenMinuteRate()`            | PER_SECOND
-|===
-
-The OpenMetrics name is composed `<scope>_<metric-name>_<suffix>`.
-
-.Example OpenMetrics text format for a Meter
-[source, ruby]
-----
-# TYPE application_requests_total counter
-# HELP application_requests_total Tracks the number of requests to the server
-application_requests_total 29382
-# TYPE application_requests_rate_per_second gauge
-application_requests_rate_per_second 12.223
-# TYPE application_requests_one_min_rate_per_second gauge
-application_requests_one_min_rate_per_second 12.563
-# TYPE application_requests_five_min_rate_per_second gauge
-application_requests_five_min_rate_per_second 12.364
-# TYPE application_requests_fifteen_min_rate_per_second gauge
-application_requests_fifteen_min_rate_per_second 12.126
-----
-
-
 ==== Histogram OpenMetrics Text Format
 
 `Histogram` is a complex metric type comprised of multiple key/values. Each key will require a suffix to be appended to the metric name with appropriate naming/scaling based on <<OpenMetrics_units>>.  The format is specified by the table below.
@@ -668,7 +480,6 @@ The `quantile` OpenMetrics label is merged with the metric's tags.
 | `min_<units>`                   | Gauge   | `getSnapshot().getMin()`            | <units>^1^
 | `max_<units>`                   | Gauge   | `getSnapshot().getMax()`            | <units>^1^
 | `mean_<units>`                  | Gauge   | `getSnapshot().getMean()`           | <units>^1^
-| `stddev_<units>`                | Gauge   | `getSnapshot().getStdDev()`         | <units>^1^
 | `<units>_count`^2^              | Summary | `getCount()`                        | N/A
 | `<units>_sum`^2^                | Summary | `getSum()`                          | <units>^1^
 | `<units>{quantile="0.5"}`^2^    | Summary | `getSnapshot().getMedian()`         | <units>^1^
@@ -720,14 +531,9 @@ The `quantile` OpenMetrics label is merged with the metric's tags.
 |===
 | Suffix{label}                   | TYPE    | Value (Timer method)                | Units
 
-| `rate_per_second`               | Gauge   | `getMeanRate()`                     | PER_SECOND
-| `one_min_rate_per_second`       | Gauge   | `getOneMinuteRate()`                | PER_SECOND
-| `five_min_rate_per_second`      | Gauge   | `getFiveMinuteRate()`               | PER_SECOND
-| `fifteen_min_rate_per_second`   | Gauge   | `getFifteenMinuteRate()`            | PER_SECOND
 | `min_seconds`                   | Gauge   | `getSnapshot().getMin()`            | SECONDS^1^
 | `max_seconds`                   | Gauge   | `getSnapshot().getMax()`            | SECONDS^1^
 | `mean_seconds`                  | Gauge   | `getSnapshot().getMean()`           | SECONDS^1^
-| `stddev_seconds`                | Gauge   | `getSnapshot().getStdDev()`         | SECONDS^1^
 | `seconds_count`^2^              | Summary | `getCount()`                        | N/A
 | `seconds_sum`^2^                | Summary | `getElapsedTime()`                  | SECONDS^1^
 | `seconds{quantile="0.5"}`^2^    | Summary | `getSnapshot().getMedian()`         | SECONDS^1^
@@ -773,42 +579,6 @@ application_response_time_seconds{quantile="0.99"} 0.005608694
 application_response_time_seconds{quantile="0.999"} 0.005608694
 ----
 
-
-==== Simple Timer OpenMetrics Text Format
-
-`Simple Timer` is a complex metric type comprised of multiple key/values. Each key will require a suffix to be appended to the metric name. The format is specified by the table below.
-The OpenMetrics name is composed `<scope>_<metric-name>_<suffix>`.
-
-
-.OpenMetrics text mapping for a SimpleTimer metric
-[cols="2,1,2,1"]
-|===
-| Suffix{label}                   | TYPE    | Value (SimpleTimer method)                | Units
-| `total`                         | Counter | `getCount()`                              | N/A
-| `elapsedTime_seconds`           | Gauge   | `getElapsedTime()`                        | SECONDS^1^
-| `maxTimeDuration_seconds`       | Gauge   | `getMaxTimeDuration()`                    | SECONDS^1^
-| `minTimeDuration_seconds`       | Gauge   | `getMinTimeDuration()`                    | SECONDS^1^
-|===
-
-^1^ The implementation is expected to convert the result returned by the `SimpleTimer` into seconds
-
-.Example OpenMetrics text format for a SimpleTimer
-[source, ruby]
-----
-# TYPE application_response_time_total counter
-# HELP application_response_time_total The number of calls to this REST endpoint #(1)
-application_response_time_total 12
-# TYPE application_response_time_elapsedTime_seconds gauge
-application_response_time_elapsedTime_seconds  12.30000000
-# TYPE application_response_time_maxTimeDuration_seconds gauge
-application_response_time_maxTimeDuration_seconds  3.231000000 #(2)
-# TYPE application_response_time_minTimeDuration_seconds gauge
-application_response_time_minTimeDuration_seconds  0.0256 #(2)
-----
-
-<1> Note help is only emitted for the metric related to `getCount()`, but not for elapsedTime.
-
-<2> The `minTimeDuration` and `maxTimeDuration` will display a `NaN` value if no values were recorded.
 
 === Security
 
