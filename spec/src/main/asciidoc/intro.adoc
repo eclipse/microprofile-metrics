@@ -30,7 +30,7 @@ https://github.com/eclipse/microprofile-health[Health Checks].
 In the previous release we mentioned our intent to investigate https://micrometer.io/[Micrometer]. 
 This has led to key changes in this specification, and the corresponding API, to allow for a variety
 of possible implementations. As examples, it should be possible to implement this specification
-using metrics libraries from Micrometer or Open https://opentelemetry.io/[Open Telemetry]. The modifications to the API, since
+using metrics libraries from Micrometer or https://opentelemetry.io/[Open Telemetry]. The modifications to the API, since
 the previous release, have been made in consideration of maintaining backwards compatibility, as much
 as possible, but while removing parts of the API that limited the ability to plug in new implementations.
 
