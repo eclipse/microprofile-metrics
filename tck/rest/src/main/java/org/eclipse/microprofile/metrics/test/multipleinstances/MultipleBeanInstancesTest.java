@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2019, 2022 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -77,15 +77,6 @@ public class MultipleBeanInstancesTest {
         instance2.countedMethod();
         assertThat(registry.getCounters((id, metric) -> id.getName().equals("counter")).values().iterator().next()
                 .getCount(), is(2L));
-    }
-
-    @Test
-    public void testMeter() {
-        instance1.meteredMethod();
-        instance2.meteredMethod();
-        assertThat(
-                registry.getMeters((id, metric) -> id.getName().equals("meter")).values().iterator().next().getCount(),
-                is(2L));
     }
 
     @Test

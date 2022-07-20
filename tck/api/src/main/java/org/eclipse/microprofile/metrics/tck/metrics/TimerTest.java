@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017, 2020 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
  *               2010-2013 Coda Hale, Yammer.com
  *
  * See the NOTICES file(s) distributed with this work for additional
@@ -23,7 +23,6 @@
 
 package org.eclipse.microprofile.metrics.tck.metrics;
 
-import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertNotNull;
 
 import java.time.Duration;
@@ -91,40 +90,6 @@ public class TimerTest {
 
     @Test
     @InSequence(1)
-    public void testRate() throws Exception {
-
-        int markSeconds = 60;
-        int delaySeconds = 15;
-
-        Timer timer = registry.timer("testRate");
-
-        // Call update ~1/sec
-        for (int i = 0; i < markSeconds; i++) {
-            timer.update(Duration.ofSeconds(1));
-            Thread.sleep(1000);
-        }
-
-        // All rates should be around the value of ~1/sec
-        TestUtils.assertEqualsWithTolerance(1.0, timer.getMeanRate());
-        TestUtils.assertEqualsWithTolerance(1.0, timer.getOneMinuteRate());
-        TestUtils.assertEqualsWithTolerance(1.0, timer.getFiveMinuteRate());
-        TestUtils.assertEqualsWithTolerance(1.0, timer.getFifteenMinuteRate());
-
-        Thread.sleep(delaySeconds * 1000);
-
-        // Approximately calculate what the expected mean should be
-        // and let the tolerance account for the delta
-        double expectedMean = ((double) markSeconds / (markSeconds + delaySeconds));
-        TestUtils.assertEqualsWithTolerance(expectedMean, timer.getMeanRate());
-
-        // After a delay, we expect some decay of values
-        Assert.assertThat(timer.getOneMinuteRate(), lessThan(1.0));
-        Assert.assertThat(timer.getFiveMinuteRate(), lessThan(1.0));
-        Assert.assertThat(timer.getFifteenMinuteRate(), lessThan(1.0));
-    }
-
-    @Test
-    @InSequence(2)
     public void testTime() throws Exception {
         Timer timer = registry.timer("testTime");
 
@@ -142,7 +107,7 @@ public class TimerTest {
     }
 
     @Test
-    @InSequence(3)
+    @InSequence(2)
     public void testTimerRegistry() throws Exception {
         String timerLongName = "test.longData.timer";
         String timerTimeName = "testTime";
@@ -160,7 +125,7 @@ public class TimerTest {
     }
 
     @Test
-    @InSequence(4)
+    @InSequence(3)
     public void timesCallableInstances() throws Exception {
         Timer timer = registry.timer("testCallable");
         final String value = timer.time(() -> "one");
@@ -171,7 +136,7 @@ public class TimerTest {
     }
 
     @Test
-    @InSequence(5)
+    @InSequence(4)
     public void timesRunnableInstances() throws Exception {
         Timer timer = registry.timer("testRunnable");
         final AtomicBoolean called = new AtomicBoolean();

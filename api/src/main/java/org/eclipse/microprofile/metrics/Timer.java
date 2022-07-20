@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017, 2020 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
  *               2010, 2013 Coda Hale, Yammer.com
  *
  * See the NOTICES file(s) distributed with this work for additional
@@ -27,14 +27,11 @@ import java.time.Duration;
 import java.util.concurrent.Callable;
 
 /**
- * A timer metric which aggregates timing durations and provides duration statistics, plus throughput statistics via
- * {@link Meter}.
- * 
- * See {@link SimpleTimer} for a lightweight alternative that only tracks elapsed time duration and count.
+ * A timer metric which aggregates timing durations and provides duration statistics
  *
  * The timer measures duration in nanoseconds.
  */
-public interface Timer extends Metered, Sampling {
+public interface Timer extends Metric, Sampling {
     /**
      * A timing context.
      *
@@ -102,20 +99,7 @@ public interface Timer extends Metered, Sampling {
      */
     Duration getElapsedTime();
 
-    @Override
     long getCount();
-
-    @Override
-    double getFifteenMinuteRate();
-
-    @Override
-    double getFiveMinuteRate();
-
-    @Override
-    double getMeanRate();
-
-    @Override
-    double getOneMinuteRate();
 
     @Override
     Snapshot getSnapshot();

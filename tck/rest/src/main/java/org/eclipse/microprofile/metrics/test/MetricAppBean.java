@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017, 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,22 +22,19 @@
 
 package org.eclipse.microprofile.metrics.test;
 
+import java.util.function.Supplier;
+
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.Gauge;
 import org.eclipse.microprofile.metrics.Histogram;
 import org.eclipse.microprofile.metrics.Metadata;
-import org.eclipse.microprofile.metrics.Meter;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.MetricType;
 import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.SimpleTimer;
 import org.eclipse.microprofile.metrics.Timer;
-import org.eclipse.microprofile.metrics.annotation.ConcurrentGauge;
 import org.eclipse.microprofile.metrics.annotation.Counted;
-import org.eclipse.microprofile.metrics.annotation.Metered;
 import org.eclipse.microprofile.metrics.annotation.Metric;
-import org.eclipse.microprofile.metrics.annotation.SimplyTimed;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -102,30 +99,6 @@ public class MetricAppBean {
     @Metric(name = TAGGED_TIMER, absolute = true, tags = {"number=two"})
     private Timer timerTwoTag;
 
-    @Inject
-    @Metric(name = TAGGED_SIMPLETIMER, absolute = true)
-    private SimpleTimer simpleTimerNoTag;
-
-    @Inject
-    @Metric(name = TAGGED_SIMPLETIMER, absolute = true, tags = {"number=one"})
-    private SimpleTimer simpleTimerOneTag;
-
-    @Inject
-    @Metric(name = TAGGED_SIMPLETIMER, absolute = true, tags = {"number=two"})
-    private SimpleTimer simpleTimerTwoTag;
-
-    @Inject
-    @Metric(name = TAGGED_METER, absolute = true)
-    private Meter meterNoTag;
-
-    @Inject
-    @Metric(name = TAGGED_METER, absolute = true, tags = {"number=one"})
-    private Meter meterOneTag;
-
-    @Inject
-    @Metric(name = TAGGED_METER, absolute = true, tags = {"number=two"})
-    private Meter meterTwoTag;
-
     @org.eclipse.microprofile.metrics.annotation.Gauge(name = TAGGED_GAUGE, absolute = true, unit = MetricUnits.NONE)
     public long gaugeMeTagged() {
         return 1000L;
@@ -141,21 +114,6 @@ public class MetricAppBean {
             "number=two"})
     public long gaugeMeTaggedTwo() {
         return 1000L;
-    }
-
-    @ConcurrentGauge(absolute = true)
-    public void concGaugeMeA() {
-
-    }
-
-    @ConcurrentGauge(name = TAGGED_CONCURRENTGAUGE, absolute = true, tags = {"number=one"})
-    public void concurrentGaugeMeTaggedOne() {
-
-    }
-
-    @ConcurrentGauge(name = TAGGED_CONCURRENTGAUGE, absolute = true, tags = {"number=two"})
-    public void concurrentGaugeMeTaggedTwo() {
-
     }
 
     @Inject
@@ -192,14 +150,16 @@ public class MetricAppBean {
 
         @SuppressWarnings("unchecked")
         Gauge<Long> gauge = (Gauge<Long>) metrics.getGauge(new MetricID("metricTest.test1.gauge"));
+
         if (gauge == null) {
-            gauge = () -> {
+
+            Supplier<Long> gaugeSupp = () -> {
                 return 19L;
             };
 
             Metadata metadata = Metadata.builder().withName("metricTest.test1.gauge")
                     .withType(MetricType.GAUGE).withUnit(MetricUnits.GIGABYTES).build();
-            metrics.register(metadata, gauge);
+            metrics.gauge(metadata, gaugeSupp);
         }
 
     }
@@ -232,18 +192,6 @@ public class MetricAppBean {
         histogram2.update(1);
     }
 
-    public void meterMe() {
-
-        Meter meter = metrics.meter("metricTest.test1.meter");
-        meter.mark();
-
-    }
-
-    @Metered(absolute = true, description = "meter-me-a-description", displayName = "meter-me-a-display-name")
-    public void meterMeA() {
-
-    }
-
     public void timeMe() {
 
         Timer timer = metrics.timer("metricTest.test1.timer");
@@ -260,25 +208,6 @@ public class MetricAppBean {
 
     @Timed
     public void timeMeA() {
-
-    }
-
-    public void simpleTimeMe() {
-
-        SimpleTimer simpleTimer = metrics.simpleTimer("metricTest.test1.simpleTimer");
-
-        SimpleTimer.Context context = simpleTimer.time();
-        try {
-            Thread.sleep((long) (Math.random() * 1000));
-        } catch (InterruptedException e) {
-        } finally {
-            context.stop();
-        }
-
-    }
-
-    @SimplyTimed
-    public void simpleTimeMeA() {
 
     }
 

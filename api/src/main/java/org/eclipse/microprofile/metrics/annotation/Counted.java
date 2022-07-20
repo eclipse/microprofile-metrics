@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
  *               2012 Ryan W Tenney (ryan@10e.us)
  *
  * See the NOTICES file(s) distributed with this work for additional
@@ -73,11 +73,6 @@ import jakarta.interceptor.InterceptorBinding;
  * constructor/method is invoked, the respective counter will be marked.
  *
  * The counter value will only monotonically increase.
- *
- * <p>
- * <b>Note:</b> the default behaviour has changed in MicroProfile Metrics 2.0. To get the old @Counted(monotonic=false)
- * behavior, see @{@link ConcurrentGauge}
- * </p>
  *
  * This annotation will throw an IllegalStateException if the constructor/method is invoked, but the metric no longer
  * exists in the MetricRegistry.

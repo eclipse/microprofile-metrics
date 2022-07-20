@@ -1,6 +1,11 @@
 /**
+ **********************************************************************
+ * Copyright (c) 2013, 2022 Contributors to the Eclipse Foundation
  * Copyright © 2013 Antonin Stefanutti (antonin.stefanutti@gmail.com)
- *
+ * 
+ * See the NOTICES file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,7 +23,6 @@ package org.eclipse.microprofile.metrics.tck.metrics;
 import org.eclipse.microprofile.metrics.MetricUnits;
 import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.Gauge;
-import org.eclipse.microprofile.metrics.annotation.Metered;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -28,7 +32,6 @@ public class MultipleMetricsMethodBean {
 
     @Counted(name = "counter")
     @Gauge(name = "gauge", unit = MetricUnits.NONE)
-    @Metered(name = "meter")
     @Timed(name = "timer")
     public Long metricsMethod() {
         return 1234L;

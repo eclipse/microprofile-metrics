@@ -1,5 +1,10 @@
 /**
+ **********************************************************************
+ * Copyright (c) 2013, 2022 Contributors to the Eclipse Foundation
  * Copyright © 2013 Antonin Stefanutti (antonin.stefanutti@gmail.com)
+ * 
+ * See the NOTICES file(s) distributed with this work for additional
+ * information regarding copyright ownership.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,8 +97,6 @@ public class MultipleMetricsMethodBeanTest {
         // Make sure that the metrics have been called
         assertThat("Counter count is incorrect", registry.getCounter(
                 new MetricID(absoluteMetricName("counter"))).getCount(), is(equalTo(1L)));
-        assertThat("Meter count is incorrect", registry.getMeter(
-                new MetricID(absoluteMetricName("meter"))).getCount(), is(equalTo(1L)));
         assertThat("Timer count is incorrect", registry.getTimer(
                 new MetricID(absoluteMetricName("timer"))).getCount(), is(equalTo(1L)));
         // Let's call the gauge at the end as Weld is intercepting the gauge

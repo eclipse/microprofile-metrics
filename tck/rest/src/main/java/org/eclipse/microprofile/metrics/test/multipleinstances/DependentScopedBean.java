@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2019, 2022 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -23,18 +23,12 @@
 package org.eclipse.microprofile.metrics.test.multipleinstances;
 
 import org.eclipse.microprofile.metrics.annotation.Counted;
-import org.eclipse.microprofile.metrics.annotation.Metered;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
 public class DependentScopedBean {
 
     @Counted(name = "counter", absolute = true)
     public void countedMethod() {
-
-    }
-
-    @Metered(name = "meter", absolute = true)
-    public void meteredMethod() {
 
     }
 

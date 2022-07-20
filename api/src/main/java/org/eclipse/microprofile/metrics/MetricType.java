@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017, 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
  *               2017 Red Hat, Inc. and/or its affiliates
  *               and other contributors as indicated by the @author tags.
  *
@@ -33,12 +33,6 @@ import java.util.EnumSet;
 public enum MetricType {
 
     /**
-     * A concurrent gauge counts the number of parallel invocations of a target (method). Upon entering the target the
-     * value is increased. It is decreased again upon exiting the target.
-     */
-
-    CONCURRENT_GAUGE("concurrent gauge", ConcurrentGauge.class),
-    /**
      * A Counter monotonically increases its values. An example could be the number of Transactions committed.
      */
     COUNTER("counter", Counter.class),
@@ -49,24 +43,14 @@ public enum MetricType {
     GAUGE("gauge", Gauge.class),
 
     /**
-     * A Meter measures the rate at which a set of events occur. An example could be amount of Transactions per Hour.
-     */
-    METERED("meter", Meter.class),
-
-    /**
      * A Histogram calculates the distribution of a value.
      */
     HISTOGRAM("histogram", Histogram.class),
 
     /**
-     * A timer aggregates timing durations and provides duration statistics, plus throughput statistics
+     * A timer aggregates timing durations and provides duration statistics
      */
     TIMER("timer", Timer.class),
-
-    /**
-     * A simple timer aggregates timing durations
-     */
-    SIMPLE_TIMER("simple timer", SimpleTimer.class),
 
     /**
      * Invalid - Placeholder

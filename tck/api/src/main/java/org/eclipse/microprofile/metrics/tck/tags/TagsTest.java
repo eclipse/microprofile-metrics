@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017, 2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -27,13 +27,10 @@ import static org.hamcrest.Matchers.hasValue;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import org.eclipse.microprofile.metrics.ConcurrentGauge;
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.Histogram;
-import org.eclipse.microprofile.metrics.Meter;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
-import org.eclipse.microprofile.metrics.SimpleTimer;
 import org.eclipse.microprofile.metrics.Tag;
 import org.eclipse.microprofile.metrics.Timer;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -115,30 +112,6 @@ public class TagsTest {
 
     @Test
     @InSequence(4)
-    public void meterTagsTest() {
-
-        Tag tagEarth = new Tag("planet", "earth");
-        Tag tagRed = new Tag("colour", "red");
-        Tag tagBlue = new Tag("colour", "blue");
-
-        String meterName = "org.eclipse.microprofile.metrics.tck.TagTest.meterColour";
-
-        Meter meterColour = registry.meter(meterName);
-        Meter meterRed = registry.meter(meterName, tagEarth, tagRed);
-        Meter meterBlue = registry.meter(meterName, tagEarth, tagBlue);
-
-        MetricID meterColourMID = new MetricID(meterName);
-        MetricID meterRedMID = new MetricID(meterName, tagEarth, tagRed);
-        MetricID meterBlueMID = new MetricID(meterName, tagEarth, tagBlue);
-
-        // check multi-dimensional metrics are registered
-        assertThat("Meter is not registered correctly", registry.getMeter(meterColourMID), notNullValue());
-        assertThat("Meter is not registered correctly", registry.getMeter(meterRedMID), notNullValue());
-        assertThat("Meter is not registered correctly", registry.getMeter(meterBlueMID), notNullValue());
-    }
-
-    @Test
-    @InSequence(5)
     public void timerTagsTest() {
 
         Tag tagEarth = new Tag("planet", "earth");
@@ -162,7 +135,7 @@ public class TagsTest {
     }
 
     @Test
-    @InSequence(6)
+    @InSequence(5)
     public void histogramTagsTest() {
 
         Tag tagEarth = new Tag("planet", "earth");
@@ -183,59 +156,5 @@ public class TagsTest {
         assertThat("Histogram is not registered correctly", registry.getHistogram(histogramColourMID), notNullValue());
         assertThat("Histogram is not registered correctly", registry.getHistogram(histogramRedMID), notNullValue());
         assertThat("Histogram is not registered correctly", registry.getHistogram(histogramBlueMID), notNullValue());
-    }
-
-    @Test
-    @InSequence(7)
-    public void simpleTimerTagsTest() {
-
-        Tag tagEarth = new Tag("planet", "earth");
-        Tag tagRed = new Tag("colour", "red");
-        Tag tagBlue = new Tag("colour", "blue");
-
-        String simpleTimerName = "org.eclipse.microprofile.metrics.tck.TagTest.simpleTimerColour";
-
-        SimpleTimer simpleTimerColour = registry.simpleTimer(simpleTimerName);
-        SimpleTimer simpleTimerRed = registry.simpleTimer(simpleTimerName, tagEarth, tagRed);
-        SimpleTimer simpleTimerBlue = registry.simpleTimer(simpleTimerName, tagEarth, tagBlue);
-
-        MetricID simpleTimerColourMID = new MetricID(simpleTimerName);
-        MetricID simpleTimerRedMID = new MetricID(simpleTimerName, tagEarth, tagRed);
-        MetricID simpleTimerBlueMID = new MetricID(simpleTimerName, tagEarth, tagBlue);
-
-        // check multi-dimensional metrics are registered
-        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimer(simpleTimerColourMID),
-                notNullValue());
-        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimer(simpleTimerRedMID),
-                notNullValue());
-        assertThat("SimpleTimer is not registered correctly", registry.getSimpleTimer(simpleTimerBlueMID),
-                notNullValue());
-    }
-
-    @Test
-    @InSequence(8)
-    public void concurrentGuageTagsTest() {
-
-        Tag tagEarth = new Tag("planet", "earth");
-        Tag tagRed = new Tag("colour", "red");
-        Tag tagBlue = new Tag("colour", "blue");
-
-        String concurrentGaugeName = "org.eclipse.microprofile.metrics.tck.TagTest.concurrentGaugeColour";
-
-        ConcurrentGauge concurrentGaugeColour = registry.concurrentGauge(concurrentGaugeName);
-        ConcurrentGauge concurrentGaugeRed = registry.concurrentGauge(concurrentGaugeName, tagEarth, tagRed);
-        ConcurrentGauge concurrentGaugeBlue = registry.concurrentGauge(concurrentGaugeName, tagEarth, tagBlue);
-
-        MetricID concurrentGaugeColourMID = new MetricID(concurrentGaugeName);
-        MetricID concurrentGaugeRedMID = new MetricID(concurrentGaugeName, tagEarth, tagRed);
-        MetricID concurrentGaugeBlueMID = new MetricID(concurrentGaugeName, tagEarth, tagBlue);
-
-        // check multi-dimensional metrics are registered
-        assertThat("ConcurrentGauge is not registered correctly", registry.getConcurrentGauge(concurrentGaugeColourMID),
-                notNullValue());
-        assertThat("ConcurrentGauge is not registered correctly", registry.getConcurrentGauge(concurrentGaugeRedMID),
-                notNullValue());
-        assertThat("ConcurrentGauge is not registered correctly", registry.getConcurrentGauge(concurrentGaugeBlueMID),
-                notNullValue());
     }
 }
