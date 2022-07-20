@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017, 2020 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
  *               2010-2013 Coda Hale, Yammer.com
  *
  * See the NOTICES file(s) distributed with this work for additional
@@ -37,7 +37,7 @@ import jakarta.interceptor.InterceptorBinding;
 /**
  * An annotation for marking a method, constructor, or class as timed. The underlying
  * {@link org.eclipse.microprofile.metrics.Timer Timer} metric aggregates timing durations and provides duration
- * statistics, plus throughput statistics. There is a lightweight alternative
+ * statistics.
  * <p>
  * Given a method annotated with {@literal @}Timed like this:
  * </p>

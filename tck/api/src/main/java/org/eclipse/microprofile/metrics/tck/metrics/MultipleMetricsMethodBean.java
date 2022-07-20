@@ -1,6 +1,11 @@
 /**
+ **********************************************************************
+ * Copyright (c) 2013, 2022 Contributors to the Eclipse Foundation
  * Copyright © 2013 Antonin Stefanutti (antonin.stefanutti@gmail.com)
- *
+ * 
+ * See the NOTICES file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at

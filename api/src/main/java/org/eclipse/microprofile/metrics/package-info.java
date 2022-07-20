@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017, 2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -23,7 +23,7 @@
 /**
  * MicroProfile Metrics
  *
- * <h2>Rational</h2>
+ * <h2>Rationale</h2>
  *
  * <p>
  * To ensure reliable operation of software it is necessary to monitor essential system parameters. There is already JMX
@@ -34,7 +34,7 @@
  *
  * <h2>Adding Metrics</h2>
  * <p>
- * MicroProfile Metrics provides 6 different metric types that can be used to instrument an application. Developers can
+ * MicroProfile Metrics provides 4 different metric types that can be used to instrument an application. Developers can
  * create an accompanying {@link org.eclipse.microprofile.metrics.Metadata Metadata} object to supply the metric's name,
  * description, display name, and units. Once the metric and the metadata are registered against the application
  * {@link org.eclipse.microprofile.metrics.MetricRegistry MetricRegistry}, the metrics will be available in the REST

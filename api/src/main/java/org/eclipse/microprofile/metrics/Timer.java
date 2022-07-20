@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017, 2020 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
  *               2010, 2013 Coda Hale, Yammer.com
  *
  * See the NOTICES file(s) distributed with this work for additional

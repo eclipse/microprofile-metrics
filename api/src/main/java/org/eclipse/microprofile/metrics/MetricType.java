@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017, 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
  *               2017 Red Hat, Inc. and/or its affiliates
  *               and other contributors as indicated by the @author tags.
  *
@@ -48,7 +48,7 @@ public enum MetricType {
     HISTOGRAM("histogram", Histogram.class),
 
     /**
-     * A timer aggregates timing durations and provides duration statistics, plus throughput statistics
+     * A timer aggregates timing durations and provides duration statistics
      */
     TIMER("timer", Timer.class),
 
