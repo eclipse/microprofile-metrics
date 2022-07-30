@@ -250,16 +250,15 @@ that will probably have multiple instances.
 [[rest-api]]
 === Exposing metrics via REST API
 
-Data is exposed via REST over HTTP under the `/metrics` base path in two different data formats for `GET` requests:
+Data is exposed via REST over HTTP under the `/metrics` base path in different data formats for `GET` requests:
 
 * JSON format - used when the HTTP Accept header best matches `application/json`.
-* OpenMetrics text format - used when the HTTP Accept header best matches `text/plain` or when Accept header would equally
-accept both `text/plain` and `application/json` and there is no other higher precedence format.
-This format is also returned when no media type is requested (i.e. no Accept header is provided in the request)
+* OpenMetrics exposition format - used when the HTTP Accept header best matches `application/openmetrics-text; version=1.0.0`. Support for this format by implementations is optional.
+* Prometheus text-based exposition format - used when the HTTP Accept header best matches `text/plain; version=0.0.4`. This format is also returned when no media type is requested (i.e. no Accept header is provided in the request)
 
 NOTE: Implementations and/or future versions of this specification may allow for more export formats that are triggered
 by their specific media type.
-The OpenMetrics text format will stay as fall-back.
+The Prometheus text-based exposition format will stay as fall-back.
 
 Formats are detailed below.
 
@@ -283,7 +282,7 @@ The API MUST NOT return a 500 Internal Server Error code to represent a non-exis
 | `/metrics?scope=<scope_name>&name=<metric_name>` | GET | JSON, OpenMetrics | Returns metrics that match the metric name for the respective scope
 | `/metrics` | OPTIONS | JSON | Returns all registered metrics' metadata
 | `/metrics?scope=<scope_name>` | OPTIONS | JSON | Returns metrics' metadata registered for the respective scope. Scopes are listed in <<metrics-setup>>
-| `/metrics/scope=<scope_name>&name=<metric_name>` | OPTIONS | JSON | Returns the metric's metadata that matches the metric name for the respective scope
+| `/metrics?scope=<scope_name>&name=<metric_name>` | OPTIONS | JSON | Returns the metric's metadata that matches the metric name for the respective scope
 |===
 
 NOTE: The implementation must return a 406 response code if the request's HTTP Accept header for an OPTIONS request

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016, 2020 Contributors to the Eclipse Foundation
+// Copyright (c) 2016, 2022 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -345,239 +345,147 @@ then `OPTIONS /metrics/base` exposes:
 ----
 
 
-=== OpenMetrics format
+=== Prometheus / OpenMetrics formats
 
-Data is exposed in the OpenMetrics text format, version 0.0.4 as described in
-https://prometheus.io/docs/instrumenting/exposition_formats/#text-format-details[OpenMetrics text format].
+The REST API must respond to GET requests with data formatted according to the Prometheus text-based exposition format, version 0.0.4 (hereafter Prometheus format). For details of how to format metrics data in this format, see https://prometheus.io/docs/instrumenting/exposition_formats/#text-format-details[Prometheus format].
 
-The metadata will be included as part of the normal OpenMetrics text format. Unlike the JSON format, the text format does not support OPTIONS requests.
+Implementations may additionally provide the ability to respond to GET requests with data formatted according to the OpenMetrics exposition format, version 1.0 (hereafter OpenMetrics format).  For details on how to format metrics data in this format, see https://prometheus.io/docs/instrumenting/exposition_formats/#openmetrics-text-format[OpenMetrics format].
 
-TIP: Users that want to write tools to transform the metadata can still request the metadata via OPTIONS
-request and `application/json` media type.
+This section provides the details of how to map from the Gauge, Counter, Timer and Histogram types defined in this specification into appropriate fields in the Prometheus format.
 
-The above json example would look like this in OpenMetrics format
+Details of how to format metric names, including conventions, special character mapping and placement of the unit (if provided) in the name, are as described by the Prometheus format and OpenMetrics format documentation.
 
-.Example of OpenMetrics output
-[source]
-----
-# TYPE base_fooVal_seconds gauge
-# HELP base_fooVal_seconds The average duration of foo requests during last 5 minutes <1>
-base_fooVal_seconds{store="webshop"} 12.345  <2>
-# TYPE base_barVal_bytes gauge
-base_barVal_bytes{component="backend", store="webshop"} 42000 <2>
-base_barVal_bytes{component="frontend", store="webshop"} 63000 <2>
-----
-<1> The description goes into the HELP line
-<2> Metric names gets the base unit of the family appended with `_` and defined labels. Values are scaled accordingly. See <<OpenMetrics_units>>. The `TYPE` only occurs once.
-
-==== Translation rules for metric names
-
-OpenMetrics text format does not allow for all characters and adds the base unit of a family to the name.
-Characters allowed are `[a-zA-Z0-9_]` (Ascii alphabet, numbers and underscore). Exposed metric names must
-follow the pattern `[a-zA-Z_][a-zA-Z0-9_]*`.
-
-* Characters that do not fall in above category are translated to underscore (`_`).
-* Scope is stored as a tag (eg. scope=base or scope=vendor or scope=app or scope=bananas)
-* Scope and name are separated by underscore (`_`).
-* Double underscore is translated to single underscore
-* The unit is appended to the name, separated by underscore. See <<OpenMetrics_units>>
+Quantile values, as used in Histogram and Timer output, should represent recent values (typically from the last 5-10 minutes).  If no data is available from that timeframe, the value must be set to NaN.
 
 
-==== Handling of tags
+==== Gauge
 
-Metric tags are appended to the metric name in curly braces `{` and `}` and are separated by comma.
-Each tag is a key-value-pair in the format of `<key>="<value>"` (the quotes around the value are required).
-
-MicroProfile Metrics timers and histograms expose an OpenMetrics `summary` type which requires an additional `quantile` tag for certain metrics.
-The `quantile` tag must be included alongside the metrics tags within the curly braces `{` and `}`.
-
-The tag value can be any Unicode character but the following characters must be escaped:
-
-* Backslash (`\`) must be escaped as `\\` (as two characters: `\` and `\`)
-* Double-quotes (`"`) must be escaped as `\"` (as two characters: `\` and `"`)
-* Line feed (`\n`) must be escaped as `\n` (as two characters: `\` and `n`)
-
-[[OpenMetrics_units]]
-==== Handling of units
-
-The OpenMetrics text format adheres to using "base units" when creating the HTTP response. Due to the different context of each metric type, certain metrics' values must be converted to the respective "base unit" when responding to OpenMetrics requests. For example, times in milliseconds must be divided by 1000 and displayed in the base unit (seconds).
-
-The following sections outline how each metric type is handled:
-
-*Gauges and Histograms*
-
-The metric name and values for `Gauge` and `Histogram` are converted to the "base unit" in respect to the `unit` value in the Metadata.
-
-- If the Metadata is empty, `NONE`, or null, the metric name is used as is without appending the unit name and no scaling is applied.
-- If the metric's metadata contains a known unit, as defined in the `MetricUnits` class, the OpenMetrics value should be scaled to the _base unit_ of the respective family. The name of the base unit is appended to the metric name delimited by underscores (`_`).
-- If the `unit` is specified and is not defined in the `MetricUnits` class, the value is not scaled but the `unit` is still appended to the metric name delimited by underscores (`_`).
-
-
-Unit families and their base units are described under https://prometheus.io/docs/practices/naming/#base-units[OpenMetrics metric names, Base units].
-
-Families and OpenMetrics base units are:
-
-|===
-| Family | Base unit
-
-| Bits    | bytes
-| Bytes   | bytes
-| Time   | seconds
-| Percent | ratio (normally ratio is A_per_B, but there are exceptions like `disk_usage_ratio`)
-|===
-
-*Counters*
-
-`Counter` metrics are considered dimensionless. The implementation must not append the unit name to the metric name and must not scale the value.
-
-
-*Meters and Timers*
-
-`Meter` and `Timer` have fixed units as described below regardless of the `unit` value in the Metadata.
-
-==== Gauge OpenMetrics Text Format
-
-The value of the gauge must be the value of `getValue()` with appropriate naming/scaling based on  <<OpenMetrics_units>>
-The OpenMetrics name is composed `<scope>'_'<metric-name>'_'[<unit>'_']`.
-
-.Example OpenMetrics text format for a Gauge in dollars.
+.Example Gauge with unit `celsius` in Prometheus format.
 [source, ruby]
 ----
-# TYPE application_cost_dollars gauge
-# HELP application_cost_dollars The running cost of the server in dollars.
-application_cost_dollars 80
+# HELP current_temperature_celsius The current temperature. <1>
+# TYPE current_temperature_celsius gauge <2>
+current_temperature_celsius{scope="application",server="front_office"} 36.2 <3>
 ----
 
-==== Counter OpenMetrics Text Format
+<1> The description of the gauge, from the `getDescription()` method of the `Metadata` associated to the gauge, must be provided in the HELP line
 
-The value of the counter must be the value of `getCount()`.
-The exposed metric name must have a `\_total` suffix.
-The suffix is not appended if the (translated) original metric name already ends in `_total`.
-Counters do not have a suffix for the unit.
-The OpenMetrics name is composed `<scope>_<metric-name>_<suffix>`.
+<2> The type of the metric, in this case `gauge`, must be shown in the TYPE line
 
-.Example OpenMetrics text format for a Counter.
+<3> The value specified must be the value of the gauge's `getValue()` method. Tags, if provided, are included in brackets separated by commas.
+
+
+==== Counter
+
+.Example Counter with unit `events` in Prometheus format.
 [source, ruby]
 ----
-# TYPE application_visitors_total counter
-# HELP application_visitors_total The number of unique visitors
-application_visitors_total 80
+# HELP messages_processed_events_total Number of messages handled <1>
+# TYPE messages_processed_events_total counter <2>
+messages_processed_events_total{scope="application"} 1.0 <3>
 ----
 
-==== Histogram OpenMetrics Text Format
+<1> The description of the counter must be provided in the HELP line
 
-`Histogram` is a complex metric type comprised of multiple key/values. Each key will require a suffix to be appended to the metric name with appropriate naming/scaling based on <<OpenMetrics_units>>.  The format is specified by the table below.
+<2> The type of the metric, in this case `counter`, must be shown in the TYPE line
 
-The `# HELP` description line is only required for the `summary` value as shown below.
-The OpenMetrics name is composed `<scope>_<metric-name>_<suffix>` where `<suffix>` can consist of a fixed part and a unit or just a unit.
-The `quantile` OpenMetrics label is merged with the metric's tags.
+<3> The value specified must be the value of the counter's `getCount()` method. Tags, if provided, are included in brackets separated by commas. By convention, `_total` should be added to the end of the counter name.
 
-.OpenMetrics text mapping for a Histogram metric
-[cols="2,1,2,1"]
+
+==== Histogram
+
+.Example Histogram with unit `meters` in Prometheus format.
+[source, ruby]
+----
+# HELP distance_to_hole_meters_max Distance of golf ball to hole <1>
+# TYPE distance_to_hole_meters_max gauge <2>
+distance_to_hole_meters_max{scope="golf_stats"} 12.722726616315509 <3>
+# HELP distance_to_hole_meters Distance of golf ball to hole <1>
+# TYPE distance_to_hole_meters summary <2>
+distance_to_hole_meters{scope="golf_stats",quantile="0.5"} 2.8748779296875 <3>
+distance_to_hole_meters{scope="golf_stats",quantile="0.75"} 4.4998779296875 <3>
+distance_to_hole_meters{scope="golf_stats",quantile="0.95"} 7.9998779296875 <3>
+distance_to_hole_meters{scope="golf_stats",quantile="0.98"} 9.4998779296875 <3>
+distance_to_hole_meters{scope="golf_stats",quantile="0.99"} 11.9998779296875 <3>
+distance_to_hole_meters{scope="golf_stats",quantile="0.999"} 12.9998779296875 <3>
+distance_to_hole_meters_count{scope="golf_stats"} 487.0 <3>
+distance_to_hole_meters_sum{scope="golf_stats"} 1569.3785694223322 <3>
+----
+
+`Histogram` output is comprised of a maximum section and a summary section.
+
+<1> The description of the histogram must be provided on the HELP lines for the maximum and summary
+
+<2> The type of the metrics, in this case `gauge` (for the maximum) and `summary` for the summary. The `summary` type is comprised of the count, sum and multiple quantile values.
+
+<3> The value of each metric included in the output is described in the table below. Tags, if provided, are included in brackets separated by commas. Percentile metrics include a `quantile` label that is merged with the metric's tags.
+
+
+.Prometheus format mapping for a Histogram metric
+[cols="6,4,8,3"]
 |===
 | Suffix{label}                   | TYPE    | Value (Histogram method)            | Units
 
-| `min_<units>`                   | Gauge   | `getSnapshot().getMin()`            | <units>^1^
-| `max_<units>`                   | Gauge   | `getSnapshot().getMax()`            | <units>^1^
-| `mean_<units>`                  | Gauge   | `getSnapshot().getMean()`           | <units>^1^
-| `<units>_count`^2^              | Summary | `getCount()`                        | N/A
-| `<units>_sum`^2^                | Summary | `getSum()`                          | <units>^1^
-| `<units>{quantile="0.5"}`^2^    | Summary | `getSnapshot().getMedian()`         | <units>^1^
-| `<units>{quantile="0.75"}`^2^   | Summary | `getSnapshot().get75thPercentile()` | <units>^1^
-| `<units>{quantile="0.95"}`^2^   | Summary | `getSnapshot().get95thPercentile()` | <units>^1^
-| `<units>{quantile="0.98"}`^2^   | Summary | `getSnapshot().get98thPercentile()` | <units>^1^
-| `<units>{quantile="0.99"}`^2^   | Summary | `getSnapshot().get99thPercentile()` | <units>^1^
-| `<units>{quantile="0.999"}`^2^  | Summary | `getSnapshot().get999thPercentile()`| <units>^1^
+| `<units>_max`                   | Gauge   | `getSnapshot().getMax()`            | <units>
+| `<units>{quantile="0.5"}`       | Summary | `getSnapshot().getMedian()`         | <units>
+| `<units>{quantile="0.75"}`      | Summary | `getSnapshot().get75thPercentile()` | <units>
+| `<units>{quantile="0.95"}`      | Summary | `getSnapshot().get95thPercentile()` | <units>
+| `<units>{quantile="0.98"}`      | Summary | `getSnapshot().get98thPercentile()` | <units>
+| `<units>{quantile="0.99"}`      | Summary | `getSnapshot().get99thPercentile()` | <units>
+| `<units>{quantile="0.999"}`     | Summary | `getSnapshot().get999thPercentile()`| <units>
+| `<units>_count`                 | Summary | `getCount()`                        | <units>
+| `<units>_sum`                   | Summary | `getSum()`                          | <units>
 |===
 
-^1^ The implementation is expected to convert the result returned by the `Histogram` into the base unit (if known). The `<unit>` represents the base metric unit and is named according to  <<OpenMetrics_units>>.
 
-^2^ The `summary` type is a complex metric type for OpenMetrics which consists of the count, sum and multiple quantile values.
 
-.Example OpenMetrics text format for a Histogram with unit bytes.
+==== Timer
+
+.Example Timer in Prometheus format.  Timers use `seconds` as the unit.
 [source, ruby]
 ----
-# TYPE application_file_sizes_mean_bytes gauge
-application_file_sizes_mean_bytes 4738.231
-# TYPE application_file_sizes_max_bytes gauge
-application_file_sizes_max_bytes 31716
-# TYPE application_file_sizes_min_bytes gauge
-application_file_sizes_min_bytes 180
-# TYPE application_file_sizes_stddev_bytes gauge
-application_file_sizes_stddev_bytes 1054.7343037063602
-# TYPE application_file_sizes_bytes summary
-# HELP application_file_sizes_bytes Users file size
-application_file_sizes_bytes_count 2037
-application_file_sizes_bytes_sum 48123
-application_file_sizes_bytes{quantile="0.5"} 4201
-application_file_sizes_bytes{quantile="0.75"} 6175
-application_file_sizes_bytes{quantile="0.95"} 13560
-application_file_sizes_bytes{quantile="0.98"} 29643
-application_file_sizes_bytes{quantile="0.99"} 31716
-application_file_sizes_bytes{quantile="0.999"} 31716
+# HELP myClass_myMethod_seconds duration of myMethod <1>
+# TYPE myClass_myMethod_seconds summary <2>
+myClass_myMethod_seconds{scope="vendor",quantile="0.5"} 0.0524288 <3>
+myClass_myMethod_seconds{scope="vendor",quantile="0.75"} 0.0524288 <3>
+myClass_myMethod_seconds{scope="vendor",quantile="0.95"} 0.054525952 <3>
+myClass_myMethod_seconds{scope="vendor",quantile="0.98"} 0.054525952 <3>
+myClass_myMethod_seconds{scope="vendor",quantile="0.99"} 0.054525952 <3>
+myClass_myMethod_seconds{scope="vendor",quantile="0.999"} 0.054525952 <3>
+myClass_myMethod_seconds_count{scope="vendor"} 100.0 <3>
+myClass_myMethod_seconds_sum{scope="vendor"} 5.310349419 <3>
+# HELP myClass_myMethod_seconds_max duration of myMethod <1>
+# TYPE myClass_myMethod_seconds_max gauge <2>
+myClass_myMethod_seconds_max{scope="vendor"} 0.05507899 <3>
 ----
 
+`Timer` output is comprised of a maximum section and a summary section.
 
-==== Timer OpenMetrics Text Format
+<1> The description of the timer must be provided on the HELP lines for the maximum and summary
 
-`Timer` is a complex metric type comprised of multiple key/values. Each key will require a suffix to be appended to the metric name. The format is specified by the table below.
+<2> The type of the metrics, in this case `gauge` (for the maximum) and `summary` for the summary. The `summary` type is comprised of the count, sum and multiple quantile values.
 
-The `# HELP` description line is only required for the `summary` value as shown below.
-The OpenMetrics name is composed `<scope>_<metric-name>_<suffix>`.
-The `quantile` OpenMetrics label is merged with the metric's tags.
+<3> The value of each metric included in the output is described in the table below. Tags, if provided, are included in brackets separated by commas. Percentile metrics include a `quantile` label that is merged with the metric's tags.
 
-.OpenMetrics text mapping for a Timer metric
-[cols="2,1,2,1"]
+
+.Prometheus format mapping for a Timer metric
+[cols="6,4,8,3"]
 |===
 | Suffix{label}                   | TYPE    | Value (Timer method)                | Units
 
-| `min_seconds`                   | Gauge   | `getSnapshot().getMin()`            | SECONDS^1^
 | `max_seconds`                   | Gauge   | `getSnapshot().getMax()`            | SECONDS^1^
-| `mean_seconds`                  | Gauge   | `getSnapshot().getMean()`           | SECONDS^1^
-| `seconds_count`^2^              | Summary | `getCount()`                        | N/A
-| `seconds_sum`^2^                | Summary | `getElapsedTime()`                  | SECONDS^1^
-| `seconds{quantile="0.5"}`^2^    | Summary | `getSnapshot().getMedian()`         | SECONDS^1^
-| `seconds{quantile="0.75"}`^2^   | Summary | `getSnapshot().get75thPercentile()` | SECONDS^1^
-| `seconds{quantile="0.95"}`^2^   | Summary | `getSnapshot().get95thPercentile()` | SECONDS^1^
-| `seconds{quantile="0.98"}`^2^   | Summary | `getSnapshot().get98thPercentile()` | SECONDS^1^
-| `seconds{quantile="0.99"}`^2^   | Summary | `getSnapshot().get99thPercentile()` | SECONDS^1^
-| `seconds{quantile="0.999"}`^2^  | Summary | `getSnapshot().get999thPercentile()`| SECONDS^1^
+| `seconds{quantile="0.5"}`       | Summary | `getSnapshot().getMedian()`         | SECONDS^1^
+| `seconds{quantile="0.75"}`      | Summary | `getSnapshot().get75thPercentile()` | SECONDS^1^
+| `seconds{quantile="0.95"}`      | Summary | `getSnapshot().get95thPercentile()` | SECONDS^1^
+| `seconds{quantile="0.98"}`      | Summary | `getSnapshot().get98thPercentile()` | SECONDS^1^
+| `seconds{quantile="0.99"}`      | Summary | `getSnapshot().get99thPercentile()` | SECONDS^1^
+| `seconds{quantile="0.999"}`     | Summary | `getSnapshot().get999thPercentile()`| SECONDS^1^
+| `seconds_count`                 | Summary | `getCount()`                        | SECONDS^1^
+| `seconds_sum`                   | Summary | `getElapsedTime()`                  | SECONDS^1^
 |===
 
 ^1^ The implementation is expected to convert the result returned by the `Timer` into seconds
 
-^2^ The `summary` type is a complex metric type for OpenMetrics which consists of the count and multiple quantile values.
-
-.Example OpenMetrics text format for a Timer
-[source, ruby]
-----
-# TYPE application_response_time_rate_per_second gauge
-application_response_time_rate_per_second  0.004292520715985437
-# TYPE application_response_time_one_min_rate_per_second gauge
-application_response_time_one_min_rate_per_second  2.794076465421066E-14
-# TYPE application_response_time_five_min_rate_per_second  gauge
-application_response_time_five_min_rate_per_second  4.800392614619373E-4
-# TYPE application_response_time_fifteen_min_rate_per_second  gauge
-application_response_time_fifteen_min_rate_per_second  0.01063191047532505
-# TYPE application_response_time_mean_seconds gauge
-application_response_time_mean_seconds 0.000415041
-# TYPE application_response_time_max_seconds gauge
-application_response_time_max_seconds 0.0005608694
-# TYPE application_response_time_min_seconds gauge
-application_response_time_min_seconds 0.000169916
-# TYPE application_response_time_stddev_seconds gauge
-application_response_time_stddev_seconds 0.000652907
-# TYPE application_response_time_seconds summary
-# HELP application_response_time_seconds Server response time for /index.html
-application_response_time_seconds_count 80
-application_response_time_seconds_sum  0.023
-application_response_time_seconds{quantile="0.5"} 0.0002933240
-application_response_time_seconds{quantile="0.75"} 0.000344914
-application_response_time_seconds{quantile="0.95"} 0.000543647
-application_response_time_seconds{quantile="0.98"} 0.002706543
-application_response_time_seconds{quantile="0.99"} 0.005608694
-application_response_time_seconds{quantile="0.999"} 0.005608694
-----
 
 
 === Security
