@@ -47,6 +47,8 @@ import jakarta.inject.Inject;
 @RunWith(Arquillian.class)
 public class MetricRegistryTest {
 
+    private static final String CUSTOM_SCOPE = "customScope";
+
     @Inject
     @Metric(name = "nameTest", absolute = true)
     private Counter nameTest;
@@ -61,6 +63,10 @@ public class MetricRegistryTest {
     @Inject
     @RegistryType(scope = MetricRegistry.VENDOR_SCOPE)
     private MetricRegistry vendorMetrics;
+
+    @Inject
+    @RegistryType(scope = CUSTOM_SCOPE)
+    private MetricRegistry customScope;
 
     @Deployment
     public static WebArchive createDeployment() {
@@ -109,6 +115,7 @@ public class MetricRegistryTest {
         Assert.assertEquals(MetricRegistry.APPLICATION_SCOPE, metrics.getScope());
         Assert.assertEquals(MetricRegistry.BASE_SCOPE, baseMetrics.getScope());
         Assert.assertEquals(MetricRegistry.VENDOR_SCOPE, vendorMetrics.getScope());
+        Assert.assertEquals(CUSTOM_SCOPE, customScope.getScope());
     }
 
     private void assertExists(Class<? extends org.eclipse.microprofile.metrics.Metric> expected, MetricID metricID) {

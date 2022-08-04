@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 
 /**
- * The scope of Metric Registry to inject.
+ * Specifies the scope of Metric Registry to inject.
  * <p>
  * This can be used to obtain the respective scoped {@link MetricRegistry}:
  * </p>

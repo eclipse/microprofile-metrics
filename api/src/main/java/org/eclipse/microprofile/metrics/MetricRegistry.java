@@ -719,9 +719,9 @@ public interface MetricRegistry {
     Map<String, Metadata> getMetadata();
 
     /**
-     * Returns the type of this metric registry.
+     * Returns the scope of this metric registry.
      *
-     * @return Type of this registry (VENDOR, BASE, APPLICATION)
+     * @return Scope of this registry (VENDOR, BASE, APPLICATION)
      */
     String getScope();
 

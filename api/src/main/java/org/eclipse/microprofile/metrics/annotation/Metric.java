@@ -116,9 +116,9 @@ public @interface Metric {
     String unit() default MetricUnits.NONE;
 
     /**
-     * The scope that this counter belongs to.
+     * The scope that this metric belongs to.
      * 
-     * @return The scope this counter belongs to. By default, the value is {@link MetricRegistry.APPLICATION_SCOPE}.
+     * @return The scope this metric belongs to. By default, the value is {@link MetricRegistry.APPLICATION_SCOPE}.
      *
      */
     @Nonbinding
