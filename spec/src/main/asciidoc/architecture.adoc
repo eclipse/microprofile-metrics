@@ -277,9 +277,9 @@ The API MUST NOT return a 500 Internal Server Error code to represent a non-exis
 |===
 | Endpoint | Request Type | Supported Formats | Description
 
-| `/metrics` | GET | JSON, OpenMetrics | Returns all registered metrics
-| `/metrics?scope=<scope_name>` | GET | JSON, OpenMetrics | Returns metrics registered for the respective scope. Scopes are listed in <<metrics-setup>>
-| `/metrics?scope=<scope_name>&name=<metric_name>` | GET | JSON, OpenMetrics | Returns metrics that match the metric name for the respective scope
+| `/metrics` | GET | JSON, Prometheus, OpenMetrics | Returns all registered metrics
+| `/metrics?scope=<scope_name>` | GET | JSON, Prometheus, OpenMetrics | Returns metrics registered for the respective scope. Scopes are listed in <<metrics-setup>>
+| `/metrics?scope=<scope_name>&name=<metric_name>` | GET | JSON, Prometheus, OpenMetrics | Returns metrics that match the metric name for the respective scope
 | `/metrics` | OPTIONS | JSON | Returns all registered metrics' metadata
 | `/metrics?scope=<scope_name>` | OPTIONS | JSON | Returns metrics' metadata registered for the respective scope. Scopes are listed in <<metrics-setup>>
 | `/metrics?scope=<scope_name>&name=<metric_name>` | OPTIONS | JSON | Returns the metric's metadata that matches the metric name for the respective scope
