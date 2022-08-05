@@ -73,8 +73,9 @@
  * <h2>RegistryScope annotation</h2>
  * <p>
  * The {@link org.eclipse.microprofile.metrics.annotation.RegistryScope RegistryScope} is used to identify which
- * <code>MetricRegistry</code> (Application, Base, Vendor or a user-defined scope) should be injected. By default, no
- * <code>RegistryScope</code> will inject the application <code>MetricRegistry</code>.
+ * <code>MetricRegistry</code> (Application, Base, Vendor or a user-defined scope) should be injected. Injecting a
+ * <code>MetricRegistry</code> without a <code>RegistryScope</code> annotation gives the application-scoped
+ * <code>MetricRegistry</code>.
  *
  * <pre>
  * <code>
