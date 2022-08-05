@@ -22,11 +22,31 @@
 
 === Alternatives considered
 
-Jolokia JMX-HTTP bridge. Using this for application specific metrics would require those metrics
-to be exposed to JMX first, which many users are not familiar with.
+We addressed some significant questions while creating MicroProfile Metrics v5.0.
+
+*API or no API*
+
+In light of the increasing prevalence of developer use of APIs from Micrometer and OpenTelemetry, we considered whether we should continue to have a distinct API for MicroProfile Metrics. We decided to continue our path of providing an API for the following reasons:
+
+1. provides an easy-to-use metrics API for application developers
+2. provides continuity for the existing MicroProfile Metrics user community
+3. provides a MicroProfile-style API (for example, CDI-based annotations), and configurability (MicroProfile Config), for ease of adoption by MicroProfile users
+4. ensures compatibility across APIs within the same MicroProfile release
+
+We also considered feedback from an informal poll asking if users would use a MicroProfile Metrics API, given the other options.
+
+
+*Fixed implementation or vendor-chosen implementation*
+
+We considered whether MicroProfile Metrics should require vendors to use a particular metrics library in their implementations. The benefit of requiring a particular metrics library would be the potential for improved consistency across vendors. The benefits of not requiring a particular metrics library would be avoiding MicroProfile potentially overreaching by telling vendors which libraries to use, and leaving flexibility for vendors to change their implementation in the future if needed. Ultimately, we decided to not require a specific metrics library to be used in the implementation. Vendors may choose to implement using Micrometer libraries, OpenTelemetry libraries, Dropwizard libraries, custom code, or anything else they choose.
+
 
 [[references]]
 === References
+
+https://micrometer.io/[Micrometer]
+
+https://opentelemetry.io/docs/reference/specification/metrics/[OpenTelemetry Metrics]
 
 https://github.com/dropwizard/metrics/tree/v3.2.3[Dropwizard Metrics 3.2.3]
 
