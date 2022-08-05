@@ -38,11 +38,11 @@ import org.eclipse.microprofile.metrics.MetricRegistry;
  * <pre>
  * <code>
  *      {@literal @}Inject
- *      {@literal @}RegistryType(scope=MetricRegistry.APPLICATION_SCOPE)
+ *      {@literal @}RegistryScope(scope=MetricRegistry.APPLICATION_SCOPE)
  *      MetricRegistry appRegistry;
  * 
  *      {@literal @}Inject
- *      {@literal @}RegistryType(scope="customScope")
+ *      {@literal @}RegistryScope(scope="customScope")
  *      MetricRegistry customRegistry;
  * 
  * </code>
@@ -57,12 +57,13 @@ import org.eclipse.microprofile.metrics.MetricRegistry;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
-public @interface RegistryType {
+public @interface RegistryScope {
     /**
      * The scope of the MetricRegistry.
      * 
-     * @return Returns or creates the scope of the MetricRegistry. The MicroProfile runtimes provides
-     *         {@code application}, {@code base} and {@code vendor} scopes as part of the runtime.
+     * @return Indicates the scope of the MetricRegistry to be injected. The MicroProfile runtimes provides
+     *         {@code application}, {@code base} and {@code vendor} scopes automatically and creates user-defined scopes
+     *         as needed.
      * 
      *         see {@link MetricRegistry.APPLICATION_SCOPE}, {@link MetricRegistry.BASE_SCOPE} and
      *         {@link MetricRegistry.VENDOR_SCOPE}

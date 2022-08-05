@@ -42,10 +42,19 @@ import java.util.function.Supplier;
  */
 public interface MetricRegistry {
 
+    /**
+     * String constant to represent the scope value used for the application scope
+     */
     public static final String APPLICATION_SCOPE = "application";
 
+    /**
+     * String constant to represent the scope value used for the vendor scope
+     */
     public static final String VENDOR_SCOPE = "vendor";
 
+    /**
+     * String constant to represent the scope value used for the base scope
+     */
     public static final String BASE_SCOPE = "base";
 
     /**

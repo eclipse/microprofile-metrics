@@ -31,7 +31,7 @@ import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.MetricType;
 import org.eclipse.microprofile.metrics.Tag;
 import org.eclipse.microprofile.metrics.annotation.Metric;
-import org.eclipse.microprofile.metrics.annotation.RegistryType;
+import org.eclipse.microprofile.metrics.annotation.RegistryScope;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -57,15 +57,15 @@ public class MetricRegistryTest {
     private MetricRegistry metrics;
 
     @Inject
-    @RegistryType(scope = MetricRegistry.BASE_SCOPE)
+    @RegistryScope(scope = MetricRegistry.BASE_SCOPE)
     private MetricRegistry baseMetrics;
 
     @Inject
-    @RegistryType(scope = MetricRegistry.VENDOR_SCOPE)
+    @RegistryScope(scope = MetricRegistry.VENDOR_SCOPE)
     private MetricRegistry vendorMetrics;
 
     @Inject
-    @RegistryType(scope = CUSTOM_SCOPE)
+    @RegistryScope(scope = CUSTOM_SCOPE)
     private MetricRegistry customScope;
 
     @Deployment
@@ -111,7 +111,7 @@ public class MetricRegistryTest {
 
     @Test
     @InSequence(5)
-    public void testMetricRegistryType() {
+    public void testMetricRegistryScope() {
         Assert.assertEquals(MetricRegistry.APPLICATION_SCOPE, metrics.getScope());
         Assert.assertEquals(MetricRegistry.BASE_SCOPE, baseMetrics.getScope());
         Assert.assertEquals(MetricRegistry.VENDOR_SCOPE, vendorMetrics.getScope());

@@ -90,9 +90,9 @@ public class MetricRegistryFactory {
 
     @Produces
     @Default
-    public MetricRegistry getApplicationRegistry(InjectionPoint ip) {
+    public MetricRegistry getMetricRegistry(InjectionPoint ip) {
 
-        RegistryType registryTypeAnnotation = ip.getAnnotated().getAnnotation(RegistryType.class);
+        RegistryScope registryTypeAnnotation = ip.getAnnotated().getAnnotation(RegistryScope.class);
 
         if (registryTypeAnnotation == null) {
             return getOrCreate(MetricRegistry.APPLICATION_SCOPE);
