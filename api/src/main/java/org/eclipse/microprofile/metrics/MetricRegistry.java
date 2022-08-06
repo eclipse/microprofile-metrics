@@ -43,42 +43,19 @@ import java.util.function.Supplier;
 public interface MetricRegistry {
 
     /**
-     * An enumeration representing the scopes of the MetricRegistry
+     * String constant to represent the scope value used for the application scope
      */
-    enum Type {
-        /**
-         * The Application (default) scoped MetricRegistry. Any metric registered/accessed via CDI will use this
-         * MetricRegistry.
-         */
-        APPLICATION("application"),
+    public static final String APPLICATION_SCOPE = "application";
 
-        /**
-         * The Base scoped MetricRegistry. This MetricRegistry will contain required metrics specified in the
-         * MicroProfile Metrics specification.
-         */
-        BASE("base"),
+    /**
+     * String constant to represent the scope value used for the vendor scope
+     */
+    public static final String VENDOR_SCOPE = "vendor";
 
-        /**
-         * The Vendor scoped MetricRegistry. This MetricRegistry will contain vendor provided metrics which may vary
-         * between different vendors.
-         */
-        VENDOR("vendor");
-
-        private final String name;
-
-        Type(String name) {
-            this.name = name;
-        }
-
-        /**
-         * Returns the name of the MetricRegistry scope.
-         *
-         * @return the scope
-         */
-        public String getName() {
-            return name;
-        }
-    }
+    /**
+     * String constant to represent the scope value used for the base scope
+     */
+    public static final String BASE_SCOPE = "base";
 
     /**
      * Concatenates elements to form a dotted name, eliding any null values or empty strings.
@@ -751,10 +728,10 @@ public interface MetricRegistry {
     Map<String, Metadata> getMetadata();
 
     /**
-     * Returns the type of this metric registry.
+     * Returns the scope of this metric registry.
      *
-     * @return Type of this registry (VENDOR, BASE, APPLICATION)
+     * @return Scope of this registry (VENDOR, BASE, APPLICATION)
      */
-    Type getType();
+    String getScope();
 
 }

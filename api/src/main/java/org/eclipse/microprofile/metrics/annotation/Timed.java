@@ -29,6 +29,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.MetricUnits;
 
 import jakarta.enterprise.util.Nonbinding;
@@ -137,5 +138,14 @@ public @interface Timed {
      */
     @Nonbinding
     String unit() default MetricUnits.NANOSECONDS;
+
+    /**
+     * The scope that this Timer belongs to.
+     * 
+     * @return The scope this Timer belongs to. By default, the value is {@link MetricRegistry.APPLICATION_SCOPE}.
+     *
+     */
+    @Nonbinding
+    String scope() default MetricRegistry.APPLICATION_SCOPE;
 
 }

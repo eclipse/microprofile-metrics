@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017, 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
  *               2012 Ryan W Tenney (ryan@10e.us)
  *
  * See the NOTICES file(s) distributed with this work for additional
@@ -27,6 +27,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.MetricUnits;
 
 import jakarta.enterprise.util.Nonbinding;
@@ -114,4 +115,12 @@ public @interface Metric {
     @Nonbinding
     String unit() default MetricUnits.NONE;
 
+    /**
+     * The scope that this metric belongs to.
+     * 
+     * @return The scope this metric belongs to. By default, the value is {@link MetricRegistry.APPLICATION_SCOPE}.
+     *
+     */
+    @Nonbinding
+    String scope() default MetricRegistry.APPLICATION_SCOPE;
 }
