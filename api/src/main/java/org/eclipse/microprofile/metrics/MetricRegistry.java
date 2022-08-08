@@ -565,7 +565,7 @@ public interface MetricRegistry {
      *
      * @param name
      *            the name of the metric
-     * @return the {@link Metadata} for the provided name of {@code null} if none has been registered for that name
+     * @return the {@link Metadata} for the provided name or {@code null} if none has been registered for that name
      *
      * @since 3.0
      */
@@ -691,7 +691,7 @@ public interface MetricRegistry {
     /**
      * Returns a map of all the metrics in the registry and their {@link MetricID}s which match the given filter and
      * which are assignable to the provided type.
-     * 
+     *
      * @param ofType
      *            the type to which all returned metrics should be assignable
      * @param filter
@@ -730,7 +730,7 @@ public interface MetricRegistry {
     /**
      * Returns the scope of this metric registry.
      *
-     * @return Scope of this registry (VENDOR, BASE, APPLICATION)
+     * @return Scope of this registry (VENDOR_SCOPE, BASE_SCOPE, APPLICATION_SCOPE, or a custom scope)
      */
     String getScope();
 
