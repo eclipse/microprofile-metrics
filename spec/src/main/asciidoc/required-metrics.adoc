@@ -234,10 +234,10 @@ Vendors should either use other metrics that are close enough as substitute or n
 |Name| cpu.processCpuLoad
 |DisplayName| Process CPU Load
 |Type| Gauge
-|Unit| Ratio
+|Unit| Percent
 |Description| Displays the "recent cpu usage" for the Java Virtual Machine process
 |MBean| java.lang:type=OperatingSystem (com.sun.management.UnixOperatingSystemMXBean for Oracle Java, similar one exists for IBM Java: com.ibm.lang.management.ExtendedOperatingSystem)
-Note: This is a vendor specific attribute/operation that is not defined in java.lang. The MicroProfile Metrics runtime must convert to a ratio if necessary. A ratio is value from 0.0-1.0.
+Note: This is a vendor specific attribute/operation that is not defined in java.lang
 |===
 
 *(Optional) ProcessCpuTime*
