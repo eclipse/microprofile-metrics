@@ -63,6 +63,27 @@ public class MetricAppBean {
     public static final String NO_TAG_GAUGE = "noTagGauge";
     public static final String TAGGED_GAUGE = "taggedGauge";
 
+    public static final String SHARED_METRIC_NAME = "sharedMetricName";
+
+    @Counted(name = SHARED_METRIC_NAME, absolute = true, scope = "customScopeA")
+    public void countMeMetricNameScopeA() {
+
+    }
+
+    @Timed(name = SHARED_METRIC_NAME, absolute = true, scope = "customScopeB")
+    public void timeMeMetricNameScopeB() {
+
+    }
+
+    @org.eclipse.microprofile.metrics.annotation.Gauge(name = SHARED_METRIC_NAME, absolute = true, scope = "customScopeC", unit = "jelly")
+    public long gaugeMeMetricNameScopeC() {
+        return 123L;
+    }
+
+    @Inject
+    @Metric(name = SHARED_METRIC_NAME, absolute = true, scope = "customScopeD", unit = "marshmellow")
+    private Histogram histogramMetricNameScopeD;
+
     @Inject
     @Metric(name = "semiColonTaggedCounter", tags = {"scTag=semi;colons;are;bad"})
     private Counter semiColonTaggedCounter;
