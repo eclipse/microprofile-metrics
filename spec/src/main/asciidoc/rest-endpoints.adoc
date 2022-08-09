@@ -428,11 +428,11 @@ distance_to_hole_meters_sum{_scope="golf_stats"} 1569.3785694223322 <3>
 
 | `<units>_max`                   | Gauge   | `getSnapshot().getMax()`            | <units>
 | `<units>{quantile="0.5"}`       | Summary | `getSnapshot().getMedian()`         | <units>
-| `<units>{quantile="0.75"}`      | Summary | `getSnapshot().get75thPercentile()` | <units>
-| `<units>{quantile="0.95"}`      | Summary | `getSnapshot().get95thPercentile()` | <units>
-| `<units>{quantile="0.98"}`      | Summary | `getSnapshot().get98thPercentile()` | <units>
-| `<units>{quantile="0.99"}`      | Summary | `getSnapshot().get99thPercentile()` | <units>
-| `<units>{quantile="0.999"}`     | Summary | `getSnapshot().get999thPercentile()`| <units>
+| `<units>{quantile="0.75"}`      | Summary | `getSnapshot().getValue(0.75)`      | <units>
+| `<units>{quantile="0.95"}`      | Summary | `getSnapshot().getValue(0.95)`      | <units>
+| `<units>{quantile="0.98"}`      | Summary | `getSnapshot().getValue(0.98)`      | <units>
+| `<units>{quantile="0.99"}`      | Summary | `getSnapshot().getValue(0.99)`      | <units>
+| `<units>{quantile="0.999"}`     | Summary | `getSnapshot().getValue(0.999)`     | <units>
 | `<units>_count`                 | Summary | `getCount()`                        | <units>
 | `<units>_sum`                   | Summary | `getSum()`                          | <units>
 |===
@@ -475,11 +475,11 @@ myClass_myMethod_seconds_max{_scope="vendor"} 0.05507899 <3>
 
 | `max_seconds`                   | Gauge   | `getSnapshot().getMax()`            | SECONDS^1^
 | `seconds{quantile="0.5"}`       | Summary | `getSnapshot().getMedian()`         | SECONDS^1^
-| `seconds{quantile="0.75"}`      | Summary | `getSnapshot().get75thPercentile()` | SECONDS^1^
-| `seconds{quantile="0.95"}`      | Summary | `getSnapshot().get95thPercentile()` | SECONDS^1^
-| `seconds{quantile="0.98"}`      | Summary | `getSnapshot().get98thPercentile()` | SECONDS^1^
-| `seconds{quantile="0.99"}`      | Summary | `getSnapshot().get99thPercentile()` | SECONDS^1^
-| `seconds{quantile="0.999"}`     | Summary | `getSnapshot().get999thPercentile()`| SECONDS^1^
+| `seconds{quantile="0.75"}`      | Summary | `getSnapshot().getValue(0.75)`      | SECONDS^1^
+| `seconds{quantile="0.95"}`      | Summary | `getSnapshot().getValue(0.95)`      | SECONDS^1^
+| `seconds{quantile="0.98"}`      | Summary | `getSnapshot().getValue(0.98)`      | SECONDS^1^
+| `seconds{quantile="0.99"}`      | Summary | `getSnapshot().getValue(0.99)`      | SECONDS^1^
+| `seconds{quantile="0.999"}`     | Summary | `getSnapshot().getValue(0.999)`     | SECONDS^1^
 | `seconds_count`                 | Summary | `getCount()`                        | SECONDS^1^
 | `seconds_sum`                   | Summary | `getElapsedTime()`                  | SECONDS^1^
 |===

@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
  *               2010-2013 Coda Hale, Yammer.com
  *
  * See the NOTICES file(s) distributed with this work for additional
@@ -39,79 +39,18 @@ public abstract class Snapshot {
     public abstract double getValue(double quantile);
 
     /**
-     * Returns the entire set of values in the snapshot.
-     *
-     * @return the entire set of values
-     */
-    public abstract long[] getValues();
-
-    /**
      * Returns the number of values in the snapshot.
      *
      * @return the number of values
      */
-    public abstract int size();
-
-    /**
-     * Returns the median value in the distribution.
-     *
-     * @return the median value
-     */
-    public double getMedian() {
-        return getValue(0.5);
-    }
-
-    /**
-     * Returns the value at the 75th percentile in the distribution.
-     *
-     * @return the value at the 75th percentile
-     */
-    public double get75thPercentile() {
-        return getValue(0.75);
-    }
-
-    /**
-     * Returns the value at the 95th percentile in the distribution.
-     *
-     * @return the value at the 95th percentile
-     */
-    public double get95thPercentile() {
-        return getValue(0.95);
-    }
-
-    /**
-     * Returns the value at the 98th percentile in the distribution.
-     *
-     * @return the value at the 98th percentile
-     */
-    public double get98thPercentile() {
-        return getValue(0.98);
-    }
-
-    /**
-     * Returns the value at the 99th percentile in the distribution.
-     *
-     * @return the value at the 99th percentile
-     */
-    public double get99thPercentile() {
-        return getValue(0.99);
-    }
-
-    /**
-     * Returns the value at the 99.9th percentile in the distribution.
-     *
-     * @return the value at the 99.9th percentile
-     */
-    public double get999thPercentile() {
-        return getValue(0.999);
-    }
+    public abstract long size();
 
     /**
      * Returns the highest value in the snapshot.
      *
      * @return the highest value
      */
-    public abstract long getMax();
+    public abstract double getMax();
 
     /**
      * Returns the arithmetic mean of the values in the snapshot.
@@ -121,18 +60,12 @@ public abstract class Snapshot {
     public abstract double getMean();
 
     /**
-     * Returns the lowest value in the snapshot.
+     * Returns an array of {@link PercentileValue} containing the percentiles and associated values of this
+     * {@link Snapshot} at the moment invocation.
      *
-     * @return the lowest value
+     * @return an array of {@link PercentileValue}
      */
-    public abstract long getMin();
-
-    /**
-     * Returns the standard deviation of the values in the snapshot.
-     *
-     * @return the standard value
-     */
-    public abstract double getStdDev();
+    public abstract PercentileValue[] percentileValues();
 
     /**
      * Writes the values of the snapshot to the given stream.
@@ -142,4 +75,48 @@ public abstract class Snapshot {
      */
     public abstract void dump(OutputStream output);
 
+    /**
+     * Represents a percentile and its value at the moment it was sampled from the Snapshot.
+     * 
+     * See {@link #percentileValue()}
+     */
+    public static class PercentileValue {
+        private final double percentile;
+        private final double value;
+
+        /**
+         * 
+         * @param percentile
+         *            percentile
+         * @param value
+         *            value of percentile
+         */
+        public PercentileValue(double percentile, double value) {
+            this.percentile = percentile;
+            this.value = value;
+        }
+
+        /**
+         * Returns percentile
+         * 
+         * @return double percentile
+         */
+        public double getPercentile() {
+            return this.percentile;
+        }
+
+        /**
+         * Returns value at percentile
+         * 
+         * @return double value at percentile
+         */
+        public double getValue() {
+            return this.value;
+        }
+
+        public String toString() {
+            return "[Percentile: " + (this.percentile * 100.0) + "% with Value: " + this.value + "]";
+        }
+
+    }
 }

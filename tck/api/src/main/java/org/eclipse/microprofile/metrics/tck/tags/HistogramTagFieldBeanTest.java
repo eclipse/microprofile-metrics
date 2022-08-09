@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2019, 2022 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -104,12 +104,10 @@ public class HistogramTagFieldBeanTest {
 
         assertThat("Histogram count is incorrect", histogramOne.getCount(), is(equalTo(1L)));
         assertThat("Histogram size is incorrect", histogramOne.getSnapshot().size(), is(equalTo(1)));
-        assertThat("Histogram min value is incorrect", histogramOne.getSnapshot().getMin(), is(equalTo(value)));
         assertThat("Histogram max value is incorrect", histogramOne.getSnapshot().getMax(), is(equalTo(value)));
 
         assertThat("Histogram count is incorrect", histogramTwo.getCount(), is(equalTo(1L)));
         assertThat("Histogram size is incorrect", histogramTwo.getSnapshot().size(), is(equalTo(1)));
-        assertThat("Histogram min value is incorrect", histogramTwo.getSnapshot().getMin(), is(equalTo(valueTwo)));
         assertThat("Histogram max value is incorrect", histogramTwo.getSnapshot().getMax(), is(equalTo(valueTwo)));
     }
 }

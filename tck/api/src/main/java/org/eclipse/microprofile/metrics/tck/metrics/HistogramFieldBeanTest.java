@@ -1,4 +1,5 @@
 /**
+ * Copyright (c) 2013, 2022 Contributors to the Eclipse Foundation
  * Copyright © 2013 Antonin Stefanutti (antonin.stefanutti@gmail.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -86,7 +87,6 @@ public class HistogramFieldBeanTest {
         assertThat("Histogram count is incorrect", histogram.getCount(), is(equalTo(1L)));
         assertThat("Histogram sum is incorrect", histogram.getSum(), is(equalTo(value)));
         assertThat("Histogram size is incorrect", histogram.getSnapshot().size(), is(equalTo(1)));
-        assertThat("Histogram min value is incorrect", histogram.getSnapshot().getMin(), is(equalTo(value)));
         assertThat("Histogram max value is incorrect", histogram.getSnapshot().getMax(), is(equalTo(value)));
     }
 }
