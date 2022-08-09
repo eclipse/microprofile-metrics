@@ -25,7 +25,7 @@
 package org.eclipse.microprofile.metrics.test;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.CoreMatchers.containsString;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -43,8 +43,6 @@ import org.junit.runner.RunWith;
 
 import io.restassured.RestAssured;
 import io.restassured.builder.ResponseBuilder;
-import io.restassured.http.Header;
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import jakarta.inject.Inject;
 
@@ -54,13 +52,19 @@ import jakarta.inject.Inject;
 @RunWith(Arquillian.class)
 public class ReusedMetricsTest {
 
-    private static final String JSON_APP_LABEL_REGEX = ";_app=[-/A-Za-z0-9]+([;\\\"]?)";
-    private static final String JSON_APP_LABEL_REGEXS_SUB = "$1";
-
-    private static final String APPLICATION_JSON = "application/json";
+    private static final String OPENMETRICS_APP_LABEL_REGEX = "_app=\"[-/A-Za-z0-9]+\"";
+    private static final String TEXT_PLAIN = "text/plain";
     private static final String DEFAULT_PROTOCOL = "http";
     private static final String DEFAULT_HOST = "localhost";
     private static final int DEFAULT_PORT = 8080;
+
+    /*
+     * Filters out _app tag plus any leading or trailing commas
+     */
+    private static String filterOutAppLabelPromMetrics(String responseBody) {
+        return responseBody.replaceAll(OPENMETRICS_APP_LABEL_REGEX, "").replaceAll("\\{,", "{").replaceAll(",\\}",
+                "}");
+    }
 
     @Inject
     private MetricAppBean2 metricAppBean;
@@ -114,20 +118,18 @@ public class ReusedMetricsTest {
     @InSequence(2)
     public void testSharedCounter() {
 
-        Header acceptJson = new Header("Accept", APPLICATION_JSON);
-
-        Response resp = given().header(acceptJson).get("/metrics/application");
-        JsonPath filteredJSONPath =
-                new JsonPath(resp.jsonPath().prettify().replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB));
+        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics?scope=application");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
-        responseBuilder.setBody(filteredJSONPath.prettify());
+        responseBuilder.setBody(filterOutAppLabelPromMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
 
-        resp.then()
-                .assertThat().body("'countMe2;tier=integration'", equalTo(1))
-                .assertThat().body("'timeMe2'.'count;tier=integration'", equalTo(1));
-
+        resp.then().statusCode(200)
+                .and()
+                .body(containsString("# TYPE countMe2_total counter"))
+                .body(containsString("countMe2_total{scope=\"application\",tier=\"integration\"} 1"))
+                .body(containsString("# TYPE timeMe2_seconds summary"))
+                .body(containsString("timeMe2_seconds_count{scope=\"application\",tier=\"integration\"} 1"));
     }
 
     @Test
@@ -142,20 +144,18 @@ public class ReusedMetricsTest {
     @InSequence(4)
     public void testSharedCounterAgain() {
 
-        Header acceptJson = new Header("Accept", APPLICATION_JSON);
-
-        Response resp = given().header(acceptJson).get("/metrics/application");
-        JsonPath filteredJSONPath =
-                new JsonPath(resp.jsonPath().prettify().replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB));
+        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics?scope=application");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
-        responseBuilder.setBody(filteredJSONPath.prettify());
+        responseBuilder.setBody(filterOutAppLabelPromMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
 
-        resp.then()
-                .assertThat().body("'countMe2;tier=integration'", equalTo(2))
-                .assertThat().body("'timeMe2'.'count;tier=integration'", equalTo(2));
-
+        resp.then().statusCode(200)
+                .and()
+                .body(containsString("# TYPE countMe2_total counter"))
+                .body(containsString("countMe2_total{scope=\"application\",tier=\"integration\"} 2"))
+                .body(containsString("# TYPE timeMe2_seconds summary"))
+                .body(containsString("timeMe2_seconds_count{scope=\"application\",tier=\"integration\"} 2"));
     }
 
 }
