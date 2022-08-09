@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016, 2020 Contributors to the Eclipse Foundation
+// Copyright (c) 2016, 2022 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -86,12 +86,12 @@ Vendors should either use other metrics that are close enough as substitute or n
 |Name| gc.time
 |DisplayName| Garbage Collection Time
 |Type| Gauge
-|Unit| Milliseconds
+|Unit| Seconds
 |Multi| true
 |Tags| {name=%s}
-|Description| Displays the approximate accumulated collection elapsed time in milliseconds. This attribute displays -1 if the collection elapsed time is undefined for this collector. The Java virtual machine implementation may use a high resolution timer to measure the elapsed time. This attribute may display the same value even if the collection count has been incremented if the collection elapsed time is very short.
+|Description| Displays the approximate accumulated collection elapsed time in seconds. This attribute displays -1 if the collection elapsed time is undefined for this collector. The Java virtual machine implementation may use a high resolution timer to measure the elapsed time. This attribute may display the same value even if the collection count has been incremented if the collection elapsed time is very short.
 |MBean| java.lang:type=GarbageCollector,name=%s/CollectionTime
-|Notes| There can be multiple garbage collectors active that are assigned to different memory pools. The %s should be substituted with the name of the garbage collector.
+|Notes| There can be multiple garbage collectors active that are assigned to different memory pools. The %s should be substituted with the name of the garbage collector. The MicroProfile Metrics runtime will need to convert the metric's value to seconds if the value is provided in a different unit.
 |===
 
 *JVM Uptime - Up time of the Java Virtual machine*
@@ -100,10 +100,10 @@ Vendors should either use other metrics that are close enough as substitute or n
 |Name| jvm.uptime
 |DisplayName| JVM Uptime
 |Type| Gauge
-|Unit| Milliseconds
-|Description| Displays the time elapsed since the start of the Java virtual machine in milliseconds.
+|Unit| Seconds
+|Description| Displays the time elapsed since the start of the Java virtual machine in seconds.
 |MBean| java.lang:type=Runtime/Uptime
-|Notes| Also from JSR 77
+|Notes| Also from JSR 77. The MicroProfile Metrics runtime will need to convert the metric's value to seconds if the value is provided in a different unit.
 |===
 
 === Thread JVM Stats
@@ -234,10 +234,10 @@ Vendors should either use other metrics that are close enough as substitute or n
 |Name| cpu.processCpuLoad
 |DisplayName| Process CPU Load
 |Type| Gauge
-|Unit| Percent
+|Unit| Ratio
 |Description| Displays the "recent cpu usage" for the Java Virtual Machine process
 |MBean| java.lang:type=OperatingSystem (com.sun.management.UnixOperatingSystemMXBean for Oracle Java, similar one exists for IBM Java: com.ibm.lang.management.ExtendedOperatingSystem)
-Note: This is a vendor specific attribute/operation that is not defined in java.lang
+Note: This is a vendor specific attribute/operation that is not defined in java.lang. The MicroProfile Metrics runtime must convert to a ratio if necessary. A ratio is value from 0.0-1.0.
 |===
 
 *(Optional) ProcessCpuTime*
@@ -246,10 +246,10 @@ Note: This is a vendor specific attribute/operation that is not defined in java.
 |Name| cpu.processCpuTime
 |DisplayName| Process CPU Time
 |Type| Gauge
-|Unit| Nanoseconds
-|Description| Displays the CPU time used by the process on which the Java virtual machine is running in nanoseconds.
+|Unit| Seconds
+|Description| Displays the CPU time used by the process on which the Java virtual machine is running in seconds.
 |MBean| java.lang:type=OperatingSystem (com.sun.management.UnixOperatingSystemMXBean for Oracle Java, similar one exists for IBM Java: com.ibm.lang.management.ExtendedOperatingSystem)
-Note: This is a vendor specific attribute/operation that is not defined in java.lang
+Note: This is a vendor specific attribute/operation that is not defined in java.lang. The MicroProfile Metrics runtime will need to convert the metric's value to seconds if the value is provided in a different unit.
 |===
 
 
