@@ -25,36 +25,26 @@ package org.eclipse.microprofile.metrics.test;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anyOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.microprofile.metrics.MetricRegistry;
-import org.hamcrest.Matcher;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -75,7 +65,6 @@ import org.xml.sax.SAXException;
 import io.restassured.RestAssured;
 import io.restassured.builder.ResponseBuilder;
 import io.restassured.http.Header;
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import jakarta.inject.Inject;
 
@@ -88,14 +77,9 @@ import jakarta.inject.Inject;
 @SuppressWarnings("CdiInjectionPointsInspection")
 @RunWith(Arquillian.class)
 public class MpMetricTest {
-
-    private static final String APPLICATION_JSON = "application/json";
     private static final String TEXT_PLAIN = "text/plain";
 
-    private static final String JSON_APP_LABEL_REGEX = ";_app=[-/A-Za-z0-9]+([;\\\"]?)";
-    private static final String JSON_APP_LABEL_REGEXS_SUB = "$1";
-
-    private static final String OPENMETRICS_APP_LABEL_REGEX = "_app=\"[-/A-Za-z0-9]+\"";
+    private static final String PROM_APP_LABEL_REGEX = "_app=\"[-/A-Za-z0-9]+\"";
 
     private static final String DEFAULT_PROTOCOL = "http";
     private static final String DEFAULT_HOST = "localhost";
@@ -103,12 +87,11 @@ public class MpMetricTest {
 
     public static final double TOLERANCE = 0.025;
 
-    private static String filterOutAppLabelJSON(String responseBody) {
-        return responseBody.replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB);
-    }
-
-    private static String filterOutAppLabelOpenMetrics(String responseBody) {
-        return responseBody.replaceAll(OPENMETRICS_APP_LABEL_REGEX, "").replaceAll("\\{,", "{").replaceAll(",\\}", "}");
+    /*
+     * Filters out _app tag plus any leading or trailing commas
+     */
+    private static String filterOutAppLabelPromMetrics(String responseBody) {
+        return responseBody.replaceAll(PROM_APP_LABEL_REGEX, "").replaceAll("\\{,", "{").replaceAll(",\\}", "}");
     }
 
     @Inject
@@ -155,16 +138,6 @@ public class MpMetricTest {
     @Test
     @RunAsClient
     @InSequence(1)
-    public void testApplicationJsonResponseContentType() {
-        Header acceptHeader = new Header("Accept", APPLICATION_JSON);
-
-        given().header(acceptHeader).when().get("/metrics").then().statusCode(200).and().contentType(APPLICATION_JSON);
-
-    }
-
-    @Test
-    @RunAsClient
-    @InSequence(2)
     public void testTextPlainResponseContentType() {
         Header acceptHeader = new Header("Accept", TEXT_PLAIN);
 
@@ -173,207 +146,63 @@ public class MpMetricTest {
 
     @Test
     @RunAsClient
-    @InSequence(3)
-    public void testBadSubTreeWillReturn404() {
+    @InSequence(2)
+    public void testRequestPathReturn404() {
         when().get("/metrics/bad-tree").then().statusCode(404);
     }
 
     @Test
     @RunAsClient
-    @InSequence(4)
-    public void testListsAllJson() {
-        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        Header acceptHeader = new Header("Accept", APPLICATION_JSON);
-
-        Map response = given().header(acceptHeader).when().get("/metrics").as(Map.class);
-
-        // all servers should have some base metrics
-        assertTrue(response.containsKey("base"));
-
-        // There may be application metrics, so check if the key exists and bail if it has no data
-        if (response.containsKey("application")) {
-            Map applicationData = (Map) response.get("application");
-            assertThat(applicationData.size(), greaterThan(0));
-        }
+    @InSequence(3)
+    public void testBadScopeReturn404() {
+        when().get("/metrics?scope=fakescope").then().statusCode(404);
     }
 
     @Test
     @RunAsClient
-    @InSequence(5)
-    public void testBase() {
-        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        Response resp = given().header("Accept", APPLICATION_JSON).get("/metrics/base");
-        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
-        ResponseBuilder responseBuilder = new ResponseBuilder();
-        responseBuilder.clone(resp);
-        responseBuilder.setBody(filteredJSONPath.prettify());
-        resp = responseBuilder.build();
-
-        resp.then().statusCode(200).and()
-                .contentType(MpMetricTest.APPLICATION_JSON).and()
-                .body(containsString("thread.max.count;tier=integration"));
+    @InSequence(4)
+    public void testNoScopeReturn404() {
+        when().get("/metrics?name=name").then().statusCode(404);
     }
 
     @Test
     @RunAsClient
     @InSequence(6)
-    public void testBaseOpenMetrics() {
+    public void testBasePromMetrics() {
         Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics/base");
+        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics?scope=base");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
-        responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
+        responseBuilder.setBody(filterOutAppLabelPromMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).and().contentType(TEXT_PLAIN).and()
-                .body(containsString("# TYPE base_thread_max_count"),
-                        containsString("base_thread_max_count{tier=\"integration\"}"));
-    }
-
-    @Test
-    @RunAsClient
-    @InSequence(7)
-    public void testBaseAttributeJson() {
-        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        Header wantJson = new Header("Accept", APPLICATION_JSON);
-
-        Response resp = given().header(wantJson).get("/metrics/base/thread.max.count");
-        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
-        ResponseBuilder responseBuilder = new ResponseBuilder();
-        responseBuilder.clone(resp);
-        responseBuilder.setBody(filteredJSONPath.prettify());
-        resp = responseBuilder.build();
-        resp.then().statusCode(200).and()
-                .contentType(MpMetricTest.APPLICATION_JSON).and()
-                .body(containsString("thread.max.count;tier=integration"));
-    }
-
-    @Test
-    @RunAsClient
-    @InSequence(8)
-    public void testBaseSingularMetricsPresent() {
-        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        Header wantJson = new Header("Accept", APPLICATION_JSON);
-
-        JsonPath jsonPath = given().header(wantJson).get("/metrics/base").jsonPath();
-        JsonPath filteredJSONPath =
-                new JsonPath(jsonPath.prettify().replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB));
-
-        Map<String, Object> elements = filteredJSONPath.getMap(".");
-
-        List<String> missing = new ArrayList<>();
-
-        Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.BASE_SCOPE);
-
-        for (MiniMeta item : baseNames.values()) {
-            if (item.name.startsWith("gc.")) {
-                continue;
-            }
-
-            if (!elements.containsKey(item.toJSONName()) && !baseNames.get(item.name).optional) {
-                missing.add(item.toJSONName());
-            }
-        }
-
-        assertTrue("Following base items are missing: " + Arrays.toString(missing.toArray()), missing.isEmpty());
+                .body(containsString("# TYPE thread_max_count"))
+                .body(containsString("thread_max_count{scope=\"base\",tier=\"integration\"}"));
     }
 
     @Test
     @RunAsClient
     @InSequence(9)
-    public void testBaseAttributeOpenMetrics() {
+    public void testBaseAttributePromMetrics() {
         Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics/base/thread.max.count");
+        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics?scope=base&name=thread.max.count");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
-        responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
+        responseBuilder.setBody(filterOutAppLabelPromMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).and()
-                .contentType(TEXT_PLAIN).and().body(containsString("# TYPE base_thread_max_count"),
-                        containsString("base_thread_max_count{tier=\"integration\"}"));
-    }
-
-    @Test
-    @RunAsClient
-    @InSequence(10)
-    public void testBaseMetadata() {
-        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        Header wantJson = new Header("Accept", APPLICATION_JSON);
-
-        given().header(wantJson).options("/metrics/base").then().statusCode(200).and()
-                .contentType(MpMetricTest.APPLICATION_JSON);
-
-    }
-
-    @Test
-    @RunAsClient
-    @InSequence(11)
-    public void testBaseMetadataSingluarItems() {
-        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        Header wantJson = new Header("Accept", APPLICATION_JSON);
-
-        JsonPath jsonPath = given().header(wantJson).options("/metrics/base").jsonPath();
-
-        Map<String, Object> elements = jsonPath.getMap(".");
-        List<String> missing = new ArrayList<>();
-
-        Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.BASE_SCOPE);
-        for (String item : baseNames.keySet()) {
-            if (item.startsWith("gc.") || baseNames.get(item).optional) {
-                continue;
-            }
-            if (!elements.containsKey(item)) {
-                missing.add(item);
-            }
-        }
-
-        assertTrue("Following base items are missing: " + Arrays.toString(missing.toArray()), missing.isEmpty());
-    }
-
-    @Test
-    @RunAsClient
-    @InSequence(12)
-    public void testBaseMetadataTypeAndUnit() {
-        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        Header wantJson = new Header("Accept", APPLICATION_JSON);
-
-        JsonPath jsonPath = given().header(wantJson).options("/metrics/base").jsonPath();
-
-        Map<String, Map<String, Object>> elements = jsonPath.getMap(".");
-
-        Map<String, MiniMeta> expectedMetadata = getExpectedMetadataFromXmlFile(MetricRegistry.BASE_SCOPE);
-        checkMetadataPresent(elements, expectedMetadata);
-
-    }
-
-    private void checkMetadataPresent(Map<String, Map<String, Object>> elements,
-            Map<String, MiniMeta> expectedMetadata) {
-        for (Map.Entry<String, MiniMeta> entry : expectedMetadata.entrySet()) {
-            MiniMeta item = entry.getValue();
-            if (item.name.startsWith("gc.") || expectedMetadata.get(item.name).optional) {
-                continue; // We don't deal with them here
-            }
-            Map<String, Object> fromServer = elements.get(item.name);
-            assertNotNull("Got no data for metric " + item.name + " from the server", fromServer);
-            assertEquals("expected " + item.type + " but got "
-                    + fromServer.get("type") + " for type of metric " + item.name, item.type, fromServer.get("type"));
-            assertEquals("expected " + item.unit + " but got "
-                    + fromServer.get("unit") + " for unit of metric " + item.name, item.unit, fromServer.get("unit"));
-            if (item.description != null && !item.description.isEmpty()) {
-                assertEquals("expected " + item.description + " but got "
-                        + fromServer.get("description") + " for description of metric " + item.name,
-                        item.description, fromServer.get("description"));
-            }
-        }
+                .contentType(TEXT_PLAIN).and().body(containsString("# TYPE thread_max_count"),
+                        containsString("thread_max_count{scope=\"base\",tier=\"integration\"}"));
     }
 
     @Test
     @RunAsClient
     @InSequence(13)
-    public void testOpenMetricsFormatNoBadChars() {
+    public void testPromMetricsFormatNoBadChars() {
         Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        Header wantOpenMetricsFormat = new Header("Accept", TEXT_PLAIN);
+        Header wantPromMetricsFormat = new Header("Accept", TEXT_PLAIN);
 
-        String data = given().header(wantOpenMetricsFormat).get("/metrics/base").asString();
+        String data = given().header(wantPromMetricsFormat).get("/metrics?scope=base").asString();
 
         String[] lines = data.split("\n");
         for (String line : lines) {
@@ -390,16 +219,16 @@ public class MpMetricTest {
     }
 
     /*
-     * Technically OpenMetrics has no metadata call and this is included inline in the response.
+     * Technically PromMetrics has no metadata call and this is included inline in the response.
      */
     @Test
     @RunAsClient
     @InSequence(14)
-    public void testBaseMetadataSingluarItemsOpenMetrics() {
+    public void testBaseMetadataSingluarItemsPromMetrics() {
         Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        Header wantOpenMetricsFormat = new Header("Accept", TEXT_PLAIN);
+        Header wantPromMetricsFormat = new Header("Accept", TEXT_PLAIN);
 
-        String data = given().header(wantOpenMetricsFormat).get("/metrics/base").asString();
+        String data = given().header(wantPromMetricsFormat).get("/metrics?scope=base").asString();
 
         String[] lines = data.split("\n");
 
@@ -407,61 +236,31 @@ public class MpMetricTest {
         for (MiniMeta mm : expectedMetadata.values()) {
 
             boolean found = false;
-            // Skip GC
+            // Skip GC and optional metrics
             if (mm.name.startsWith("gc.") || expectedMetadata.get(mm.name).optional) {
                 continue;
             }
             for (String line : lines) {
-                if (!line.startsWith("# TYPE base_")) {
+
+                // Find only lines with TYPE
+                if (!line.startsWith("# TYPE")) {
                     continue;
                 }
-                String fullLine = line;
-                int c = line.indexOf("_");
-                line = line.substring(c + 1);
+
                 String promName = mm.toPromString();
+
+                // Expect [#,TYPE,<name>,<type>]
                 String[] tmp = line.split(" ");
-                assertEquals("Bad entry: " + line, tmp.length, 2);
-                if (tmp[0].startsWith(promName)) {
+                assertEquals("Bad entry: " + line, tmp.length, 4);
+
+                if (tmp[2].startsWith(promName)) {
                     found = true;
-                    assertEquals("Expected [" + mm.toString() + "] got [" + fullLine + "]", tmp[1], mm.type);
+                    assertEquals("Expected [" + mm.toString() + "] got [" + line + "]", tmp[3], mm.type);
                 }
             }
             assertTrue("Not found [" + mm.toString() + "]", found);
 
         }
-    }
-
-    @Test
-    @RunAsClient
-    @InSequence(15)
-    public void testBaseMetadataGarbageCollection() {
-        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        Header wantJson = new Header("Accept", APPLICATION_JSON);
-
-        JsonPath jsonPath = given().header(wantJson).options("/metrics/base").jsonPath();
-
-        int count = 0;
-        Map<String, Object> elements = jsonPath.getMap(".");
-        for (String name : elements.keySet()) {
-            if (name.startsWith("gc.")) {
-                assertTrue(name.endsWith(".total") || name.endsWith(".time"));
-                count++;
-            }
-        }
-        assertThat(count, greaterThan(0));
-    }
-
-    @Test
-    @RunAsClient
-    @InSequence(16)
-    public void testApplicationMetadataOkJson() {
-        Header wantJson = new Header("Accept", APPLICATION_JSON);
-
-        Response response = given().header(wantJson).options("/metrics/application");
-        int code = response.getStatusCode();
-
-        assertTrue(code == 200 || code == 204);
-
     }
 
     @Test
@@ -486,130 +285,175 @@ public class MpMetricTest {
 
     }
 
+    /*
+     * WILL TEST FOR TYPE, HELP, VALUE LINES This in effect tests for "metadata" as well
+     */
     @Test
     @RunAsClient
     @InSequence(18)
-    public void testApplicationMetricsJSON() {
-        Header wantJson = new Header("Accept", APPLICATION_JSON);
+    public void testApplicationMetricsPrometheus() {
+        Header wantPrometheus = new Header("Accept", TEXT_PLAIN);
 
-        Response resp = given().header(wantJson).get("/metrics/application");
-        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
+        Response resp = given().header(wantPrometheus).get("/metrics?scope=application");
+
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
-        responseBuilder.setBody(filteredJSONPath.prettify());
+        responseBuilder.setBody(filterOutAppLabelPromMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
 
         resp.then().statusCode(200)
 
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.redCount;tier=integration'", equalTo(0))
+                /*
+                 * COUNTERS
+                 */
+                .body(containsString(
+                        "# TYPE org_eclipse_microprofile_metrics_test_MetricAppBean_redCount_total counter"))
+                .body(containsString(
+                        "# HELP org_eclipse_microprofile_metrics_test_MetricAppBean_redCount_total red-description"))
+                .body(containsString(
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_redCount_total{scope=\"application\",tier=\"integration\"} 0"))
 
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.blue;tier=integration'", equalTo(0))
+                .body(containsString("# TYPE org_eclipse_microprofile_metrics_test_MetricAppBean_blue_total counter"))
+                .body(containsString("# HELP org_eclipse_microprofile_metrics_test_MetricAppBean_blue_total"))
+                .body(containsString(
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_blue_total{scope=\"application\",tier=\"integration\"} 0"))
 
-                .body("'greenCount;tier=integration'", equalTo(0))
+                .body(containsString("# TYPE greenCount_total counter"))
+                .body(containsString("# HELP greenCount_total"))
+                .body(containsString(
+                        "greenCount_total{scope=\"application\",tier=\"integration\"} 0"))
 
-                .body("'purple;app=myShop;tier=integration'", equalTo(0))
+                .body(containsString("# TYPE purple_total counter"))
+                .body(containsString("# HELP purple_total"))
+                .body(containsString(
+                        "purple_total{app=\"myShop\",scope=\"application\",tier=\"integration\"} 0"))
 
-                .body("'metricTest.test1.count;tier=integration'", equalTo(1))
+                .body(containsString("# HELP metricTest_test1_count_total"))
+                .body(containsString("# TYPE metricTest_test1_count_total counter"))
+                .body(containsString(
+                        "metricTest_test1_count_total{scope=\"application\",tier=\"integration\"} 1"))
 
-                .body("'metricTest.test1.countMeA;tier=integration'", equalTo(1))
-                .body("'metricTest.test1.countMeB;tier=integration'", equalTo(1))
+                .body(containsString("# HELP metricTest_test1_countMeA_total count-me-a-description"))
+                .body(containsString("# TYPE metricTest_test1_countMeA_total counter"))
+                .body(containsString(
+                        "metricTest_test1_countMeA_total{scope=\"application\",tier=\"integration\"} 1"))
 
-                .body("'metricTest.test1.gauge;tier=integration'", equalTo(19))
+                .body(containsString("# HELP metricTest_test1_countMeB_jellybean_total"))
+                .body(containsString("# TYPE metricTest_test1_countMeB_jellybean_total counter"))
+                .body(containsString(
+                        "metricTest_test1_countMeB_jellybean_total{scope=\"application\",tier=\"integration\"} 1"))
 
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeA;tier=integration'", equalTo(1000))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeB;tier=integration'",
-                        equalTo(7777777))
+                /*
+                 * GAUGES
+                 */
 
-                .body("'metricTest.test1.histogram'.'count;tier=integration'", equalTo(1000))
-                .body("'metricTest.test1.histogram'.'sum;tier=integration'", equalTo(499500))
-                .body("'metricTest.test1.histogram'.'max;tier=integration'", equalTo(999))
-                .body("'metricTest.test1.histogram'.'p50;tier=integration'", closeTo(499.0))
-                .body("'metricTest.test1.histogram'.'p75;tier=integration'", closeTo(749))
-                .body("'metricTest.test1.histogram'.'p95;tier=integration'", closeTo(949))
-                .body("'metricTest.test1.histogram'.'p98;tier=integration'", closeTo(979))
-                .body("'metricTest.test1.histogram'.'p99;tier=integration'", closeTo(989))
-                .body("'metricTest.test1.histogram'.'p999;tier=integration'", closeTo(998))
+                .body(containsString("# HELP metricTest_test1_gauge_gigabytes"))
+                .body(containsString("# TYPE metricTest_test1_gauge_gigabytes gauge"))
+                .body(containsString(
+                        "metricTest_test1_gauge_gigabytes{scope=\"application\",tier=\"integration\"} 19"))
 
-                .body("'metricTest.test1.timer'.'count;tier=integration'", equalTo(1))
-                .body("'metricTest.test1.timer'", hasKey("sum;tier=integration"))
-                .body("'metricTest.test1.timer'", hasKey("max;tier=integration"))
-                .body("'metricTest.test1.timer'", hasKey("p50;tier=integration"))
-                .body("'metricTest.test1.timer'", hasKey("p75;tier=integration"))
-                .body("'metricTest.test1.timer'", hasKey("p95;tier=integration"))
-                .body("'metricTest.test1.timer'", hasKey("p98;tier=integration"))
-                .body("'metricTest.test1.timer'", hasKey("p99;tier=integration"))
-                .body("'metricTest.test1.timer'", hasKey("p999;tier=integration"))
+                .body(containsString(
+                        "# HELP org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeA_kibibits gauge-me-a-description"))
+                .body(containsString(
+                        "# TYPE org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeA_kibibits gauge"))
+                .body(containsString(
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeA_kibibits{scope=\"application\",tier=\"integration\"} 1000"))
 
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'.'count;tier=integration'",
-                        equalTo(1))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'",
-                        hasKey("sum;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("max;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p50;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p75;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p95;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p98;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p99;tier=integration"))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA'", hasKey("p999;tier=integration"));
+                .body(containsString("# HELP org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeB_hands"))
+                .body(containsString("# TYPE org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeB_hands gauge"))
+                .body(containsString(
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeB_hands{scope=\"application\",tier=\"integration\"} 7777777"))
 
-    }
+                /*
+                 * HISTOGRAMS
+                 * 
+                 * CANNOT GURANTEE ACCURACY OF QUANTILES - WILL OMIT BETTER TESTING FOR "VALUES" WILL BE DONE IN API TCK
+                 */
+                .body(containsString("# HELP metricTest_test1_histogram_bytes"))
+                .body(containsString("# TYPE metricTest_test1_histogram_bytes summary"))
+                .body(containsString(
+                        "metricTest_test1_histogram_bytes{scope=\"application\",tier=\"integration\",quantile=\"0.5\"}"))
+                .body(containsString(
+                        "metricTest_test1_histogram_bytes{scope=\"application\",tier=\"integration\",quantile=\"0.75\"}"))
+                .body(containsString(
+                        "metricTest_test1_histogram_bytes{scope=\"application\",tier=\"integration\",quantile=\"0.95\"}"))
+                .body(containsString(
+                        "metricTest_test1_histogram_bytes{scope=\"application\",tier=\"integration\",quantile=\"0.98\"}"))
+                .body(containsString(
+                        "metricTest_test1_histogram_bytes{scope=\"application\",tier=\"integration\",quantile=\"0.99\"}"))
+                .body(containsString(
+                        "metricTest_test1_histogram_bytes{scope=\"application\",tier=\"integration\",quantile=\"0.999\"}"))
+                .body(containsString(
+                        "metricTest_test1_histogram_bytes_count{scope=\"application\",tier=\"integration\"} 1000"))
+                .body(containsString(
+                        "metricTest_test1_histogram_bytes_sum{scope=\"application\",tier=\"integration\"} 499500"))
+                .body(containsString("# HELP metricTest_test1_histogram_bytes_max"))
+                .body(containsString("# TYPE metricTest_test1_histogram_bytes_max gauge"))
+                .body(containsString(
+                        "metricTest_test1_histogram_bytes_max{scope=\"application\",tier=\"integration\"} 999"))
 
-    @Test
-    @RunAsClient
-    @InSequence(19)
-    public void testApplicationMetadataItems() {
-        Header wantJson = new Header("Accept", APPLICATION_JSON);
+                /*
+                 * TIMERS
+                 * 
+                 * ONLY INTERESTED IN THE COUNT. NOT INTERESTED IN ANY OTHER VALUES. TIMES RECORDED COULD VARY. BETTER
+                 * TESTING FOR "VALUES" WILL BE DONE IN API TCKS
+                 */
+                .body(containsString("# HELP metricTest_test1_timer_seconds"))
+                .body(containsString("# TYPE metricTest_test1_timer_seconds summary"))
+                .body(containsString(
+                        "metricTest_test1_timer_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.5\"}"))
+                .body(containsString(
+                        "metricTest_test1_timer_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.75\"}"))
+                .body(containsString(
+                        "metricTest_test1_timer_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.95\"}"))
+                .body(containsString(
+                        "metricTest_test1_timer_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.98\"}"))
+                .body(containsString(
+                        "metricTest_test1_timer_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.99\"}"))
+                .body(containsString(
+                        "metricTest_test1_timer_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.999\"}"))
+                .body(containsString(
+                        "metricTest_test1_timer_seconds_count{scope=\"application\",tier=\"integration\"} 1"))
+                .body(containsString(
+                        "metricTest_test1_timer_seconds_sum{scope=\"application\",tier=\"integration\"}"))
+                .body(containsString("# HELP metricTest_test1_timer_seconds_max"))
+                .body(containsString("# TYPE metricTest_test1_timer_seconds_max gauge"))
+                .body(containsString(
+                        "metricTest_test1_timer_seconds_max{scope=\"application\",tier=\"integration\"}"))
 
-        JsonPath jsonPath = given().header(wantJson).options("/metrics/application").jsonPath();
+                .body(containsString("# HELP org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds"))
+                .body(containsString(
+                        "# TYPE org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds summary"))
+                .body(containsString(
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.5\"}"))
+                .body(containsString(
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.75\"}"))
+                .body(containsString(
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.95\"}"))
+                .body(containsString(
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.98\"}"))
+                .body(containsString(
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.99\"}"))
+                .body(containsString(
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.999\"}"))
+                .body(containsString(
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds_count{scope=\"application\",tier=\"integration\"} 1"))
+                .body(containsString(
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds_sum{scope=\"application\",tier=\"integration\"}"))
+                .body(containsString("# HELP org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds_max"))
+                .body(containsString(
+                        "# TYPE org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds_max gauge"))
+                .body(containsString(
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds_max{scope=\"application\",tier=\"integration\"}"));
 
-        Map<String, Object> elements = jsonPath.getMap(".");
-
-        List<String> missing = new ArrayList<>();
-
-        Map<String, MiniMeta> names = getExpectedMetadataFromXmlFile(MetricRegistry.APPLICATION_SCOPE);
-        for (String item : names.keySet()) {
-            if (!elements.containsKey(item)) {
-                missing.add(item);
-            }
-        }
-        assertTrue("Following application items are missing: " + Arrays.toString(missing.toArray()), missing.isEmpty());
-    }
-
-    @Test
-    @RunAsClient
-    @InSequence(20)
-    public void testApplicationMetadataTypeAndUnit() {
-        Header wantJson = new Header("Accept", APPLICATION_JSON);
-
-        JsonPath jsonPath = given().header(wantJson).options("/metrics/application").jsonPath();
-
-        Map<String, Map<String, Object>> elements = jsonPath.getMap(".");
-
-        Map<String, MiniMeta> expectedMetadata = getExpectedMetadataFromXmlFile(MetricRegistry.APPLICATION_SCOPE);
-        checkMetadataPresent(elements, expectedMetadata);
-
-    }
-
-    @Test
-    @RunAsClient
-    @InSequence(21)
-    public void testApplicationTagJson() {
-
-        JsonPath jsonPath = given().header("Accept", APPLICATION_JSON)
-                .when()
-                .options("/metrics/application/purple").jsonPath();
-        String tags = jsonPath.getString("purple.tags");
-        assertNotNull(tags);
-        assertTrue(tags.contains("app=myShop"));
-        assertTrue(tags.contains("tier=integration"));
     }
 
     @Test
     @RunAsClient
     @InSequence(22)
-    public void testApplicationTagOpenMetrics() {
+    public void testApplicationTagPromMetrics() {
 
-        given().header("Accept", TEXT_PLAIN).when().get("/metrics/application/purple")
+        given().header("Accept", TEXT_PLAIN).when().get("/metrics?scope=application&name=purple")
                 .then().statusCode(200)
                 .and()
                 .body(containsString("tier=\"integration\""))
@@ -619,147 +463,136 @@ public class MpMetricTest {
     @Test
     @RunAsClient
     @InSequence(24)
-    public void testApplicationTimerUnitOpenMetrics() {
+    public void testApplicationTimerUnitPromMetrics() {
 
         String prefix = "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_";
 
         Response resp = given().header("Accept", TEXT_PLAIN)
-                .get("/metrics/application/org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA");
+                .get("/metrics?scope=application&name=org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
-        responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
+        responseBuilder.setBody(filterOutAppLabelPromMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
 
         resp.then().statusCode(200)
                 .and()
-                .body(containsString("# TYPE application_" + prefix + "seconds summary"))
+                .body(containsString("# TYPE " + prefix + "seconds summary"))
                 .body(containsString(prefix + "seconds_count"))
                 .body(containsString(prefix + "seconds_sum"))
-                .body(containsString(prefix + "seconds_max"))
-                .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.5\"}"))
-                .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.75\"}"))
-                .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.95\"}"))
-                .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.98\"}"))
-                .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.99\"}"))
-                .body(containsString(prefix + "seconds{tier=\"integration\",quantile=\"0.999\"}"));
+                .body(containsString(prefix + "seconds{scope=\"application\",tier=\"integration\",quantile=\"0.5\"}"))
+                .body(containsString(prefix + "seconds{scope=\"application\",tier=\"integration\",quantile=\"0.75\"}"))
+                .body(containsString(prefix + "seconds{scope=\"application\",tier=\"integration\",quantile=\"0.95\"}"))
+                .body(containsString(prefix + "seconds{scope=\"application\",tier=\"integration\",quantile=\"0.98\"}"))
+                .body(containsString(prefix + "seconds{scope=\"application\",tier=\"integration\",quantile=\"0.99\"}"))
+                .body(containsString(prefix + "seconds{scope=\"application\",tier=\"integration\",quantile=\"0.999\"}"))
+                .body(containsString("# TYPE " + prefix + "seconds_max gauge"))
+                .body(containsString(prefix + "seconds_max"));
+
     }
 
     @Test
     @RunAsClient
     @InSequence(25)
-    public void testApplicationHistogramUnitBytesOpenMetrics() {
+    public void testApplicationHistogramUnitBytesPromMetrics() {
 
         String prefix = "metricTest_test1_histogram_";
 
-        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics/application/metricTest.test1.histogram");
+        Response resp =
+                given().header("Accept", TEXT_PLAIN).get("/metrics?scope=application&name=metricTest.test1.histogram");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
-        responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
+        responseBuilder.setBody(filterOutAppLabelPromMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
 
         resp.then().statusCode(200)
                 .and()
+                .body(containsString("# TYPE " + prefix + "bytes summary"))
                 .body(containsString(prefix + "bytes_count"))
                 .body(containsString(prefix + "bytes_sum"))
-                .body(containsString("# TYPE application_" + prefix + "bytes summary"))
-                .body(containsString(prefix + "bytes_max"))
-                .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.5\"}"))
-                .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.75\"}"))
-                .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.95\"}"))
-                .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.98\"}"))
-                .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.99\"}"))
-                .body(containsString(prefix + "bytes{tier=\"integration\",quantile=\"0.999\"}"));
+                .body(containsString(prefix + "bytes{scope=\"application\",tier=\"integration\",quantile=\"0.5\"}"))
+                .body(containsString(prefix + "bytes{scope=\"application\",tier=\"integration\",quantile=\"0.75\"}"))
+                .body(containsString(prefix + "bytes{scope=\"application\",tier=\"integration\",quantile=\"0.95\"}"))
+                .body(containsString(prefix + "bytes{scope=\"application\",tier=\"integration\",quantile=\"0.98\"}"))
+                .body(containsString(prefix + "bytes{scope=\"application\",tier=\"integration\",quantile=\"0.99\"}"))
+                .body(containsString(prefix + "bytes{scope=\"application\",tier=\"integration\",quantile=\"0.999\"}"))
+                .body(containsString("# TYPE " + prefix + "bytes_max gauge"))
+                .body(containsString(prefix + "bytes_max"));
     }
 
     @Test
     @RunAsClient
     @InSequence(26)
-    public void testApplicationHistogramUnitNoneOpenMetrics() {
+    public void testApplicationHistogramUnitNonePromMetrics() {
 
         String prefix = "metricTest_test1_histogram2";
 
-        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics/application/metricTest.test1.histogram2");
+        Response resp =
+                given().header("Accept", TEXT_PLAIN).get("/metrics?scope=application&name=metricTest.test1.histogram2");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
-        responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
+        responseBuilder.setBody(filterOutAppLabelPromMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
 
         resp.then().statusCode(200)
                 .and()
+                .body(containsString("# TYPE " + prefix + " summary"))
                 .body(containsString(prefix + "_count"))
                 .body(containsString(prefix + "_sum"))
-                .body(containsString("# TYPE application_" + prefix + " summary"))
-                .body(containsString(prefix + "_max"))
-                .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.5\"}"))
-                .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.75\"}"))
-                .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.95\"}"))
-                .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.98\"}"))
-                .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.99\"}"))
-                .body(containsString(prefix + "{tier=\"integration\",quantile=\"0.999\"}"));
+                .body(containsString(prefix + "{scope=\"application\",tier=\"integration\",quantile=\"0.5\"}"))
+                .body(containsString(prefix + "{scope=\"application\",tier=\"integration\",quantile=\"0.75\"}"))
+                .body(containsString(prefix + "{scope=\"application\",tier=\"integration\",quantile=\"0.95\"}"))
+                .body(containsString(prefix + "{scope=\"application\",tier=\"integration\",quantile=\"0.98\"}"))
+                .body(containsString(prefix + "{scope=\"application\",tier=\"integration\",quantile=\"0.99\"}"))
+                .body(containsString(prefix + "{scope=\"application\",tier=\"integration\",quantile=\"0.999\"}"))
+                .body(containsString("# TYPE " + prefix + "_max gauge"))
+                .body(containsString(prefix + "_max"));
     }
 
     @Test
     @RunAsClient
     @InSequence(27)
-    public void testOpenMetrics406ForOptions() {
+    public void testPromMetrics405NotGET() {
         given()
                 .header("Accept", TEXT_PLAIN)
                 .when()
                 .options("/metrics/application/metricTest.test1.histogram2")
                 .then()
-                .statusCode(406);
-    }
-
-    @Test
-    @RunAsClient
-    @InSequence(28)
-    public void testConvertingToBaseUnit() {
-        Header wantOpenMetricsFormat = new Header("Accept", TEXT_PLAIN);
-        given().header(wantOpenMetricsFormat).get("/metrics/application").then().statusCode(200)
-                .and().body(containsString(
-                        "TYPE application_org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeA_bytes gauge"))
-                .and().body(containsString("TYPE application_metricTest_test1_gauge_bytes gauge"));
-
-    }
-
-    @Test
-    @RunAsClient
-    @InSequence(29)
-    public void testNonStandardUnitsJSON() {
-
-        Header wantJSONFormat = new Header("Accept", APPLICATION_JSON);
-
-        given().header(wantJSONFormat).options("/metrics/application/jellybeanHistogram").then().statusCode(200)
-                .body("jellybeanHistogram.unit", equalTo("jellybeans"));
-
+                .statusCode(405);
     }
 
     @Test
     @RunAsClient
     @InSequence(30)
-    public void testNonStandardUnitsOpenMetrics() {
+    public void testNonStandardUnitsPromMetrics() {
 
         String prefix = "jellybeanHistogram_";
-        Header wantOpenMetricsFormat = new Header("Accept", TEXT_PLAIN);
+        Header wantPromMetricsFormat = new Header("Accept", TEXT_PLAIN);
 
-        Response resp = given().header(wantOpenMetricsFormat).get("/metrics/application/jellybeanHistogram");
+        Response resp = given().header(wantPromMetricsFormat).get("/metrics?scope=application&name=jellybeanHistogram");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
-        responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
+        responseBuilder.setBody(filterOutAppLabelPromMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
 
         resp.then().statusCode(200)
                 .and()
+                .body(containsString("# TYPE " + prefix + "jellybeans summary"))
                 .body(containsString(prefix + "jellybeans_count"))
-                .body(containsString("# TYPE application_" + prefix + "jellybeans summary"))
                 .body(containsString(prefix + "jellybeans_sum"))
-                .body(containsString(prefix + "jellybeans_max"))
-                .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.5\"}"))
-                .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.75\"}"))
-                .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.95\"}"))
-                .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.98\"}"))
-                .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.99\"}"))
-                .body(containsString(prefix + "jellybeans{tier=\"integration\",quantile=\"0.999\"}"));
+                .body(containsString(
+                        prefix + "jellybeans{scope=\"application\",tier=\"integration\",quantile=\"0.5\"}"))
+                .body(containsString(
+                        prefix + "jellybeans{scope=\"application\",tier=\"integration\",quantile=\"0.75\"}"))
+                .body(containsString(
+                        prefix + "jellybeans{scope=\"application\",tier=\"integration\",quantile=\"0.95\"}"))
+                .body(containsString(
+                        prefix + "jellybeans{scope=\"application\",tier=\"integration\",quantile=\"0.98\"}"))
+                .body(containsString(
+                        prefix + "jellybeans{scope=\"application\",tier=\"integration\",quantile=\"0.99\"}"))
+                .body(containsString(
+                        prefix + "jellybeans{scope=\"application\",tier=\"integration\",quantile=\"0.999\"}"))
+                .body(containsString("# TYPE " + prefix + "jellybeans_max gauge"))
+                .body(containsString(prefix + "jellybeans_max"));
     }
 
     @Test
@@ -767,25 +600,26 @@ public class MpMetricTest {
     @InSequence(31)
     public void testOptionalBaseMetrics() {
         Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        Header wantJson = new Header("Accept", APPLICATION_JSON);
+        Header wantPromMetricsFormat = new Header("Accept", TEXT_PLAIN);
 
-        JsonPath jsonPath = given().header(wantJson).options("/metrics/base").jsonPath();
+        String data = given().header(wantPromMetricsFormat).get("/metrics?scope=base").asString();
 
-        Map<String, Object> elements = jsonPath.getMap(".");
+        String[] lines = data.split("\n");
         Map<String, MiniMeta> names = getExpectedMetadataFromXmlFile(MetricRegistry.BASE_SCOPE);
 
-        for (MiniMeta item : names.values()) {
-            if (elements.containsKey(item.toJSONName()) && names.get(item.name).optional) {
-                String prefix = names.get(item.name).name;
-                String type = "'" + item.toJSONName() + "'" + ".type";
-                String unit = "'" + item.toJSONName() + "'" + ".unit";
-
-                given().header(wantJson).options("/metrics/base/" + prefix).then().statusCode(200)
-                        .body(type, equalTo(names.get(item.name).type))
-                        .body(unit, equalTo(names.get(item.name).unit));
+        for (String line : lines) {
+            for (MiniMeta item : names.values()) {
+                /*
+                 * implicity the following line checks that the "unit" is present for the "found" optional metric. The
+                 * toPromString() generates the metric name with the unit and any applicable suffixes.
+                 */
+                if (line.contains("# TYPE " + item.toPromString()) && names.get(item.name).optional) {
+                    // now check it is the right type
+                    System.out.println(line);
+                    assertThat("Wrong metric type. Should be " + item.type, line, containsString(item.type));
+                }
             }
         }
-
     }
 
     @Test
@@ -798,16 +632,16 @@ public class MpMetricTest {
     @RunAsClient
     @InSequence(34)
     public void testPromNoBadCharsInNames() {
-        given().header("Accept", TEXT_PLAIN).when().get("/metrics/application")
+        given().header("Accept", TEXT_PLAIN).when().get("/metrics?scope=application")
                 .then().statusCode(200)
                 .and()
-                // metrics.counter("pm_counter-with-dashes");
+                // for visual comparison: "pm_counter-with-dashes"s
                 .body(containsString("pm_counter_with_dashes"))
-                // metrics.counter("pm_counter#hash_x'y_");
+                // for visual comparison: "pm_counter#hash_x'y_"
                 .body(containsString("pm_counter_hash_x_y_"))
-                // metrics.counter("pm_counter-umlaut-äöü");
+                // for visual comparison: "pm_counter-umlaut-äöü"
                 .body(containsString("pm_counter_umlaut_"))
-                // metrics.counter("pm_counter+accent_ê_");
+                // for visual comparison: "pm_counter+accent_ê_"
                 .body(containsString("pm_counter_accent_"));
     }
 
@@ -816,7 +650,7 @@ public class MpMetricTest {
     @InSequence(35)
     public void testAccept1() {
         given().header("Accept", "application/json;q=0.5,text/plain;q=0.5")
-                .when().get("/metrics/application")
+                .when().get("/metrics?scope=application")
                 .then().statusCode(200)
                 .and()
                 .contentType(TEXT_PLAIN);
@@ -827,7 +661,7 @@ public class MpMetricTest {
     @InSequence(36)
     public void testAccept2() {
         given().header("Accept", "application/json;q=0.1,text/plain;q=0.9")
-                .when().get("/metrics/application")
+                .when().get("/metrics?scope=application")
                 .then().statusCode(200)
                 .and()
                 .contentType(TEXT_PLAIN);
@@ -839,7 +673,7 @@ public class MpMetricTest {
     @InSequence(37)
     public void testAccept3() {
         given().header("Accept", "image/png,image/jpeg")
-                .when().get("/metrics/application")
+                .when().get("/metrics?scope=application")
                 .then().statusCode(406);
     }
 
@@ -848,7 +682,7 @@ public class MpMetricTest {
     @InSequence(38)
     public void testAccept4() {
         given().header("Accept", "*/*")
-                .when().get("/metrics/application")
+                .when().get("/metrics?scope=application")
                 .then().statusCode(200)
                 .and()
                 .contentType(TEXT_PLAIN);
@@ -859,7 +693,7 @@ public class MpMetricTest {
     @InSequence(39)
     public void testAccept5() {
         given().header("Accept", "image/png;q=1,*/*;q=0.1")
-                .when().get("/metrics/application")
+                .when().get("/metrics?cope=application")
                 .then().statusCode(200)
                 .and()
                 .contentType(TEXT_PLAIN);
@@ -869,7 +703,7 @@ public class MpMetricTest {
     @RunAsClient
     @InSequence(40)
     public void testNoAcceptHeader() {
-        when().get("/metrics/application")
+        when().get("/metrics?scope=application")
                 .then().statusCode(200)
                 .and()
                 .contentType(TEXT_PLAIN);
@@ -879,19 +713,21 @@ public class MpMetricTest {
     @RunAsClient
     @InSequence(41)
     public void testCustomUnitAppendToGaugeName() {
-        Header wantOpenMetricsFormat = new Header("Accept", TEXT_PLAIN);
-        given().header(wantOpenMetricsFormat).get("/metrics/application").then().statusCode(200)
+        Header wantPromMetricsFormat = new Header("Accept", TEXT_PLAIN);
+        given().header(wantPromMetricsFormat).get("/metrics?scope=application").then().statusCode(200)
                 .and().body(containsString(
-                        "TYPE application_org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeB_hands gauge"));
+                        "TYPE org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeB_hands gauge"));
     }
 
     @Test
     @RunAsClient
     @InSequence(42)
-    public void testNoCustomUnitForCounter() {
-        Header wantOpenMetricsFormat = new Header("Accept", TEXT_PLAIN);
-        given().header(wantOpenMetricsFormat).get("/metrics/application").then().statusCode(200)
-                .and().body(containsString("TYPE application_metricTest_test1_countMeB_total counter"));
+    public void testCustomUnitForCounter() {
+        Header wantPromMetricsFormat = new Header("Accept", TEXT_PLAIN);
+        given().header(wantPromMetricsFormat).get("/metrics?scope=application").then().statusCode(200)
+                .and()
+                .body(anyOf(containsString("TYPE metricTest_test1_countMeB_jellybean_total counter"),
+                        containsString("TYPE metricTest_test1_countMeB_jellybean counter")));
     }
 
     /**
@@ -903,31 +739,36 @@ public class MpMetricTest {
     @InSequence(43)
     public void testGcCountMetrics() {
         Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        Header wantJson = new Header("Accept", APPLICATION_JSON);
-        JsonPath jsonPath = given().header(wantJson).get("/metrics/base").jsonPath();
+        Header wantPromMetricsFormat = new Header("Accept", TEXT_PLAIN);
+        String data = given().header(wantPromMetricsFormat).get("/metrics?scope=base").asString();
 
         Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.BASE_SCOPE);
         MiniMeta gcCountMetricMeta = baseNames.get("gc.total");
         Set<String> expectedTags = gcCountMetricMeta.tags.keySet();
 
-        // obtain list of actual base metrics from the runtime and find all named gc.total
-        Map<String, Object> elements = jsonPath.getMap(".");
+        String[] lines = data.split("\n");
+
         boolean found = false;
-        for (Map.Entry<String, Object> metricEntry : elements.entrySet()) {
-            if (metricEntry.getKey().startsWith("gc.total")) {
-                // We found a metric named gc.total. Now check that it contains all expected tags
+        for (String line : lines) {
+            // explicitly check for the metric line wth value (i.e. the use of `{`)
+            if (line.contains("gc_total{")) {
                 for (String expectedTag : expectedTags) {
-                    assertThat("The metric should contain a " + expectedTag + " tag",
-                            metricEntry.getKey(), containsString(expectedTag + "="));
+                    assertThat("The metric should contain a " + expectedTag + " tag", line,
+                            containsString(expectedTag + "="));
                 }
-                // check that the metric has a reasonable value - it should at least be numeric and not negative
-                Assert.assertTrue("gc.total value should be numeric",
-                        metricEntry.getValue() instanceof Number);
-                Assert.assertTrue("gc.total value should not be a negative number",
-                        (Integer) metricEntry.getValue() >= 0);
+                /*
+                 * example: gc_total{name="global",scope="base",tier="integration",} 14.0 Expect only one space
+                 */
+                String[] tmp = line.split(" ");
+                assertEquals("Unexpected format: " + line, tmp.length, 2);
+
+                Assert.assertTrue("gc.total value should be numeric and not negative",
+                        Double.valueOf(tmp[1]).doubleValue() >= 0);
+
                 found = true;
             }
         }
+
         Assert.assertTrue("At least one metric named gc.total is expected", found);
     }
 
@@ -940,168 +781,231 @@ public class MpMetricTest {
     @InSequence(44)
     public void testGcTimeMetrics() {
         Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        Header wantJson = new Header("Accept", APPLICATION_JSON);
-        JsonPath jsonPath = given().header(wantJson).get("/metrics/base").jsonPath();
+        Header wantPromMetricsFormat = new Header("Accept", TEXT_PLAIN);
+        String data = given().header(wantPromMetricsFormat).get("/metrics?scope=base").asString();
 
         Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.BASE_SCOPE);
-        MiniMeta gcTimeMetricMeta = baseNames.get("gc.time");
-        Set<String> expectedTags = gcTimeMetricMeta.tags.keySet();
+        MiniMeta gcCountMetricMeta = baseNames.get("gc.time");
+        Set<String> expectedTags = gcCountMetricMeta.tags.keySet();
 
-        // obtain list of actual base metrics from the runtime and find all named gc.time
-        Map<String, Object> elements = jsonPath.getMap(".");
+        String[] lines = data.split("\n");
+
         boolean found = false;
-        for (Map.Entry<String, Object> metricEntry : elements.entrySet()) {
-            if (metricEntry.getKey().startsWith("gc.time")) {
-                // We found a metric named gc.time. Now check that it contains all expected tags
+        for (String line : lines) {
+            // explicitly check for the metric line wth value (i.e. the use of `{`)
+            if (line.contains("gc_time_seconds_total{")) {
                 for (String expectedTag : expectedTags) {
-                    assertThat("The metric should contain a " + expectedTag + " tag",
-                            metricEntry.getKey(), containsString(expectedTag + "="));
+                    assertThat("The metric should contain a " + expectedTag + " tag", line,
+                            containsString(expectedTag + "="));
                 }
-                // check that the metric has a reasonable value - it should at least be numeric and not negative
-                Assert.assertTrue("gc.time value should be numeric",
-                        metricEntry.getValue() instanceof Number);
-                Assert.assertTrue("gc.time value should not be a negative number",
-                        (Integer) metricEntry.getValue() >= 0);
+                /*
+                 * example: gc_time_total{name="scavenge",scope="base",tier="integration",} 264.0 Expect only one space
+                 */
+                String[] tmp = line.split(" ");
+                assertEquals("Unexpected format: " + line, tmp.length, 2);
+
+                Assert.assertTrue("gc.total value should be numeric and not negative",
+                        Double.valueOf(tmp[1]).doubleValue() >= 0);
+
                 found = true;
             }
         }
-        Assert.assertTrue("At least one metric named gc.time is expected", found);
+
+        Assert.assertTrue("At least one metric named gc.total is expected", found);
     }
 
     /**
-     * Test that multi-dimensional metrics are represented properly in JSON.
+     * Test that multi-dimensional metrics are represented properly in Prometheus. WILL TEST FOR TYPE, HELP, VALUE LINES
+     * This in effect tests for "metadata" as well
      */
     @Test
     @RunAsClient
     @InSequence(45)
-    public void testMultipleTaggedMetricsJSON() {
-        Header wantJson = new Header("Accept", APPLICATION_JSON);
+    public void testMultipleTaggedMetricsProm() {
+        Header wantPrometheus = new Header("Accept", TEXT_PLAIN);
 
-        Response resp = given().header(wantJson).get("/metrics/application");
-        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
+        Response resp = given().header(wantPrometheus).get("/metrics?scope=application");
+
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
-        responseBuilder.setBody(filteredJSONPath.prettify());
+        responseBuilder.setBody(filterOutAppLabelPromMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
 
         /*
          * This test's primary objective is to ensure that the format is correct.
          */
-
         resp.then().statusCode(200)
-                // counters
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.taggedCounter;tier=integration'",
-                        equalTo(0))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.taggedCounter;number=one;tier=integration'",
-                        equalTo(0))
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.taggedCounter;number=two;tier=integration'",
-                        equalTo(0))
+                /**
+                 * COUNTERS
+                 */
+                .body(containsString("# HELP org_eclipse_microprofile_metrics_test_MetricAppBean_noTagCounter_total"))
+                .body(containsString(
+                        "# TYPE org_eclipse_microprofile_metrics_test_MetricAppBean_noTagCounter_total counter"))
+                .body(containsString(
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_noTagCounter_total{scope=\"application\",tier=\"integration\"} 0"))
 
-                // Gauge
-                .body("'taggedGauge;number=one;tier=integration'", equalTo(1000))
-                .body("'taggedGauge;number=two;tier=integration'", equalTo(1000))
+                .body(containsString("# HELP org_eclipse_microprofile_metrics_test_MetricAppBean_taggedCounter_total"))
+                .body(containsString(
+                        "# TYPE org_eclipse_microprofile_metrics_test_MetricAppBean_taggedCounter_total counter"))
+                .body(containsString(
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_taggedCounter_total{number=\"one\",scope=\"application\",tier=\"integration\"} 0"))
+                .body(containsString(
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_taggedCounter_total{number=\"two\",scope=\"application\",tier=\"integration\"} 0"))
+                /**
+                 * GAUGES
+                 */
+                .body(containsString("# HELP taggedGauge"))
+                .body(containsString("# TYPE taggedGauge gauge"))
+                .body(containsString(
+                        "taggedGauge{number=\"one\",scope=\"application\",tier=\"integration\"} 1000"))
+                .body(containsString(
+                        "taggedGauge{number=\"two\",scope=\"application\",tier=\"integration\"} 1000"))
 
-                // histogram - ;tier=integration
-                .body("'taggedHistogram'.'count;tier=integration'", equalTo(0))
-                .body("'taggedHistogram'", hasKey("sum;tier=integration"))
-                .body("'taggedHistogram'", hasKey("max;tier=integration"))
-                .body("'taggedHistogram'", hasKey("p50;tier=integration"))
-                .body("'taggedHistogram'", hasKey("p75;tier=integration"))
-                .body("'taggedHistogram'", hasKey("p95;tier=integration"))
-                .body("'taggedHistogram'", hasKey("p98;tier=integration"))
-                .body("'taggedHistogram'", hasKey("p99;tier=integration"))
-                .body("'taggedHistogram'", hasKey("p999;tier=integration"))
+                /*
+                 * HISTOGRAMS ONLY CHECKING THAT COUNT IS 0
+                 */
 
-                // histogram - ;number=one;tier=integration
-                .body("'taggedHistogram'.'count;number=one;tier=integration'", equalTo(0))
-                .body("'taggedHistogram'", hasKey("sum;number=one;tier=integration"))
-                .body("'taggedHistogram'", hasKey("max;number=one;tier=integration"))
-                .body("'taggedHistogram'", hasKey("p50;number=one;tier=integration"))
-                .body("'taggedHistogram'", hasKey("p75;number=one;tier=integration"))
-                .body("'taggedHistogram'", hasKey("p95;number=one;tier=integration"))
-                .body("'taggedHistogram'", hasKey("p98;number=one;tier=integration"))
-                .body("'taggedHistogram'", hasKey("p99;number=one;tier=integration"))
-                .body("'taggedHistogram'", hasKey("p999;number=one;tier=integration"))
+                // no tag
+                .body(containsString("# HELP noTagHistogram_marshmellow"))
+                .body(containsString("# TYPE noTagHistogram_marshmellow summary"))
+                .body(containsString(
+                        "noTagHistogram_marshmellow{scope=\"application\",tier=\"integration\",quantile=\"0.5\"} "))
+                .body(containsString(
+                        "noTagHistogram_marshmellow{scope=\"application\",tier=\"integration\",quantile=\"0.75\"} "))
+                .body(containsString(
+                        "noTagHistogram_marshmellow{scope=\"application\",tier=\"integration\",quantile=\"0.95\"} "))
+                .body(containsString(
+                        "noTagHistogram_marshmellow{scope=\"application\",tier=\"integration\",quantile=\"0.98\"} "))
+                .body(containsString(
+                        "noTagHistogram_marshmellow{scope=\"application\",tier=\"integration\",quantile=\"0.99\"} "))
+                .body(containsString(
+                        "noTagHistogram_marshmellow{scope=\"application\",tier=\"integration\",quantile=\"0.999\"} "))
+                .body(containsString(
+                        "noTagHistogram_marshmellow_count{scope=\"application\",tier=\"integration\"} 0"))
+                .body(containsString(
+                        "noTagHistogram_marshmellow_sum{scope=\"application\",tier=\"integration\"} "))
+                .body(containsString("# HELP noTagHistogram_marshmellow_max"))
+                .body(containsString("# TYPE noTagHistogram_marshmellow_max gauge"))
+                .body(containsString(
+                        "noTagHistogram_marshmellow_max{scope=\"application\",tier=\"integration\"} "))
 
-                // histogram - ;number=two;tier=integration
-                .body("'taggedHistogram'.'count;number=two;tier=integration'", equalTo(0))
-                .body("'taggedHistogram'", hasKey("sum;number=two;tier=integration"))
-                .body("'taggedHistogram'", hasKey("max;number=two;tier=integration"))
-                .body("'taggedHistogram'", hasKey("p50;number=two;tier=integration"))
-                .body("'taggedHistogram'", hasKey("p75;number=two;tier=integration"))
-                .body("'taggedHistogram'", hasKey("p95;number=two;tier=integration"))
-                .body("'taggedHistogram'", hasKey("p98;number=two;tier=integration"))
-                .body("'taggedHistogram'", hasKey("p99;number=two;tier=integration"))
-                .body("'taggedHistogram'", hasKey("p999;number=two;tier=integration"))
+                // tagged histo
+                .body(containsString("# HELP taggedHistogram_marshmellow"))
+                .body(containsString("# TYPE taggedHistogram_marshmellow summary"))
+                // number=one
+                .body(containsString(
+                        "taggedHistogram_marshmellow{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.5\"} "))
+                .body(containsString(
+                        "taggedHistogram_marshmellow{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.75\"} "))
+                .body(containsString(
+                        "taggedHistogram_marshmellow{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.95\"} "))
+                .body(containsString(
+                        "taggedHistogram_marshmellow{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.98\"} "))
+                .body(containsString(
+                        "taggedHistogram_marshmellow{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.99\"} "))
+                .body(containsString(
+                        "taggedHistogram_marshmellow{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.999\"} "))
+                .body(containsString(
+                        "taggedHistogram_marshmellow_count{number=\"one\",scope=\"application\",tier=\"integration\"} 0"))
+                .body(containsString(
+                        "taggedHistogram_marshmellow_sum{number=\"one\",scope=\"application\",tier=\"integration\"} "))
+                .body(containsString("# HELP taggedHistogram_marshmellow_max"))
+                .body(containsString("# TYPE taggedHistogram_marshmellow_max gauge"))
+                .body(containsString(
+                        "taggedHistogram_marshmellow_max{number=\"one\",scope=\"application\",tier=\"integration\"} "))
 
-                // timer - ;tier=integration
-                .body("'taggedTimer'.'count;tier=integration'", equalTo(0))
-                .body("'taggedTimer'", hasKey("count;tier=integration"))
-                .body("'taggedTimer'", hasKey("sum;tier=integration"))
-                .body("'taggedTimer'", hasKey("max;tier=integration"))
-                .body("'taggedTimer'", hasKey("p50;tier=integration"))
-                .body("'taggedTimer'", hasKey("p75;tier=integration"))
-                .body("'taggedTimer'", hasKey("p95;tier=integration"))
-                .body("'taggedTimer'", hasKey("p98;tier=integration"))
-                .body("'taggedTimer'", hasKey("p99;tier=integration"))
-                .body("'taggedTimer'", hasKey("p999;tier=integration"))
-                // timer - ;number=one;tier=integration
-                .body("'taggedTimer'.'count;number=one;tier=integration'", equalTo(0))
-                .body("'taggedTimer'", hasKey("count;number=one;tier=integration"))
-                .body("'taggedTimer'", hasKey("sum;number=one;tier=integration"))
-                .body("'taggedTimer'", hasKey("max;number=one;tier=integration"))
-                .body("'taggedTimer'", hasKey("p50;number=one;tier=integration"))
-                .body("'taggedTimer'", hasKey("p75;number=one;tier=integration"))
-                .body("'taggedTimer'", hasKey("p95;number=one;tier=integration"))
-                .body("'taggedTimer'", hasKey("p98;number=one;tier=integration"))
-                .body("'taggedTimer'", hasKey("p99;number=one;tier=integration"))
-                .body("'taggedTimer'", hasKey("p999;number=one;tier=integration"))
-                // timer - ;number=two;tier=integration
-                .body("'taggedTimer'.'count;number=two;tier=integration'", equalTo(0))
-                .body("'taggedTimer'", hasKey("count;number=two;tier=integration"))
-                .body("'taggedTimer'", hasKey("sum;number=two;tier=integration"))
-                .body("'taggedTimer'", hasKey("max;number=two;tier=integration"))
-                .body("'taggedTimer'", hasKey("p50;number=two;tier=integration"))
-                .body("'taggedTimer'", hasKey("p75;number=two;tier=integration"))
-                .body("'taggedTimer'", hasKey("p95;number=two;tier=integration"))
-                .body("'taggedTimer'", hasKey("p98;number=two;tier=integration"))
-                .body("'taggedTimer'", hasKey("p99;number=two;tier=integration"))
-                .body("'taggedTimer'", hasKey("p999;number=two;tier=integration"));
+                // number=two
+                .body(containsString(
+                        "taggedHistogram_marshmellow{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.5\"} "))
+                .body(containsString(
+                        "taggedHistogram_marshmellow{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.75\"} "))
+                .body(containsString(
+                        "taggedHistogram_marshmellow{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.95\"} "))
+                .body(containsString(
+                        "taggedHistogram_marshmellow{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.98\"} "))
+                .body(containsString(
+                        "taggedHistogram_marshmellow{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.99\"} "))
+                .body(containsString(
+                        "taggedHistogram_marshmellow{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.999\"} "))
+                .body(containsString(
+                        "taggedHistogram_marshmellow_count{number=\"two\",scope=\"application\",tier=\"integration\"} 0"))
+                .body(containsString(
+                        "taggedHistogram_marshmellow_sum{number=\"two\",scope=\"application\",tier=\"integration\"} "))
+                .body(containsString(
+                        "taggedHistogram_marshmellow_max{number=\"two\",scope=\"application\",tier=\"integration\"} "))
 
-    }
+                /*
+                 * TIMERS ONLY CHECKING THAT COUNT IS 0
+                 */
+                // no tag
+                .body(containsString("# HELP noTagTimer_seconds"))
+                .body(containsString("# TYPE noTagTimer_seconds summary"))
+                .body(containsString(
+                        "noTagTimer_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.5\"} "))
+                .body(containsString(
+                        "noTagTimer_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.75\"} "))
+                .body(containsString(
+                        "noTagTimer_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.95\"} "))
+                .body(containsString(
+                        "noTagTimer_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.98\"} "))
+                .body(containsString(
+                        "noTagTimer_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.99\"} "))
+                .body(containsString(
+                        "noTagTimer_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.999\"} "))
+                .body(containsString(
+                        "noTagTimer_seconds_count{scope=\"application\",tier=\"integration\"} 0"))
+                .body(containsString(
+                        "noTagTimer_seconds_sum{scope=\"application\",tier=\"integration\"} "))
+                .body(containsString("# HELP noTagTimer_seconds_max"))
+                .body(containsString("# TYPE noTagTimer_seconds_max gauge"))
+                .body(containsString(
+                        "noTagTimer_seconds_max{scope=\"application\",tier=\"integration\"} "))
 
-    /**
-     * Test that semicolons `;` in tag values are translated to underscores `_` in the JSON output
-     */
-    @Test
-    @RunAsClient
-    @InSequence(46)
-    public void testTranslateSemiColonToUnderScoreJSON() {
-        Header wantJson = new Header("Accept", APPLICATION_JSON);
-        Response resp = given().header(wantJson).get("/metrics/application");
-        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
-        ResponseBuilder responseBuilder = new ResponseBuilder();
-        responseBuilder.clone(resp);
-        responseBuilder.setBody(filteredJSONPath.prettify());
-        resp = responseBuilder.build();
+                // tagged timer
+                .body(containsString("# HELP taggedTimer_seconds"))
+                .body(containsString("# TYPE taggedTimer_seconds summary"))
+                // number=one
+                .body(containsString(
+                        "taggedTimer_seconds{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.5\"} "))
+                .body(containsString(
+                        "taggedTimer_seconds{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.75\"} "))
+                .body(containsString(
+                        "taggedTimer_seconds{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.95\"} "))
+                .body(containsString(
+                        "taggedTimer_seconds{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.98\"} "))
+                .body(containsString(
+                        "taggedTimer_seconds{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.99\"} "))
+                .body(containsString(
+                        "taggedTimer_seconds{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.999\"} "))
+                .body(containsString(
+                        "taggedTimer_seconds_count{number=\"one\",scope=\"application\",tier=\"integration\"} 0"))
+                .body(containsString(
+                        "taggedTimer_seconds_sum{number=\"one\",scope=\"application\",tier=\"integration\"} "))
+                .body(containsString("# HELP taggedTimer_seconds_max"))
+                .body(containsString("# TYPE taggedTimer_seconds_max gauge"))
+                .body(containsString(
+                        "taggedTimer_seconds_max{number=\"one\",scope=\"application\",tier=\"integration\"} "))
 
-        resp.then().statusCode(200)
-                .body("'org.eclipse.microprofile.metrics.test.MetricAppBean.semiColonTaggedCounter;"
-                        + "scTag=semi_colons_are_bad;tier=integration'", equalTo(0));
-    }
+                // number=two
+                .body(containsString(
+                        "taggedTimer_seconds{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.5\"} "))
+                .body(containsString(
+                        "taggedTimer_seconds{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.75\"} "))
+                .body(containsString(
+                        "taggedTimer_seconds{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.95\"} "))
+                .body(containsString(
+                        "taggedTimer_seconds{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.98\"} "))
+                .body(containsString(
+                        "taggedTimer_seconds{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.99\"} "))
+                .body(containsString(
+                        "taggedTimer_seconds{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.999\"} "))
+                .body(containsString(
+                        "taggedTimer_seconds_count{number=\"two\",scope=\"application\",tier=\"integration\"} 0"))
+                .body(containsString(
+                        "taggedTimer_seconds_sum{number=\"two\",scope=\"application\",tier=\"integration\"} "))
+                .body(containsString(
+                        "taggedTimer_seconds_max{number=\"two\",scope=\"application\",tier=\"integration\"} "));
 
-    /**
-     * Checks that the value is within tolerance of the expected value
-     *
-     * Note: The JSON parser only returns float for earlier versions of restassured, so we need to return a float
-     * Matcher.
-     * 
-     * @param operand
-     * @return
-     */
-    private Matcher<Float> closeTo(double operand) {
-        double delta = Math.abs(operand) * TOLERANCE;
-        return allOf(greaterThan((float) (operand - delta)), lessThan((float) (operand + delta)));
     }
 
     private Map<String, MiniMeta> getExpectedMetadataFromXmlFile(String scope) {
@@ -1172,35 +1076,10 @@ public class MpMetricTest {
         String toPromString() {
             String out = name.replace('-', '_').replace('.', '_').replace(' ', '_');
             if (!unit.equals("none")) {
-                out = out + "_" + getBaseUnitAsOpenMetricsString(unit);
+                out = out + "_" + unit;
             }
             out = out.replace("__", "_");
             out = out.replace(":_", ":");
-
-            return out;
-        }
-
-        String toJSONName() {
-            return name + ";" + tags.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue())
-                    .collect(Collectors.joining(";"));
-        }
-
-        private String getBaseUnitAsOpenMetricsString(String unit) {
-            String out;
-            switch (unit) {
-                case "milliseconds" :
-                    out = "seconds";
-                    break;
-                case "bytes" :
-                    out = "bytes";
-                    break;
-                case "percent" :
-                    out = "percent";
-                    break;
-
-                default :
-                    out = "none";
-            }
 
             return out;
         }

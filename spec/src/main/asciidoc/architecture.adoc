@@ -252,7 +252,6 @@ that will probably have multiple instances.
 
 Data is exposed via REST over HTTP under the `/metrics` base path in different data formats for `GET` requests:
 
-* JSON format - used when the HTTP Accept header best matches `application/json`.
 * OpenMetrics exposition format - used when the HTTP Accept header best matches `application/openmetrics-text; version=1.0.0`. Support for this format by implementations is optional.
 * Prometheus text-based exposition format - used when the HTTP Accept header best matches `text/plain; version=0.0.4`. This format is also returned when no media type is requested (i.e. no Accept header is provided in the request)
 
@@ -276,17 +275,10 @@ The API MUST NOT return a 500 Internal Server Error code to represent a non-exis
 [cols="2,1,1,3"]
 |===
 | Endpoint | Request Type | Supported Formats | Description
-
-| `/metrics` | GET | JSON, Prometheus, OpenMetrics | Returns all registered metrics
-| `/metrics?scope=<scope_name>` | GET | JSON, Prometheus, OpenMetrics | Returns metrics registered for the respective scope. Scopes are listed in <<metrics-setup>>
-| `/metrics?scope=<scope_name>&name=<metric_name>` | GET | JSON, Prometheus, OpenMetrics | Returns metrics that match the metric name for the respective scope
-| `/metrics` | OPTIONS | JSON | Returns all registered metrics' metadata
-| `/metrics?scope=<scope_name>` | OPTIONS | JSON | Returns metrics' metadata registered for the respective scope. Scopes are listed in <<metrics-setup>>
-| `/metrics?scope=<scope_name>&name=<metric_name>` | OPTIONS | JSON | Returns the metric's metadata that matches the metric name for the respective scope
+| `/metrics` | GET | Prometheus, OpenMetrics | Returns all registered metrics
+| `/metrics?scope=<scope_name>` | GET | Prometheus, OpenMetrics | Returns metrics registered for the respective scope. Scopes are listed in <<metrics-setup>>
+| `/metrics?scope=<scope_name>&name=<metric_name>` | GET | Prometheus, OpenMetrics | Returns metrics that match the metric name for the respective scope
 |===
-
-NOTE: The implementation must return a 406 response code if the request's HTTP Accept header for an OPTIONS request
-does not match `application/json`.
 
 [[app-servers]]
 === Usage of MicroProfile Metrics in application servers with multiple applications
