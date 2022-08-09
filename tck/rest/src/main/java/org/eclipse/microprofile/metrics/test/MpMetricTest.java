@@ -160,13 +160,6 @@ public class MpMetricTest {
 
     @Test
     @RunAsClient
-    @InSequence(4)
-    public void testNoScopeReturn404() {
-        when().get("/metrics?name=name").then().statusCode(404);
-    }
-
-    @Test
-    @RunAsClient
     @InSequence(6)
     public void testBasePromMetrics() {
         Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
@@ -450,6 +443,33 @@ public class MpMetricTest {
 
     @Test
     @RunAsClient
+    @InSequence(19)
+    public void testMetricNameAcrossScopes() {
+
+        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics?name=sharedMetricName");
+        ResponseBuilder responseBuilder = new ResponseBuilder();
+        responseBuilder.clone(resp);
+        responseBuilder.setBody(filterOutAppLabelPromMetrics(resp.getBody().asString()));
+        resp = responseBuilder.build();
+
+        /*
+         * Just checks that the the TYPE line for the 4 expected metrics are there
+         */
+        resp.then().statusCode(200)
+                // counter
+                .body(containsString("# TYPE sharedMetricName_total counter"))
+                // timer
+                .body(containsString("# TYPE sharedMetricName_seconds_max gauge"))
+                .body(containsString("# TYPE sharedMetricName_seconds summary"))
+                // gauge
+                .body(containsString("# TYPE sharedMetricName_jelly gauge"))
+                // histogram
+                .body(containsString("# TYPE sharedMetricName_marshmellow_max gauge"))
+                .body(containsString("# TYPE sharedMetricName_marshmellow summary"));
+    }
+
+    @Test
+    @RunAsClient
     @InSequence(22)
     public void testApplicationTagPromMetrics() {
 
@@ -615,7 +635,6 @@ public class MpMetricTest {
                  */
                 if (line.contains("# TYPE " + item.toPromString()) && names.get(item.name).optional) {
                     // now check it is the right type
-                    System.out.println(line);
                     assertThat("Wrong metric type. Should be " + item.type, line, containsString(item.type));
                 }
             }
