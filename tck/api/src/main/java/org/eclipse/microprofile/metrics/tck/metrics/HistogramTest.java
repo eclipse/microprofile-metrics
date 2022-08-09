@@ -168,6 +168,12 @@ public class HistogramTest {
     }
 
     @Test
+    public void testSnapshot50thPercentile() throws Exception {
+        TestUtils.assertEqualsWithTolerance(48, histogramInt.getSnapshot().getValue(0.5));
+        TestUtils.assertEqualsWithTolerance(480, histogramLong.getSnapshot().getValue(0.5));
+    }
+
+    @Test
     public void testSnapshot75thPercentile() throws Exception {
         TestUtils.assertEqualsWithTolerance(75, histogramInt.getSnapshot().getValue(0.75));
         TestUtils.assertEqualsWithTolerance(750, histogramLong.getSnapshot().getValue(0.75));

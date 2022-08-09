@@ -170,6 +170,11 @@ public class TimerTest {
     }
 
     @Test
+    public void testSnapshot50thPercentile() throws Exception {
+        TestUtils.assertEqualsWithTolerance(480, globalTimer.getSnapshot().getValue(0.5));
+    }
+
+    @Test
     public void testSnapshot75thPercentile() throws Exception {
         TestUtils.assertEqualsWithTolerance(750, globalTimer.getSnapshot().getValue(0.75));
     }

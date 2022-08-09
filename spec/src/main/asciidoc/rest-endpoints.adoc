@@ -427,7 +427,7 @@ distance_to_hole_meters_sum{_scope="golf_stats"} 1569.3785694223322 <3>
 | Suffix{label}                   | TYPE    | Value (Histogram method)            | Units
 
 | `<units>_max`                   | Gauge   | `getSnapshot().getMax()`            | <units>
-| `<units>{quantile="0.5"}`       | Summary | `getSnapshot().getMedian()`         | <units>
+| `<units>{quantile="0.5"}`       | Summary | `getSnapshot().getValue(0.5)`       | <units>
 | `<units>{quantile="0.75"}`      | Summary | `getSnapshot().getValue(0.75)`      | <units>
 | `<units>{quantile="0.95"}`      | Summary | `getSnapshot().getValue(0.95)`      | <units>
 | `<units>{quantile="0.98"}`      | Summary | `getSnapshot().getValue(0.98)`      | <units>
@@ -474,7 +474,7 @@ myClass_myMethod_seconds_max{_scope="vendor"} 0.05507899 <3>
 | Suffix{label}                   | TYPE    | Value (Timer method)                | Units
 
 | `max_seconds`                   | Gauge   | `getSnapshot().getMax()`            | SECONDS^1^
-| `seconds{quantile="0.5"}`       | Summary | `getSnapshot().getMedian()`         | SECONDS^1^
+| `seconds{quantile="0.5"}`       | Summary | `getSnapshot().getValue(0.5)`       | SECONDS^1^
 | `seconds{quantile="0.75"}`      | Summary | `getSnapshot().getValue(0.75)`      | SECONDS^1^
 | `seconds{quantile="0.95"}`      | Summary | `getSnapshot().getValue(0.95)`      | SECONDS^1^
 | `seconds{quantile="0.98"}`      | Summary | `getSnapshot().getValue(0.98)`      | SECONDS^1^
