@@ -30,15 +30,6 @@ import java.io.OutputStream;
 public abstract class Snapshot {
 
     /**
-     * Returns the value at the given quantile.
-     *
-     * @param quantile
-     *            a given quantile, in {@code [0..1]}
-     * @return the value in the distribution at {@code quantile}
-     */
-    public abstract double getValue(double quantile);
-
-    /**
      * Returns the number of values in the snapshot.
      *
      * @return the number of values

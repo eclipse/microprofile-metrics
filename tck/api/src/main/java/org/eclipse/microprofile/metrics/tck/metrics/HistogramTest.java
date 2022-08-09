@@ -24,11 +24,13 @@
 package org.eclipse.microprofile.metrics.tck.metrics;
 
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import org.eclipse.microprofile.metrics.Histogram;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
+import org.eclipse.microprofile.metrics.Snapshot;
 import org.eclipse.microprofile.metrics.Snapshot.PercentileValue;
 import org.eclipse.microprofile.metrics.tck.util.TestUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -113,8 +115,11 @@ public class HistogramTest {
         assertThat("Histogram is not registered correctly", histogramInt, notNullValue());
         assertThat("Histogram is not registered correctly", histogramLong, notNullValue());
 
-        TestUtils.assertEqualsWithTolerance(48, histogramInt.getSnapshot().getValue(0.5));
-        TestUtils.assertEqualsWithTolerance(480, histogramLong.getSnapshot().getValue(0.5));
+        PercentileValue histogramIntPercentileValue = getPercentileValueAt(histogramInt, 0.5);
+        PercentileValue histogramLongPercentileValue = getPercentileValueAt(histogramLong, 0.5);
+
+        TestUtils.assertEqualsWithTolerance(48, histogramIntPercentileValue.getValue());
+        TestUtils.assertEqualsWithTolerance(480, histogramLongPercentileValue.getValue());
     }
 
     @Test
@@ -150,13 +155,14 @@ public class HistogramTest {
         Assert.assertTrue(countDown == 0);
 
         PercentileValue[] percentileValuesHisLong = histogramLong.getSnapshot().percentileValues();
-        // Check that there are 5 percentiles - [0.75,0.95,0.98,0.99,0.999]
+        // Check that there are 5 percentiles - [0.5,0.75,0.95,0.98,0.99,0.999]
         Assert.assertTrue(percentileValuesHisLong.length == 5);
 
-        countDown = 5;
+        countDown = 6;
         for (PercentileValue pv : percentileValuesHisLong) {
             double percentile = pv.getPercentile();
-            if (percentile == 0.75 ||
+            if (percentile == 0.5 ||
+                    percentile == 0.75 ||
                     percentile == 0.95 ||
                     percentile == 0.98 ||
                     percentile == 0.99 ||
@@ -169,38 +175,62 @@ public class HistogramTest {
 
     @Test
     public void testSnapshot50thPercentile() throws Exception {
-        TestUtils.assertEqualsWithTolerance(48, histogramInt.getSnapshot().getValue(0.5));
-        TestUtils.assertEqualsWithTolerance(480, histogramLong.getSnapshot().getValue(0.5));
+
+        PercentileValue histogramIntPercentileValue = getPercentileValueAt(histogramInt, 0.5);
+        PercentileValue histogramLongPercentileValue = getPercentileValueAt(histogramLong, 0.5);
+
+        TestUtils.assertEqualsWithTolerance(48, histogramIntPercentileValue.getValue());
+        TestUtils.assertEqualsWithTolerance(480, histogramLongPercentileValue.getValue());
     }
 
     @Test
     public void testSnapshot75thPercentile() throws Exception {
-        TestUtils.assertEqualsWithTolerance(75, histogramInt.getSnapshot().getValue(0.75));
-        TestUtils.assertEqualsWithTolerance(750, histogramLong.getSnapshot().getValue(0.75));
+
+        PercentileValue histogramIntPercentileValue = getPercentileValueAt(histogramInt, 0.5);
+        PercentileValue histogramLongPercentileValue = getPercentileValueAt(histogramLong, 0.5);
+
+        TestUtils.assertEqualsWithTolerance(75, histogramIntPercentileValue.getValue());
+        TestUtils.assertEqualsWithTolerance(750, histogramLongPercentileValue.getValue());
     }
 
     @Test
     public void testSnapshot95thPercentile() throws Exception {
-        TestUtils.assertEqualsWithTolerance(96, histogramInt.getSnapshot().getValue(0.95));
-        TestUtils.assertEqualsWithTolerance(960, histogramLong.getSnapshot().getValue(0.95));
+
+        PercentileValue histogramIntPercentileValue = getPercentileValueAt(histogramInt, 0.75);
+        PercentileValue histogramLongPercentileValue = getPercentileValueAt(histogramLong, 0.75);
+
+        TestUtils.assertEqualsWithTolerance(96, histogramIntPercentileValue.getValue());
+        TestUtils.assertEqualsWithTolerance(960, histogramLongPercentileValue.getValue());
     }
 
     @Test
     public void testSnapshot98thPercentile() throws Exception {
-        TestUtils.assertEqualsWithTolerance(98, histogramInt.getSnapshot().getValue(0.98));
-        TestUtils.assertEqualsWithTolerance(980, histogramLong.getSnapshot().getValue(0.98));
+
+        PercentileValue histogramIntPercentileValue = getPercentileValueAt(histogramInt, 0.98);
+        PercentileValue histogramLongPercentileValue = getPercentileValueAt(histogramLong, 0.98);
+
+        TestUtils.assertEqualsWithTolerance(98, histogramIntPercentileValue.getValue());
+        TestUtils.assertEqualsWithTolerance(980, histogramLongPercentileValue.getValue());
     }
 
     @Test
     public void testSnapshot99thPercentile() throws Exception {
-        TestUtils.assertEqualsWithTolerance(98, histogramInt.getSnapshot().getValue(0.98));
-        TestUtils.assertEqualsWithTolerance(980, histogramLong.getSnapshot().getValue(0.98));
+
+        PercentileValue histogramIntPercentileValue = getPercentileValueAt(histogramInt, 0.99);
+        PercentileValue histogramLongPercentileValue = getPercentileValueAt(histogramLong, 0.99);
+
+        TestUtils.assertEqualsWithTolerance(98, histogramIntPercentileValue.getValue());
+        TestUtils.assertEqualsWithTolerance(980, histogramLongPercentileValue.getValue());
     }
 
     @Test
     public void testSnapshot999thPercentile() throws Exception {
-        TestUtils.assertEqualsWithTolerance(99, histogramInt.getSnapshot().getValue(0.999));
-        TestUtils.assertEqualsWithTolerance(990, histogramLong.getSnapshot().getValue(0.999));
+
+        PercentileValue histogramIntPercentileValue = getPercentileValueAt(histogramInt, 0.999);
+        PercentileValue histogramLongPercentileValue = getPercentileValueAt(histogramLong, 0.999);
+
+        TestUtils.assertEqualsWithTolerance(99, histogramIntPercentileValue.getValue());
+        TestUtils.assertEqualsWithTolerance(990, histogramLongPercentileValue.getValue());
     }
 
     @Test
@@ -219,6 +249,20 @@ public class HistogramTest {
     public void testSnapshotSize() throws Exception {
         Assert.assertEquals(200, histogramInt.getSnapshot().size());
         Assert.assertEquals(200, histogramLong.getSnapshot().size());
+    }
+
+    private static PercentileValue getPercentileValueAt(Histogram histo, double percentile) {
+        Snapshot snapshot = histo.getSnapshot();
+
+        PercentileValue percentileValue = null;
+        for (PercentileValue pv : snapshot.percentileValues()) {
+            if (pv.getPercentile() == percentile) {
+                percentileValue = pv;
+                break;
+            }
+        }
+        assertNotNull(percentileValue);
+        return percentileValue;
     }
 
 }
