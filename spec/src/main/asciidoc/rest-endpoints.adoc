@@ -287,7 +287,6 @@ then `OPTIONS /metrics/base/fooVal` will expose:
     "unit": "milliseconds",
     "type": "gauge",
     "description": "The size of foo after each request",
-    "displayName": "Size of foo",
     "tags": [
       [
         "store=webshop"
@@ -320,7 +319,6 @@ then `OPTIONS /metrics/base` exposes:
     "unit": "milliseconds",
     "type": "gauge",
     "description": "The average duration of foo requests during last 5 minutes",
-    "displayName": "Duration of foo",
     "tags": [
       [
         "store=webshop"

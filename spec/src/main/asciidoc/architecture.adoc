@@ -174,8 +174,6 @@ The Metadata:
 ** histogram: a metric which calculates the distribution of a value.
 ** timer: a metric which aggregates timing durations and provides duration statistics.
 * description (optional): A human readable description of the metric.
-* displayName (optional): A human readable name of the metric for display purposes if the metric name is not
-human readable. This could e.g. be the case when the metric name is a uuid.
 
 Metadata must not change over the lifetime of a process (i.e. it is not allowed
 to return the units as seconds in one retrieval and as hours in a subsequent one).

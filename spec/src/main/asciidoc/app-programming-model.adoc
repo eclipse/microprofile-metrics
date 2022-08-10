@@ -117,7 +117,6 @@ in <<architecture#meta-data-def>>.
 `String name`:: Optional. Sets the name of the metric. If not explicitly given the name of the annotated object is used.
 `boolean absolute`:: If `true`, uses the given name as the absolute name of the metric.
 If `false`, prepends the package name and class name before the given name. Default value is `false`.
-`String displayName`:: Optional. A human readable display name for metadata.
 `String description`:: Optional. A description of the metric.
 `String unit`:: Unit of the metric. For `@Gauge` no default is provided. Check the `MetricUnits` class for a set of pre-defined units.
 `String scope`:: Optional. The `MetricRegistry` scope that this metric belongs to. Default value is `application`.

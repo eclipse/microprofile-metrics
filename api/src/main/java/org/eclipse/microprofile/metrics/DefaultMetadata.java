@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2018, 2019, 2020 Contributors to the Eclipse Foundation
+ * Copyright (c) 2018, 2022 Contributors to the Eclipse Foundation
  *               2018 Red Hat, Inc. and/or its affiliates
  *               and other contributors as indicated by the @author tags.
  *
@@ -40,15 +40,6 @@ public class DefaultMetadata implements Metadata {
     private final String name;
 
     /**
-     * Display name of the metric. If not set, the name is taken.
-     * <p>
-     * An optional field which holds the display (Friendly) name of the metric object. By default it is set to the name
-     * of the metric object.
-     * </p>
-     */
-    private final String displayName;
-
-    /**
      * A human readable description.
      * <p>
      * An optional field which holds the description of the metric object.
@@ -71,10 +62,9 @@ public class DefaultMetadata implements Metadata {
      */
     private final String unit;
 
-    protected DefaultMetadata(String name, String displayName, String description,
+    protected DefaultMetadata(String name, String description,
             MetricType type, String unit) {
         this.name = name;
-        this.displayName = displayName;
         this.description = description;
         this.type = type;
         this.unit = unit;
@@ -83,16 +73,6 @@ public class DefaultMetadata implements Metadata {
     @Override
     public String getName() {
         return name;
-    }
-
-    @Override
-    public String getDisplayName() {
-        return displayName().orElse(name);
-    }
-
-    @Override
-    public Optional<String> displayName() {
-        return Optional.ofNullable(displayName);
     }
 
     @Override
@@ -137,7 +117,6 @@ public class DefaultMetadata implements Metadata {
 
         // Use getters to compare the effective values
         return Objects.equals(name, that.getName()) &&
-                Objects.equals(this.getDisplayName(), that.getDisplayName()) &&
                 Objects.equals(this.getDescription(), that.getDescription()) &&
                 Objects.equals(this.getUnit(), that.getUnit()) &&
                 Objects.equals(this.getTypeRaw(), that.getTypeRaw());
@@ -145,7 +124,7 @@ public class DefaultMetadata implements Metadata {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, displayName, description, unit, type);
+        return Objects.hash(name, description, unit, type);
     }
 
     @Override
@@ -158,11 +137,6 @@ public class DefaultMetadata implements Metadata {
             sb.append(", description='").append(description).append('\'');
         } else {
             sb.append(", description=null");
-        }
-        if (displayName != null) {
-            sb.append(", displayName='").append(displayName).append('\'');
-        } else {
-            sb.append(", displayName=null");
         }
         sb.append('}');
         return sb.toString();

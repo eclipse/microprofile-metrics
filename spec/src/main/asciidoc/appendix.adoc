@@ -51,7 +51,6 @@ base:
     description: "Number of currently deployed threads"
     unit: "none"
     type: "gauge"
-    displayName: "Current Thread count"
   - name: "peak-thread-count"
     mbean: "java.lang:type=Threading/PeakThreadCount"
     description: "Max number of threads"

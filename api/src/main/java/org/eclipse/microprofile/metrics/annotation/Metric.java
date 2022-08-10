@@ -85,16 +85,6 @@ public @interface Metric {
     boolean absolute() default false;
 
     /**
-     * The display name of the metric.
-     * 
-     * @return The display name of the metric.
-     *
-     * @see org.eclipse.microprofile.metrics.Metadata
-     */
-    @Nonbinding
-    String displayName() default "";
-
-    /**
      * The description of the metric.
      * 
      * @return The description of the metric.

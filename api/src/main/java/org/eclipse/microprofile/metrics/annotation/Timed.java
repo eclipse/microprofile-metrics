@@ -109,16 +109,6 @@ public @interface Timed {
     boolean absolute() default false;
 
     /**
-     * The display name of the timer.
-     * 
-     * @return The display name of the timer.
-     *
-     * @see org.eclipse.microprofile.metrics.Metadata
-     */
-    @Nonbinding
-    String displayName() default "";
-
-    /**
      * The description of the timer.
      * 
      * @return The description of the timer.
