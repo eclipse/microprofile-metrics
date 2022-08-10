@@ -103,11 +103,13 @@ public class HistogramTagFieldBeanTest {
         bean.updateTwo(valueTwo);
 
         assertThat("Histogram count is incorrect", histogramOne.getCount(), is(equalTo(1L)));
-        assertThat("Histogram size is incorrect", histogramOne.getSnapshot().size(), is(equalTo(1)));
-        assertThat("Histogram max value is incorrect", histogramOne.getSnapshot().getMax(), is(equalTo(value)));
+        assertThat("Histogram size is incorrect", histogramOne.getSnapshot().size(), is(equalTo(1L)));
+        assertThat("Histogram max value is incorrect", histogramOne.getSnapshot().getMax(),
+                is(equalTo((double) value)));
 
         assertThat("Histogram count is incorrect", histogramTwo.getCount(), is(equalTo(1L)));
-        assertThat("Histogram size is incorrect", histogramTwo.getSnapshot().size(), is(equalTo(1)));
-        assertThat("Histogram max value is incorrect", histogramTwo.getSnapshot().getMax(), is(equalTo(valueTwo)));
+        assertThat("Histogram size is incorrect", histogramTwo.getSnapshot().size(), is(equalTo(1L)));
+        assertThat("Histogram max value is incorrect", histogramTwo.getSnapshot().getMax(),
+                is(equalTo((double) valueTwo)));
     }
 }

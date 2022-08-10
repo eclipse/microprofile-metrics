@@ -83,10 +83,11 @@ public class HistogramFieldBeanTest {
 
         // Call the update method and assert the histogram is up-to-date
         long value = Math.round(Math.random() * Long.MAX_VALUE);
+
         bean.update(value);
         assertThat("Histogram count is incorrect", histogram.getCount(), is(equalTo(1L)));
         assertThat("Histogram sum is incorrect", histogram.getSum(), is(equalTo(value)));
-        assertThat("Histogram size is incorrect", histogram.getSnapshot().size(), is(equalTo(1)));
-        assertThat("Histogram max value is incorrect", histogram.getSnapshot().getMax(), is(equalTo(value)));
+        assertThat("Histogram size is incorrect", histogram.getSnapshot().size(), is(equalTo(1L)));
+        assertThat("Histogram max value is incorrect", histogram.getSnapshot().getMax(), is(equalTo((double) value)));
     }
 }

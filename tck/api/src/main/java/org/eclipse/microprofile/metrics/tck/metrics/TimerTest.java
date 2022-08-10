@@ -155,7 +155,7 @@ public class TimerTest {
 
         PercentileValue[] percentileValues = globalTimer.getSnapshot().percentileValues();
         // Check that there are 5 percentiles - [0.5, 0.75,0.95,0.98,0.99,0.999]
-        Assert.assertTrue(percentileValues.length == 5);
+        Assert.assertTrue(percentileValues.length == 6);
 
         int countDown = 6;
         for (PercentileValue pv : percentileValues) {
@@ -213,7 +213,7 @@ public class TimerTest {
 
     @Test
     public void testSnapshotMax() throws Exception {
-        Assert.assertEquals(990, globalTimer.getSnapshot().getMax());
+        Assert.assertEquals(990, globalTimer.getSnapshot().getMax(), 0.0);
     }
 
     @Test
