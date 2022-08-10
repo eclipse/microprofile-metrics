@@ -1,4 +1,5 @@
 /**
+ * Copyright (c) 2013, 2022 Contributors to the Eclipse Foundation
  * Copyright © 2013 Antonin Stefanutti (antonin.stefanutti@gmail.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,11 +40,10 @@ import jakarta.inject.Inject;
 public class DefaultNameMetricMethodBeanTest {
 
     private final static String[] METRIC_NAMES =
-            {"defaultNameCountedMethod", "defaultNameMeteredMethod", "defaultNameTimedMethod"};
+            {"defaultNameCountedMethod", "defaultNameTimedMethod"};
 
     private final static String[] ABSOLUTE_METRIC_NAMES =
-            {"absoluteDefaultNameCountedMethod", "absoluteDefaultNameMeteredMethod",
-                    "absoluteDefaultNameTimedMethod"};
+            {"absoluteDefaultNameCountedMethod", "absoluteDefaultNameTimedMethod"};
 
     private Set<String> metricNames() {
         Set<String> names = MetricsUtil.absoluteMetricNames(DefaultNameMetricMethodBean.class, METRIC_NAMES);
