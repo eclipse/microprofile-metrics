@@ -128,6 +128,8 @@ For portability reasons, the key name for the tag must match the regex `[a-zA-Z_
 If an illegal character is used, the implementation must throw an `IllegalArgumentException`.
 If a duplicate tag is used, the last occurrence of the tag is used.
 
+The tags named `_scope` and `_app` are reserved. If an application attempts to create a metric with either of these tags, the implementation must throw an `IllegalArgumentException`.
+
 The tag value may contain any UTF-8 encoded character.
 
 NOTE: The REST endpoints provided by MicroProfile Metrics have different reserved characters based on the format.
