@@ -33,7 +33,7 @@ In light of the increasing prevalence of developer use of APIs from Micrometer a
 3. provides a MicroProfile-style API (for example, CDI-based annotations), and configurability (MicroProfile Config), for ease of adoption by MicroProfile users
 4. ensures compatibility across APIs within the same MicroProfile release
 
-We also considered feedback from an informal poll asking if users would use a MicroProfile Metrics API, given the other options.
+We also considered feedback from an informal poll in which a majority of respondents said they would use a MicroProfile Metrics API, given the other options.
 
 
 *Fixed implementation or vendor-chosen implementation*
