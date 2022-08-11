@@ -89,11 +89,9 @@
  * <pre>
  * <code>
  *     Timer timer = metricRegistry.timer(metadata);
- *     Timer.Context context = timer.time();
- *
- *     ... // code that will be timed
- *
- *     context.close();
+ *     try (Timer.Context context = timer.time()) {
+ *         ... // code that will be timed
+ *     }
  * </code>
  * </pre>
  */
