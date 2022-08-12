@@ -138,7 +138,7 @@ public class HistogramTest {
     public void testSnapshotPercentileValuesPresent() throws Exception {
 
         PercentileValue[] percentileValuesHistInt = histogramInt.getSnapshot().percentileValues();
-        // Check that there are 5 percentiles - [0.75,0.95,0.98,0.99,0.999]
+        // Check that there are 6 percentiles - [0.75,0.95,0.98,0.99,0.999]
         Assert.assertTrue(percentileValuesHistInt.length == 6);
 
         int countDown = 6;
@@ -156,7 +156,7 @@ public class HistogramTest {
         Assert.assertTrue(countDown == 0);
 
         PercentileValue[] percentileValuesHisLong = histogramLong.getSnapshot().percentileValues();
-        // Check that there are 5 percentiles - [0.5,0.75,0.95,0.98,0.99,0.999]
+        // Check that there are 6 percentiles - [0.5,0.75,0.95,0.98,0.99,0.999]
         Assert.assertTrue(percentileValuesHisLong.length == 6);
 
         countDown = 6;

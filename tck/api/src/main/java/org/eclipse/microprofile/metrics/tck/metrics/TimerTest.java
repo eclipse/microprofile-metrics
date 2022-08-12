@@ -154,7 +154,7 @@ public class TimerTest {
     public void testSnapshotPercentileValuesPresent() throws Exception {
 
         PercentileValue[] percentileValues = globalTimer.getSnapshot().percentileValues();
-        // Check that there are 5 percentiles - [0.5, 0.75,0.95,0.98,0.99,0.999]
+        // Check that there are 6 percentiles - [0.5, 0.75,0.95,0.98,0.99,0.999]
         Assert.assertTrue(percentileValues.length == 6);
 
         int countDown = 6;
