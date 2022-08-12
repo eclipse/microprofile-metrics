@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
  *               2010-2013 Coda Hale, Yammer.com
  *
  * See the NOTICES file(s) distributed with this work for additional
@@ -38,10 +38,10 @@ package org.eclipse.microprofile.metrics;
  * </pre>
  *
  * @param <T>
- *            the type of the metric's value
+ *            the type of the metric's value. Must be numeric.
  */
 @FunctionalInterface
-public interface Gauge<T> extends Metric {
+public interface Gauge<T extends Number> extends Metric {
     /**
      * Returns the metric's current value.
      *
