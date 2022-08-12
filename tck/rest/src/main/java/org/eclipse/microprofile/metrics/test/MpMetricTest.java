@@ -1063,7 +1063,7 @@ public class MpMetricTest {
             mm.type = metric.getAttribute("type");
             mm.unit = metric.getAttribute("unit");
             mm.description = metric.getAttribute("description");
-            mm.displayName = metric.getAttribute("display-name");
+
             mm.optional = Boolean.parseBoolean(metric.getAttribute("optional"));
             String tags = metric.getAttribute("tags");
             if (!(tags == null || tags.length() == 0)) {
@@ -1084,7 +1084,6 @@ public class MpMetricTest {
         private String type;
         private String unit;
         private String description;
-        private String displayName;
         private boolean multi;
         private boolean optional;
         private Map<String, String> tags = new TreeMap<>();
@@ -1113,7 +1112,6 @@ public class MpMetricTest {
             sb.append(", multi=").append(multi);
             sb.append(", optional=").append(optional);
             sb.append(", description=").append(description);
-            sb.append(", display-name=").append(displayName);
             sb.append('}');
             return sb.toString();
         }

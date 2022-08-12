@@ -44,7 +44,7 @@ import jakarta.inject.Inject;
 public class MetricAppBean {
 
     @Inject
-    @Metric(description = "red-description", displayName = "red-display-name")
+    @Metric(description = "red-description")
     private Counter redCount;
 
     @Inject
@@ -150,7 +150,7 @@ public class MetricAppBean {
     private Counter purpleCount;
 
     @Inject
-    @Metric(absolute = true, unit = "jellybeans", description = "jellybeans-description", displayName = "jellybeans-displayName")
+    @Metric(absolute = true, unit = "jellybeans", description = "jellybeans-description")
     private Histogram jellybeanHistogram;
 
     @Inject
@@ -161,7 +161,7 @@ public class MetricAppBean {
         counter.inc();
     }
 
-    @Counted(name = "metricTest.test1.countMeA", absolute = true, description = "count-me-a-description", displayName = "count-me-a-display-name")
+    @Counted(name = "metricTest.test1.countMeA", absolute = true, description = "count-me-a-description")
     public void countMeA() {
 
     }
@@ -189,7 +189,7 @@ public class MetricAppBean {
 
     }
 
-    @org.eclipse.microprofile.metrics.annotation.Gauge(unit = MetricUnits.KIBIBITS, description = "gauge-me-a-description", displayName = "gauge-me-a-displayname")
+    @org.eclipse.microprofile.metrics.annotation.Gauge(unit = MetricUnits.KIBIBITS, description = "gauge-me-a-description")
     public long gaugeMeA() {
         return 1000L;
     }
