@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -359,7 +360,7 @@ public class MpMetricTest {
 
                 /*
                  * HISTOGRAMS
-                 * 
+                 *
                  * CANNOT GURANTEE ACCURACY OF QUANTILES - WILL OMIT BETTER TESTING FOR "VALUES" WILL BE DONE IN API TCK
                  */
                 .body(containsString("# HELP metricTest_test1_histogram_bytes"))
@@ -387,7 +388,7 @@ public class MpMetricTest {
 
                 /*
                  * TIMERS
-                 * 
+                 *
                  * ONLY INTERESTED IN THE COUNT. NOT INTERESTED IN ANY OTHER VALUES. TIMES RECORDED COULD VARY. BETTER
                  * TESTING FOR "VALUES" WILL BE DONE IN API TCKS
                  */
@@ -796,7 +797,6 @@ public class MpMetricTest {
 
         Assert.assertTrue("At least one metric named gc.total is expected", found);
     }
-
 
     /**
      * Check that there is at least one metric named gc.time and that they all contain expected tags (actually this is
