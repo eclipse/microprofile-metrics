@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -359,7 +360,7 @@ public class MpMetricTest {
 
                 /*
                  * HISTOGRAMS
-                 * 
+                 *
                  * CANNOT GURANTEE ACCURACY OF QUANTILES - WILL OMIT BETTER TESTING FOR "VALUES" WILL BE DONE IN API TCK
                  */
                 .body(containsString("# HELP metricTest_test1_histogram_bytes"))
@@ -387,7 +388,7 @@ public class MpMetricTest {
 
                 /*
                  * TIMERS
-                 * 
+                 *
                  * ONLY INTERESTED IN THE COUNT. NOT INTERESTED IN ANY OTHER VALUES. TIMES RECORDED COULD VARY. BETTER
                  * TESTING FOR "VALUES" WILL BE DONE IN API TCKS
                  */
@@ -771,18 +772,24 @@ public class MpMetricTest {
         for (String line : lines) {
             // explicitly check for the metric line wth value (i.e. the use of `{`)
             if (line.contains("gc_total{")) {
-                for (String expectedTag : expectedTags) {
-                    assertThat("The metric should contain a " + expectedTag + " tag", line,
-                            containsString(expectedTag + "="));
-                }
                 /*
                  * example: gc_total{name="global",scope="base",tier="integration",} 14.0 Expect only one space
                  */
-                String[] tmp = line.split(" ");
-                assertEquals("Unexpected format: " + line, tmp.length, 2);
 
+                final Pattern gcTotalPattern = Pattern.compile("(gc_total\\{.*?\\}) (\\d+\\.\\d+)");
+                assertThat("Line format should be gc_total\\{.*?\\} \\d+\\.\\d+",
+                        gcTotalPattern.matcher(line).matches());
+
+                final String metricID = gcTotalPattern.matcher(line).replaceAll("$1");
+                final String tags = metricID.replaceAll("^gc_total\\{", "").replaceAll("\\}$", "");
+
+                for (String expectedTag : expectedTags) {
+                    assertThat("The metric should contain a " + expectedTag + " tag", tags,
+                            containsString(expectedTag + "="));
+                }
+                final String value = gcTotalPattern.matcher(line).replaceAll("$2");
                 Assert.assertTrue("gc.total value should be numeric and not negative",
-                        Double.valueOf(tmp[1]).doubleValue() >= 0);
+                        Double.valueOf(value).doubleValue() >= 0);
 
                 found = true;
             }
@@ -813,24 +820,26 @@ public class MpMetricTest {
         for (String line : lines) {
             // explicitly check for the metric line wth value (i.e. the use of `{`)
             if (line.contains("gc_time_seconds_total{")) {
+                final Pattern gcTimeTotalPattern = Pattern.compile("(gc_time_seconds_total\\{.*?\\}) (\\d+\\.\\d+)");
+                assertThat("Line format should be gc_time_seconds_total\\{.*?\\} \\d+\\.\\d+",
+                        gcTimeTotalPattern.matcher(line).matches());
+
+                final String metricID = gcTimeTotalPattern.matcher(line).replaceAll("$1");
+                final String tags = metricID.replaceAll("^gc_time_seconds_total\\{", "").replaceAll("\\}$", "");
+
                 for (String expectedTag : expectedTags) {
-                    assertThat("The metric should contain a " + expectedTag + " tag", line,
+                    assertThat("The metric should contain a " + expectedTag + " tag", tags,
                             containsString(expectedTag + "="));
                 }
-                /*
-                 * example: gc_time_total{name="scavenge",scope="base",tier="integration",} 264.0 Expect only one space
-                 */
-                String[] tmp = line.split(" ");
-                assertEquals("Unexpected format: " + line, tmp.length, 2);
-
-                Assert.assertTrue("gc.total value should be numeric and not negative",
-                        Double.valueOf(tmp[1]).doubleValue() >= 0);
+                final String value = gcTimeTotalPattern.matcher(line).replaceAll("$2");
+                Assert.assertTrue("gc.time.seconds.total value should be numeric and not negative",
+                        Double.valueOf(value).doubleValue() >= 0);
 
                 found = true;
             }
         }
 
-        Assert.assertTrue("At least one metric named gc.total is expected", found);
+        Assert.assertTrue("At least one metric named gc.time.seconds.total is expected", found);
     }
 
     /**
