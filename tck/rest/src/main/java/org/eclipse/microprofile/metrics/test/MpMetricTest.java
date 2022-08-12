@@ -771,18 +771,24 @@ public class MpMetricTest {
         for (String line : lines) {
             // explicitly check for the metric line wth value (i.e. the use of `{`)
             if (line.contains("gc_total{")) {
-                for (String expectedTag : expectedTags) {
-                    assertThat("The metric should contain a " + expectedTag + " tag", line,
-                            containsString(expectedTag + "="));
-                }
                 /*
                  * example: gc_total{name="global",scope="base",tier="integration",} 14.0 Expect only one space
                  */
-                String[] tmp = line.split(" ");
-                assertEquals("Unexpected format: " + line, tmp.length, 2);
 
+                final Pattern gcTotalPattern = Pattern.compile("(gc_total\\{.*?\\}) (\\d+\\.\\d+)");
+                assertThat("Line format should be gc_total\\{.*?\\} \\d+\\.\\d+",
+                        gcTotalPattern.matcher(line).matches());
+
+                final String metricID = gcTotalPattern.matcher(line).replaceAll("$1");
+                final String tags = metricID.replaceAll("^gc_total\\{", "").replaceAll("\\}$", "");
+
+                for (String expectedTag : expectedTags) {
+                    assertThat("The metric should contain a " + expectedTag + " tag", tags,
+                            containsString(expectedTag + "="));
+                }
+                final String value = gcTotalPattern.matcher(line).replaceAll("$2");
                 Assert.assertTrue("gc.total value should be numeric and not negative",
-                        Double.valueOf(tmp[1]).doubleValue() >= 0);
+                        Double.valueOf(value).doubleValue() >= 0);
 
                 found = true;
             }
@@ -790,6 +796,7 @@ public class MpMetricTest {
 
         Assert.assertTrue("At least one metric named gc.total is expected", found);
     }
+
 
     /**
      * Check that there is at least one metric named gc.time and that they all contain expected tags (actually this is
