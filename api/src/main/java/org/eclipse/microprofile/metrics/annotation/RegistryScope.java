@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -29,10 +29,8 @@ import java.lang.annotation.Target;
 
 import org.eclipse.microprofile.metrics.MetricRegistry;
 
-import jakarta.inject.Qualifier;
-
 /**
- * Qualifies the type of Metric Registry to inject.
+ * Specifies the scope of Metric Registry to inject.
  * <p>
  * This can be used to obtain the respective scoped {@link MetricRegistry}:
  * </p>
@@ -40,27 +38,35 @@ import jakarta.inject.Qualifier;
  * <pre>
  * <code>
  *      {@literal @}Inject
- *      {@literal @}RegistryType(type=MetricRegistry.Type.BASE)
- *      MetricRegistry baseRegistry;
+ *      {@literal @}RegistryScope(scope=MetricRegistry.APPLICATION_SCOPE)
+ *      MetricRegistry appRegistry;
+ * 
+ *      {@literal @}Inject
+ *      {@literal @}RegistryScope(scope="customScope")
+ *      MetricRegistry customRegistry;
+ * 
  * </code>
  * </pre>
  *
- * @see org.eclipse.microprofile.metrics.MetricRegistry.Type
+ * see {@link MetricRegistry.APPLICATION_SCOPE}, {@link MetricRegistry.BASE_SCOPE} and
+ * {@link MetricRegistry.VENDOR_SCOPE}
  *
  * @author Raymond Lam
  *
  */
-@Qualifier
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
-public @interface RegistryType {
+public @interface RegistryScope {
     /**
      * The scope of the MetricRegistry.
      * 
-     * @return Returns the scope of the MetricRegistry. The {@link MetricRegistry.Type} can be {@code APPLICATION},
-     *         {@code BASE}, or {@code VENDOR}.
-     * @see org.eclipse.microprofile.metrics.MetricRegistry.Type
+     * @return Indicates the scope of the MetricRegistry to be injected. The MicroProfile runtimes provides
+     *         {@code application}, {@code base} and {@code vendor} scopes automatically and creates user-defined scopes
+     *         as needed.
+     * 
+     *         see {@link MetricRegistry.APPLICATION_SCOPE}, {@link MetricRegistry.BASE_SCOPE} and
+     *         {@link MetricRegistry.VENDOR_SCOPE}
      */
-    MetricRegistry.Type type() default MetricRegistry.Type.APPLICATION;
+    String scope() default MetricRegistry.APPLICATION_SCOPE;
 }

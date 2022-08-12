@@ -31,7 +31,7 @@ import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.MetricType;
 import org.eclipse.microprofile.metrics.Tag;
 import org.eclipse.microprofile.metrics.annotation.Metric;
-import org.eclipse.microprofile.metrics.annotation.RegistryType;
+import org.eclipse.microprofile.metrics.annotation.RegistryScope;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -47,6 +47,8 @@ import jakarta.inject.Inject;
 @RunWith(Arquillian.class)
 public class MetricRegistryTest {
 
+    private static final String CUSTOM_SCOPE = "customScope";
+
     @Inject
     @Metric(name = "nameTest", absolute = true)
     private Counter nameTest;
@@ -55,12 +57,16 @@ public class MetricRegistryTest {
     private MetricRegistry metrics;
 
     @Inject
-    @RegistryType(type = MetricRegistry.Type.BASE)
+    @RegistryScope(scope = MetricRegistry.BASE_SCOPE)
     private MetricRegistry baseMetrics;
 
     @Inject
-    @RegistryType(type = MetricRegistry.Type.VENDOR)
+    @RegistryScope(scope = MetricRegistry.VENDOR_SCOPE)
     private MetricRegistry vendorMetrics;
+
+    @Inject
+    @RegistryScope(scope = CUSTOM_SCOPE)
+    private MetricRegistry customScope;
 
     @Deployment
     public static WebArchive createDeployment() {
@@ -105,10 +111,11 @@ public class MetricRegistryTest {
 
     @Test
     @InSequence(5)
-    public void testMetricRegistryType() {
-        Assert.assertEquals(MetricRegistry.Type.APPLICATION, metrics.getType());
-        Assert.assertEquals(MetricRegistry.Type.BASE, baseMetrics.getType());
-        Assert.assertEquals(MetricRegistry.Type.VENDOR, vendorMetrics.getType());
+    public void testMetricRegistryScope() {
+        Assert.assertEquals(MetricRegistry.APPLICATION_SCOPE, metrics.getScope());
+        Assert.assertEquals(MetricRegistry.BASE_SCOPE, baseMetrics.getScope());
+        Assert.assertEquals(MetricRegistry.VENDOR_SCOPE, vendorMetrics.getScope());
+        Assert.assertEquals(CUSTOM_SCOPE, customScope.getScope());
     }
 
     private void assertExists(Class<? extends org.eclipse.microprofile.metrics.Metric> expected, MetricID metricID) {

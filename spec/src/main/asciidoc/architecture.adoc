@@ -128,6 +128,8 @@ For portability reasons, the key name for the tag must match the regex `[a-zA-Z_
 If an illegal character is used, the implementation must throw an `IllegalArgumentException`.
 If a duplicate tag is used, the last occurrence of the tag is used.
 
+The tags named `_scope` and `_app` are reserved. If an application attempts to create a metric with either of these tags, the implementation must throw an `IllegalArgumentException`.
+
 The tag value may contain any UTF-8 encoded character.
 
 NOTE: The REST endpoints provided by MicroProfile Metrics have different reserved characters based on the format.
@@ -277,9 +279,9 @@ The API MUST NOT return a 500 Internal Server Error code to represent a non-exis
 |===
 | Endpoint | Request Type | Supported Formats | Description
 
-| `/metrics` | GET | JSON, OpenMetrics | Returns all registered metrics
-| `/metrics?scope=<scope_name>` | GET | JSON, OpenMetrics | Returns metrics registered for the respective scope. Scopes are listed in <<metrics-setup>>
-| `/metrics?scope=<scope_name>&name=<metric_name>` | GET | JSON, OpenMetrics | Returns metrics that match the metric name for the respective scope
+| `/metrics` | GET | JSON, Prometheus, OpenMetrics | Returns all registered metrics
+| `/metrics?scope=<scope_name>` | GET | JSON, Prometheus, OpenMetrics | Returns metrics registered for the respective scope. Scopes are listed in <<metrics-setup>>
+| `/metrics?scope=<scope_name>&name=<metric_name>` | GET | JSON, Prometheus, OpenMetrics | Returns metrics that match the metric name for the respective scope
 | `/metrics` | OPTIONS | JSON | Returns all registered metrics' metadata
 | `/metrics?scope=<scope_name>` | OPTIONS | JSON | Returns metrics' metadata registered for the respective scope. Scopes are listed in <<metrics-setup>>
 | `/metrics?scope=<scope_name>&name=<metric_name>` | OPTIONS | JSON | Returns the metric's metadata that matches the metric name for the respective scope

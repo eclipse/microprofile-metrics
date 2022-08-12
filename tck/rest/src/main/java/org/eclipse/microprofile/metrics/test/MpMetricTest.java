@@ -262,7 +262,7 @@ public class MpMetricTest {
 
         List<String> missing = new ArrayList<>();
 
-        Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
+        Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.BASE_SCOPE);
 
         for (MiniMeta item : baseNames.values()) {
             if (item.name.startsWith("gc.")) {
@@ -316,7 +316,7 @@ public class MpMetricTest {
         Map<String, Object> elements = jsonPath.getMap(".");
         List<String> missing = new ArrayList<>();
 
-        Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
+        Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.BASE_SCOPE);
         for (String item : baseNames.keySet()) {
             if (item.startsWith("gc.") || baseNames.get(item).optional) {
                 continue;
@@ -340,7 +340,7 @@ public class MpMetricTest {
 
         Map<String, Map<String, Object>> elements = jsonPath.getMap(".");
 
-        Map<String, MiniMeta> expectedMetadata = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
+        Map<String, MiniMeta> expectedMetadata = getExpectedMetadataFromXmlFile(MetricRegistry.BASE_SCOPE);
         checkMetadataPresent(elements, expectedMetadata);
 
     }
@@ -408,7 +408,7 @@ public class MpMetricTest {
 
         String[] lines = data.split("\n");
 
-        Map<String, MiniMeta> expectedMetadata = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
+        Map<String, MiniMeta> expectedMetadata = getExpectedMetadataFromXmlFile(MetricRegistry.BASE_SCOPE);
         for (MiniMeta mm : expectedMetadata.values()) {
 
             boolean found = false;
@@ -571,7 +571,7 @@ public class MpMetricTest {
 
         List<String> missing = new ArrayList<>();
 
-        Map<String, MiniMeta> names = getExpectedMetadataFromXmlFile(MetricRegistry.Type.APPLICATION);
+        Map<String, MiniMeta> names = getExpectedMetadataFromXmlFile(MetricRegistry.APPLICATION_SCOPE);
         for (String item : names.keySet()) {
             if (!elements.containsKey(item)) {
                 missing.add(item);
@@ -590,7 +590,7 @@ public class MpMetricTest {
 
         Map<String, Map<String, Object>> elements = jsonPath.getMap(".");
 
-        Map<String, MiniMeta> expectedMetadata = getExpectedMetadataFromXmlFile(MetricRegistry.Type.APPLICATION);
+        Map<String, MiniMeta> expectedMetadata = getExpectedMetadataFromXmlFile(MetricRegistry.APPLICATION_SCOPE);
         checkMetadataPresent(elements, expectedMetadata);
 
     }
@@ -777,7 +777,7 @@ public class MpMetricTest {
         JsonPath jsonPath = given().header(wantJson).options("/metrics/base").jsonPath();
 
         Map<String, Object> elements = jsonPath.getMap(".");
-        Map<String, MiniMeta> names = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
+        Map<String, MiniMeta> names = getExpectedMetadataFromXmlFile(MetricRegistry.BASE_SCOPE);
 
         for (MiniMeta item : names.values()) {
             if (elements.containsKey(item.toJSONName()) && names.get(item.name).optional) {
@@ -911,7 +911,7 @@ public class MpMetricTest {
         Header wantJson = new Header("Accept", APPLICATION_JSON);
         JsonPath jsonPath = given().header(wantJson).get("/metrics/base").jsonPath();
 
-        Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
+        Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.BASE_SCOPE);
         MiniMeta gcCountMetricMeta = baseNames.get("gc.total");
         Set<String> expectedTags = gcCountMetricMeta.tags.keySet();
 
@@ -948,7 +948,7 @@ public class MpMetricTest {
         Header wantJson = new Header("Accept", APPLICATION_JSON);
         JsonPath jsonPath = given().header(wantJson).get("/metrics/base").jsonPath();
 
-        Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.Type.BASE);
+        Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.BASE_SCOPE);
         MiniMeta gcTimeMetricMeta = baseNames.get("gc.time");
         Set<String> expectedTags = gcTimeMetricMeta.tags.keySet();
 
@@ -1109,18 +1109,18 @@ public class MpMetricTest {
         return allOf(greaterThan((float) (operand - delta)), lessThan((float) (operand + delta)));
     }
 
-    private Map<String, MiniMeta> getExpectedMetadataFromXmlFile(MetricRegistry.Type scope) {
+    private Map<String, MiniMeta> getExpectedMetadataFromXmlFile(String scope) {
         ClassLoader cl = this.getClass().getClassLoader();
         String fileName;
         switch (scope) {
-            case BASE :
+            case "base" :
                 fileName = "base_metrics.xml";
                 break;
-            case APPLICATION :
+            case "application" :
                 fileName = "application_metrics.xml";
                 break;
             default :
-                throw new IllegalArgumentException("No definitions for " + scope.getName() + " supported");
+                throw new IllegalArgumentException("No definitions for " + scope + " supported");
         }
         InputStream is = cl.getResourceAsStream(fileName);
 
