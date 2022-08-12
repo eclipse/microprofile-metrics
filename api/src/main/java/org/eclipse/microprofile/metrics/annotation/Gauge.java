@@ -51,6 +51,8 @@ import jakarta.interceptor.InterceptorBinding;
  * 
  * A gauge with the fully qualified class name + {@code queueSize} will be created which uses the annotated method's
  * return value as its value.
+ * 
+ * The annotated method/field must be of numeric type (extends {@link java.lang.Number}).
  *
  */
 @InterceptorBinding
