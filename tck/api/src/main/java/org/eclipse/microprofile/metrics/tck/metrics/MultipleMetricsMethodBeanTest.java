@@ -45,7 +45,7 @@ import jakarta.inject.Inject;
 @RunWith(Arquillian.class)
 public class MultipleMetricsMethodBeanTest {
 
-    private final static String[] METRIC_NAMES = {"counter", "gauge", "meter", "timer"};
+    private final static String[] METRIC_NAMES = {"counter", "gauge", "timer"};
 
     private Set<String> absoluteMetricNames() {
         return MetricsUtil.absoluteMetricNames(MultipleMetricsMethodBean.class, METRIC_NAMES);

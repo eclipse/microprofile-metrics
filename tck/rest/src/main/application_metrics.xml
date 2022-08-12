@@ -28,6 +28,5 @@
   <metric multi="false" name="metricTest.test1.countMeB" type="counter" unit="jellybean"/>
   <metric multi="false" name="org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeA" type="gauge" unit="kibibits" description="gauge-me-a-description"/>
   <metric multi="false" name="org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeB" type="gauge" unit="hands"/>
-  <metric multi="false" name="meterMeA" type="meter" unit="per_second" description="meter-me-a-description" display-name="meter-me-a-display-name"/>
   <metric multi="false" name="org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA" type="timer" unit="nanoseconds"/>
 </config>
