@@ -819,27 +819,27 @@ public class MpMetricTest {
         boolean found = false;
         for (String line : lines) {
             // explicitly check for the metric line wth value (i.e. the use of `{`)
-            if (line.contains("gc_time_total{")) {
-                final Pattern gcTimeTotalPattern = Pattern.compile("(gc_time_total\\{.*?\\}) (\\d+\\.\\d+)");
-                assertThat("Line format should be gc_time_total\\{.*?\\} \\d+\\.\\d+",
+            if (line.contains("gc_time_seconds_total{")) {
+                final Pattern gcTimeTotalPattern = Pattern.compile("(gc_time_seconds_total\\{.*?\\}) (\\d+\\.\\d+)");
+                assertThat("Line format should be gc_time_seconds_total\\{.*?\\} \\d+\\.\\d+",
                         gcTimeTotalPattern.matcher(line).matches());
 
                 final String metricID = gcTimeTotalPattern.matcher(line).replaceAll("$1");
-                final String tags = metricID.replaceAll("^gc_time_total\\{", "").replaceAll("\\}$", "");
+                final String tags = metricID.replaceAll("^gc_time_seconds_total\\{", "").replaceAll("\\}$", "");
 
                 for (String expectedTag : expectedTags) {
                     assertThat("The metric should contain a " + expectedTag + " tag", tags,
                             containsString(expectedTag + "="));
                 }
                 final String value = gcTimeTotalPattern.matcher(line).replaceAll("$2");
-                Assert.assertTrue("gc.time.total value should be numeric and not negative",
+                Assert.assertTrue("gc.time.seconds.total value should be numeric and not negative",
                         Double.valueOf(value).doubleValue() >= 0);
 
                 found = true;
             }
         }
 
-        Assert.assertTrue("At least one metric named gc.time is expected", found);
+        Assert.assertTrue("At least one metric named gc.time.seconds.total is expected", found);
     }
 
     /**
