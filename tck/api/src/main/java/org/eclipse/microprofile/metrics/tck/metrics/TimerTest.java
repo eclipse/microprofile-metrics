@@ -26,11 +26,12 @@ package org.eclipse.microprofile.metrics.tck.metrics;
 import static org.junit.Assert.assertNotNull;
 
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
+import org.eclipse.microprofile.metrics.Snapshot;
+import org.eclipse.microprofile.metrics.Snapshot.PercentileValue;
 import org.eclipse.microprofile.metrics.Timer;
 import org.eclipse.microprofile.metrics.Timer.Context;
 import org.eclipse.microprofile.metrics.tck.util.TestUtils;
@@ -121,7 +122,9 @@ public class TimerTest {
         assertNotNull(timerLong);
         assertNotNull(timerTime);
 
-        TestUtils.assertEqualsWithTolerance(480, timerLong.getSnapshot().getValue(0.5));
+        PercentileValue globalTimerPercentileValue = getPercentileValueAt(globalTimer, 0.5);
+
+        TestUtils.assertEqualsWithTolerance(480, globalTimerPercentileValue.getValue());
     }
 
     @Test
@@ -148,45 +151,69 @@ public class TimerTest {
     }
 
     @Test
-    public void testSnapshotValues() throws Exception {
-        Assert.assertArrayEquals(
-                "The globalTimer does not contain the expected values: " + Arrays.toString(SAMPLE_LONG_DATA),
-                SAMPLE_LONG_DATA, globalTimer.getSnapshot().getValues());
+    public void testSnapshotPercentileValuesPresent() throws Exception {
+
+        PercentileValue[] percentileValues = globalTimer.getSnapshot().percentileValues();
+        // Check that there are 5 percentiles - [0.5, 0.75,0.95,0.98,0.99,0.999]
+        Assert.assertTrue(percentileValues.length == 6);
+
+        int countDown = 6;
+        for (PercentileValue pv : percentileValues) {
+            double percentile = pv.getPercentile();
+            if (percentile == 0.5 ||
+                    percentile == 0.75 ||
+                    percentile == 0.95 ||
+                    percentile == 0.98 ||
+                    percentile == 0.99 ||
+                    percentile == 0.999) {
+                countDown--;
+            }
+        }
+        Assert.assertTrue(countDown == 0);
+
+    }
+
+    @Test
+    public void testSnapshot50thPercentile() throws Exception {
+
+        PercentileValue globalTimerPercentileValue = getPercentileValueAt(globalTimer, 0.5);
+
+        TestUtils.assertEqualsWithTolerance(480, globalTimerPercentileValue.getValue());
     }
 
     @Test
     public void testSnapshot75thPercentile() throws Exception {
-        TestUtils.assertEqualsWithTolerance(750, globalTimer.getSnapshot().get75thPercentile());
+        PercentileValue globalTimerPercentileValue = getPercentileValueAt(globalTimer, 0.75);
+        TestUtils.assertEqualsWithTolerance(750, globalTimerPercentileValue.getValue());
     }
 
     @Test
     public void testSnapshot95thPercentile() throws Exception {
-        TestUtils.assertEqualsWithTolerance(960, globalTimer.getSnapshot().get95thPercentile());
+        PercentileValue globalTimerPercentileValue = getPercentileValueAt(globalTimer, 0.95);
+        TestUtils.assertEqualsWithTolerance(960, globalTimerPercentileValue.getValue());
     }
 
     @Test
     public void testSnapshot98thPercentile() throws Exception {
-        TestUtils.assertEqualsWithTolerance(980, globalTimer.getSnapshot().get98thPercentile());
+        PercentileValue globalTimerPercentileValue = getPercentileValueAt(globalTimer, 0.98);
+        TestUtils.assertEqualsWithTolerance(980, globalTimerPercentileValue.getValue());
     }
 
     @Test
     public void testSnapshot99thPercentile() throws Exception {
-        TestUtils.assertEqualsWithTolerance(980, globalTimer.getSnapshot().get99thPercentile());
+        PercentileValue globalTimerPercentileValue = getPercentileValueAt(globalTimer, 0.99);
+        TestUtils.assertEqualsWithTolerance(980, globalTimerPercentileValue.getValue());
     }
 
     @Test
     public void testSnapshot999thPercentile() throws Exception {
-        TestUtils.assertEqualsWithTolerance(990, globalTimer.getSnapshot().get999thPercentile());
+        PercentileValue globalTimerPercentileValue = getPercentileValueAt(globalTimer, 0.999);
+        TestUtils.assertEqualsWithTolerance(990, globalTimerPercentileValue.getValue());
     }
 
     @Test
     public void testSnapshotMax() throws Exception {
-        Assert.assertEquals(990, globalTimer.getSnapshot().getMax());
-    }
-
-    @Test
-    public void testSnapshotMin() throws Exception {
-        Assert.assertEquals(0, globalTimer.getSnapshot().getMin());
+        Assert.assertEquals(990, globalTimer.getSnapshot().getMax(), 0.0);
     }
 
     @Test
@@ -195,17 +222,21 @@ public class TimerTest {
     }
 
     @Test
-    public void testSnapshotMedian() throws Exception {
-        TestUtils.assertEqualsWithTolerance(480, globalTimer.getSnapshot().getMedian());
-    }
-
-    @Test
-    public void testSnapshotStdDev() throws Exception {
-        TestUtils.assertEqualsWithTolerance(294.3, globalTimer.getSnapshot().getStdDev());
-    }
-
-    @Test
     public void testSnapshotSize() throws Exception {
         Assert.assertEquals(200, globalTimer.getSnapshot().size());
+    }
+
+    private static PercentileValue getPercentileValueAt(Timer timer, double percentile) {
+        Snapshot snapshot = timer.getSnapshot();
+
+        PercentileValue percentileValue = null;
+        for (PercentileValue pv : snapshot.percentileValues()) {
+            if (pv.getPercentile() == percentile) {
+                percentileValue = pv;
+                break;
+            }
+        }
+        assertNotNull(percentileValue);
+        return percentileValue;
     }
 }
