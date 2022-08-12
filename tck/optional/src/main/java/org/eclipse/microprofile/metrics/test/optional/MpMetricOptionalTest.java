@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2020 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020, 2022 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -24,9 +24,6 @@ package org.eclipse.microprofile.metrics.test.optional;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertTrue;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -48,19 +45,13 @@ import org.junit.runner.RunWith;
 import io.restassured.RestAssured;
 import io.restassured.builder.ResponseBuilder;
 import io.restassured.http.Header;
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 
 @SuppressWarnings("CdiInjectionPointsInspection")
 @RunWith(Arquillian.class)
 public class MpMetricOptionalTest {
 
-    private static final String JSON_APP_LABEL_REGEX = ";_app=[-/A-Za-z0-9]+([;\\\"]?)";
-    private static final String JSON_APP_LABEL_REGEXS_SUB = "$1";
-
     private static final String OPENMETRICS_APP_LABEL_REGEX = "_app=\"[-/A-Za-z0-9]+\"";
-
-    private static final String APPLICATION_JSON = "application/json";
 
     // context root under which the application JAX-RS resources are expected to be
     private static String contextRoot;
@@ -93,18 +84,6 @@ public class MpMetricOptionalTest {
     private static final String NAME_OBJECT_PARAM = "_org.eclipse.microprofile.metrics.test.optional.NameObject";
     private static final String AYNC_RESP_PARAM = "_jakarta.ws.rs.container.AsyncResponse";
 
-    private static final String JSON_BASE_REQUEST_COUNT_START =
-            "'REST.request'.'count;class=org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional;method=";
-    private static final String JSON_BASE_REQUEST_UNMAPPED_EXCEPTION_START =
-            "'REST.request.unmappedException.total;class=org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional;method=";
-    private static final String JSON_BASE_REQUEST_TIME_START =
-            "'REST.request'.'elapsedTime;class=org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional;method=";
-    private static final String JSON_BASE_MAX_TIME_START =
-            "'REST.request'.'maxTimeDuration;class=org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional;method=";
-    private static final String JSON_BASE_MIN_TIME_START =
-            "'REST.request'.'minTimeDuration;class=org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional;method=";
-    private static final String JSON_BASE_REQUEST_END = ";tier=integration'";
-
     private static final String OM_BASE_REQUEST_COUNT_START = "base_REST_request_total"
             + "{class=\"org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional\",method=\"";
     private static final String OM_BASE_REQUEST_TIME_START = "base_REST_request_elapsedTime_seconds"
@@ -129,10 +108,6 @@ public class MpMetricOptionalTest {
     private static final String DEFAULT_PROTOCOL = "http";
     private static final String DEFAULT_HOST = "localhost";
     private static final int DEFAULT_PORT = 8080;
-
-    private static String filterOutAppLabelJSON(String responseBody) {
-        return responseBody.replaceAll(JSON_APP_LABEL_REGEX, JSON_APP_LABEL_REGEXS_SUB);
-    }
 
     private static String filterOutAppLabelOpenMetrics(String responseBody) {
         return responseBody.replaceAll(OPENMETRICS_APP_LABEL_REGEX, "").replaceAll("\\{,", "{").replaceAll(",\\}", "}");
@@ -632,24 +607,26 @@ public class MpMetricOptionalTest {
 
         // Proceed to test that expected duration has elapsed
 
-        acceptHeader = new Header("Accept", APPLICATION_JSON);
+        // TODO: Need to rewrite this in PROM - no implementation available
+        // TODO: Need to to this in a separate PR
+        // acceptHeader = new Header("Accept", APPLICATION_JSON);
 
-        resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
-        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
-        responseBuilder = new ResponseBuilder();
-        responseBuilder.clone(resp);
-        responseBuilder.setBody(filteredJSONPath.prettify());
-        resp = responseBuilder.build();
-        Object asyncDurationObject = resp.then().statusCode(200).contentType(APPLICATION_JSON).extract()
-                .path(JSON_BASE_REQUEST_TIME_START + "getAsync" + AYNC_RESP_PARAM + JSON_BASE_REQUEST_END);
+        // resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
+        // JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
+        // responseBuilder = new ResponseBuilder();
+        // responseBuilder.clone(resp);
+        // responseBuilder.setBody(filteredJSONPath.prettify());
+        // resp = responseBuilder.build();
+        // Object asyncDurationObject = resp.then().statusCode(200).contentType(APPLICATION_JSON).extract()
+        // .path(JSON_BASE_REQUEST_TIME_START + "getAsync" + AYNC_RESP_PARAM + JSON_BASE_REQUEST_END);
 
-        String asyncDurationString = (asyncDurationObject instanceof Number)
-                ? ((Number) asyncDurationObject).toString()
-                : (String) asyncDurationObject;
-        Double asyncDurationDouble = Double.parseDouble(asyncDurationString);
+        // String asyncDurationString = (asyncDurationObject instanceof Number)
+        // ? ((Number) asyncDurationObject).toString()
+        // : (String) asyncDurationObject;
+        // Double asyncDurationDouble = Double.parseDouble(asyncDurationString);
 
-        assertTrue("Expected duration to be greater than 5000000000 nanoseconds (i.e 5 seconds)",
-                (asyncDurationDouble >= 5000000000.00));
+        // assertTrue("Expected duration to be greater than 5000000000 nanoseconds (i.e 5 seconds)",
+        // (asyncDurationDouble >= 5000000000.00));
     }
 
     /*
@@ -705,226 +682,6 @@ public class MpMetricOptionalTest {
 
     }
 
-    /*
-     * TEST GET REQUEST JSON TO RETRIEVE ABOVE VALUES
-     */
-
-    @Test
-    @RunAsClient
-    @InSequence(16)
-    public void testValidateGetJSONnoParam() throws InterruptedException {
-        Header acceptHeader = new Header("Accept", APPLICATION_JSON);
-
-        Response resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
-        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
-        ResponseBuilder responseBuilder = new ResponseBuilder();
-        responseBuilder.clone(resp);
-        responseBuilder.setBody(filteredJSONPath.prettify());
-        resp = responseBuilder.build();
-        resp.then().statusCode(200).contentType(APPLICATION_JSON)
-                .body(JSON_BASE_REQUEST_COUNT_START + "getNoParam" + JSON_BASE_REQUEST_END, equalTo(2)) // end-point was
-                                                                                                        // hit twice
-                .body(JSON_BASE_REQUEST_TIME_START + "getNoParam" + JSON_BASE_REQUEST_END, not(0))
-                .body(JSON_BASE_MAX_TIME_START + "getNoParam" + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "getNoParam" + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-
-                .body(JSON_BASE_REQUEST_COUNT_START + "optionsNoParam" + JSON_BASE_REQUEST_END, equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "optionsNoParam" + JSON_BASE_REQUEST_END, not(0))
-                .body(JSON_BASE_MAX_TIME_START + "optionsNoParam" + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "optionsNoParam" + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-
-                .body(JSON_BASE_REQUEST_COUNT_START + "headNoParam" + JSON_BASE_REQUEST_END, equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "headNoParam" + JSON_BASE_REQUEST_END, not(0))
-                .body(JSON_BASE_MAX_TIME_START + "headNoParam" + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "headNoParam" + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-
-                .body(JSON_BASE_REQUEST_COUNT_START + "putNoParam" + JSON_BASE_REQUEST_END, equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "putNoParam" + JSON_BASE_REQUEST_END, not(0))
-                .body(JSON_BASE_MAX_TIME_START + "putNoParam" + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "putNoParam" + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-
-                .body(JSON_BASE_REQUEST_COUNT_START + "postNoParam" + JSON_BASE_REQUEST_END, equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "postNoParam" + JSON_BASE_REQUEST_END, not(0))
-                .body(JSON_BASE_MAX_TIME_START + "postNoParam" + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "postNoParam" + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-
-                .body(JSON_BASE_REQUEST_COUNT_START + "deleteNoParam" + JSON_BASE_REQUEST_END, equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "deleteNoParam" + JSON_BASE_REQUEST_END, not(0))
-                .body(JSON_BASE_MAX_TIME_START + "deleteNoParam" + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "deleteNoParam" + JSON_BASE_REQUEST_END, nullOrGreaterThanZero());
-
-    }
-
-    @Test
-    @RunAsClient
-    @InSequence(17)
-    public void testValidateGetJSONParam() throws InterruptedException {
-        Header acceptHeader = new Header("Accept", APPLICATION_JSON);
-        Response resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
-        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
-        ResponseBuilder responseBuilder = new ResponseBuilder();
-        responseBuilder.clone(resp);
-        responseBuilder.setBody(filteredJSONPath.prettify());
-        resp = responseBuilder.build();
-        resp.then().statusCode(200).contentType(APPLICATION_JSON)
-                .body(JSON_BASE_REQUEST_COUNT_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
-                        not(0))
-                .body(JSON_BASE_MAX_TIME_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_REQUEST_COUNT_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
-                        not(0))
-                .body(JSON_BASE_MAX_TIME_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_REQUEST_COUNT_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
-                        not(0))
-                .body(JSON_BASE_MAX_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_REQUEST_COUNT_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
-                        not(0))
-                .body(JSON_BASE_MAX_TIME_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_REQUEST_COUNT_START + "getSingleBooleanParam" + BOOLEAN_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + JSON_BASE_REQUEST_END,
-                        not(0))
-                .body(JSON_BASE_MAX_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_REQUEST_COUNT_START + "getListParam1" + LIST_PARAM + JSON_BASE_REQUEST_END, equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "getListParam1" + LIST_PARAM + JSON_BASE_REQUEST_END,
-                        not(0))
-                .body(JSON_BASE_MAX_TIME_START + "getListParam1" + LIST_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "getListParam1" + LIST_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_REQUEST_COUNT_START + "getListParam2" + LIST_PARAM + JSON_BASE_REQUEST_END, equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "getListParam2" + LIST_PARAM + JSON_BASE_REQUEST_END,
-                        not(0))
-                .body(JSON_BASE_MAX_TIME_START + "getListParam2" + LIST_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "getListParam2" + LIST_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_REQUEST_COUNT_START + "getListParam3" + LIST_PARAM + LIST_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "getListParam3" + LIST_PARAM + LIST_PARAM + JSON_BASE_REQUEST_END,
-                        not(0))
-                .body(JSON_BASE_MAX_TIME_START + "getListParam3" + LIST_PARAM + LIST_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "getListParam3" + LIST_PARAM + LIST_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_REQUEST_COUNT_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
-                        not(0))
-                .body(JSON_BASE_MAX_TIME_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_REQUEST_COUNT_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
-                        not(0))
-                .body(JSON_BASE_MAX_TIME_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_REQUEST_COUNT_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
-                        not(0))
-                .body(JSON_BASE_MAX_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_REQUEST_COUNT_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
-                        equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
-                        not(0))
-                .body(JSON_BASE_MAX_TIME_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_REQUEST_COUNT_START + "getSingleBooleanParam" + BOOLEAN_PARAM
-                        + JSON_BASE_REQUEST_END, equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + JSON_BASE_REQUEST_END,
-                        not(0))
-                .body(JSON_BASE_MAX_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_REQUEST_COUNT_START + "getMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
-                        + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "getMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
-                        + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, not(0))
-                .body(JSON_BASE_MAX_TIME_START + "getMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
-                        + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "getMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
-                        + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-                .body(JSON_BASE_REQUEST_COUNT_START + "getMultipleParam2" + STRING_PARAM + LIST_PARAM
-                        + JSON_BASE_REQUEST_END, equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "getMultipleParam2" + STRING_PARAM + LIST_PARAM
-                        + JSON_BASE_REQUEST_END, not(0))
-                .body(JSON_BASE_MAX_TIME_START + "getMultipleParam2" + STRING_PARAM + LIST_PARAM
-                        + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "getMultipleParam2" + STRING_PARAM + LIST_PARAM
-                        + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-                .body(JSON_BASE_REQUEST_COUNT_START + "getMultipleParam4" + SET_PARAM + SORTED_SET_PARAM
-                        + JSON_BASE_REQUEST_END, equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "getMultipleParam4" + SET_PARAM + SORTED_SET_PARAM
-                        + JSON_BASE_REQUEST_END, not(0))
-                .body(JSON_BASE_MAX_TIME_START + "getMultipleParam4" + SET_PARAM + SORTED_SET_PARAM
-                        + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "getMultipleParam4" + SET_PARAM + SORTED_SET_PARAM
-                        + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-                .body(JSON_BASE_REQUEST_COUNT_START + "postMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
-                        + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "postMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
-                        + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, not(0))
-                .body(JSON_BASE_MAX_TIME_START + "postMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
-                        + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "postMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
-                        + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-                .body(JSON_BASE_REQUEST_COUNT_START + "postMultipleParam2" + STRING_PARAM + LIST_PARAM
-                        + JSON_BASE_REQUEST_END, equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "postMultipleParam2" + STRING_PARAM + LIST_PARAM
-                        + JSON_BASE_REQUEST_END, not(0))
-                .body(JSON_BASE_MAX_TIME_START + "postMultipleParam2" + STRING_PARAM + LIST_PARAM
-                        + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "postMultipleParam2" + STRING_PARAM + LIST_PARAM
-                        + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-                .body(JSON_BASE_REQUEST_COUNT_START + "postMultipleParam4" + SET_PARAM + SORTED_SET_PARAM
-                        + JSON_BASE_REQUEST_END, equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "postMultipleParam4" + SET_PARAM + SORTED_SET_PARAM
-                        + JSON_BASE_REQUEST_END, not(0))
-                .body(JSON_BASE_MAX_TIME_START + "postMultipleParam4" + SET_PARAM + SORTED_SET_PARAM
-                        + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "postMultipleParam4" + SET_PARAM + SORTED_SET_PARAM
-                        + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-                .body(JSON_BASE_REQUEST_COUNT_START + "getAsync" + AYNC_RESP_PARAM + JSON_BASE_REQUEST_END, equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "getAsync" + AYNC_RESP_PARAM + JSON_BASE_REQUEST_END, not(0))
-                .body(JSON_BASE_MAX_TIME_START + "getAsync" + AYNC_RESP_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "getAsync" + AYNC_RESP_PARAM + JSON_BASE_REQUEST_END,
-                        nullOrGreaterThanZero());
-    }
-
     @Test
     @RunAsClient
     @InSequence(18)
@@ -957,38 +714,6 @@ public class MpMetricOptionalTest {
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(containsString(
                 OM_BASE_REQUEST_UNMAPPED_EXCEPTION_START + "getMappedArithException" + OM_BASE_REQUEST_END + " 0"));
-
-        /*
-         * Check JSON
-         */
-
-        acceptHeader = new Header("Accept", APPLICATION_JSON);
-        resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
-        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
-        responseBuilder = new ResponseBuilder();
-        responseBuilder.clone(resp);
-        responseBuilder.setBody(filteredJSONPath.prettify());
-        resp = responseBuilder.build();
-        resp.then().statusCode(200).contentType(APPLICATION_JSON)
-                .body(JSON_BASE_REQUEST_COUNT_START + "getMappedArithException"
-                        + JSON_BASE_REQUEST_END, equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "getMappedArithException"
-                        + JSON_BASE_REQUEST_END, not(0))
-                .body(JSON_BASE_MAX_TIME_START + "getMappedArithException"
-                        + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "getMappedArithException"
-                        + JSON_BASE_REQUEST_END, nullOrGreaterThanZero());
-
-        acceptHeader = new Header("Accept", APPLICATION_JSON);
-        resp = given().header(acceptHeader).when().get(RESTREQUEST_UNMAPPED_EXCEPION_METRIC_ENDPOINT);
-        filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
-        responseBuilder = new ResponseBuilder();
-        responseBuilder.clone(resp);
-        responseBuilder.setBody(filteredJSONPath.prettify());
-        resp = responseBuilder.build();
-        resp.then().statusCode(200).contentType(APPLICATION_JSON)
-                .body(JSON_BASE_REQUEST_UNMAPPED_EXCEPTION_START + "getMappedArithException"
-                        + JSON_BASE_REQUEST_END, equalTo(0));
     }
 
     @Test
@@ -1023,38 +748,6 @@ public class MpMetricOptionalTest {
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(containsString(
                 OM_BASE_REQUEST_UNMAPPED_EXCEPTION_START + "postMappedArithException" + OM_BASE_REQUEST_END + " 0"));
-
-        /*
-         * Check JSON
-         */
-
-        acceptHeader = new Header("Accept", APPLICATION_JSON);
-        resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
-        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
-        responseBuilder = new ResponseBuilder();
-        responseBuilder.clone(resp);
-        responseBuilder.setBody(filteredJSONPath.prettify());
-        resp = responseBuilder.build();
-        resp.then().statusCode(200).contentType(APPLICATION_JSON)
-                .body(JSON_BASE_REQUEST_COUNT_START + "postMappedArithException"
-                        + JSON_BASE_REQUEST_END, equalTo(1))
-                .body(JSON_BASE_REQUEST_TIME_START + "postMappedArithException"
-                        + JSON_BASE_REQUEST_END, not(0))
-                .body(JSON_BASE_MAX_TIME_START + "postMappedArithException"
-                        + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "postMappedArithException"
-                        + JSON_BASE_REQUEST_END, nullOrGreaterThanZero());
-
-        acceptHeader = new Header("Accept", APPLICATION_JSON);
-        resp = given().header(acceptHeader).when().get(RESTREQUEST_UNMAPPED_EXCEPION_METRIC_ENDPOINT);
-        filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
-        responseBuilder = new ResponseBuilder();
-        responseBuilder.clone(resp);
-        responseBuilder.setBody(filteredJSONPath.prettify());
-        resp = responseBuilder.build();
-        resp.then().statusCode(200).contentType(APPLICATION_JSON)
-                .body(JSON_BASE_REQUEST_UNMAPPED_EXCEPTION_START + "postMappedArithException"
-                        + JSON_BASE_REQUEST_END, equalTo(0));
     }
 
     @Test
@@ -1089,37 +782,6 @@ public class MpMetricOptionalTest {
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(containsString(
                 OM_BASE_REQUEST_UNMAPPED_EXCEPTION_START + "getUnmappedArithException" + OM_BASE_REQUEST_END + " 1"));
-        /*
-         * Check JSON
-         */
-
-        acceptHeader = new Header("Accept", APPLICATION_JSON);
-        resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
-        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
-        responseBuilder = new ResponseBuilder();
-        responseBuilder.clone(resp);
-        responseBuilder.setBody(filteredJSONPath.prettify());
-        resp = responseBuilder.build();
-        resp.then().statusCode(200).contentType(APPLICATION_JSON)
-                .body(JSON_BASE_REQUEST_COUNT_START + "getUnmappedArithException"
-                        + JSON_BASE_REQUEST_END, zero())
-                .body(JSON_BASE_REQUEST_TIME_START + "getUnmappedArithException"
-                        + JSON_BASE_REQUEST_END, zero())
-                .body(JSON_BASE_MAX_TIME_START + "getUnmappedArithException"
-                        + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "getUnmappedArithException"
-                        + JSON_BASE_REQUEST_END, nullOrGreaterThanZero());
-
-        acceptHeader = new Header("Accept", APPLICATION_JSON);
-        resp = given().header(acceptHeader).when().get(RESTREQUEST_UNMAPPED_EXCEPION_METRIC_ENDPOINT);
-        filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
-        responseBuilder = new ResponseBuilder();
-        responseBuilder.clone(resp);
-        responseBuilder.setBody(filteredJSONPath.prettify());
-        resp = responseBuilder.build();
-        resp.then().statusCode(200).contentType(APPLICATION_JSON)
-                .body(JSON_BASE_REQUEST_UNMAPPED_EXCEPTION_START + "getUnmappedArithException"
-                        + JSON_BASE_REQUEST_END, equalTo(1));
     }
 
     @Test
@@ -1154,38 +816,6 @@ public class MpMetricOptionalTest {
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(containsString(
                 OM_BASE_REQUEST_UNMAPPED_EXCEPTION_START + "postUnmappedArithException" + OM_BASE_REQUEST_END + " 1"));
-
-        /*
-         * Check JSON
-         */
-
-        acceptHeader = new Header("Accept", APPLICATION_JSON);
-        resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
-        JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
-        responseBuilder = new ResponseBuilder();
-        responseBuilder.clone(resp);
-        responseBuilder.setBody(filteredJSONPath.prettify());
-        resp = responseBuilder.build();
-        resp.then().statusCode(200).contentType(APPLICATION_JSON)
-                .body(JSON_BASE_REQUEST_COUNT_START + "postUnmappedArithException"
-                        + JSON_BASE_REQUEST_END, zero())
-                .body(JSON_BASE_REQUEST_TIME_START + "postUnmappedArithException"
-                        + JSON_BASE_REQUEST_END, zero())
-                .body(JSON_BASE_MAX_TIME_START + "postUnmappedArithException"
-                        + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-                .body(JSON_BASE_MIN_TIME_START + "postUnmappedArithException"
-                        + JSON_BASE_REQUEST_END, nullOrGreaterThanZero());
-
-        acceptHeader = new Header("Accept", APPLICATION_JSON);
-        resp = given().header(acceptHeader).when().get(RESTREQUEST_UNMAPPED_EXCEPION_METRIC_ENDPOINT);
-        filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
-        responseBuilder = new ResponseBuilder();
-        responseBuilder.clone(resp);
-        responseBuilder.setBody(filteredJSONPath.prettify());
-        resp = responseBuilder.build();
-        resp.then().statusCode(200).contentType(APPLICATION_JSON)
-                .body(JSON_BASE_REQUEST_UNMAPPED_EXCEPTION_START + "postUnmappedArithException"
-                        + JSON_BASE_REQUEST_END, equalTo(1));
     }
 
     Matcher<Object> nullOrGreaterThanZero() {

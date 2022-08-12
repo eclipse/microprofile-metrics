@@ -51,20 +51,45 @@ public class MetricAppBean {
     @Metric(name = "blue")
     private Counter blueCount;
 
+    public static final String NO_TAG_COUNTER = "noTagCounter";
     public static final String TAGGED_COUNTER = "taggedCounter";
+
+    public static final String NO_TAG_HISTOGRAM = "noTagHistogram";
     public static final String TAGGED_HISTOGRAM = "taggedHistogram";
+
+    public static final String NO_TAG_TIMER = "noTagTimer";
     public static final String TAGGED_TIMER = "taggedTimer";
-    public static final String TAGGED_SIMPLETIMER = "taggedSimpleTimer";
-    public static final String TAGGED_METER = "taggedMeter";
+
+    public static final String NO_TAG_GAUGE = "noTagGauge";
     public static final String TAGGED_GAUGE = "taggedGauge";
-    public static final String TAGGED_CONCURRENTGAUGE = "taggedConcurrentGauge";
+
+    public static final String SHARED_METRIC_NAME = "sharedMetricName";
+
+    @Counted(name = SHARED_METRIC_NAME, absolute = true, scope = "customScopeA")
+    public void countMeMetricNameScopeA() {
+
+    }
+
+    @Timed(name = SHARED_METRIC_NAME, absolute = true, scope = "customScopeB")
+    public void timeMeMetricNameScopeB() {
+
+    }
+
+    @org.eclipse.microprofile.metrics.annotation.Gauge(name = SHARED_METRIC_NAME, absolute = true, scope = "customScopeC", unit = "jelly")
+    public long gaugeMeMetricNameScopeC() {
+        return 123L;
+    }
+
+    @Inject
+    @Metric(name = SHARED_METRIC_NAME, absolute = true, scope = "customScopeD", unit = "marshmellow")
+    private Histogram histogramMetricNameScopeD;
 
     @Inject
     @Metric(name = "semiColonTaggedCounter", tags = {"scTag=semi;colons;are;bad"})
     private Counter semiColonTaggedCounter;
 
     @Inject
-    @Metric(name = TAGGED_COUNTER)
+    @Metric(name = NO_TAG_COUNTER)
     private Counter counterNoTag;
 
     @Inject
@@ -76,7 +101,7 @@ public class MetricAppBean {
     private Counter counterNumberTwoTag;
 
     @Inject
-    @Metric(name = TAGGED_HISTOGRAM, absolute = true, unit = "marshmellow")
+    @Metric(name = NO_TAG_HISTOGRAM, absolute = true, unit = "marshmellow")
     private Histogram histogramNoTag;
 
     @Inject
@@ -88,7 +113,7 @@ public class MetricAppBean {
     private Histogram histogramTwoTag;
 
     @Inject
-    @Metric(name = TAGGED_TIMER, absolute = true)
+    @Metric(name = NO_TAG_TIMER, absolute = true)
     private Timer timerNoTag;
 
     @Inject
@@ -99,7 +124,7 @@ public class MetricAppBean {
     @Metric(name = TAGGED_TIMER, absolute = true, tags = {"number=two"})
     private Timer timerTwoTag;
 
-    @org.eclipse.microprofile.metrics.annotation.Gauge(name = TAGGED_GAUGE, absolute = true, unit = MetricUnits.NONE)
+    @org.eclipse.microprofile.metrics.annotation.Gauge(name = NO_TAG_GAUGE, absolute = true, unit = MetricUnits.NONE)
     public long gaugeMeTagged() {
         return 1000L;
     }
