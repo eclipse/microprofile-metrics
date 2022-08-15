@@ -121,13 +121,13 @@ public @interface Timed {
     /**
      * The unit of the timer.
      * 
-     * @return The unit of the timer. By default, the value is {@link MetricUnits#NANOSECONDS}.
+     * @return The unit of the timer. By default, the value is {@link MetricUnits#SECONDS}.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
      * @see org.eclipse.microprofile.metrics.MetricUnits
      */
     @Nonbinding
-    String unit() default MetricUnits.NANOSECONDS;
+    String unit() default MetricUnits.SECONDS;
 
     /**
      * The scope that this Timer belongs to.
