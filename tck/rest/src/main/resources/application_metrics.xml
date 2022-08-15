@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
-    Copyright (c) 2017 Contributors to the Eclipse Foundation
+    Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
 
     See the NOTICES file(s) distributed with this work for additional
     information regarding copyright ownership.
@@ -19,14 +19,14 @@
     SPDX-License-Identifier: Apache-2.0
 -->
 <config>
-  <metric multi="false" name="org.eclipse.microprofile.metrics.test.MetricAppBean.redCount" type="counter" unit="none" description="red-description" display-name="red-display-name"/>
+  <metric multi="false" name="org.eclipse.microprofile.metrics.test.MetricAppBean.redCount" type="counter" unit="none" description="red-description"/>
   <metric multi="false" name="org.eclipse.microprofile.metrics.test.MetricAppBean.blue" type="counter" unit="none"/>
   <metric multi="false" name="greenCount" type="counter" unit="none"/>
   <metric multi="false" name="purple" type="counter" unit="none" tags="app=myShop"/>
-  <metric multi="false" name="jellybeanHistogram" type="histogram" unit="jellybeans" description="jellybeans-description" display-name="jellybeans-displayName"/>
-  <metric multi="false" name="metricTest.test1.countMeA" type="counter" unit="none" description="count-me-a-description" display-name="count-me-a-display-name"/>
+  <metric multi="false" name="jellybeanHistogram" type="histogram" unit="jellybeans" description="jellybeans-description"/>
+  <metric multi="false" name="metricTest.test1.countMeA" type="counter" unit="none" description="count-me-a-description"/>
   <metric multi="false" name="metricTest.test1.countMeB" type="counter" unit="jellybean"/>
-  <metric multi="false" name="org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeA" type="gauge" unit="kibibits" description="gauge-me-a-description" display-name="gauge-me-a-displayname"/>
+  <metric multi="false" name="org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeA" type="gauge" unit="kibibits" description="gauge-me-a-description" />
   <metric multi="false" name="org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeB" type="gauge" unit="hands"/>
   <metric multi="false" name="meterMeA" type="meter" unit="per_second" description="meter-me-a-description" display-name="meter-me-a-display-name"/>
   <metric multi="false" name="org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA" type="timer" unit="nanoseconds"/>

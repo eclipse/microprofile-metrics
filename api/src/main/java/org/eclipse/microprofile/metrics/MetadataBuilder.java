@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2018, 2020 Contributors to the Eclipse Foundation
+ * Copyright (c) 2018, 2022 Contributors to the Eclipse Foundation
  *               2018 Red Hat, Inc. and/or its affiliates
  *               and other contributors as indicated by the @author tags.
  *
@@ -34,8 +34,6 @@ public class MetadataBuilder {
 
     private String name;
 
-    private String displayName;
-
     private String description;
 
     private MetricType type;
@@ -47,7 +45,6 @@ public class MetadataBuilder {
         this.type = metadata.getTypeRaw();
         metadata.description().ifPresent(this::withDescription);
         metadata.unit().ifPresent(this::withUnit);
-        metadata.displayName().ifPresent(this::withDisplayName);
     }
 
     public MetadataBuilder() {
@@ -70,18 +67,6 @@ public class MetadataBuilder {
         if ("".equals(name)) {
             throw new IllegalArgumentException("Name must not be empty");
         }
-        return this;
-    }
-
-    /**
-     * Sets the displayName.
-     *
-     * @param displayName
-     *            the displayName, empty string is considered as "not present" (null)
-     * @return the builder instance
-     */
-    public MetadataBuilder withDisplayName(String displayName) {
-        this.displayName = "".equals(displayName) ? null : displayName;
         return this;
     }
 
@@ -131,6 +116,6 @@ public class MetadataBuilder {
             throw new IllegalStateException("Name is required");
         }
 
-        return new DefaultMetadata(name, displayName, description, type, unit);
+        return new DefaultMetadata(name, description, type, unit);
     }
 }

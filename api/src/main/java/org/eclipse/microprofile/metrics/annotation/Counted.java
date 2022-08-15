@@ -115,16 +115,6 @@ public @interface Counted {
     boolean absolute() default false;
 
     /**
-     * The human readable display name of the counter.
-     * 
-     * @return The display name of the counter.
-     *
-     * @see org.eclipse.microprofile.metrics.Metadata
-     */
-    @Nonbinding
-    String displayName() default "";
-
-    /**
      * The description of the counter.
      * 
      * @return The description of the counter.

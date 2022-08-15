@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2020 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020, 2022 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -34,7 +34,7 @@ import jakarta.enterprise.inject.Stereotype;
 @Stereotype
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-@Counted(name = "bloop", description = "description", displayName = "displayName")
+@Counted(name = "bloop", description = "description")
 public @interface CountMeWithSpecifiedMetadata {
 
 }
