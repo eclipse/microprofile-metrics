@@ -92,16 +92,18 @@ public class MetricRegistryTest {
     public void useExistingMetaDataTest() {
         String metricName = "counterFoo";
 
+        Tag orangeTag = new Tag("colour", "orange");
+        Tag purpleTag = new Tag("colour", "purple");
+
         // first to register a "complex" metadata
         metrics.counter(Metadata.builder().withName(metricName)
-                .withType(MetricType.COUNTER).build());
+                .withType(MetricType.COUNTER).build(), orangeTag);
 
-        Tag purpleTag = new Tag("colour", "purple");
         // creates with a simple/template metadata or uses an existing one.
         metrics.counter(metricName, purpleTag);
 
         // check both counters have been registered
-        assertExists(Counter.class, new MetricID(metricName));
+        assertExists(Counter.class, new MetricID(metricName, orangeTag));
         assertExists(Counter.class, new MetricID(metricName, purpleTag));
     }
 
