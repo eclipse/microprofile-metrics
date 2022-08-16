@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
-    Copyright (c) 2017 Contributors to the Eclipse Foundation
+    Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
 
     See the NOTICES file(s) distributed with this work for additional
     information regarding copyright ownership.
@@ -29,11 +29,11 @@
   <metric multi="false" name="classloader.loadedClasses.total" type="counter" unit="none"/>
   <metric multi="false" name="classloader.unloadedClasses.total" type="counter" unit="none"/>
   <metric multi="false" name="cpu.availableProcessors" type="gauge" unit="none"/>
-  <metric multi="false" name="jvm.uptime" type="gauge" unit="milliseconds"/>
+  <metric multi="false" name="jvm.uptime" type="gauge" unit="seconds"/>
   <metric multi="true" name="gc.total" type="counter" unit="none" tags="name=*"/>
-  <metric multi="true" name="gc.time" type="gauge" unit="milliseconds" tags="name=*"/>
-  <metric multi="false" name="optional.metric" type="histogram" unit="milliseconds" optional="true"/>
+  <metric multi="true" name="gc.time" type="gauge" unit="seconds" tags="name=*"/>
+  <metric multi="false" name="optional.metric" type="histogram" unit="seconds" optional="true"/>
   <metric multi="false" name="cpu.systemLoadAverage" type="gauge" unit="none" optional="true"/>
   <metric multi="false" name="cpu.processCpuLoad" type="gauge" unit="percent" optional="true"/>
-  <metric multi="false" name="cpu.processCpuTime" type="gauge" unit="nanoseconds" optional="true"/>
+  <metric multi="false" name="cpu.processCpuTime" type="gauge" unit="seconds" optional="true"/>
 </config>
