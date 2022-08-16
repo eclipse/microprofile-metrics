@@ -195,7 +195,7 @@ There is one `MetricRegistry` instance for each of the predefined scopes listed 
 Metrics can be added to or retrieved from the registry either using the `@Metric` annotation
 (see <<app-programming-model#api-annotations, Metrics Annotations>>) or using the `MetricRegistry` object directly.
 
-A metric is uniquely identified by the `MetricRegistry` if the `MetricID` associated with the metric is unique. That is to say, there are no other metrics with the same combination of metric name and tags. However, all metrics of the same name must be of the same type and contain the same set of tag names otherwise an `IllegalArgumentException` will be thrown. This exception will be thrown during registration.
+A metric is uniquely identified by the `MetricRegistry` if the `MetricID` associated with the metric is unique. That is to say, there are no other metrics with the same combination of metric name and tags. However, all metrics of the same name must be of the same type and be identified by the same set of tag names otherwise an `IllegalArgumentException` will be thrown. This exception will be thrown during registration.
 
 The metadata information is registered under a unique metric name and is immutable. All metrics of the same name must be registered with the same metadata information otherwise an "IllegalArgumentException" will be thrown. This exception will be thrown during registration.
 
@@ -213,8 +213,7 @@ The MetricID:
 ==== Reusing Metrics
 
 For metrics declared using annotations, it is allowed to reference one metric by multiple annotations.
-The prerequisite for this is that the annotations carry the same metadata. If multiple annotations declare the same
-metric, but contain different metadata, an `IllegalArgumentException` must be thrown during startup.
+The prerequisite for this is that all such annotations must carry the same metadata and tag names. If multiple annotations declare the same metric but contain different metadata or tag names, an IllegalArgumentException must be thrown during startup.
 
 Reusability does not apply to gauges though. The implementation must throw an `IllegalArgumentException` during startup if it detects multiple 
 `@Gauge` annotations referring to the same gauge (with the same `MetricID`).
