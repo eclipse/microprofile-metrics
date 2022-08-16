@@ -64,7 +64,7 @@ and throw an `IllegalArgumentException` if such duplicate exists
 * The implementation must reject metrics upon registration if the metadata information being registered is not equivalent to the metadata information that has already been registered under the given metric name (if it already exists).
 ** All metrics of a given metric name must be associated with the same metadata information.
 ** The implementation must throw an `IllegalArgumentException` when the metric is rejected.
-* The implementation must reject metrics upon registration if the names of the tags are not equivalent to those already registered under the given metric name (if it already exists). The values of the tags may differ, but the name/key of the tags must be the same.
+* The implementation must reject metrics upon registration if the set of tag names specified is not the same as the set of tag names used in prior registrations of metrics with the same metric name.
 ** The implementation must throw an `IllegalArgumentException` when the metric is rejected.
 * The implementation must throw an `IllegalStateException` if an annotated metric is invoked, but the metric no longer exists in the MetricRegistry. This applies to the following annotations : @Timed, @Counted
 * The implementation must make sure that metric registries are thread-safe, in other words, concurrent calls to methods of `MetricRegistry` must not leave the registry in an inconsistent state.
