@@ -118,7 +118,7 @@ public class ReusedMetricsTest {
     @InSequence(2)
     public void testSharedCounter() {
 
-        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics?mp_scope=application");
+        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics?scope=application");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
         responseBuilder.setBody(filterOutAppLabelPromMetrics(resp.getBody().asString()));
@@ -144,7 +144,7 @@ public class ReusedMetricsTest {
     @InSequence(4)
     public void testSharedCounterAgain() {
 
-        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics?mp_scope=application");
+        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics?scope=application");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
         responseBuilder.setBody(filterOutAppLabelPromMetrics(resp.getBody().asString()));
