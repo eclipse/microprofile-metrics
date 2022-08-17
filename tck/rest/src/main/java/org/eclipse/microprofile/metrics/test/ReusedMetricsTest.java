@@ -52,7 +52,7 @@ import jakarta.inject.Inject;
 @RunWith(Arquillian.class)
 public class ReusedMetricsTest {
 
-    private static final String OPENMETRICS_APP_LABEL_REGEX = "_app=\"[-/A-Za-z0-9]+\"";
+    private static final String OPENMETRICS_APP_LABEL_REGEX = "mp_app=\"[-/A-Za-z0-9]+\"";
     private static final String TEXT_PLAIN = "text/plain";
     private static final String DEFAULT_PROTOCOL = "http";
     private static final String DEFAULT_HOST = "localhost";
@@ -118,7 +118,7 @@ public class ReusedMetricsTest {
     @InSequence(2)
     public void testSharedCounter() {
 
-        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics?scope=application");
+        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics?mp_scope=application");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
         responseBuilder.setBody(filterOutAppLabelPromMetrics(resp.getBody().asString()));
@@ -127,9 +127,9 @@ public class ReusedMetricsTest {
         resp.then().statusCode(200)
                 .and()
                 .body(containsString("# TYPE countMe2_total counter"))
-                .body(containsString("countMe2_total{scope=\"application\",tier=\"integration\"} 1"))
+                .body(containsString("countMe2_total{mp_scope=\"application\",tier=\"integration\"} 1"))
                 .body(containsString("# TYPE timeMe2_seconds summary"))
-                .body(containsString("timeMe2_seconds_count{scope=\"application\",tier=\"integration\"} 1"));
+                .body(containsString("timeMe2_seconds_count{mp_scope=\"application\",tier=\"integration\"} 1"));
     }
 
     @Test
@@ -144,7 +144,7 @@ public class ReusedMetricsTest {
     @InSequence(4)
     public void testSharedCounterAgain() {
 
-        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics?scope=application");
+        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics?mp_scope=application");
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
         responseBuilder.setBody(filterOutAppLabelPromMetrics(resp.getBody().asString()));
@@ -153,9 +153,9 @@ public class ReusedMetricsTest {
         resp.then().statusCode(200)
                 .and()
                 .body(containsString("# TYPE countMe2_total counter"))
-                .body(containsString("countMe2_total{scope=\"application\",tier=\"integration\"} 2"))
+                .body(containsString("countMe2_total{mp_scope=\"application\",tier=\"integration\"} 2"))
                 .body(containsString("# TYPE timeMe2_seconds summary"))
-                .body(containsString("timeMe2_seconds_count{scope=\"application\",tier=\"integration\"} 2"));
+                .body(containsString("timeMe2_seconds_count{mp_scope=\"application\",tier=\"integration\"} 2"));
     }
 
 }
