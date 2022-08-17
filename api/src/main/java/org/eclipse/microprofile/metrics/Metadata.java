@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017, 2018, 2020 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
  *               2017, 2018 Red Hat, Inc. and/or its affiliates
  *               and other contributors as indicated by the @author tags.
  *
@@ -32,8 +32,6 @@ import java.util.Optional;
  * The metadata contains:
  * <ul>
  * <li>{@code Name}: (Required) The name of the metric.</li>
- * <li>{@code Display name}: (Optional) The display (friendly) name of the metric. By default, it is set to the
- * {@code Name}.</li>
  * <li>{@code Description}: (Optional) A human readable description of the metric.</li>
  * <li>{@code Type}: (Required) The type of the metric. See {@link MetricType}.</li>
  * <li>{@code Unit}: (Optional) The unit of the metric. The unit may be any unit specified as a String or one specified
@@ -50,15 +48,6 @@ public interface Metadata {
      * @return the metric name.
      */
     String getName();
-
-    /**
-     * Returns the display name if set, otherwise this method returns the metric name.
-     *
-     * @return the display name
-     */
-    String getDisplayName();
-
-    Optional<String> displayName();
 
     /**
      * Returns the description of the metric if set, otherwise this method returns the empty {@link String}.

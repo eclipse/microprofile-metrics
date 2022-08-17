@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2019, 2022 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -46,6 +46,8 @@ import jakarta.inject.Inject;
 @RunWith(Arquillian.class)
 public class CounterFieldTagBeanTest {
 
+    private final static String COUNTER_NAME_NO_TAG =
+            MetricRegistry.name(CounterFieldTagBean.class, "counterNameNoTag");
     private final static String COUNTER_NAME = MetricRegistry.name(CounterFieldTagBean.class, "counterName");
 
     private final static Tag NUMBER_TWO_TAG = new Tag("number", "two");
@@ -81,7 +83,7 @@ public class CounterFieldTagBeanTest {
          *
          * This will cause client instantiated MetricIDs to throw an exception. (i.e the global MetricIDs)
          */
-        counterMID = new MetricID(COUNTER_NAME);
+        counterMID = new MetricID(COUNTER_NAME_NO_TAG);
         counterTwoMID = new MetricID(COUNTER_NAME, NUMBER_TWO_TAG, COLOUR_RED_TAG);
         counterThreeMID = new MetricID(COUNTER_NAME, NUMBER_THREE_TAG, COLOUR_BLUE_TAG);
     }

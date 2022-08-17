@@ -465,8 +465,8 @@ public class MpMetricTest {
                 // gauge
                 .body(containsString("# TYPE sharedMetricName_jelly gauge"))
                 // histogram
-                .body(containsString("# TYPE sharedMetricName_marshmellow_max gauge"))
-                .body(containsString("# TYPE sharedMetricName_marshmellow summary"));
+                .body(containsString("# TYPE sharedMetricName_marshmallow_max gauge"))
+                .body(containsString("# TYPE sharedMetricName_marshmallow summary"));
     }
 
     @Test
@@ -713,7 +713,7 @@ public class MpMetricTest {
     @InSequence(39)
     public void testAccept5() {
         given().header("Accept", "image/png;q=1,*/*;q=0.1")
-                .when().get("/metrics?cope=application")
+                .when().get("/metrics?scope=application")
                 .then().statusCode(200)
                 .and()
                 .contentType(TEXT_PLAIN);
@@ -894,73 +894,73 @@ public class MpMetricTest {
                  */
 
                 // no tag
-                .body(containsString("# HELP noTagHistogram_marshmellow"))
-                .body(containsString("# TYPE noTagHistogram_marshmellow summary"))
+                .body(containsString("# HELP noTagHistogram_marshmallow"))
+                .body(containsString("# TYPE noTagHistogram_marshmallow summary"))
                 .body(containsString(
-                        "noTagHistogram_marshmellow{scope=\"application\",tier=\"integration\",quantile=\"0.5\"} "))
+                        "noTagHistogram_marshmallow{scope=\"application\",tier=\"integration\",quantile=\"0.5\"} "))
                 .body(containsString(
-                        "noTagHistogram_marshmellow{scope=\"application\",tier=\"integration\",quantile=\"0.75\"} "))
+                        "noTagHistogram_marshmallow{scope=\"application\",tier=\"integration\",quantile=\"0.75\"} "))
                 .body(containsString(
-                        "noTagHistogram_marshmellow{scope=\"application\",tier=\"integration\",quantile=\"0.95\"} "))
+                        "noTagHistogram_marshmallow{scope=\"application\",tier=\"integration\",quantile=\"0.95\"} "))
                 .body(containsString(
-                        "noTagHistogram_marshmellow{scope=\"application\",tier=\"integration\",quantile=\"0.98\"} "))
+                        "noTagHistogram_marshmallow{scope=\"application\",tier=\"integration\",quantile=\"0.98\"} "))
                 .body(containsString(
-                        "noTagHistogram_marshmellow{scope=\"application\",tier=\"integration\",quantile=\"0.99\"} "))
+                        "noTagHistogram_marshmallow{scope=\"application\",tier=\"integration\",quantile=\"0.99\"} "))
                 .body(containsString(
-                        "noTagHistogram_marshmellow{scope=\"application\",tier=\"integration\",quantile=\"0.999\"} "))
+                        "noTagHistogram_marshmallow{scope=\"application\",tier=\"integration\",quantile=\"0.999\"} "))
                 .body(containsString(
-                        "noTagHistogram_marshmellow_count{scope=\"application\",tier=\"integration\"} 0"))
+                        "noTagHistogram_marshmallow_count{scope=\"application\",tier=\"integration\"} 0"))
                 .body(containsString(
-                        "noTagHistogram_marshmellow_sum{scope=\"application\",tier=\"integration\"} "))
-                .body(containsString("# HELP noTagHistogram_marshmellow_max"))
-                .body(containsString("# TYPE noTagHistogram_marshmellow_max gauge"))
+                        "noTagHistogram_marshmallow_sum{scope=\"application\",tier=\"integration\"} "))
+                .body(containsString("# HELP noTagHistogram_marshmallow_max"))
+                .body(containsString("# TYPE noTagHistogram_marshmallow_max gauge"))
                 .body(containsString(
-                        "noTagHistogram_marshmellow_max{scope=\"application\",tier=\"integration\"} "))
+                        "noTagHistogram_marshmallow_max{scope=\"application\",tier=\"integration\"} "))
 
                 // tagged histo
-                .body(containsString("# HELP taggedHistogram_marshmellow"))
-                .body(containsString("# TYPE taggedHistogram_marshmellow summary"))
+                .body(containsString("# HELP taggedHistogram_marshmallow"))
+                .body(containsString("# TYPE taggedHistogram_marshmallow summary"))
                 // number=one
                 .body(containsString(
-                        "taggedHistogram_marshmellow{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.5\"} "))
+                        "taggedHistogram_marshmallow{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.5\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmellow{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.75\"} "))
+                        "taggedHistogram_marshmallow{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.75\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmellow{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.95\"} "))
+                        "taggedHistogram_marshmallow{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.95\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmellow{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.98\"} "))
+                        "taggedHistogram_marshmallow{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.98\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmellow{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.99\"} "))
+                        "taggedHistogram_marshmallow{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.99\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmellow{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.999\"} "))
+                        "taggedHistogram_marshmallow{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.999\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmellow_count{number=\"one\",scope=\"application\",tier=\"integration\"} 0"))
+                        "taggedHistogram_marshmallow_count{number=\"one\",scope=\"application\",tier=\"integration\"} 0"))
                 .body(containsString(
-                        "taggedHistogram_marshmellow_sum{number=\"one\",scope=\"application\",tier=\"integration\"} "))
-                .body(containsString("# HELP taggedHistogram_marshmellow_max"))
-                .body(containsString("# TYPE taggedHistogram_marshmellow_max gauge"))
+                        "taggedHistogram_marshmallow_sum{number=\"one\",scope=\"application\",tier=\"integration\"} "))
+                .body(containsString("# HELP taggedHistogram_marshmallow_max"))
+                .body(containsString("# TYPE taggedHistogram_marshmallow_max gauge"))
                 .body(containsString(
-                        "taggedHistogram_marshmellow_max{number=\"one\",scope=\"application\",tier=\"integration\"} "))
+                        "taggedHistogram_marshmallow_max{number=\"one\",scope=\"application\",tier=\"integration\"} "))
 
                 // number=two
                 .body(containsString(
-                        "taggedHistogram_marshmellow{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.5\"} "))
+                        "taggedHistogram_marshmallow{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.5\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmellow{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.75\"} "))
+                        "taggedHistogram_marshmallow{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.75\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmellow{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.95\"} "))
+                        "taggedHistogram_marshmallow{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.95\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmellow{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.98\"} "))
+                        "taggedHistogram_marshmallow{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.98\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmellow{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.99\"} "))
+                        "taggedHistogram_marshmallow{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.99\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmellow{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.999\"} "))
+                        "taggedHistogram_marshmallow{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.999\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmellow_count{number=\"two\",scope=\"application\",tier=\"integration\"} 0"))
+                        "taggedHistogram_marshmallow_count{number=\"two\",scope=\"application\",tier=\"integration\"} 0"))
                 .body(containsString(
-                        "taggedHistogram_marshmellow_sum{number=\"two\",scope=\"application\",tier=\"integration\"} "))
+                        "taggedHistogram_marshmallow_sum{number=\"two\",scope=\"application\",tier=\"integration\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmellow_max{number=\"two\",scope=\"application\",tier=\"integration\"} "))
+                        "taggedHistogram_marshmallow_max{number=\"two\",scope=\"application\",tier=\"integration\"} "))
 
                 /*
                  * TIMERS ONLY CHECKING THAT COUNT IS 0
@@ -1072,7 +1072,7 @@ public class MpMetricTest {
             mm.type = metric.getAttribute("type");
             mm.unit = metric.getAttribute("unit");
             mm.description = metric.getAttribute("description");
-            mm.displayName = metric.getAttribute("display-name");
+
             mm.optional = Boolean.parseBoolean(metric.getAttribute("optional"));
             String tags = metric.getAttribute("tags");
             if (!(tags == null || tags.length() == 0)) {
@@ -1093,7 +1093,6 @@ public class MpMetricTest {
         private String type;
         private String unit;
         private String description;
-        private String displayName;
         private boolean multi;
         private boolean optional;
         private Map<String, String> tags = new TreeMap<>();
@@ -1122,7 +1121,6 @@ public class MpMetricTest {
             sb.append(", multi=").append(multi);
             sb.append(", optional=").append(optional);
             sb.append(", description=").append(description);
-            sb.append(", display-name=").append(displayName);
             sb.append('}');
             return sb.toString();
         }

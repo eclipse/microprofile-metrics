@@ -90,11 +90,10 @@ public class MetricRegistryTest {
     @Test
     @InSequence(4)
     public void useExistingMetaDataTest() {
-        String displayName = "displayCounterFoo";
         String metricName = "counterFoo";
 
         // first to register a "complex" metadata
-        metrics.counter(Metadata.builder().withName(metricName).withDisplayName(displayName)
+        metrics.counter(Metadata.builder().withName(metricName)
                 .withType(MetricType.COUNTER).build());
 
         Tag purpleTag = new Tag("colour", "purple");
@@ -104,9 +103,6 @@ public class MetricRegistryTest {
         // check both counters have been registered
         assertExists(Counter.class, new MetricID(metricName));
         assertExists(Counter.class, new MetricID(metricName, purpleTag));
-
-        // check that the "original" metadata wasn't replaced by the empty default metadata
-        Assert.assertEquals(metrics.getMetadata(metricName).getDisplayName(), displayName);
     }
 
     @Test

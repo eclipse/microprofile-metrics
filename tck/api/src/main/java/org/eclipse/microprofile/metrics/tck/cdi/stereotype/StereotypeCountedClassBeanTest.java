@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2020 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020, 2022 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -80,14 +80,12 @@ public class StereotypeCountedClassBeanTest {
         assertNotNull(metricRegistry.getCounter(constructorMetricId));
         Metadata constructorMetadata = metricRegistry.getMetadata(constructorMetricName);
         assertEquals("description", constructorMetadata.description().orElse(null));
-        assertEquals("displayName", constructorMetadata.getDisplayName());
 
         String methodMetricName = "org.eclipse.microprofile.metrics.tck.cdi.stereotype.bloop.foo";
         MetricID methodMetricId = new MetricID(methodMetricName);
         assertNotNull(metricRegistry.getCounter(methodMetricId));
         Metadata methodMetadata = metricRegistry.getMetadata(methodMetricName);
         assertEquals("description", methodMetadata.description().orElse(null));
-        assertEquals("displayName", methodMetadata.getDisplayName());
 
         beanWithSpecifiedMetadata.foo();
         assertEquals(1, metricRegistry.getCounter(methodMetricId).getCount());

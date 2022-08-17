@@ -36,7 +36,7 @@
  * <p>
  * MicroProfile Metrics provides 4 different metric types that can be used to instrument an application. Developers can
  * create an accompanying {@link org.eclipse.microprofile.metrics.Metadata Metadata} object to supply the metric's name,
- * description, display name, and units. Once the metric and the metadata are registered against the application
+ * description and units. Once the metric and the metadata are registered against the application
  * {@link org.eclipse.microprofile.metrics.MetricRegistry MetricRegistry}, the metrics will be available in the REST
  * endpoints.
  *
@@ -89,11 +89,9 @@
  * <pre>
  * <code>
  *     Timer timer = metricRegistry.timer(metadata);
- *     Timer.Context context = timer.time();
- *
- *     ... // code that will be timed
- *
- *     context.close();
+ *     try (Timer.Context context = timer.time()) {
+ *         ... // code that will be timed
+ *     }
  * </code>
  * </pre>
  */
