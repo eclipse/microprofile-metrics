@@ -23,6 +23,8 @@
 This section describes the REST-API, that monitoring agents would use to retrieve the collected metrics.
 (Java-) methods mentioned refer to the respective Objects in the Java API. See also <<app-programming-model#app-programming-model>>
 
+NOTE: While vendors are required to provide a `/metrics` endpoint, as described in this section, it is permissible for implementations to be configurable to run without the endpoint in cases where the metrics capability is not wanted or a different monitoring backend is in use that does not require the endpoint.
+
 === Prometheus / OpenMetrics formats
 
 The REST API must respond to GET requests with data formatted according to the Prometheus text-based exposition format, version 0.0.4 (hereafter Prometheus format). For details of how to format metrics data in this format, see https://prometheus.io/docs/instrumenting/exposition_formats/#text-format-details[Prometheus format].
