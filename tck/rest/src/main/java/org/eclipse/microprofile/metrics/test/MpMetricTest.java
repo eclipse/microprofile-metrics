@@ -79,7 +79,7 @@ import jakarta.inject.Inject;
 public class MpMetricTest {
     private static final String TEXT_PLAIN = "text/plain";
 
-    private static final String PROM_APP_LABEL_REGEX = "_app=\"[-/A-Za-z0-9]+\"";
+    private static final String PROM_APP_LABEL_REGEX = "mp_app=\"[-/A-Za-z0-9]+\"";
 
     private static final String DEFAULT_PROTOCOL = "http";
     private static final String DEFAULT_HOST = "localhost";
@@ -170,7 +170,7 @@ public class MpMetricTest {
         resp = responseBuilder.build();
         resp.then().statusCode(200).and().contentType(TEXT_PLAIN).and()
                 .body(containsString("# TYPE thread_max_count"))
-                .body(containsString("thread_max_count{scope=\"base\",tier=\"integration\"}"));
+                .body(containsString("thread_max_count{mp_scope=\"base\",tier=\"integration\"}"));
     }
 
     @Test
@@ -185,7 +185,7 @@ public class MpMetricTest {
         resp = responseBuilder.build();
         resp.then().statusCode(200).and()
                 .contentType(TEXT_PLAIN).and().body(containsString("# TYPE thread_max_count"),
-                        containsString("thread_max_count{scope=\"base\",tier=\"integration\"}"));
+                        containsString("thread_max_count{mp_scope=\"base\",tier=\"integration\"}"));
     }
 
     @Test
@@ -304,37 +304,37 @@ public class MpMetricTest {
                 .body(containsString(
                         "# HELP org_eclipse_microprofile_metrics_test_MetricAppBean_redCount_total red-description"))
                 .body(containsString(
-                        "org_eclipse_microprofile_metrics_test_MetricAppBean_redCount_total{scope=\"application\",tier=\"integration\"} 0"))
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_redCount_total{mp_scope=\"application\",tier=\"integration\"} 0"))
 
                 .body(containsString("# TYPE org_eclipse_microprofile_metrics_test_MetricAppBean_blue_total counter"))
                 .body(containsString("# HELP org_eclipse_microprofile_metrics_test_MetricAppBean_blue_total"))
                 .body(containsString(
-                        "org_eclipse_microprofile_metrics_test_MetricAppBean_blue_total{scope=\"application\",tier=\"integration\"} 0"))
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_blue_total{mp_scope=\"application\",tier=\"integration\"} 0"))
 
                 .body(containsString("# TYPE greenCount_total counter"))
                 .body(containsString("# HELP greenCount_total"))
                 .body(containsString(
-                        "greenCount_total{scope=\"application\",tier=\"integration\"} 0"))
+                        "greenCount_total{mp_scope=\"application\",tier=\"integration\"} 0"))
 
                 .body(containsString("# TYPE purple_total counter"))
                 .body(containsString("# HELP purple_total"))
                 .body(containsString(
-                        "purple_total{app=\"myShop\",scope=\"application\",tier=\"integration\"} 0"))
+                        "purple_total{app=\"myShop\",mp_scope=\"application\",tier=\"integration\"} 0"))
 
                 .body(containsString("# HELP metricTest_test1_count_total"))
                 .body(containsString("# TYPE metricTest_test1_count_total counter"))
                 .body(containsString(
-                        "metricTest_test1_count_total{scope=\"application\",tier=\"integration\"} 1"))
+                        "metricTest_test1_count_total{mp_scope=\"application\",tier=\"integration\"} 1"))
 
                 .body(containsString("# HELP metricTest_test1_countMeA_total count-me-a-description"))
                 .body(containsString("# TYPE metricTest_test1_countMeA_total counter"))
                 .body(containsString(
-                        "metricTest_test1_countMeA_total{scope=\"application\",tier=\"integration\"} 1"))
+                        "metricTest_test1_countMeA_total{mp_scope=\"application\",tier=\"integration\"} 1"))
 
                 .body(containsString("# HELP metricTest_test1_countMeB_jellybean_total"))
                 .body(containsString("# TYPE metricTest_test1_countMeB_jellybean_total counter"))
                 .body(containsString(
-                        "metricTest_test1_countMeB_jellybean_total{scope=\"application\",tier=\"integration\"} 1"))
+                        "metricTest_test1_countMeB_jellybean_total{mp_scope=\"application\",tier=\"integration\"} 1"))
 
                 /*
                  * GAUGES
@@ -343,19 +343,19 @@ public class MpMetricTest {
                 .body(containsString("# HELP metricTest_test1_gauge_gigabytes"))
                 .body(containsString("# TYPE metricTest_test1_gauge_gigabytes gauge"))
                 .body(containsString(
-                        "metricTest_test1_gauge_gigabytes{scope=\"application\",tier=\"integration\"} 19"))
+                        "metricTest_test1_gauge_gigabytes{mp_scope=\"application\",tier=\"integration\"} 19"))
 
                 .body(containsString(
                         "# HELP org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeA_kibibits gauge-me-a-description"))
                 .body(containsString(
                         "# TYPE org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeA_kibibits gauge"))
                 .body(containsString(
-                        "org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeA_kibibits{scope=\"application\",tier=\"integration\"} 1000"))
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeA_kibibits{mp_scope=\"application\",tier=\"integration\"} 1000"))
 
                 .body(containsString("# HELP org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeB_hands"))
                 .body(containsString("# TYPE org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeB_hands gauge"))
                 .body(containsString(
-                        "org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeB_hands{scope=\"application\",tier=\"integration\"} 7777777"))
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_gaugeMeB_hands{mp_scope=\"application\",tier=\"integration\"} 7777777"))
 
                 /*
                  * HISTOGRAMS
@@ -365,25 +365,25 @@ public class MpMetricTest {
                 .body(containsString("# HELP metricTest_test1_histogram_bytes"))
                 .body(containsString("# TYPE metricTest_test1_histogram_bytes summary"))
                 .body(containsString(
-                        "metricTest_test1_histogram_bytes{scope=\"application\",tier=\"integration\",quantile=\"0.5\"}"))
+                        "metricTest_test1_histogram_bytes{mp_scope=\"application\",tier=\"integration\",quantile=\"0.5\"}"))
                 .body(containsString(
-                        "metricTest_test1_histogram_bytes{scope=\"application\",tier=\"integration\",quantile=\"0.75\"}"))
+                        "metricTest_test1_histogram_bytes{mp_scope=\"application\",tier=\"integration\",quantile=\"0.75\"}"))
                 .body(containsString(
-                        "metricTest_test1_histogram_bytes{scope=\"application\",tier=\"integration\",quantile=\"0.95\"}"))
+                        "metricTest_test1_histogram_bytes{mp_scope=\"application\",tier=\"integration\",quantile=\"0.95\"}"))
                 .body(containsString(
-                        "metricTest_test1_histogram_bytes{scope=\"application\",tier=\"integration\",quantile=\"0.98\"}"))
+                        "metricTest_test1_histogram_bytes{mp_scope=\"application\",tier=\"integration\",quantile=\"0.98\"}"))
                 .body(containsString(
-                        "metricTest_test1_histogram_bytes{scope=\"application\",tier=\"integration\",quantile=\"0.99\"}"))
+                        "metricTest_test1_histogram_bytes{mp_scope=\"application\",tier=\"integration\",quantile=\"0.99\"}"))
                 .body(containsString(
-                        "metricTest_test1_histogram_bytes{scope=\"application\",tier=\"integration\",quantile=\"0.999\"}"))
+                        "metricTest_test1_histogram_bytes{mp_scope=\"application\",tier=\"integration\",quantile=\"0.999\"}"))
                 .body(containsString(
-                        "metricTest_test1_histogram_bytes_count{scope=\"application\",tier=\"integration\"} 1000"))
+                        "metricTest_test1_histogram_bytes_count{mp_scope=\"application\",tier=\"integration\"} 1000"))
                 .body(containsString(
-                        "metricTest_test1_histogram_bytes_sum{scope=\"application\",tier=\"integration\"} 499500"))
+                        "metricTest_test1_histogram_bytes_sum{mp_scope=\"application\",tier=\"integration\"} 499500"))
                 .body(containsString("# HELP metricTest_test1_histogram_bytes_max"))
                 .body(containsString("# TYPE metricTest_test1_histogram_bytes_max gauge"))
                 .body(containsString(
-                        "metricTest_test1_histogram_bytes_max{scope=\"application\",tier=\"integration\"} 999"))
+                        "metricTest_test1_histogram_bytes_max{mp_scope=\"application\",tier=\"integration\"} 999"))
 
                 /*
                  * TIMERS
@@ -394,50 +394,50 @@ public class MpMetricTest {
                 .body(containsString("# HELP metricTest_test1_timer_seconds"))
                 .body(containsString("# TYPE metricTest_test1_timer_seconds summary"))
                 .body(containsString(
-                        "metricTest_test1_timer_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.5\"}"))
+                        "metricTest_test1_timer_seconds{mp_scope=\"application\",tier=\"integration\",quantile=\"0.5\"}"))
                 .body(containsString(
-                        "metricTest_test1_timer_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.75\"}"))
+                        "metricTest_test1_timer_seconds{mp_scope=\"application\",tier=\"integration\",quantile=\"0.75\"}"))
                 .body(containsString(
-                        "metricTest_test1_timer_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.95\"}"))
+                        "metricTest_test1_timer_seconds{mp_scope=\"application\",tier=\"integration\",quantile=\"0.95\"}"))
                 .body(containsString(
-                        "metricTest_test1_timer_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.98\"}"))
+                        "metricTest_test1_timer_seconds{mp_scope=\"application\",tier=\"integration\",quantile=\"0.98\"}"))
                 .body(containsString(
-                        "metricTest_test1_timer_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.99\"}"))
+                        "metricTest_test1_timer_seconds{mp_scope=\"application\",tier=\"integration\",quantile=\"0.99\"}"))
                 .body(containsString(
-                        "metricTest_test1_timer_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.999\"}"))
+                        "metricTest_test1_timer_seconds{mp_scope=\"application\",tier=\"integration\",quantile=\"0.999\"}"))
                 .body(containsString(
-                        "metricTest_test1_timer_seconds_count{scope=\"application\",tier=\"integration\"} 1"))
+                        "metricTest_test1_timer_seconds_count{mp_scope=\"application\",tier=\"integration\"} 1"))
                 .body(containsString(
-                        "metricTest_test1_timer_seconds_sum{scope=\"application\",tier=\"integration\"}"))
+                        "metricTest_test1_timer_seconds_sum{mp_scope=\"application\",tier=\"integration\"}"))
                 .body(containsString("# HELP metricTest_test1_timer_seconds_max"))
                 .body(containsString("# TYPE metricTest_test1_timer_seconds_max gauge"))
                 .body(containsString(
-                        "metricTest_test1_timer_seconds_max{scope=\"application\",tier=\"integration\"}"))
+                        "metricTest_test1_timer_seconds_max{mp_scope=\"application\",tier=\"integration\"}"))
 
                 .body(containsString("# HELP org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds"))
                 .body(containsString(
                         "# TYPE org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds summary"))
                 .body(containsString(
-                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.5\"}"))
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds{mp_scope=\"application\",tier=\"integration\",quantile=\"0.5\"}"))
                 .body(containsString(
-                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.75\"}"))
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds{mp_scope=\"application\",tier=\"integration\",quantile=\"0.75\"}"))
                 .body(containsString(
-                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.95\"}"))
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds{mp_scope=\"application\",tier=\"integration\",quantile=\"0.95\"}"))
                 .body(containsString(
-                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.98\"}"))
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds{mp_scope=\"application\",tier=\"integration\",quantile=\"0.98\"}"))
                 .body(containsString(
-                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.99\"}"))
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds{mp_scope=\"application\",tier=\"integration\",quantile=\"0.99\"}"))
                 .body(containsString(
-                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.999\"}"))
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds{mp_scope=\"application\",tier=\"integration\",quantile=\"0.999\"}"))
                 .body(containsString(
-                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds_count{scope=\"application\",tier=\"integration\"} 1"))
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds_count{mp_scope=\"application\",tier=\"integration\"} 1"))
                 .body(containsString(
-                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds_sum{scope=\"application\",tier=\"integration\"}"))
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds_sum{mp_scope=\"application\",tier=\"integration\"}"))
                 .body(containsString("# HELP org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds_max"))
                 .body(containsString(
                         "# TYPE org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds_max gauge"))
                 .body(containsString(
-                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds_max{scope=\"application\",tier=\"integration\"}"));
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_seconds_max{mp_scope=\"application\",tier=\"integration\"}"));
 
     }
 
@@ -499,12 +499,18 @@ public class MpMetricTest {
                 .body(containsString("# TYPE " + prefix + "seconds summary"))
                 .body(containsString(prefix + "seconds_count"))
                 .body(containsString(prefix + "seconds_sum"))
-                .body(containsString(prefix + "seconds{scope=\"application\",tier=\"integration\",quantile=\"0.5\"}"))
-                .body(containsString(prefix + "seconds{scope=\"application\",tier=\"integration\",quantile=\"0.75\"}"))
-                .body(containsString(prefix + "seconds{scope=\"application\",tier=\"integration\",quantile=\"0.95\"}"))
-                .body(containsString(prefix + "seconds{scope=\"application\",tier=\"integration\",quantile=\"0.98\"}"))
-                .body(containsString(prefix + "seconds{scope=\"application\",tier=\"integration\",quantile=\"0.99\"}"))
-                .body(containsString(prefix + "seconds{scope=\"application\",tier=\"integration\",quantile=\"0.999\"}"))
+                .body(containsString(
+                        prefix + "seconds{mp_scope=\"application\",tier=\"integration\",quantile=\"0.5\"}"))
+                .body(containsString(
+                        prefix + "seconds{mp_scope=\"application\",tier=\"integration\",quantile=\"0.75\"}"))
+                .body(containsString(
+                        prefix + "seconds{mp_scope=\"application\",tier=\"integration\",quantile=\"0.95\"}"))
+                .body(containsString(
+                        prefix + "seconds{mp_scope=\"application\",tier=\"integration\",quantile=\"0.98\"}"))
+                .body(containsString(
+                        prefix + "seconds{mp_scope=\"application\",tier=\"integration\",quantile=\"0.99\"}"))
+                .body(containsString(
+                        prefix + "seconds{mp_scope=\"application\",tier=\"integration\",quantile=\"0.999\"}"))
                 .body(containsString("# TYPE " + prefix + "seconds_max gauge"))
                 .body(containsString(prefix + "seconds_max"));
 
@@ -529,12 +535,13 @@ public class MpMetricTest {
                 .body(containsString("# TYPE " + prefix + "bytes summary"))
                 .body(containsString(prefix + "bytes_count"))
                 .body(containsString(prefix + "bytes_sum"))
-                .body(containsString(prefix + "bytes{scope=\"application\",tier=\"integration\",quantile=\"0.5\"}"))
-                .body(containsString(prefix + "bytes{scope=\"application\",tier=\"integration\",quantile=\"0.75\"}"))
-                .body(containsString(prefix + "bytes{scope=\"application\",tier=\"integration\",quantile=\"0.95\"}"))
-                .body(containsString(prefix + "bytes{scope=\"application\",tier=\"integration\",quantile=\"0.98\"}"))
-                .body(containsString(prefix + "bytes{scope=\"application\",tier=\"integration\",quantile=\"0.99\"}"))
-                .body(containsString(prefix + "bytes{scope=\"application\",tier=\"integration\",quantile=\"0.999\"}"))
+                .body(containsString(prefix + "bytes{mp_scope=\"application\",tier=\"integration\",quantile=\"0.5\"}"))
+                .body(containsString(prefix + "bytes{mp_scope=\"application\",tier=\"integration\",quantile=\"0.75\"}"))
+                .body(containsString(prefix + "bytes{mp_scope=\"application\",tier=\"integration\",quantile=\"0.95\"}"))
+                .body(containsString(prefix + "bytes{mp_scope=\"application\",tier=\"integration\",quantile=\"0.98\"}"))
+                .body(containsString(prefix + "bytes{mp_scope=\"application\",tier=\"integration\",quantile=\"0.99\"}"))
+                .body(containsString(
+                        prefix + "bytes{mp_scope=\"application\",tier=\"integration\",quantile=\"0.999\"}"))
                 .body(containsString("# TYPE " + prefix + "bytes_max gauge"))
                 .body(containsString(prefix + "bytes_max"));
     }
@@ -558,12 +565,12 @@ public class MpMetricTest {
                 .body(containsString("# TYPE " + prefix + " summary"))
                 .body(containsString(prefix + "_count"))
                 .body(containsString(prefix + "_sum"))
-                .body(containsString(prefix + "{scope=\"application\",tier=\"integration\",quantile=\"0.5\"}"))
-                .body(containsString(prefix + "{scope=\"application\",tier=\"integration\",quantile=\"0.75\"}"))
-                .body(containsString(prefix + "{scope=\"application\",tier=\"integration\",quantile=\"0.95\"}"))
-                .body(containsString(prefix + "{scope=\"application\",tier=\"integration\",quantile=\"0.98\"}"))
-                .body(containsString(prefix + "{scope=\"application\",tier=\"integration\",quantile=\"0.99\"}"))
-                .body(containsString(prefix + "{scope=\"application\",tier=\"integration\",quantile=\"0.999\"}"))
+                .body(containsString(prefix + "{mp_scope=\"application\",tier=\"integration\",quantile=\"0.5\"}"))
+                .body(containsString(prefix + "{mp_scope=\"application\",tier=\"integration\",quantile=\"0.75\"}"))
+                .body(containsString(prefix + "{mp_scope=\"application\",tier=\"integration\",quantile=\"0.95\"}"))
+                .body(containsString(prefix + "{mp_scope=\"application\",tier=\"integration\",quantile=\"0.98\"}"))
+                .body(containsString(prefix + "{mp_scope=\"application\",tier=\"integration\",quantile=\"0.99\"}"))
+                .body(containsString(prefix + "{mp_scope=\"application\",tier=\"integration\",quantile=\"0.999\"}"))
                 .body(containsString("# TYPE " + prefix + "_max gauge"))
                 .body(containsString(prefix + "_max"));
     }
@@ -600,17 +607,17 @@ public class MpMetricTest {
                 .body(containsString(prefix + "jellybeans_count"))
                 .body(containsString(prefix + "jellybeans_sum"))
                 .body(containsString(
-                        prefix + "jellybeans{scope=\"application\",tier=\"integration\",quantile=\"0.5\"}"))
+                        prefix + "jellybeans{mp_scope=\"application\",tier=\"integration\",quantile=\"0.5\"}"))
                 .body(containsString(
-                        prefix + "jellybeans{scope=\"application\",tier=\"integration\",quantile=\"0.75\"}"))
+                        prefix + "jellybeans{mp_scope=\"application\",tier=\"integration\",quantile=\"0.75\"}"))
                 .body(containsString(
-                        prefix + "jellybeans{scope=\"application\",tier=\"integration\",quantile=\"0.95\"}"))
+                        prefix + "jellybeans{mp_scope=\"application\",tier=\"integration\",quantile=\"0.95\"}"))
                 .body(containsString(
-                        prefix + "jellybeans{scope=\"application\",tier=\"integration\",quantile=\"0.98\"}"))
+                        prefix + "jellybeans{mp_scope=\"application\",tier=\"integration\",quantile=\"0.98\"}"))
                 .body(containsString(
-                        prefix + "jellybeans{scope=\"application\",tier=\"integration\",quantile=\"0.99\"}"))
+                        prefix + "jellybeans{mp_scope=\"application\",tier=\"integration\",quantile=\"0.99\"}"))
                 .body(containsString(
-                        prefix + "jellybeans{scope=\"application\",tier=\"integration\",quantile=\"0.999\"}"))
+                        prefix + "jellybeans{mp_scope=\"application\",tier=\"integration\",quantile=\"0.999\"}"))
                 .body(containsString("# TYPE " + prefix + "jellybeans_max gauge"))
                 .body(containsString(prefix + "jellybeans_max"));
     }
@@ -776,7 +783,7 @@ public class MpMetricTest {
                             containsString(expectedTag + "="));
                 }
                 /*
-                 * example: gc_total{name="global",scope="base",tier="integration",} 14.0 Expect only one space
+                 * example: gc_total{name="global",mp_scope="base",tier="integration",} 14.0 Expect only one space
                  */
                 String[] tmp = line.split(" ");
                 assertEquals("Unexpected format: " + line, tmp.length, 2);
@@ -818,7 +825,8 @@ public class MpMetricTest {
                             containsString(expectedTag + "="));
                 }
                 /*
-                 * example: gc_time_total{name="scavenge",scope="base",tier="integration",} 264.0 Expect only one space
+                 * example: gc_time_total{name="scavenge",mp_scope="base",tier="integration",} 264.0 Expect only one
+                 * space
                  */
                 String[] tmp = line.split(" ");
                 assertEquals("Unexpected format: " + line, tmp.length, 2);
@@ -861,24 +869,24 @@ public class MpMetricTest {
                 .body(containsString(
                         "# TYPE org_eclipse_microprofile_metrics_test_MetricAppBean_noTagCounter_total counter"))
                 .body(containsString(
-                        "org_eclipse_microprofile_metrics_test_MetricAppBean_noTagCounter_total{scope=\"application\",tier=\"integration\"} 0"))
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_noTagCounter_total{mp_scope=\"application\",tier=\"integration\"} 0"))
 
                 .body(containsString("# HELP org_eclipse_microprofile_metrics_test_MetricAppBean_taggedCounter_total"))
                 .body(containsString(
                         "# TYPE org_eclipse_microprofile_metrics_test_MetricAppBean_taggedCounter_total counter"))
                 .body(containsString(
-                        "org_eclipse_microprofile_metrics_test_MetricAppBean_taggedCounter_total{number=\"one\",scope=\"application\",tier=\"integration\"} 0"))
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_taggedCounter_total{mp_scope=\"application\",number=\"one\",tier=\"integration\"} 0"))
                 .body(containsString(
-                        "org_eclipse_microprofile_metrics_test_MetricAppBean_taggedCounter_total{number=\"two\",scope=\"application\",tier=\"integration\"} 0"))
+                        "org_eclipse_microprofile_metrics_test_MetricAppBean_taggedCounter_total{mp_scope=\"application\",number=\"two\",tier=\"integration\"} 0"))
                 /**
                  * GAUGES
                  */
                 .body(containsString("# HELP taggedGauge"))
                 .body(containsString("# TYPE taggedGauge gauge"))
                 .body(containsString(
-                        "taggedGauge{number=\"one\",scope=\"application\",tier=\"integration\"} 1000"))
+                        "taggedGauge{mp_scope=\"application\",number=\"one\",tier=\"integration\"} 1000"))
                 .body(containsString(
-                        "taggedGauge{number=\"two\",scope=\"application\",tier=\"integration\"} 1000"))
+                        "taggedGauge{mp_scope=\"application\",number=\"two\",tier=\"integration\"} 1000"))
 
                 /*
                  * HISTOGRAMS ONLY CHECKING THAT COUNT IS 0
@@ -888,70 +896,70 @@ public class MpMetricTest {
                 .body(containsString("# HELP noTagHistogram_marshmallow"))
                 .body(containsString("# TYPE noTagHistogram_marshmallow summary"))
                 .body(containsString(
-                        "noTagHistogram_marshmallow{scope=\"application\",tier=\"integration\",quantile=\"0.5\"} "))
+                        "noTagHistogram_marshmallow{mp_scope=\"application\",tier=\"integration\",quantile=\"0.5\"} "))
                 .body(containsString(
-                        "noTagHistogram_marshmallow{scope=\"application\",tier=\"integration\",quantile=\"0.75\"} "))
+                        "noTagHistogram_marshmallow{mp_scope=\"application\",tier=\"integration\",quantile=\"0.75\"} "))
                 .body(containsString(
-                        "noTagHistogram_marshmallow{scope=\"application\",tier=\"integration\",quantile=\"0.95\"} "))
+                        "noTagHistogram_marshmallow{mp_scope=\"application\",tier=\"integration\",quantile=\"0.95\"} "))
                 .body(containsString(
-                        "noTagHistogram_marshmallow{scope=\"application\",tier=\"integration\",quantile=\"0.98\"} "))
+                        "noTagHistogram_marshmallow{mp_scope=\"application\",tier=\"integration\",quantile=\"0.98\"} "))
                 .body(containsString(
-                        "noTagHistogram_marshmallow{scope=\"application\",tier=\"integration\",quantile=\"0.99\"} "))
+                        "noTagHistogram_marshmallow{mp_scope=\"application\",tier=\"integration\",quantile=\"0.99\"} "))
                 .body(containsString(
-                        "noTagHistogram_marshmallow{scope=\"application\",tier=\"integration\",quantile=\"0.999\"} "))
+                        "noTagHistogram_marshmallow{mp_scope=\"application\",tier=\"integration\",quantile=\"0.999\"} "))
                 .body(containsString(
-                        "noTagHistogram_marshmallow_count{scope=\"application\",tier=\"integration\"} 0"))
+                        "noTagHistogram_marshmallow_count{mp_scope=\"application\",tier=\"integration\"} 0"))
                 .body(containsString(
-                        "noTagHistogram_marshmallow_sum{scope=\"application\",tier=\"integration\"} "))
+                        "noTagHistogram_marshmallow_sum{mp_scope=\"application\",tier=\"integration\"} "))
                 .body(containsString("# HELP noTagHistogram_marshmallow_max"))
                 .body(containsString("# TYPE noTagHistogram_marshmallow_max gauge"))
                 .body(containsString(
-                        "noTagHistogram_marshmallow_max{scope=\"application\",tier=\"integration\"} "))
+                        "noTagHistogram_marshmallow_max{mp_scope=\"application\",tier=\"integration\"} "))
 
                 // tagged histo
                 .body(containsString("# HELP taggedHistogram_marshmallow"))
                 .body(containsString("# TYPE taggedHistogram_marshmallow summary"))
                 // number=one
                 .body(containsString(
-                        "taggedHistogram_marshmallow{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.5\"} "))
+                        "taggedHistogram_marshmallow{mp_scope=\"application\",number=\"one\",tier=\"integration\",quantile=\"0.5\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmallow{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.75\"} "))
+                        "taggedHistogram_marshmallow{mp_scope=\"application\",number=\"one\",tier=\"integration\",quantile=\"0.75\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmallow{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.95\"} "))
+                        "taggedHistogram_marshmallow{mp_scope=\"application\",number=\"one\",tier=\"integration\",quantile=\"0.95\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmallow{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.98\"} "))
+                        "taggedHistogram_marshmallow{mp_scope=\"application\",number=\"one\",tier=\"integration\",quantile=\"0.98\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmallow{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.99\"} "))
+                        "taggedHistogram_marshmallow{mp_scope=\"application\",number=\"one\",tier=\"integration\",quantile=\"0.99\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmallow{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.999\"} "))
+                        "taggedHistogram_marshmallow{mp_scope=\"application\",number=\"one\",tier=\"integration\",quantile=\"0.999\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmallow_count{number=\"one\",scope=\"application\",tier=\"integration\"} 0"))
+                        "taggedHistogram_marshmallow_count{mp_scope=\"application\",number=\"one\",tier=\"integration\"} 0"))
                 .body(containsString(
-                        "taggedHistogram_marshmallow_sum{number=\"one\",scope=\"application\",tier=\"integration\"} "))
+                        "taggedHistogram_marshmallow_sum{mp_scope=\"application\",number=\"one\",tier=\"integration\"} "))
                 .body(containsString("# HELP taggedHistogram_marshmallow_max"))
                 .body(containsString("# TYPE taggedHistogram_marshmallow_max gauge"))
                 .body(containsString(
-                        "taggedHistogram_marshmallow_max{number=\"one\",scope=\"application\",tier=\"integration\"} "))
+                        "taggedHistogram_marshmallow_max{mp_scope=\"application\",number=\"one\",tier=\"integration\"} "))
 
                 // number=two
                 .body(containsString(
-                        "taggedHistogram_marshmallow{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.5\"} "))
+                        "taggedHistogram_marshmallow{mp_scope=\"application\",number=\"two\",tier=\"integration\",quantile=\"0.5\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmallow{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.75\"} "))
+                        "taggedHistogram_marshmallow{mp_scope=\"application\",number=\"two\",tier=\"integration\",quantile=\"0.75\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmallow{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.95\"} "))
+                        "taggedHistogram_marshmallow{mp_scope=\"application\",number=\"two\",tier=\"integration\",quantile=\"0.95\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmallow{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.98\"} "))
+                        "taggedHistogram_marshmallow{mp_scope=\"application\",number=\"two\",tier=\"integration\",quantile=\"0.98\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmallow{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.99\"} "))
+                        "taggedHistogram_marshmallow{mp_scope=\"application\",number=\"two\",tier=\"integration\",quantile=\"0.99\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmallow{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.999\"} "))
+                        "taggedHistogram_marshmallow{mp_scope=\"application\",number=\"two\",tier=\"integration\",quantile=\"0.999\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmallow_count{number=\"two\",scope=\"application\",tier=\"integration\"} 0"))
+                        "taggedHistogram_marshmallow_count{mp_scope=\"application\",number=\"two\",tier=\"integration\"} 0"))
                 .body(containsString(
-                        "taggedHistogram_marshmallow_sum{number=\"two\",scope=\"application\",tier=\"integration\"} "))
+                        "taggedHistogram_marshmallow_sum{mp_scope=\"application\",number=\"two\",tier=\"integration\"} "))
                 .body(containsString(
-                        "taggedHistogram_marshmallow_max{number=\"two\",scope=\"application\",tier=\"integration\"} "))
+                        "taggedHistogram_marshmallow_max{mp_scope=\"application\",number=\"two\",tier=\"integration\"} "))
 
                 /*
                  * TIMERS ONLY CHECKING THAT COUNT IS 0
@@ -960,70 +968,70 @@ public class MpMetricTest {
                 .body(containsString("# HELP noTagTimer_seconds"))
                 .body(containsString("# TYPE noTagTimer_seconds summary"))
                 .body(containsString(
-                        "noTagTimer_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.5\"} "))
+                        "noTagTimer_seconds{mp_scope=\"application\",tier=\"integration\",quantile=\"0.5\"} "))
                 .body(containsString(
-                        "noTagTimer_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.75\"} "))
+                        "noTagTimer_seconds{mp_scope=\"application\",tier=\"integration\",quantile=\"0.75\"} "))
                 .body(containsString(
-                        "noTagTimer_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.95\"} "))
+                        "noTagTimer_seconds{mp_scope=\"application\",tier=\"integration\",quantile=\"0.95\"} "))
                 .body(containsString(
-                        "noTagTimer_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.98\"} "))
+                        "noTagTimer_seconds{mp_scope=\"application\",tier=\"integration\",quantile=\"0.98\"} "))
                 .body(containsString(
-                        "noTagTimer_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.99\"} "))
+                        "noTagTimer_seconds{mp_scope=\"application\",tier=\"integration\",quantile=\"0.99\"} "))
                 .body(containsString(
-                        "noTagTimer_seconds{scope=\"application\",tier=\"integration\",quantile=\"0.999\"} "))
+                        "noTagTimer_seconds{mp_scope=\"application\",tier=\"integration\",quantile=\"0.999\"} "))
                 .body(containsString(
-                        "noTagTimer_seconds_count{scope=\"application\",tier=\"integration\"} 0"))
+                        "noTagTimer_seconds_count{mp_scope=\"application\",tier=\"integration\"} 0"))
                 .body(containsString(
-                        "noTagTimer_seconds_sum{scope=\"application\",tier=\"integration\"} "))
+                        "noTagTimer_seconds_sum{mp_scope=\"application\",tier=\"integration\"} "))
                 .body(containsString("# HELP noTagTimer_seconds_max"))
                 .body(containsString("# TYPE noTagTimer_seconds_max gauge"))
                 .body(containsString(
-                        "noTagTimer_seconds_max{scope=\"application\",tier=\"integration\"} "))
+                        "noTagTimer_seconds_max{mp_scope=\"application\",tier=\"integration\"} "))
 
                 // tagged timer
                 .body(containsString("# HELP taggedTimer_seconds"))
                 .body(containsString("# TYPE taggedTimer_seconds summary"))
                 // number=one
                 .body(containsString(
-                        "taggedTimer_seconds{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.5\"} "))
+                        "taggedTimer_seconds{mp_scope=\"application\",number=\"one\",tier=\"integration\",quantile=\"0.5\"} "))
                 .body(containsString(
-                        "taggedTimer_seconds{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.75\"} "))
+                        "taggedTimer_seconds{mp_scope=\"application\",number=\"one\",tier=\"integration\",quantile=\"0.75\"} "))
                 .body(containsString(
-                        "taggedTimer_seconds{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.95\"} "))
+                        "taggedTimer_seconds{mp_scope=\"application\",number=\"one\",tier=\"integration\",quantile=\"0.95\"} "))
                 .body(containsString(
-                        "taggedTimer_seconds{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.98\"} "))
+                        "taggedTimer_seconds{mp_scope=\"application\",number=\"one\",tier=\"integration\",quantile=\"0.98\"} "))
                 .body(containsString(
-                        "taggedTimer_seconds{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.99\"} "))
+                        "taggedTimer_seconds{mp_scope=\"application\",number=\"one\",tier=\"integration\",quantile=\"0.99\"} "))
                 .body(containsString(
-                        "taggedTimer_seconds{number=\"one\",scope=\"application\",tier=\"integration\",quantile=\"0.999\"} "))
+                        "taggedTimer_seconds{mp_scope=\"application\",number=\"one\",tier=\"integration\",quantile=\"0.999\"} "))
                 .body(containsString(
-                        "taggedTimer_seconds_count{number=\"one\",scope=\"application\",tier=\"integration\"} 0"))
+                        "taggedTimer_seconds_count{mp_scope=\"application\",number=\"one\",tier=\"integration\"} 0"))
                 .body(containsString(
-                        "taggedTimer_seconds_sum{number=\"one\",scope=\"application\",tier=\"integration\"} "))
+                        "taggedTimer_seconds_sum{mp_scope=\"application\",number=\"one\",tier=\"integration\"} "))
                 .body(containsString("# HELP taggedTimer_seconds_max"))
                 .body(containsString("# TYPE taggedTimer_seconds_max gauge"))
                 .body(containsString(
-                        "taggedTimer_seconds_max{number=\"one\",scope=\"application\",tier=\"integration\"} "))
+                        "taggedTimer_seconds_max{mp_scope=\"application\",number=\"one\",tier=\"integration\"} "))
 
                 // number=two
                 .body(containsString(
-                        "taggedTimer_seconds{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.5\"} "))
+                        "taggedTimer_seconds{mp_scope=\"application\",number=\"two\",tier=\"integration\",quantile=\"0.5\"} "))
                 .body(containsString(
-                        "taggedTimer_seconds{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.75\"} "))
+                        "taggedTimer_seconds{mp_scope=\"application\",number=\"two\",tier=\"integration\",quantile=\"0.75\"} "))
                 .body(containsString(
-                        "taggedTimer_seconds{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.95\"} "))
+                        "taggedTimer_seconds{mp_scope=\"application\",number=\"two\",tier=\"integration\",quantile=\"0.95\"} "))
                 .body(containsString(
-                        "taggedTimer_seconds{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.98\"} "))
+                        "taggedTimer_seconds{mp_scope=\"application\",number=\"two\",tier=\"integration\",quantile=\"0.98\"} "))
                 .body(containsString(
-                        "taggedTimer_seconds{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.99\"} "))
+                        "taggedTimer_seconds{mp_scope=\"application\",number=\"two\",tier=\"integration\",quantile=\"0.99\"} "))
                 .body(containsString(
-                        "taggedTimer_seconds{number=\"two\",scope=\"application\",tier=\"integration\",quantile=\"0.999\"} "))
+                        "taggedTimer_seconds{mp_scope=\"application\",number=\"two\",tier=\"integration\",quantile=\"0.999\"} "))
                 .body(containsString(
-                        "taggedTimer_seconds_count{number=\"two\",scope=\"application\",tier=\"integration\"} 0"))
+                        "taggedTimer_seconds_count{mp_scope=\"application\",number=\"two\",tier=\"integration\"} 0"))
                 .body(containsString(
-                        "taggedTimer_seconds_sum{number=\"two\",scope=\"application\",tier=\"integration\"} "))
+                        "taggedTimer_seconds_sum{mp_scope=\"application\",number=\"two\",tier=\"integration\"} "))
                 .body(containsString(
-                        "taggedTimer_seconds_max{number=\"two\",scope=\"application\",tier=\"integration\"} "));
+                        "taggedTimer_seconds_max{mp_scope=\"application\",number=\"two\",tier=\"integration\"} "));
 
     }
 

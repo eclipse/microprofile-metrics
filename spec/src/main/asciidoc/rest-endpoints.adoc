@@ -45,7 +45,7 @@ Quantile values, as used in Histogram and Timer output, should represent recent 
 ----
 # HELP current_temperature_celsius The current temperature. <1>
 # TYPE current_temperature_celsius gauge <2>
-current_temperature_celsius{_scope="application",server="front_office"} 36.2 <3>
+current_temperature_celsius{mp_scope="application",server="front_office"} 36.2 <3>
 ----
 
 <1> The description of the gauge, from the `getDescription()` method of the `Metadata` associated to the gauge, must be provided in the HELP line
@@ -62,7 +62,7 @@ current_temperature_celsius{_scope="application",server="front_office"} 36.2 <3>
 ----
 # HELP messages_processed_events_total Number of messages handled <1>
 # TYPE messages_processed_events_total counter <2>
-messages_processed_events_total{_scope="application"} 1.0 <3>
+messages_processed_events_total{mp_scope="application"} 1.0 <3>
 ----
 
 <1> The description of the counter must be provided in the HELP line
@@ -79,17 +79,17 @@ messages_processed_events_total{_scope="application"} 1.0 <3>
 ----
 # HELP distance_to_hole_meters_max Distance of golf ball to hole <1>
 # TYPE distance_to_hole_meters_max gauge <2>
-distance_to_hole_meters_max{_scope="golf_stats"} 12.722726616315509 <3>
+distance_to_hole_meters_max{mp_scope="golf_stats"} 12.722726616315509 <3>
 # HELP distance_to_hole_meters Distance of golf ball to hole <1>
 # TYPE distance_to_hole_meters summary <2>
-distance_to_hole_meters{_scope="golf_stats",quantile="0.5"} 2.8748779296875 <3>
-distance_to_hole_meters{_scope="golf_stats",quantile="0.75"} 4.4998779296875 <3>
-distance_to_hole_meters{_scope="golf_stats",quantile="0.95"} 7.9998779296875 <3>
-distance_to_hole_meters{_scope="golf_stats",quantile="0.98"} 9.4998779296875 <3>
-distance_to_hole_meters{_scope="golf_stats",quantile="0.99"} 11.9998779296875 <3>
-distance_to_hole_meters{_scope="golf_stats",quantile="0.999"} 12.9998779296875 <3>
-distance_to_hole_meters_count{_scope="golf_stats"} 487.0 <3>
-distance_to_hole_meters_sum{_scope="golf_stats"} 1569.3785694223322 <3>
+distance_to_hole_meters{mp_scope="golf_stats",quantile="0.5"} 2.8748779296875 <3>
+distance_to_hole_meters{mp_scope="golf_stats",quantile="0.75"} 4.4998779296875 <3>
+distance_to_hole_meters{mp_scope="golf_stats",quantile="0.95"} 7.9998779296875 <3>
+distance_to_hole_meters{mp_scope="golf_stats",quantile="0.98"} 9.4998779296875 <3>
+distance_to_hole_meters{mp_scope="golf_stats",quantile="0.99"} 11.9998779296875 <3>
+distance_to_hole_meters{mp_scope="golf_stats",quantile="0.999"} 12.9998779296875 <3>
+distance_to_hole_meters_count{mp_scope="golf_stats"} 487.0 <3>
+distance_to_hole_meters_sum{mp_scope="golf_stats"} 1569.3785694223322 <3>
 ----
 
 `Histogram` output is comprised of a maximum section and a summary section.
@@ -126,17 +126,17 @@ distance_to_hole_meters_sum{_scope="golf_stats"} 1569.3785694223322 <3>
 ----
 # HELP myClass_myMethod_seconds duration of myMethod <1>
 # TYPE myClass_myMethod_seconds summary <2>
-myClass_myMethod_seconds{_scope="vendor",quantile="0.5"} 0.0524288 <3>
-myClass_myMethod_seconds{_scope="vendor",quantile="0.75"} 0.0524288 <3>
-myClass_myMethod_seconds{_scope="vendor",quantile="0.95"} 0.054525952 <3>
-myClass_myMethod_seconds{_scope="vendor",quantile="0.98"} 0.054525952 <3>
-myClass_myMethod_seconds{_scope="vendor",quantile="0.99"} 0.054525952 <3>
-myClass_myMethod_seconds{_scope="vendor",quantile="0.999"} 0.054525952 <3>
-myClass_myMethod_seconds_count{_scope="vendor"} 100.0 <3>
-myClass_myMethod_seconds_sum{_scope="vendor"} 5.310349419 <3>
+myClass_myMethod_seconds{mp_scope="vendor",quantile="0.5"} 0.0524288 <3>
+myClass_myMethod_seconds{mp_scope="vendor",quantile="0.75"} 0.0524288 <3>
+myClass_myMethod_seconds{mp_scope="vendor",quantile="0.95"} 0.054525952 <3>
+myClass_myMethod_seconds{mp_scope="vendor",quantile="0.98"} 0.054525952 <3>
+myClass_myMethod_seconds{mp_scope="vendor",quantile="0.99"} 0.054525952 <3>
+myClass_myMethod_seconds{mp_scope="vendor",quantile="0.999"} 0.054525952 <3>
+myClass_myMethod_seconds_count{mp_scope="vendor"} 100.0 <3>
+myClass_myMethod_seconds_sum{mp_scope="vendor"} 5.310349419 <3>
 # HELP myClass_myMethod_seconds_max duration of myMethod <1>
 # TYPE myClass_myMethod_seconds_max gauge <2>
-myClass_myMethod_seconds_max{_scope="vendor"} 0.05507899 <3>
+myClass_myMethod_seconds_max{mp_scope="vendor"} 0.05507899 <3>
 ----
 
 `Timer` output is comprised of a maximum section and a summary section.
