@@ -83,8 +83,7 @@ Metrics with application-defined scopes are exposed under `/metrics?scope=scope_
 
 ===== Vendor specific Metrics
 
-It is possible for MicroProfile server implementors to supply their specific metrics data on top
-of the basic set of required metrics.
+Vendors may choose to provide metrics relevant to their runtime.
 
 Vendor specific metrics are exposed under `/metrics?scope=vendor`.
 
