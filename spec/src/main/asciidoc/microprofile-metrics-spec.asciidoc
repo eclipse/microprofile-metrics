@@ -54,7 +54,7 @@ include::architecture.adoc[]
 
 include::rest-endpoints.adoc[]
 
-include::required-metrics.adoc[]
+include::base-metrics.adoc[]
 
 include::app-programming-model.adoc[]
 

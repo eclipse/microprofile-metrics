@@ -17,16 +17,16 @@
 // limitations under the License.
 //
 
-[[required-metrics]]
-== Required Metrics
+[[base-metrics]]
+== Base Metrics
 
-Base metrics is a list of metrics that all vendors need to implement. Optional base metrics are recommended to be implemented but are not required.
+Base metrics is an optional list of metrics that vendors may implement in whole or in part.
 These metrics are exposed under `/metrics/base`.
 
-The following is a list of required and optional base metrics. All metrics are singletons and have `Multi:` set to `false` unless otherwise stated.
+The following is a list of base metrics. All metrics are singletons and have `Multi:` set to `false` unless otherwise stated.
 Visit <<architecture#meta-data-def>> for the meaning of each key
 
-NOTE: Although vendors are required to implement these base metrics, some virtual machines can not provide them.
+NOTE: Some virtual machines can not provide the data required for some of the base metrics.
 Vendors should either use other metrics that are close enough as substitute or not fill these base metrics at all.
 
 
@@ -134,7 +134,7 @@ Vendors should either use other metrics that are close enough as substitute or n
 
 === Thread Pool Stats
 
-*(Optional) ActiveThreads*
+*ActiveThreads*
 [cols="1,4"]
 |===
 |Name| threadpool.activeThreads
@@ -146,7 +146,7 @@ Vendors should either use other metrics that are close enough as substitute or n
 |Notes| The %s should be substituted with the name of the thread pool. This is a vendor specific attribute/operation that is not defined in java.lang.
 |===
 
-*(Optional) PoolSize*
+*PoolSize*
 [cols="1,4"]
 |===
 |Name| threadpool.size
@@ -202,7 +202,7 @@ Vendors should either use other metrics that are close enough as substitute or n
 |MBean| java.lang:type=OperatingSystem/AvailableProcessors
 |===
 
-*(Optional) SystemLoadAverage*
+*SystemLoadAverage*
 [cols="1,4"]
 |===
 |Name| cpu.systemLoadAverage
@@ -212,7 +212,7 @@ Vendors should either use other metrics that are close enough as substitute or n
 |MBean| java.lang:type=OperatingSystem/SystemLoadAverage
 |===
 
-*(Optional) ProcessCpuLoad*
+*ProcessCpuLoad*
 [cols="1,4"]
 |===
 |Name| cpu.processCpuLoad
@@ -223,7 +223,7 @@ Vendors should either use other metrics that are close enough as substitute or n
 Note: This is a vendor specific attribute/operation that is not defined in java.lang
 |===
 
-*(Optional) ProcessCpuTime*
+*ProcessCpuTime*
 [cols="1,4"]
 |===
 |Name| cpu.processCpuTime
@@ -235,17 +235,15 @@ Note: This is a vendor specific attribute/operation that is not defined in java.
 |===
 
 
-=== (Optional) REST
+=== REST
 
-Metrics gathered from REST stats are optional and therefore may not be available in every implementation.
-
-The MicroProfile Metrics runtime will track metrics from RESTful resource method calls during runtime (i.e GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD). It is up to the implementation to decide how to enable the REST metrics.
+The MicroProfile Metrics runtime may track metrics from RESTful resource method calls during runtime (ie. GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD). It is up to the implementation to decide how to enable the REST metrics.
 
 === Mapped and Unmapped Exceptions
 
 The metrics defined below will treat a REST request that ends in a mapped exception or an unmapped exception differently. For the MicroProfile Metrics runtime, mapped exceptions and _succesful_ REST requests should be considered and handled the same way. This is because mapped exceptions are expected by the developer and may then be handled appropriately as part of the application's expected behviour.  Unmapped exceptions on the other hand are unexpected and can skew metric data if its' respective REST request is recorded. To avoid contaminating the metric values with these _unsuccesful_ REST requests, the below metrics may omit tracking a REST request that ends with an unmapped exception. There are also metrics that purposely track REST requests that end with an unmapped exception.
 
-*(Optional) RESTRequest*
+*RESTRequest*
 [cols="1,4"]
 |===
 |Name| REST.request
@@ -268,7 +266,7 @@ Parameter type formatting rules: +
 
 |===
 
-*(Optional) RESTRequestUnmappedExceptions*
+*RESTRequestUnmappedExceptions*
 [cols="1,4"]
 |===
 |Name| REST.request.unmappedException.total

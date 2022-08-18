@@ -24,7 +24,7 @@
 This chapter describes the architectural overview of how metrics are setup, stored and exposed for consumption.
 This chapter also lists the various scopes of metrics.
 
-See section <<required-metrics#required-metrics>> for more information regarding metrics that are required for each vendor.
+See section <<base-metrics#base-metrics>> for more information regarding spec-described metrics that vendors may provide.
 
 See section <<app-programming-model#app-programming-model>> for more information regarding the application metrics programming model.
 
@@ -35,31 +35,32 @@ Metrics that are exposed need to be configured in the server. On top of the pure
 
 The following three sets of sub-resource (scopes) are exposed.
 
-* base: metrics that all MicroProfile vendors have to provide
+* base: spec-described metrics that vendors may provide (optional)
 * vendor: vendor specific metrics (optional)
 * application: application-specific metrics (optional)
 
 [[scopes]]
 ==== Scopes
 
-===== Required Base metrics
+===== Base metrics
 
-Required base metrics describe a set of metrics that all MicroProfile-compliant servers have to provide.
-Each vendor can implement the set-up of the metrics in the _base_ scope in a vendor-specific way.
+Base metrics describe a set of optional metrics that MicroProfile-compliant servers may provide. 
+Vendors may choose to implement all of the base metrics, some of them, or none of them. They are provided to ensure consistency between vendors that choose to implement them. 
+One reason vendors may choose to use a different set of metrics is that the metrics libraries they are using in their implementation come with metrics with a similar purpose to the spec-described base metrics.
+If vendors choose to use different metrics, for example to measure values related to the JVM, they must do so using the _vendor_ scope for those metrics.
+If vendors choose to use these base scope metrics, they can implement the set-up of the metrics in a vendor-specific way.
 The metrics can be hard coded into the server or read from a configuration file or supplied via the Java-API described in <<app-programming-model#app-programming-model>>.
 The Appendix shows a possible data format for such a configuration.
-The configuration and set up of the _base_ scope is thus an implementation detail and is not expected to be portable across vendors.
+The configuration and set up of the base scope is thus an implementation detail and is not expected to be portable across vendors.
 
-Section <<required-metrics#required-metrics>> lists the required metrics. This list also includes a few items marked as optional.
-These are listed here as they are dependent on the underlying JVM and not the server and thus fit better in _base_ scope
-than the _vendor_ one.
+Section <<base-metrics#base-metrics>> lists the base metrics.
 
-The implementation must tag base metrics with `scope=base`.
+The implementation must tag base metrics with `mp_scope=base`.
 
-Required base metrics are exposed under `/metrics?scope=base`.
+Base metrics are exposed under `/metrics?scope=base`.
 
 The `base` scope is used for, and only for, any metrics that are defined in MicroProfile specifications. 
-Metrics in the base scope are intended to be portable between different MicroProfile-compatible runtimes at the same version.
+Metrics in the base scope, where implemented, are intended to be portable between different MicroProfile-compatible runtimes at the same version.
 
 ===== Application metrics
 
