@@ -51,7 +51,7 @@ import io.restassured.response.Response;
 @RunWith(Arquillian.class)
 public class MpMetricOptionalTest {
 
-    private static final String OPENMETRICS_APP_LABEL_REGEX = "_app=\"[-/A-Za-z0-9]+\"";
+    private static final String OPENMETRICS_APP_LABEL_REGEX = "mp_app=\"[-/A-Za-z0-9]+\"";
 
     // context root under which the application JAX-RS resources are expected to be
     private static String contextRoot;
@@ -84,23 +84,20 @@ public class MpMetricOptionalTest {
     private static final String NAME_OBJECT_PARAM = "_org.eclipse.microprofile.metrics.test.optional.NameObject";
     private static final String AYNC_RESP_PARAM = "_jakarta.ws.rs.container.AsyncResponse";
 
-    private static final String OM_BASE_REQUEST_COUNT_START = "base_REST_request_total"
+    private static final String OM_BASE_REQUEST_COUNT_START = "REST_request_seconds_count"
             + "{class=\"org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional\",method=\"";
-    private static final String OM_BASE_REQUEST_TIME_START = "base_REST_request_elapsedTime_seconds"
+    private static final String OM_BASE_REQUEST_TIME_START = "REST_request_seconds_sum"
             + "{class=\"org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional\",method=\"";
-    private static final String OM_BASE_REQUEST_UNMAPPED_EXCEPTION_START = "base_REST_request_unmappedException_total"
+    private static final String OM_BASE_REQUEST_UNMAPPED_EXCEPTION_START = "REST_request_unmappedException_total"
             + "{class=\"org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional\",method=\"";
-    private static final String OM_BASE_MAX_TIME_START = "base_REST_request_maxTimeDuration_seconds"
-            + "{class=\"org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional\",method=\"";
-    private static final String OM_BASE_MIN_TIME_START = "base_REST_request_minTimeDuration_seconds"
-            + "{class=\"org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional\",method=\"";
-    private static final String OM_BASE_REQUEST_END = "\",tier=\"integration\"}";
+
+    private static final String OM_BASE_REQUEST_END = "\",mp_scope=\"base\",tier=\"integration\"}";
 
     private static final String METRICS_ENDPOINT = "/metrics";
-    private static final String BASE_METRIC_ENDPOINT = METRICS_ENDPOINT + "/base";
-    private static final String RESTREQUEST_METRIC_ENDPOINT = BASE_METRIC_ENDPOINT + "/REST.request";
+    private static final String BASE_METRIC_ENDPOINT = METRICS_ENDPOINT + "?" + "scope=base";
+    private static final String RESTREQUEST_METRIC_ENDPOINT = BASE_METRIC_ENDPOINT + "&" + "name=REST.request";
     private static final String RESTREQUEST_UNMAPPED_EXCEPION_METRIC_ENDPOINT =
-            BASE_METRIC_ENDPOINT + "/REST.request.unmappedException.total";
+            BASE_METRIC_ENDPOINT + "&" + "name=REST.request.unmappedException.total";
 
     @ArquillianResource
     private URL deploymentURL;
@@ -176,9 +173,7 @@ public class MpMetricOptionalTest {
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
                 containsString(OM_BASE_REQUEST_COUNT_START + "getNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "getNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getNoParam" + OM_BASE_REQUEST_END));
+                containsString(OM_BASE_REQUEST_TIME_START + "getNoParam" + OM_BASE_REQUEST_END));
     }
 
     @Test
@@ -199,9 +194,7 @@ public class MpMetricOptionalTest {
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
                 containsString(OM_BASE_REQUEST_COUNT_START + "getNoParam" + OM_BASE_REQUEST_END + " 2"),
-                containsString(OM_BASE_REQUEST_TIME_START + "getNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getNoParam" + OM_BASE_REQUEST_END));
+                containsString(OM_BASE_REQUEST_TIME_START + "getNoParam" + OM_BASE_REQUEST_END));
     }
 
     @Test
@@ -220,10 +213,7 @@ public class MpMetricOptionalTest {
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
                 containsString(OM_BASE_REQUEST_COUNT_START + "optionsNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "optionsNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "optionsNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "optionsNoParam" + OM_BASE_REQUEST_END));
-
+                containsString(OM_BASE_REQUEST_TIME_START + "optionsNoParam" + OM_BASE_REQUEST_END));
     }
 
     @Test
@@ -242,9 +232,7 @@ public class MpMetricOptionalTest {
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
                 containsString(OM_BASE_REQUEST_COUNT_START + "headNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "headNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "headNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "headNoParam" + OM_BASE_REQUEST_END));
+                containsString(OM_BASE_REQUEST_TIME_START + "headNoParam" + OM_BASE_REQUEST_END));
 
     }
 
@@ -264,9 +252,7 @@ public class MpMetricOptionalTest {
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
                 containsString(OM_BASE_REQUEST_COUNT_START + "putNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "putNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "putNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "putNoParam" + OM_BASE_REQUEST_END));
+                containsString(OM_BASE_REQUEST_TIME_START + "putNoParam" + OM_BASE_REQUEST_END));
     }
 
     @Test
@@ -285,9 +271,7 @@ public class MpMetricOptionalTest {
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
                 containsString(OM_BASE_REQUEST_COUNT_START + "postNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "postNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "postNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "postNoParam" + OM_BASE_REQUEST_END));
+                containsString(OM_BASE_REQUEST_TIME_START + "postNoParam" + OM_BASE_REQUEST_END));
 
     }
 
@@ -307,10 +291,7 @@ public class MpMetricOptionalTest {
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
                 containsString(OM_BASE_REQUEST_COUNT_START + "deleteNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "deleteNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "deleteNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "deleteNoParam" + OM_BASE_REQUEST_END));
-
+                containsString(OM_BASE_REQUEST_TIME_START + "deleteNoParam" + OM_BASE_REQUEST_END));
     }
 
     /*
@@ -347,35 +328,25 @@ public class MpMetricOptionalTest {
                 containsString(
                         OM_BASE_REQUEST_COUNT_START + "getSingleStringParam" + STRING_PARAM + OM_BASE_REQUEST_END),
                 containsString(
-                        OM_BASE_REQUEST_TIME_START + "getSingleStringParam" + STRING_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getSingleStringParam" + STRING_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getSingleStringParam" + STRING_PARAM + OM_BASE_REQUEST_END)
+                        OM_BASE_REQUEST_TIME_START + "getSingleStringParam" + STRING_PARAM + OM_BASE_REQUEST_END)
 
                 , containsString(OM_BASE_REQUEST_COUNT_START + "getSingleIntParam" + INT_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "getSingleIntParam" + INT_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getSingleIntParam" + INT_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getSingleIntParam" + INT_PARAM + OM_BASE_REQUEST_END)
+                containsString(OM_BASE_REQUEST_TIME_START + "getSingleIntParam" + INT_PARAM + OM_BASE_REQUEST_END)
 
                 ,
                 containsString(
                         OM_BASE_REQUEST_COUNT_START + "getSingleDoubleParam" + DOUBLE_PARAM + OM_BASE_REQUEST_END),
                 containsString(
-                        OM_BASE_REQUEST_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + OM_BASE_REQUEST_END)
+                        OM_BASE_REQUEST_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + OM_BASE_REQUEST_END)
 
                 , containsString(OM_BASE_REQUEST_COUNT_START + "getSingleLongParam" + LONG_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "getSingleLongParam" + LONG_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getSingleLongParam" + LONG_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getSingleLongParam" + LONG_PARAM + OM_BASE_REQUEST_END)
+                containsString(OM_BASE_REQUEST_TIME_START + "getSingleLongParam" + LONG_PARAM + OM_BASE_REQUEST_END)
 
                 ,
                 containsString(
                         OM_BASE_REQUEST_COUNT_START + "getSingleBooleanParam" + BOOLEAN_PARAM + OM_BASE_REQUEST_END),
                 containsString(
-                        OM_BASE_REQUEST_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + OM_BASE_REQUEST_END));
+                        OM_BASE_REQUEST_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + OM_BASE_REQUEST_END));
 
     }
 
@@ -412,30 +383,6 @@ public class MpMetricOptionalTest {
                                 + OM_BASE_REQUEST_END),
                 containsString(
                         OM_BASE_REQUEST_TIME_START
-                                + "getContextParams"
-                                + HTTP_HEADERS_PARAM
-                                + REQUEST_PARAM
-                                + URI_INFO_PARAM
-                                + RESOURCE_CONTEXT_PARAM
-                                + PROVIDERS_PARAM
-                                + APPLICATION_PARAM
-                                + SECURITY_CONTEXT_PARAM
-                                + CONFIGURATION_PARAM
-                                + OM_BASE_REQUEST_END),
-                containsString(
-                        OM_BASE_MAX_TIME_START
-                                + "getContextParams"
-                                + HTTP_HEADERS_PARAM
-                                + REQUEST_PARAM
-                                + URI_INFO_PARAM
-                                + RESOURCE_CONTEXT_PARAM
-                                + PROVIDERS_PARAM
-                                + APPLICATION_PARAM
-                                + SECURITY_CONTEXT_PARAM
-                                + CONFIGURATION_PARAM
-                                + OM_BASE_REQUEST_END),
-                containsString(
-                        OM_BASE_MIN_TIME_START
                                 + "getContextParams"
                                 + HTTP_HEADERS_PARAM
                                 + REQUEST_PARAM
@@ -482,24 +429,16 @@ public class MpMetricOptionalTest {
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
                 containsString(OM_BASE_REQUEST_COUNT_START + "getListParam1" + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "getListParam1" + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getListParam1" + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getListParam1" + LIST_PARAM + OM_BASE_REQUEST_END)
+                containsString(OM_BASE_REQUEST_TIME_START + "getListParam1" + LIST_PARAM + OM_BASE_REQUEST_END)
 
                 , containsString(OM_BASE_REQUEST_COUNT_START + "getListParam2" + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "getListParam2" + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getListParam2" + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getListParam2" + LIST_PARAM + OM_BASE_REQUEST_END)
+                containsString(OM_BASE_REQUEST_TIME_START + "getListParam2" + LIST_PARAM + OM_BASE_REQUEST_END)
 
                 ,
                 containsString(
                         OM_BASE_REQUEST_COUNT_START + "getListParam3" + LIST_PARAM + LIST_PARAM + OM_BASE_REQUEST_END),
                 containsString(
-                        OM_BASE_REQUEST_TIME_START + "getListParam3" + LIST_PARAM + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(
-                        OM_BASE_MAX_TIME_START + "getListParam3" + LIST_PARAM + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(
-                        OM_BASE_MIN_TIME_START + "getListParam3" + LIST_PARAM + LIST_PARAM + OM_BASE_REQUEST_END));
+                        OM_BASE_REQUEST_TIME_START + "getListParam3" + LIST_PARAM + LIST_PARAM + OM_BASE_REQUEST_END));
 
     }
 
@@ -539,19 +478,11 @@ public class MpMetricOptionalTest {
                 containsString(OM_BASE_REQUEST_COUNT_START + "getMultipleParam1"
                         + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END),
                 containsString(OM_BASE_REQUEST_TIME_START + "getMultipleParam1"
-                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getMultipleParam1"
-                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getMultipleParam1"
                         + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END)
 
                 , containsString(OM_BASE_REQUEST_COUNT_START + "getMultipleParam2"
                         + STRING_PARAM + LIST_PARAM + OM_BASE_REQUEST_END),
                 containsString(OM_BASE_REQUEST_TIME_START + "getMultipleParam2"
-                        + STRING_PARAM + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getMultipleParam2"
-                        + STRING_PARAM + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getMultipleParam2"
                         + STRING_PARAM + LIST_PARAM + OM_BASE_REQUEST_END));
 
     }
@@ -575,9 +506,7 @@ public class MpMetricOptionalTest {
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
                 containsString(OM_BASE_REQUEST_COUNT_START + "getNameObject" + NAME_OBJECT_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "getNameObject" + NAME_OBJECT_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getNameObject" + NAME_OBJECT_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getNameObject" + NAME_OBJECT_PARAM + OM_BASE_REQUEST_END));
+                containsString(OM_BASE_REQUEST_TIME_START + "getNameObject" + NAME_OBJECT_PARAM + OM_BASE_REQUEST_END));
 
     }
 
@@ -601,14 +530,13 @@ public class MpMetricOptionalTest {
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
                 containsString(OM_BASE_REQUEST_COUNT_START + "getAsync" + AYNC_RESP_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "getAsync" + AYNC_RESP_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getAsync" + AYNC_RESP_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getAsync" + AYNC_RESP_PARAM + OM_BASE_REQUEST_END));
+                containsString(OM_BASE_REQUEST_TIME_START + "getAsync" + AYNC_RESP_PARAM + OM_BASE_REQUEST_END));
+
+        System.out.println(resp.prettyPrint());
 
         // Proceed to test that expected duration has elapsed
 
-        // TODO: Need to rewrite this in PROM - no implementation available
-        // TODO: Need to to this in a separate PR
+        // TODO: Need to rewrite this in PROM - to check that value is greater than 5 seconds
         // acceptHeader = new Header("Accept", APPLICATION_JSON);
 
         // resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
@@ -628,6 +556,10 @@ public class MpMetricOptionalTest {
         // assertTrue("Expected duration to be greater than 5000000000 nanoseconds (i.e 5 seconds)",
         // (asyncDurationDouble >= 5000000000.00));
     }
+
+
+    //TODO: Test to check general values?
+
 
     /*
      * TEST POST REQUEST MULTI PARAM
@@ -665,19 +597,11 @@ public class MpMetricOptionalTest {
                 containsString(OM_BASE_REQUEST_COUNT_START + "postMultipleParam1"
                         + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END),
                 containsString(OM_BASE_REQUEST_TIME_START + "postMultipleParam1"
-                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "postMultipleParam1"
-                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "postMultipleParam1"
                         + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END)
 
                 , containsString(OM_BASE_REQUEST_COUNT_START + "postMultipleParam2"
                         + STRING_PARAM + LIST_PARAM + OM_BASE_REQUEST_END),
                 containsString(OM_BASE_REQUEST_TIME_START + "postMultipleParam2"
-                        + STRING_PARAM + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "postMultipleParam2"
-                        + STRING_PARAM + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "postMultipleParam2"
                         + STRING_PARAM + LIST_PARAM + OM_BASE_REQUEST_END));
 
     }
@@ -703,9 +627,7 @@ public class MpMetricOptionalTest {
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
                 containsString(OM_BASE_REQUEST_COUNT_START + "getMappedArithException" + OM_BASE_REQUEST_END + " 1"),
-                containsString(OM_BASE_REQUEST_TIME_START + "getMappedArithException" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getMappedArithException" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getMappedArithException" + OM_BASE_REQUEST_END));
+                containsString(OM_BASE_REQUEST_TIME_START + "getMappedArithException" + OM_BASE_REQUEST_END));
 
         resp = given().header(acceptHeader).when().get(RESTREQUEST_UNMAPPED_EXCEPION_METRIC_ENDPOINT);
         responseBuilder = new ResponseBuilder();
@@ -737,9 +659,7 @@ public class MpMetricOptionalTest {
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
                 containsString(OM_BASE_REQUEST_COUNT_START + "postMappedArithException" + OM_BASE_REQUEST_END + " 1"),
-                containsString(OM_BASE_REQUEST_TIME_START + "postMappedArithException" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "postMappedArithException" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "postMappedArithException" + OM_BASE_REQUEST_END));
+                containsString(OM_BASE_REQUEST_TIME_START + "postMappedArithException" + OM_BASE_REQUEST_END));
 
         resp = given().header(acceptHeader).when().get(RESTREQUEST_UNMAPPED_EXCEPION_METRIC_ENDPOINT);
         responseBuilder = new ResponseBuilder();
@@ -771,9 +691,7 @@ public class MpMetricOptionalTest {
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
                 containsString(OM_BASE_REQUEST_COUNT_START + "getUnmappedArithException" + OM_BASE_REQUEST_END + " 0"),
-                containsString(OM_BASE_REQUEST_TIME_START + "getUnmappedArithException" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getUnmappedArithException" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getUnmappedArithException" + OM_BASE_REQUEST_END));
+                containsString(OM_BASE_REQUEST_TIME_START + "getUnmappedArithException" + OM_BASE_REQUEST_END));
 
         resp = given().header(acceptHeader).when().get(RESTREQUEST_UNMAPPED_EXCEPION_METRIC_ENDPOINT);
         responseBuilder = new ResponseBuilder();
@@ -805,9 +723,7 @@ public class MpMetricOptionalTest {
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
                 containsString(OM_BASE_REQUEST_COUNT_START + "postUnmappedArithException" + OM_BASE_REQUEST_END + " 0"),
-                containsString(OM_BASE_REQUEST_TIME_START + "postUnmappedArithException" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "postUnmappedArithException" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "postUnmappedArithException" + OM_BASE_REQUEST_END));
+                containsString(OM_BASE_REQUEST_TIME_START + "postUnmappedArithException" + OM_BASE_REQUEST_END));
 
         resp = given().header(acceptHeader).when().get(RESTREQUEST_UNMAPPED_EXCEPION_METRIC_ENDPOINT);
         responseBuilder = new ResponseBuilder();
