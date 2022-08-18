@@ -1,0 +1,122 @@
+//
+// Copyright (c) 2016, 2022 Contributors to the Eclipse Foundation
+//
+// See the NOTICE file(s) distributed with this work for additional
+// information regarding copyright ownership.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+[#micrometer-implementations]
+== Micrometer Implementations
+
+Vendor implementations are required to implement the REST interfaces detailed in the <<rest-endpoints>>
+section of this document, including the `/metrics` endpoint that provides metrics data in Prometheus format,
+in order to provide metrics to monitoring agents. 
+
+In order to achieve this, vendors MAY choose to implement metrics in their products using Micrometer,  
+OpenTelemetry Metrics or another library, but they are not required to do so.
+
+=== Micrometer Backends
+
+Where a vendor chooses to use Micrometer, they MAY additionally wish to support Micrometer's other monitoring
+backends, which at the time of writing include:
+
+* AppOptics
+* Azure Monitor
+* Netflix Atlas
+* CloudWatch
+* Datadog
+* Dynatrace
+* Elastic
+* Ganglia
+* Graphite
+* Humio
+* Influx/Telegraf
+* JMX
+* KairosDB
+* New Relic
+* Prometheus
+* SignalFx
+* Google Stackdriver
+* StatsD 
+* Wavefront
+
+The `/metrics` REST endpoint provides Prometheus metrics as a pull-based mechanism. A monitoring agent will
+need to make a request to the endpoint to obtain the metrics data at that point in time. 
+Conversely, the Micrometer backends listed above are typically push-based, so vendor products using the 
+Micrometer backends will be periodically pushing metrics data from the server to the metrics backend.
+
+=== Recommended setup and configuration for alternative Micrometer backends
+
+The following suggestions are OPTIONAL, and provided with a view of attempting to make configuring
+Micrometer-based metrics implementations consistent for consumers.
+
+==== Discoverability
+
+Each Micrometer backend is packaged separately by the Micrometer project in its own .jar file. In order
+to allow an implementation to push to Graphite, for example, the vendor will either need to provide the 
+io.micrometer:micrometer-registry-graphite jar and its runtime dependencies as part of their product, 
+or enable consumers to add it to their classpath. Where consumers are adding libraries to the classpath,
+vendors can check for the presence of the appropriate MeterRegistry class. Taking Graphite as an example,
+the vendor would need to check for the presence of `io.micrometer.graphite.GraphiteMeterRegistry`.
+
+==== Configuration
+
+Each Micrometer backend has its own Config interface, which requires a `String get(final String propertyName)` method
+to be implemented. In order to configure the Micrometer backends in a way that is both consistent across all the 
+Micrometer backends and also consistent with MicroProfile itself, it is suggested that the 
+`String get(final String propertyName)` is implemented to obtain the relevant config using MicroProfile config. 
+Micrometer property names are already prefixed with the name of the relevant backend, so it is suggested that a prefix
+of `mp.metrics.` is added to the property when it is obtained from MicroProfile config.
+
+==== Enabling a backend
+
+Micrometer backends have many values in their config set by default. It is therefore recommended that backends
+are not enabled by default, and enabled by setting `mp.metrics.<backend name>.enabled` to `true`, for example:
+
+----
+mp.metrics.graphite.enabled = true
+----
+
+==== Example backend setup and configuration
+
+If a vendor is implementing MicroProfile Metrics as a CDI extension, the above can be achieved by registering
+a Producer for a backend, if the relevant Micrometer registry class is available on the classpath.
+
+The following is provided as an example of a CDI producer for the Graphite backend.
+
+----
+public static class GraphiteBackendProducer {
+
+        @Inject
+        private Config config;
+
+        @Produces
+        @Backend
+        public MeterRegistry produce() {
+            if (!Boolean.parseBoolean(
+                    config.getOptionalValue("mp.metrics.graphite.enabled", String.class).orElse("false"))) {
+                return null;
+            }
+
+            return new GraphiteMeterRegistry(new GraphiteConfig() {
+                @Override
+                public String get(final String propertyName) {
+                    return config.getOptionalValue("mp.metrics." + propertyName, String.class)
+                            .orElse(null);
+                }
+            }, io.micrometer.core.instrument.Clock.SYSTEM);
+        }
+    }
+----
