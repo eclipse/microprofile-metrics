@@ -28,8 +28,6 @@ import java.util.concurrent.Callable;
 
 /**
  * A timer metric which aggregates timing durations and provides duration statistics
- *
- * The timer measures duration in seconds.
  */
 public interface Timer extends Metric, Sampling {
     /**
