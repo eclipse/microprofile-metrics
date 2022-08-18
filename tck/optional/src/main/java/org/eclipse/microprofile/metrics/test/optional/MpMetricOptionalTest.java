@@ -24,12 +24,13 @@ package org.eclipse.microprofile.metrics.test.optional;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 
-import org.hamcrest.Matcher;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -803,6 +804,7 @@ public class MpMetricOptionalTest {
                 .statusCode(200);
 
         Response resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
+
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
@@ -823,248 +825,62 @@ public class MpMetricOptionalTest {
                 containsString(
                         PROM_BASE_REQUEST_START + "getAsync" + AYNC_RESP_PARAM + PROM_BASE_REQUEST_QUANTILE_999_END));
 
-        // System.out.println(resp.prettyPrint());
+        /*
+         * Only check that elapsed time was greater than 0
+         */
 
-        // Proceed to test that expected duration has elapsed
+        String data = resp.asString();
+        String[] lines = data.split("\n");
 
-        // TODO: Need to rewrite this in PROM - to check that value is greater than 5 seconds
-        // acceptHeader = new Header("Accept", APPLICATION_JSON);
-
-        // resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
-        // JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
-        // responseBuilder = new ResponseBuilder();
-        // responseBuilder.clone(resp);
-        // responseBuilder.setBody(filteredJSONPath.prettify());
-        // resp = responseBuilder.build();
-        // Object asyncDurationObject = resp.then().statusCode(200).contentType(APPLICATION_JSON).extract()
-        // .path(JSON_BASE_REQUEST_TIME_START + "getAsync" + AYNC_RESP_PARAM + JSON_BASE_REQUEST_END);
-
-        // String asyncDurationString = (asyncDurationObject instanceof Number)
-        // ? ((Number) asyncDurationObject).toString()
-        // : (String) asyncDurationObject;
-        // Double asyncDurationDouble = Double.parseDouble(asyncDurationString);
-
-        // assertTrue("Expected duration to be greater than 5000000000 nanoseconds (i.e 5 seconds)",
-        // (asyncDurationDouble >= 5000000000.00));
+        for (String line : lines) {
+            if (line.contains(PROM_BASE_REQUEST_TIME_START + "getAsync" + AYNC_RESP_PARAM + PROM_BASE_REQUEST_END)) {
+                double value = parseMetricLineValue(line);
+                assertThat("Expected duration to be greater than 5 seconds", value > 5.0);
+            }
+        }
     }
 
-    // TODO: Redo test in 16 and 17 in PROMETHEUS -- They check for "valus"
+    @Test
+    @RunAsClient
+    @InSequence(15)
+    /**
+     * This test checks that all elapsed times are not 0 and that all counts are 1 (or 2 if it belongs to the the
+     * REST.request metric assosciated to the "getNoParam" endpoint as it was requested twice)
+     * 
+     * @throws InterruptedException
+     */
+    public void testForNonZeroValues() throws InterruptedException {
+        Header acceptHeader = new Header("Accept", TEXT_PLAIN);
 
-    // @Test
-    // @RunAsClient
-    // @InSequence(16)
-    // public void testValidateGetJSONnoParam() throws InterruptedException {
-    // Header acceptHeader = new Header("Accept", APPLICATION_JSON);
+        given().header(acceptHeader).port(applicationPort).when().get(RESTREQUEST_METRIC_ENDPOINT).then()
+                .statusCode(200);
 
-    // Response resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
-    // JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
-    // ResponseBuilder responseBuilder = new ResponseBuilder();
-    // responseBuilder.clone(resp);
-    // responseBuilder.setBody(filteredJSONPath.prettify());
-    // resp = responseBuilder.build();
-    // resp.then().statusCode(200).contentType(APPLICATION_JSON)
-    // .body(JSON_BASE_REQUEST_COUNT_START + "getNoParam" + JSON_BASE_REQUEST_END, equalTo(2)) // end-point was
-    // // hit twice
-    // .body(JSON_BASE_REQUEST_TIME_START + "getNoParam" + JSON_BASE_REQUEST_END, not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "getNoParam" + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "getNoParam" + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
+        String data =
+                given().header(acceptHeader).port(applicationPort).when().get(RESTREQUEST_METRIC_ENDPOINT).toString();
 
-    // .body(JSON_BASE_REQUEST_COUNT_START + "optionsNoParam" + JSON_BASE_REQUEST_END, equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "optionsNoParam" + JSON_BASE_REQUEST_END, not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "optionsNoParam" + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "optionsNoParam" + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
+        String[] lines = data.split("\n");
 
-    // .body(JSON_BASE_REQUEST_COUNT_START + "headNoParam" + JSON_BASE_REQUEST_END, equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "headNoParam" + JSON_BASE_REQUEST_END, not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "headNoParam" + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "headNoParam" + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-
-    // .body(JSON_BASE_REQUEST_COUNT_START + "putNoParam" + JSON_BASE_REQUEST_END, equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "putNoParam" + JSON_BASE_REQUEST_END, not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "putNoParam" + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "putNoParam" + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-
-    // .body(JSON_BASE_REQUEST_COUNT_START + "postNoParam" + JSON_BASE_REQUEST_END, equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "postNoParam" + JSON_BASE_REQUEST_END, not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "postNoParam" + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "postNoParam" + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-
-    // .body(JSON_BASE_REQUEST_COUNT_START + "deleteNoParam" + JSON_BASE_REQUEST_END, equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "deleteNoParam" + JSON_BASE_REQUEST_END, not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "deleteNoParam" + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "deleteNoParam" + JSON_BASE_REQUEST_END, nullOrGreaterThanZero());
-
-    // }
-
-    // @Test
-    // @RunAsClient
-    // @InSequence(17)
-    // public void testValidateGetJSONParam() throws InterruptedException {
-    // Header acceptHeader = new Header("Accept", APPLICATION_JSON);
-    // Response resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
-    // JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
-    // ResponseBuilder responseBuilder = new ResponseBuilder();
-    // responseBuilder.clone(resp);
-    // responseBuilder.setBody(filteredJSONPath.prettify());
-    // resp = responseBuilder.build();
-    // resp.then().statusCode(200).contentType(APPLICATION_JSON)
-    // .body(JSON_BASE_REQUEST_COUNT_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
-    // equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
-    // not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_REQUEST_COUNT_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
-    // equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
-    // not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_REQUEST_COUNT_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
-    // equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
-    // not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_REQUEST_COUNT_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
-    // equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
-    // not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_REQUEST_COUNT_START + "getSingleBooleanParam" + BOOLEAN_PARAM + JSON_BASE_REQUEST_END,
-    // equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + JSON_BASE_REQUEST_END,
-    // not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_REQUEST_COUNT_START + "getListParam1" + LIST_PARAM + JSON_BASE_REQUEST_END, equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "getListParam1" + LIST_PARAM + JSON_BASE_REQUEST_END,
-    // not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "getListParam1" + LIST_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "getListParam1" + LIST_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_REQUEST_COUNT_START + "getListParam2" + LIST_PARAM + JSON_BASE_REQUEST_END, equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "getListParam2" + LIST_PARAM + JSON_BASE_REQUEST_END,
-    // not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "getListParam2" + LIST_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "getListParam2" + LIST_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_REQUEST_COUNT_START + "getListParam3" + LIST_PARAM + LIST_PARAM + JSON_BASE_REQUEST_END,
-    // equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "getListParam3" + LIST_PARAM + LIST_PARAM + JSON_BASE_REQUEST_END,
-    // not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "getListParam3" + LIST_PARAM + LIST_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "getListParam3" + LIST_PARAM + LIST_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_REQUEST_COUNT_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
-    // equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
-    // not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "getSingleStringParam" + STRING_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_REQUEST_COUNT_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
-    // equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
-    // not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "getSingleIntParam" + INT_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_REQUEST_COUNT_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
-    // equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
-    // not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_REQUEST_COUNT_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
-    // equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
-    // not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "getSingleLongParam" + LONG_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_REQUEST_COUNT_START + "getSingleBooleanParam" + BOOLEAN_PARAM
-    // + JSON_BASE_REQUEST_END, equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + JSON_BASE_REQUEST_END,
-    // not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_REQUEST_COUNT_START + "getMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
-    // + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "getMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
-    // + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "getMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
-    // + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "getMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
-    // + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-    // .body(JSON_BASE_REQUEST_COUNT_START + "getMultipleParam2" + STRING_PARAM + LIST_PARAM
-    // + JSON_BASE_REQUEST_END, equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "getMultipleParam2" + STRING_PARAM + LIST_PARAM
-    // + JSON_BASE_REQUEST_END, not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "getMultipleParam2" + STRING_PARAM + LIST_PARAM
-    // + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "getMultipleParam2" + STRING_PARAM + LIST_PARAM
-    // + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-    // .body(JSON_BASE_REQUEST_COUNT_START + "getMultipleParam4" + SET_PARAM + SORTED_SET_PARAM
-    // + JSON_BASE_REQUEST_END, equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "getMultipleParam4" + SET_PARAM + SORTED_SET_PARAM
-    // + JSON_BASE_REQUEST_END, not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "getMultipleParam4" + SET_PARAM + SORTED_SET_PARAM
-    // + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "getMultipleParam4" + SET_PARAM + SORTED_SET_PARAM
-    // + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-    // .body(JSON_BASE_REQUEST_COUNT_START + "postMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
-    // + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "postMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
-    // + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "postMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
-    // + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "postMultipleParam1" + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM
-    // + STRING_PARAM + LONG_PARAM + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-    // .body(JSON_BASE_REQUEST_COUNT_START + "postMultipleParam2" + STRING_PARAM + LIST_PARAM
-    // + JSON_BASE_REQUEST_END, equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "postMultipleParam2" + STRING_PARAM + LIST_PARAM
-    // + JSON_BASE_REQUEST_END, not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "postMultipleParam2" + STRING_PARAM + LIST_PARAM
-    // + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "postMultipleParam2" + STRING_PARAM + LIST_PARAM
-    // + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-    // .body(JSON_BASE_REQUEST_COUNT_START + "postMultipleParam4" + SET_PARAM + SORTED_SET_PARAM
-    // + JSON_BASE_REQUEST_END, equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "postMultipleParam4" + SET_PARAM + SORTED_SET_PARAM
-    // + JSON_BASE_REQUEST_END, not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "postMultipleParam4" + SET_PARAM + SORTED_SET_PARAM
-    // + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "postMultipleParam4" + SET_PARAM + SORTED_SET_PARAM
-    // + JSON_BASE_REQUEST_END, nullOrGreaterThanZero())
-    // .body(JSON_BASE_REQUEST_COUNT_START + "getAsync" + AYNC_RESP_PARAM + JSON_BASE_REQUEST_END, equalTo(1))
-    // .body(JSON_BASE_REQUEST_TIME_START + "getAsync" + AYNC_RESP_PARAM + JSON_BASE_REQUEST_END, not(0))
-    // .body(JSON_BASE_MAX_TIME_START + "getAsync" + AYNC_RESP_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero())
-    // .body(JSON_BASE_MIN_TIME_START + "getAsync" + AYNC_RESP_PARAM + JSON_BASE_REQUEST_END,
-    // nullOrGreaterThanZero());
-    // }
+        for (String line : lines) {
+            // Checks for the elapsesd time (i.e. sum) or quantiles lines
+            if (line.contains(PROM_BASE_REQUEST_TIME_START) || line.contains(PROM_BASE_REQUEST_START)) {
+                double value = parseMetricLineValue(line);
+                assertThat("Expected duration values to be greater than 0 seconds", value > 0.0);
+            } else if (line.contains(PROM_BASE_REQUEST_COUNT_START)) { // check count
+                double value = parseMetricLineValue(line);
+                /*
+                 * Special case, getNoParam was hit twice above.
+                 */
+                if (line.contains("getNoParam")) {
+                    assertThat("Expected count was 2 for " + line, value == 2.0);
+                } else {
+                    assertThat("Expected count was 1 for " + line, value == 1.0);
+                }
+            }
+            /*
+             * We'll ignore checking the max value.
+             */
+        }
+    }
 
     /*
      * TEST POST REQUEST MULTI PARAM
@@ -1319,24 +1135,15 @@ public class MpMetricOptionalTest {
                         + " 1"));
     }
 
-    Matcher<Object> nullOrGreaterThanZero() {
-        return new LambdaMatcher<>((value) -> {
-            if (value == null) {
-                return true;
-            } else {
-                return value instanceof Number && ((Number) value).doubleValue() > 0;
-            }
-        }, "Value should be either null, or a number greater than zero");
-    }
+    public double parseMetricLineValue(String line) {
+        String tmpLine = line.trim();
+        String[] elements = tmpLine.split(" ");
+        assertThat("Should be more than 2 elements <name> <value>", elements.length > 1);
+        // Last partitioned string should be the value;
+        String value = elements[elements.length - 1];
+        assertNotNull(value);
+        assertThat("Expected value to be not empty", value.length() > 0);
+        return Double.parseDouble(value);
 
-    Matcher<Object> zero() {
-        return new LambdaMatcher<>((value) -> {
-            if (value == null) {
-                return false;
-            } else {
-                return value instanceof Number && ((Number) value).doubleValue() == 0.0;
-            }
-        }, "Value should be zero");
     }
-
 }
