@@ -25,27 +25,11 @@ package org.eclipse.microprofile.metrics.test;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.anyOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.regex.Pattern;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -53,15 +37,9 @@ import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import io.restassured.RestAssured;
 import io.restassured.builder.ResponseBuilder;
@@ -160,105 +138,7 @@ public class MpMetricTest {
     }
 
     @Test
-    @RunAsClient
-    @InSequence(6)
-    public void testBasePromMetrics() {
-        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics?scope=base");
-        ResponseBuilder responseBuilder = new ResponseBuilder();
-        responseBuilder.clone(resp);
-        responseBuilder.setBody(filterOutAppLabelPromMetrics(resp.getBody().asString()));
-        resp = responseBuilder.build();
-        resp.then().statusCode(200).and().contentType(TEXT_PLAIN).and()
-                .body(containsString("# TYPE thread_max_count"))
-                .body(containsString("thread_max_count{mp_scope=\"base\",tier=\"integration\"}"));
-    }
-
-    @Test
-    @RunAsClient
-    @InSequence(9)
-    public void testBaseAttributePromMetrics() {
-        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics?scope=base&name=thread.max.count");
-        ResponseBuilder responseBuilder = new ResponseBuilder();
-        responseBuilder.clone(resp);
-        responseBuilder.setBody(filterOutAppLabelPromMetrics(resp.getBody().asString()));
-        resp = responseBuilder.build();
-        resp.then().statusCode(200).and()
-                .contentType(TEXT_PLAIN).and().body(containsString("# TYPE thread_max_count"),
-                        containsString("thread_max_count{mp_scope=\"base\",tier=\"integration\"}"));
-    }
-
-    @Test
-    @RunAsClient
-    @InSequence(13)
-    public void testPromMetricsFormatNoBadChars() {
-        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        Header wantPromMetricsFormat = new Header("Accept", TEXT_PLAIN);
-
-        String data = given().header(wantPromMetricsFormat).get("/metrics?scope=base").asString();
-
-        String[] lines = data.split("\n");
-        for (String line : lines) {
-            if (line.startsWith("#")) {
-                continue;
-            }
-            String nameAndTagsPart = line.substring(0, line.lastIndexOf(" "));
-            String namePart = nameAndTagsPart.contains("{")
-                    ? nameAndTagsPart.substring(0, nameAndTagsPart.lastIndexOf("{"))
-                    : nameAndTagsPart;
-            assertFalse("Name has illegal chars " + line, namePart.matches(".*[-.].*"));
-            assertFalse("Found __ in " + line, line.matches(".*__.*"));
-        }
-    }
-
-    /*
-     * Technically PromMetrics has no metadata call and this is included inline in the response.
-     */
-    @Test
-    @RunAsClient
-    @InSequence(14)
-    public void testBaseMetadataSingluarItemsPromMetrics() {
-        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        Header wantPromMetricsFormat = new Header("Accept", TEXT_PLAIN);
-
-        String data = given().header(wantPromMetricsFormat).get("/metrics?scope=base").asString();
-
-        String[] lines = data.split("\n");
-
-        Map<String, MiniMeta> expectedMetadata = getExpectedMetadataFromXmlFile(MetricRegistry.BASE_SCOPE);
-        for (MiniMeta mm : expectedMetadata.values()) {
-
-            boolean found = false;
-            // Skip GC and optional metrics
-            if (mm.name.startsWith("gc.") || expectedMetadata.get(mm.name).optional) {
-                continue;
-            }
-            for (String line : lines) {
-
-                // Find only lines with TYPE
-                if (!line.startsWith("# TYPE")) {
-                    continue;
-                }
-
-                String promName = mm.toPromString();
-
-                // Expect [#,TYPE,<name>,<type>]
-                String[] tmp = line.split(" ");
-                assertEquals("Bad entry: " + line, tmp.length, 4);
-
-                if (tmp[2].startsWith(promName)) {
-                    found = true;
-                    assertEquals("Expected [" + mm.toString() + "] got [" + line + "]", tmp[3], mm.type);
-                }
-            }
-            assertTrue("Not found [" + mm.toString() + "]", found);
-
-        }
-    }
-
-    @Test
-    @InSequence(17)
+    @InSequence(10)
     public void testSetupApplicationMetrics() {
 
         metricAppBean.countMe();
@@ -284,7 +164,7 @@ public class MpMetricTest {
      */
     @Test
     @RunAsClient
-    @InSequence(18)
+    @InSequence(11)
     public void testApplicationMetricsPrometheus() {
         Header wantPrometheus = new Header("Accept", TEXT_PLAIN);
 
@@ -444,7 +324,7 @@ public class MpMetricTest {
 
     @Test
     @RunAsClient
-    @InSequence(19)
+    @InSequence(12)
     public void testMetricNameAcrossScopes() {
 
         Response resp = given().header("Accept", TEXT_PLAIN).get("/metrics?name=sharedMetricName");
@@ -471,7 +351,7 @@ public class MpMetricTest {
 
     @Test
     @RunAsClient
-    @InSequence(22)
+    @InSequence(13)
     public void testApplicationTagPromMetrics() {
 
         given().header("Accept", TEXT_PLAIN).when().get("/metrics?scope=application&name=purple")
@@ -483,7 +363,7 @@ public class MpMetricTest {
 
     @Test
     @RunAsClient
-    @InSequence(24)
+    @InSequence(14)
     public void testApplicationTimerUnitPromMetrics() {
 
         String prefix = "org_eclipse_microprofile_metrics_test_MetricAppBean_timeMeA_";
@@ -519,7 +399,7 @@ public class MpMetricTest {
 
     @Test
     @RunAsClient
-    @InSequence(25)
+    @InSequence(15)
     public void testApplicationHistogramUnitBytesPromMetrics() {
 
         String prefix = "metricTest_test1_histogram_";
@@ -549,7 +429,7 @@ public class MpMetricTest {
 
     @Test
     @RunAsClient
-    @InSequence(26)
+    @InSequence(16)
     public void testApplicationHistogramUnitNonePromMetrics() {
 
         String prefix = "metricTest_test1_histogram2";
@@ -578,7 +458,7 @@ public class MpMetricTest {
 
     @Test
     @RunAsClient
-    @InSequence(27)
+    @InSequence(17)
     public void testPromMetrics405NotGET() {
         given()
                 .header("Accept", TEXT_PLAIN)
@@ -590,7 +470,7 @@ public class MpMetricTest {
 
     @Test
     @RunAsClient
-    @InSequence(30)
+    @InSequence(18)
     public void testNonStandardUnitsPromMetrics() {
 
         String prefix = "jellybeanHistogram_";
@@ -624,40 +504,14 @@ public class MpMetricTest {
     }
 
     @Test
-    @RunAsClient
-    @InSequence(31)
-    public void testOptionalBaseMetrics() {
-        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        Header wantPromMetricsFormat = new Header("Accept", TEXT_PLAIN);
-
-        String data = given().header(wantPromMetricsFormat).get("/metrics?scope=base").asString();
-
-        String[] lines = data.split("\n");
-        Map<String, MiniMeta> names = getExpectedMetadataFromXmlFile(MetricRegistry.BASE_SCOPE);
-
-        for (String line : lines) {
-            for (MiniMeta item : names.values()) {
-                /*
-                 * implicity the following line checks that the "unit" is present for the "found" optional metric. The
-                 * toPromString() generates the metric name with the unit and any applicable suffixes.
-                 */
-                if (line.contains("# TYPE " + item.toPromString()) && names.get(item.name).optional) {
-                    // now check it is the right type
-                    assertThat("Wrong metric type. Should be " + item.type, line, containsString(item.type));
-                }
-            }
-        }
-    }
-
-    @Test
-    @InSequence(33)
+    @InSequence(19)
     public void testSetupPromNoBadCharsInNames() {
         metricAppBean.createPromMetrics();
     }
 
     @Test
     @RunAsClient
-    @InSequence(34)
+    @InSequence(20)
     public void testPromNoBadCharsInNames() {
         given().header("Accept", TEXT_PLAIN).when().get("/metrics?scope=application")
                 .then().statusCode(200)
@@ -674,7 +528,7 @@ public class MpMetricTest {
 
     @Test
     @RunAsClient
-    @InSequence(35)
+    @InSequence(21)
     public void testAccept1() {
         given().header("Accept", "application/json;q=0.5,text/plain;q=0.5")
                 .when().get("/metrics?scope=application")
@@ -685,7 +539,7 @@ public class MpMetricTest {
 
     @Test
     @RunAsClient
-    @InSequence(36)
+    @InSequence(22)
     public void testAccept2() {
         given().header("Accept", "application/json;q=0.1,text/plain;q=0.9")
                 .when().get("/metrics?scope=application")
@@ -697,7 +551,7 @@ public class MpMetricTest {
 
     @Test
     @RunAsClient
-    @InSequence(37)
+    @InSequence(23)
     public void testAccept3() {
         given().header("Accept", "image/png,image/jpeg")
                 .when().get("/metrics?scope=application")
@@ -706,7 +560,7 @@ public class MpMetricTest {
 
     @Test
     @RunAsClient
-    @InSequence(38)
+    @InSequence(24)
     public void testAccept4() {
         given().header("Accept", "*/*")
                 .when().get("/metrics?scope=application")
@@ -717,7 +571,7 @@ public class MpMetricTest {
 
     @Test
     @RunAsClient
-    @InSequence(39)
+    @InSequence(25)
     public void testAccept5() {
         given().header("Accept", "image/png;q=1,*/*;q=0.1")
                 .when().get("/metrics?scope=application")
@@ -728,7 +582,7 @@ public class MpMetricTest {
 
     @Test
     @RunAsClient
-    @InSequence(40)
+    @InSequence(26)
     public void testNoAcceptHeader() {
         when().get("/metrics?scope=application")
                 .then().statusCode(200)
@@ -738,7 +592,7 @@ public class MpMetricTest {
 
     @Test
     @RunAsClient
-    @InSequence(41)
+    @InSequence(27)
     public void testCustomUnitAppendToGaugeName() {
         Header wantPromMetricsFormat = new Header("Accept", TEXT_PLAIN);
         given().header(wantPromMetricsFormat).get("/metrics?scope=application").then().statusCode(200)
@@ -748,7 +602,7 @@ public class MpMetricTest {
 
     @Test
     @RunAsClient
-    @InSequence(42)
+    @InSequence(28)
     public void testCustomUnitForCounter() {
         Header wantPromMetricsFormat = new Header("Accept", TEXT_PLAIN);
         given().header(wantPromMetricsFormat).get("/metrics?scope=application").then().statusCode(200)
@@ -758,100 +612,12 @@ public class MpMetricTest {
     }
 
     /**
-     * Check that there is at least one metric named gc.total and that they all contain expected tags (actually this is
-     * just 'name' for now).
-     */
-    @Test
-    @RunAsClient
-    @InSequence(43)
-    public void testGcCountMetrics() {
-        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        Header wantPromMetricsFormat = new Header("Accept", TEXT_PLAIN);
-        String data = given().header(wantPromMetricsFormat).get("/metrics?scope=base").asString();
-
-        Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.BASE_SCOPE);
-        MiniMeta gcCountMetricMeta = baseNames.get("gc.total");
-        Set<String> expectedTags = gcCountMetricMeta.tags.keySet();
-
-        String[] lines = data.split("\n");
-
-        boolean found = false;
-        for (String line : lines) {
-            // explicitly check for the metric line wth value (i.e. the use of `{`)
-            if (line.contains("gc_total{")) {
-                final Pattern gcTotalPattern = Pattern.compile("(gc_total\\{.*?\\}) (\\d+\\.\\d+)");
-                assertThat("Line format should be gc_total\\{.*?\\} \\d+\\.\\d+",
-                        gcTotalPattern.matcher(line).matches());
-
-                final String metricID = gcTotalPattern.matcher(line).replaceAll("$1");
-                final String tags = metricID.replaceAll("^gc_total\\{", "").replaceAll("\\}$", "");
-
-                for (String expectedTag : expectedTags) {
-                    assertThat("The metric should contain a " + expectedTag + " tag", tags,
-                            containsString(expectedTag + "="));
-                }
-                final String value = gcTotalPattern.matcher(line).replaceAll("$2");
-                Assert.assertTrue("gc.total value should be numeric and not negative",
-                        Double.valueOf(value).doubleValue() >= 0);
-
-                found = true;
-            }
-        }
-
-        Assert.assertTrue("At least one metric named gc.total is expected", found);
-    }
-
-    /**
-     * Check that there is at least one metric named gc.time and that they all contain expected tags (actually this is
-     * just 'name' for now).
-     */
-    @Test
-    @RunAsClient
-    @InSequence(44)
-    public void testGcTimeMetrics() {
-        Assume.assumeFalse(Boolean.getBoolean("skip.base.metric.tests"));
-        Header wantPromMetricsFormat = new Header("Accept", TEXT_PLAIN);
-        String data = given().header(wantPromMetricsFormat).get("/metrics?scope=base").asString();
-
-        Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.BASE_SCOPE);
-        MiniMeta gcCountMetricMeta = baseNames.get("gc.time");
-        Set<String> expectedTags = gcCountMetricMeta.tags.keySet();
-
-        String[] lines = data.split("\n");
-
-        boolean found = false;
-        for (String line : lines) {
-            // explicitly check for the metric line wth value (i.e. the use of `{`)
-            if (line.contains("gc_time_seconds_total{")) {
-                final Pattern gcTimeTotalPattern = Pattern.compile("(gc_time_seconds_total\\{.*?\\}) (\\d+\\.\\d+)");
-                assertThat("Line format should be gc_time_seconds_total\\{.*?\\} \\d+\\.\\d+",
-                        gcTimeTotalPattern.matcher(line).matches());
-
-                final String metricID = gcTimeTotalPattern.matcher(line).replaceAll("$1");
-                final String tags = metricID.replaceAll("^gc_time_seconds_total\\{", "").replaceAll("\\}$", "");
-
-                for (String expectedTag : expectedTags) {
-                    assertThat("The metric should contain a " + expectedTag + " tag", tags,
-                            containsString(expectedTag + "="));
-                }
-                final String value = gcTimeTotalPattern.matcher(line).replaceAll("$2");
-                Assert.assertTrue("gc.time.seconds.total value should be numeric and not negative",
-                        Double.valueOf(value).doubleValue() >= 0);
-
-                found = true;
-            }
-        }
-
-        Assert.assertTrue("At least one metric named gc.time.seconds.total is expected", found);
-    }
-
-    /**
      * Test that multi-dimensional metrics are represented properly in Prometheus. WILL TEST FOR TYPE, HELP, VALUE LINES
      * This in effect tests for "metadata" as well
      */
     @Test
     @RunAsClient
-    @InSequence(45)
+    @InSequence(29)
     public void testMultipleTaggedMetricsProm() {
         Header wantPrometheus = new Header("Accept", TEXT_PLAIN);
 
@@ -1039,93 +805,4 @@ public class MpMetricTest {
 
     }
 
-    private Map<String, MiniMeta> getExpectedMetadataFromXmlFile(String scope) {
-        ClassLoader cl = this.getClass().getClassLoader();
-        String fileName;
-        switch (scope) {
-            case "base" :
-                fileName = "base_metrics.xml";
-                break;
-            case "application" :
-                fileName = "application_metrics.xml";
-                break;
-            default :
-                throw new IllegalArgumentException("No definitions for " + scope + " supported");
-        }
-        InputStream is = cl.getResourceAsStream(fileName);
-
-        DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
-        Document document;
-        try {
-            builder = fac.newDocumentBuilder();
-            document = builder.parse(is);
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        Element root = (Element) document.getElementsByTagName("config").item(0);
-        NodeList metrics = root.getElementsByTagName("metric");
-        Map<String, MiniMeta> metaMap = new HashMap<>(metrics.getLength());
-        for (int i = 0; i < metrics.getLength(); i++) {
-            Element metric = (Element) metrics.item(i);
-            MiniMeta mm = new MiniMeta();
-            mm.multi = Boolean.parseBoolean(metric.getAttribute("multi"));
-            mm.name = metric.getAttribute("name");
-            mm.type = metric.getAttribute("type");
-            mm.unit = metric.getAttribute("unit");
-            mm.description = metric.getAttribute("description");
-
-            mm.optional = Boolean.parseBoolean(metric.getAttribute("optional"));
-            String tags = metric.getAttribute("tags");
-            if (!(tags == null || tags.length() == 0)) {
-                for (String tag : tags.split(",")) {
-                    String[] str = tag.split("=");
-                    mm.tags.put(str[0], str[1]);
-                }
-            }
-            metaMap.put(mm.name, mm);
-        }
-        return metaMap;
-
-    }
-
-    @SuppressWarnings("StringBufferReplaceableByString")
-    private static class MiniMeta {
-        private String name;
-        private String type;
-        private String unit;
-        private String description;
-        private boolean multi;
-        private boolean optional;
-        private Map<String, String> tags = new TreeMap<>();
-
-        public MiniMeta() {
-            tags.put("tier", "integration");
-        }
-
-        String toPromString() {
-            String out = name.replace('-', '_').replace('.', '_').replace(' ', '_');
-            if (!unit.equals("none")) {
-                out = out + "_" + unit;
-            }
-            out = out.replace("__", "_");
-            out = out.replace(":_", ":");
-
-            return out;
-        }
-
-        @Override
-        public String toString() {
-            final StringBuilder sb = new StringBuilder("MiniMeta{");
-            sb.append("name='").append(name).append('\'');
-            sb.append(", type='").append(type).append('\'');
-            sb.append(", unit='").append(unit).append('\'');
-            sb.append(", multi=").append(multi);
-            sb.append(", optional=").append(optional);
-            sb.append(", description=").append(description);
-            sb.append('}');
-            return sb.toString();
-        }
-    }
 }
