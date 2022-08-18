@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2019, 2022 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -63,24 +63,25 @@ public class MetricIDTest {
         Tag tagBlue = new Tag("colour", "blue");
 
         String counterName = "org.eclipse.microprofile.metrics.tck.MetricIDTest.counterColour";
+        String counterNameNoTag = "org.eclipse.microprofile.metrics.tck.MetricIDTest.counter";
 
-        Counter counterColour = registry.counter(counterName);
+        Counter counter = registry.counter(counterNameNoTag);
         Counter counterRed = registry.counter(counterName, tagEarth, tagRed);
         Counter counterBlue = registry.counter(counterName, tagEarth, tagBlue);
 
-        MetricID counterColourMID = new MetricID(counterName);
+        MetricID counterMID = new MetricID(counterNameNoTag);
         MetricID counterRedMID = new MetricID(counterName, tagEarth, tagRed);
         MetricID counterBlueMID = new MetricID(counterName, tagEarth, tagRed);
 
         // check multi-dimensional metrics are registered
-        assertThat("Counter is not registered correctly", registry.getCounter(counterColourMID), notNullValue());
+        assertThat("Counter is not registered correctly", registry.getCounter(counterMID), notNullValue());
         assertThat("Counter is not registered correctly", registry.getCounter(counterRedMID), notNullValue());
         assertThat("Counter is not registered correctly", registry.getCounter(counterBlueMID), notNullValue());
 
         // remove one metric
-        registry.remove(counterColourMID);
+        registry.remove(counterMID);
         assertThat("Registry did not remove metric", registry.getCounters().size(), equalTo(2));
-        assertThat("Counter is not registered correctly", registry.getCounter(counterColourMID), nullValue());
+        assertThat("Counter is not registered correctly", registry.getCounter(counterMID), nullValue());
 
         // remove all metrics with the given name
         registry.remove(counterName);

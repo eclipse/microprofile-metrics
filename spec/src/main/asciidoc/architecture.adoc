@@ -128,7 +128,7 @@ For portability reasons, the key name for the tag must match the regex `[a-zA-Z_
 If an illegal character is used, the implementation must throw an `IllegalArgumentException`.
 If a duplicate tag is used, the last occurrence of the tag is used.
 
-The tags named `_scope` and `_app` are reserved. If an application attempts to create a metric with either of these tags, the implementation must throw an `IllegalArgumentException`.
+The tags named `mp_scope` and `mp_app` are reserved. If an application attempts to create a metric with either of these tags, the implementation must throw an `IllegalArgumentException`.
 
 The tag value may contain any UTF-8 encoded character.
 
@@ -154,8 +154,8 @@ Global tags and tags registered with the metric are included in the output retur
 
 Global tags MUST NOT be added to the `MetricID` objects. Global tags must be included in list of tags when metrics are exported.
 
-NOTE: In application servers with multiple applications deployed, there is one reserved tag name: `_app`, which serves for
-distinguishing metrics from different applications and must not be used for any other purpose. For details,
+NOTE: In application servers with multiple applications deployed, values of the reserved tag `mp_app` distinguish metrics
+ from different applications and must not be used for any other purpose. For details,
  see section <<app-servers>>.
 
 [[meta-data-def]]
@@ -195,7 +195,7 @@ There is one `MetricRegistry` instance for each of the predefined scopes listed 
 Metrics can be added to or retrieved from the registry either using the `@Metric` annotation
 (see <<app-programming-model#api-annotations, Metrics Annotations>>) or using the `MetricRegistry` object directly.
 
-A metric is uniquely identified by the `MetricRegistry` if the `MetricID` associated with the metric is unique. That is to say, there are no other metrics with the same combination of metric name and tags. However, all metrics of the same name must be of the same type otherwise an `IllegalArgumentException` will be thrown. This exception will be thrown during registration.
+A metric is uniquely identified by the `MetricRegistry` if the `MetricID` associated with the metric is unique. That is to say, there are no other metrics with the same combination of metric name and tags. However, all metrics of the same name must be of the same type and be identified by the same set of tag names otherwise an `IllegalArgumentException` will be thrown. This exception will be thrown during registration.
 
 The metadata information is registered under a unique metric name and is immutable. All metrics of the same name must be registered with the same metadata information otherwise an "IllegalArgumentException" will be thrown. This exception will be thrown during registration.
 
@@ -213,8 +213,7 @@ The MetricID:
 ==== Reusing Metrics
 
 For metrics declared using annotations, it is allowed to reference one metric by multiple annotations.
-The prerequisite for this is that the annotations carry the same metadata. If multiple annotations declare the same
-metric, but contain different metadata, an `IllegalArgumentException` must be thrown during startup.
+The prerequisite for this is that all such annotations must carry the same metadata and tag names. If multiple annotations declare the same metric but contain different metadata or tag names, an IllegalArgumentException must be thrown during startup.
 
 Reusability does not apply to gauges though. The implementation must throw an `IllegalArgumentException` during startup if it detects multiple 
 `@Gauge` annotations referring to the same gauge (with the same `MetricID`).
@@ -288,13 +287,13 @@ how such application servers should behave if they want to support MicroProfile 
 Metrics from all applications and scopes should be available under a single REST endpoint ending with `/metrics` similarly as
 in case of single-application deployments (microservices).
 
-To help distinguish between metrics pertaining to each deployed application, a tag named `_app` should be added to each metric. 
+To help distinguish between metrics pertaining to each deployed application, a tag named `mp_app` should be added to each metric. 
 
-The value of the `_app` tag should be passed by the application server to the application via a MicroProfile Config property named `mp.metrics.appName`.
+The value of the `mp_app` tag should be passed by the application server to the application via a MicroProfile Config property named `mp.metrics.appName`.
 It should be possible to override this value by bundling the file `META-INF/microprofile-config.properties` within the application archive
 and setting a custom value for the property `mp.metrics.appName` inside it.
 
-It is allowed for application servers to choose to not add the _app tag at all. Implementations may differ in how they handle cases where 
+It is allowed for application servers to choose to not add the `mp_app` tag at all. Implementations may differ in how they handle cases where 
 metrics are registered with the same name from two or more applications running in the same server.  This behavior is not expected to be 
 portable across vendors.
 

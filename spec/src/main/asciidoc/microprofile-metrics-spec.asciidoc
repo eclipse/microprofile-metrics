@@ -58,6 +58,8 @@ include::required-metrics.adoc[]
 
 include::app-programming-model.adoc[]
 
+include::micrometer-backends.adoc[]
+
 include::appendix.adoc[]
 
 include::changelog.adoc[]

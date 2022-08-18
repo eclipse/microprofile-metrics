@@ -24,8 +24,10 @@ package org.eclipse.microprofile.metrics.tck.tags;
 
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasValue;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.Histogram;
@@ -33,6 +35,7 @@ import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.Tag;
 import org.eclipse.microprofile.metrics.Timer;
+import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -76,7 +79,7 @@ public class TagsTest {
         Tag tagColour = new Tag("colour", "red");
         Tag tagColourTwo = new Tag("colour", "blue");
 
-        String counterName = "org.eclipse.microprofile.metrics.tck.TagTest.counter";
+        String counterName = "org.eclipse.microprofile.metrics.tck.TagTest.counter.lastTag";
         Counter counter = registry.counter(counterName, tagColour, tagColourTwo);
 
         // MetricID that only has colour=blue... the last tag value to be passed in
@@ -95,12 +98,13 @@ public class TagsTest {
         Tag tagBlue = new Tag("colour", "blue");
 
         String counterName = "org.eclipse.microprofile.metrics.tck.TagTest.counterColour";
+        String counterNameNoTag = "org.eclipse.microprofile.metrics.tck.TagTest.counter";
 
-        Counter counterColour = registry.counter(counterName);
+        Counter counter = registry.counter(counterNameNoTag);
         Counter counterRed = registry.counter(counterName, tagEarth, tagRed);
         Counter counterBlue = registry.counter(counterName, tagEarth, tagBlue);
 
-        MetricID counterColourMID = new MetricID(counterName);
+        MetricID counterColourMID = new MetricID(counterNameNoTag);
         MetricID counterRedMID = new MetricID(counterName, tagEarth, tagRed);
         MetricID counterBlueMID = new MetricID(counterName, tagEarth, tagBlue);
 
@@ -119,12 +123,13 @@ public class TagsTest {
         Tag tagBlue = new Tag("colour", "blue");
 
         String timerName = "org.eclipse.microprofile.metrics.tck.TagTest.timerColour";
+        String timerNameNoTag = "org.eclipse.microprofile.metrics.tck.TagTest.timer";
 
-        Timer timerColour = registry.timer(timerName);
+        Timer timerColour = registry.timer(timerNameNoTag);
         Timer timerRed = registry.timer(timerName, tagEarth, tagRed);
         Timer timerBlue = registry.timer(timerName, tagEarth, tagBlue);
 
-        MetricID timerColourMID = new MetricID(timerName);
+        MetricID timerColourMID = new MetricID(timerNameNoTag);
         MetricID timerRedMID = new MetricID(timerName, tagEarth, tagRed);
         MetricID timerBlueMID = new MetricID(timerName, tagEarth, tagBlue);
 
@@ -143,12 +148,13 @@ public class TagsTest {
         Tag tagBlue = new Tag("colour", "blue");
 
         String histogramName = "org.eclipse.microprofile.metrics.tck.TagTest.histogramColour";
+        String histogramNameNoTag = "org.eclipse.microprofile.metrics.tck.TagTest.histogram";
 
-        Histogram histogramColour = registry.histogram(histogramName);
+        Histogram histogramColour = registry.histogram(histogramNameNoTag);
         Histogram histogramRed = registry.histogram(histogramName, tagEarth, tagRed);
         Histogram histogramBlue = registry.histogram(histogramName, tagEarth, tagBlue);
 
-        MetricID histogramColourMID = new MetricID(histogramName);
+        MetricID histogramColourMID = new MetricID(histogramNameNoTag);
         MetricID histogramRedMID = new MetricID(histogramName, tagEarth, tagRed);
         MetricID histogramBlueMID = new MetricID(histogramName, tagEarth, tagBlue);
 
@@ -156,5 +162,70 @@ public class TagsTest {
         assertThat("Histogram is not registered correctly", registry.getHistogram(histogramColourMID), notNullValue());
         assertThat("Histogram is not registered correctly", registry.getHistogram(histogramRedMID), notNullValue());
         assertThat("Histogram is not registered correctly", registry.getHistogram(histogramBlueMID), notNullValue());
+    }
+
+    @Test
+    @InSequence(6)
+    public void nonMatchingTagTest() {
+        Tag tagForNames = new Tag("name", "Bill");
+
+        String counterName = "org.eclipse.microprofile.metrics.tck.TagTest.counter.mismatch.tags";
+
+        Counter counter = registry.counter(counterName);
+
+        try {
+            registry.counter(counterName, tagForNames);
+
+        } catch (Exception cause) {
+            assertThat(cause, is(Matchers.<Exception>instanceOf(IllegalArgumentException.class)));
+            return;
+        }
+
+        fail("No exception was caught");
+
+    }
+
+    @Test
+    @InSequence(7)
+    public void nonMatchingTagTest2() {
+        Tag tagForNames = new Tag("name", "Bill");
+        Tag tagForAnimals = new Tag("animal", "dog");
+
+        String timerName = "org.eclipse.microprofile.metrics.tck.TagTest.timer.mismatch.tags";
+
+        Timer timer = registry.timer(timerName, tagForNames);
+
+        try {
+            registry.timer(timerName, tagForAnimals);
+
+        } catch (Exception cause) {
+            assertThat(cause, is(Matchers.<Exception>instanceOf(IllegalArgumentException.class)));
+            return;
+        }
+
+        fail("No exception was caught");
+
+    }
+
+    @Test
+    @InSequence(8)
+    public void nonMatchingTagTest3() {
+        Tag tagForNames = new Tag("name", "Bill");
+        Tag tagForAnimals = new Tag("animal", "dog");
+
+        String histogramName = "org.eclipse.microprofile.metrics.tck.TagTest.histogram.mismatch.tags";
+
+        Histogram histogram = registry.histogram(histogramName, tagForNames);
+
+        try {
+            registry.histogram(histogramName, tagForAnimals);
+
+        } catch (Exception cause) {
+            assertThat(cause, is(Matchers.<Exception>instanceOf(IllegalArgumentException.class)));
+            return;
+        }
+
+        fail("No exception was caught");
+
     }
 }
