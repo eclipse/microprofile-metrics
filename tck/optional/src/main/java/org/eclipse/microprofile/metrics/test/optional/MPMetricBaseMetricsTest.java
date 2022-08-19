@@ -43,9 +43,13 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.microprofile.metrics.MetricRegistry;
+import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.BeforeClass;
@@ -109,6 +113,14 @@ public class MPMetricBaseMetricsTest {
             RestAssured.useRelaxedHTTPSValidation();
         }
 
+    }
+
+    @Deployment
+    public static WebArchive createDeployment() {
+        WebArchive jar = ShrinkWrap.create(WebArchive.class).addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+
+        System.out.println(jar.toString(true));
+        return jar;
     }
 
     @Test
