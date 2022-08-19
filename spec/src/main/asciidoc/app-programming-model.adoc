@@ -500,7 +500,7 @@ MetricRegistry metricRegistry;
 ----
 
 ==== Base Metric Registry
-The implementation must produce the _base_ `MetricRegistry` when the `RegistryScope` is `base` (i.e. `MetricRegistry.BASE_SCOPE`). The _base_ `MetricRegistry` must contain the required metrics specified in <<required-metrics#required-metrics>>.
+The implementation must produce the _base_ `MetricRegistry` when the `RegistryScope` is `base` (i.e. `MetricRegistry.BASE_SCOPE`). The _base_ `MetricRegistry` contains any metrics the vendor has chosen to provide from <<base-metrics#base-metrics>>.
 
 .Example of the application injecting the base registry
 [source, java]
