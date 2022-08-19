@@ -127,7 +127,7 @@ public @interface Timed {
      * @see org.eclipse.microprofile.metrics.MetricUnits
      */
     @Nonbinding
-    String unit() default MetricUnits.NANOSECONDS;
+    String unit() default MetricUnits.SECONDS;
 
     /**
      * The scope that this Timer belongs to.

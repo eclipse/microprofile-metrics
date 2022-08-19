@@ -99,11 +99,11 @@ The following Annotations exist, see below for common fields:
 |@Counted | M, C, T | Denotes a counter, which counts the invocations of the annotated object. | MetricUnits.NONE
 |@Gauge   | M | Denotes a gauge, which samples the value of the annotated object.  | _no default_, must be supplied by the user
 |@Metric  | F, P | An annotation that contains the metadata information when requesting a metric to be injected. | MetricUnits.NONE
-|@Timed   | M, C, T | Denotes a timer, which tracks duration of the annotated object. | MetricUnits.NANOSECONDS
+|@Timed   | M, C, T | Denotes a timer, which tracks duration of the annotated object. | MetricUnits.NANOSECONDS^1^
 |===
-(C=Constructor, F=Field, M=Method, P=Parameter, T=Type)
+(C=Constructor, F=Field, M=Method, P=Parameter, T=Type)  
 
-
+^1^ Prometheus output will always display timer values in _seconds_. When using the `Timer` API to retrieve the `Snapshot`, the values returned from the `Snapshot` will be in nanoseconds. 
 [cols="1,3,2"]
 |===
 |Annotation | Description | Default
