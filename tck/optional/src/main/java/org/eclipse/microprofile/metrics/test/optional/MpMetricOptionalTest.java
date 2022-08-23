@@ -24,12 +24,13 @@ package org.eclipse.microprofile.metrics.test.optional;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 
-import org.hamcrest.Matcher;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -51,7 +52,7 @@ import io.restassured.response.Response;
 @RunWith(Arquillian.class)
 public class MpMetricOptionalTest {
 
-    private static final String OPENMETRICS_APP_LABEL_REGEX = "_app=\"[-/A-Za-z0-9]+\"";
+    private static final String PROM_APP_LABEL_REGEX = "mp_app=\"[-/A-Za-z0-9]+\"";
 
     // context root under which the application JAX-RS resources are expected to be
     private static String contextRoot;
@@ -84,23 +85,43 @@ public class MpMetricOptionalTest {
     private static final String NAME_OBJECT_PARAM = "_org.eclipse.microprofile.metrics.test.optional.NameObject";
     private static final String AYNC_RESP_PARAM = "_jakarta.ws.rs.container.AsyncResponse";
 
-    private static final String OM_BASE_REQUEST_COUNT_START = "base_REST_request_total"
-            + "{class=\"org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional\",method=\"";
-    private static final String OM_BASE_REQUEST_TIME_START = "base_REST_request_elapsedTime_seconds"
-            + "{class=\"org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional\",method=\"";
-    private static final String OM_BASE_REQUEST_UNMAPPED_EXCEPTION_START = "base_REST_request_unmappedException_total"
-            + "{class=\"org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional\",method=\"";
-    private static final String OM_BASE_MAX_TIME_START = "base_REST_request_maxTimeDuration_seconds"
-            + "{class=\"org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional\",method=\"";
-    private static final String OM_BASE_MIN_TIME_START = "base_REST_request_minTimeDuration_seconds"
-            + "{class=\"org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional\",method=\"";
-    private static final String OM_BASE_REQUEST_END = "\",tier=\"integration\"}";
+    /*
+     * String constants for start of a metric line
+     */
 
+    private static final String PROM_BASE_REQUEST_COUNT_START = "REST_request_seconds_count"
+            + "{class=\"org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional\",method=\"";
+    private static final String PROM_BASE_REQUEST_TIME_START = "REST_request_seconds_sum"
+            + "{class=\"org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional\",method=\"";
+
+    private static final String PROM_BASE_REQUEST_START = "REST_request_seconds"
+            + "{class=\"org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional\",method=\"";
+
+    private static final String PROM_BASE_REQUEST_MAX_START = "REST_request_seconds_max"
+            + "{class=\"org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional\",method=\"";
+    private static final String PROM_BASE_REQUEST_UNMAPPED_EXCEPTION_START = "REST_request_unmappedException_total"
+            + "{class=\"org.eclipse.microprofile.metrics.test.optional.MetricAppBeanOptional\",method=\"";
+
+    /*
+     * String constants for end of a metric line
+     */
+    private static final String PROM_BASE_REQUEST_END_PRE = "\",mp_scope=\"base\",tier=\"integration\"";
+    private static final String PROM_BASE_REQUEST_END = PROM_BASE_REQUEST_END_PRE + "}";
+    private static final String PROM_BASE_REQUEST_QUANTILE_50_END = PROM_BASE_REQUEST_END_PRE + ",quantile=\"0.5\"}";
+    private static final String PROM_BASE_REQUEST_QUANTILE_75_END = PROM_BASE_REQUEST_END_PRE + ",quantile=\"0.75\"}";
+    private static final String PROM_BASE_REQUEST_QUANTILE_95_END = PROM_BASE_REQUEST_END_PRE + ",quantile=\"0.95\"}";
+    private static final String PROM_BASE_REQUEST_QUANTILE_98_END = PROM_BASE_REQUEST_END_PRE + ",quantile=\"0.98\"}";
+    private static final String PROM_BASE_REQUEST_QUANTILE_99_END = PROM_BASE_REQUEST_END_PRE + ",quantile=\"0.99\"}";
+    private static final String PROM_BASE_REQUEST_QUANTILE_999_END = PROM_BASE_REQUEST_END_PRE + ",quantile=\"0.999\"}";
+
+    /*
+     * String Constants for URL
+     */
     private static final String METRICS_ENDPOINT = "/metrics";
-    private static final String BASE_METRIC_ENDPOINT = METRICS_ENDPOINT + "/base";
-    private static final String RESTREQUEST_METRIC_ENDPOINT = BASE_METRIC_ENDPOINT + "/REST.request";
+    private static final String BASE_METRIC_ENDPOINT = METRICS_ENDPOINT + "?" + "scope=base";
+    private static final String RESTREQUEST_METRIC_ENDPOINT = BASE_METRIC_ENDPOINT + "&" + "name=REST.request";
     private static final String RESTREQUEST_UNMAPPED_EXCEPION_METRIC_ENDPOINT =
-            BASE_METRIC_ENDPOINT + "/REST.request.unmappedException.total";
+            BASE_METRIC_ENDPOINT + "&" + "name=REST.request.unmappedException.total";
 
     @ArquillianResource
     private URL deploymentURL;
@@ -110,7 +131,7 @@ public class MpMetricOptionalTest {
     private static final int DEFAULT_PORT = 8080;
 
     private static String filterOutAppLabelOpenMetrics(String responseBody) {
-        return responseBody.replaceAll(OPENMETRICS_APP_LABEL_REGEX, "").replaceAll("\\{,", "{").replaceAll(",\\}", "}");
+        return responseBody.replaceAll(PROM_APP_LABEL_REGEX, "").replaceAll("\\{,", "{").replaceAll(",\\}", "}");
     }
 
     @BeforeClass
@@ -175,10 +196,15 @@ public class MpMetricOptionalTest {
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
-                containsString(OM_BASE_REQUEST_COUNT_START + "getNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "getNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getNoParam" + OM_BASE_REQUEST_END));
+                containsString(PROM_BASE_REQUEST_COUNT_START + "getNoParam" + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_TIME_START + "getNoParam" + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_MAX_START + "getNoParam" + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_START + "getNoParam" + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(PROM_BASE_REQUEST_START + "getNoParam" + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(PROM_BASE_REQUEST_START + "getNoParam" + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(PROM_BASE_REQUEST_START + "getNoParam" + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(PROM_BASE_REQUEST_START + "getNoParam" + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(PROM_BASE_REQUEST_START + "getNoParam" + PROM_BASE_REQUEST_QUANTILE_999_END));
     }
 
     @Test
@@ -198,10 +224,14 @@ public class MpMetricOptionalTest {
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
-                containsString(OM_BASE_REQUEST_COUNT_START + "getNoParam" + OM_BASE_REQUEST_END + " 2"),
-                containsString(OM_BASE_REQUEST_TIME_START + "getNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getNoParam" + OM_BASE_REQUEST_END));
+                containsString(PROM_BASE_REQUEST_COUNT_START + "getNoParam" + PROM_BASE_REQUEST_END + " 2"),
+                containsString(PROM_BASE_REQUEST_TIME_START + "getNoParam" + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_START + "getNoParam" + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(PROM_BASE_REQUEST_START + "getNoParam" + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(PROM_BASE_REQUEST_START + "getNoParam" + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(PROM_BASE_REQUEST_START + "getNoParam" + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(PROM_BASE_REQUEST_START + "getNoParam" + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(PROM_BASE_REQUEST_START + "getNoParam" + PROM_BASE_REQUEST_QUANTILE_999_END));
     }
 
     @Test
@@ -219,11 +249,14 @@ public class MpMetricOptionalTest {
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
-                containsString(OM_BASE_REQUEST_COUNT_START + "optionsNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "optionsNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "optionsNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "optionsNoParam" + OM_BASE_REQUEST_END));
-
+                containsString(PROM_BASE_REQUEST_COUNT_START + "optionsNoParam" + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_TIME_START + "optionsNoParam" + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_START + "optionsNoParam" + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(PROM_BASE_REQUEST_START + "optionsNoParam" + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(PROM_BASE_REQUEST_START + "optionsNoParam" + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(PROM_BASE_REQUEST_START + "optionsNoParam" + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(PROM_BASE_REQUEST_START + "optionsNoParam" + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(PROM_BASE_REQUEST_START + "optionsNoParam" + PROM_BASE_REQUEST_QUANTILE_999_END));
     }
 
     @Test
@@ -241,10 +274,14 @@ public class MpMetricOptionalTest {
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
-                containsString(OM_BASE_REQUEST_COUNT_START + "headNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "headNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "headNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "headNoParam" + OM_BASE_REQUEST_END));
+                containsString(PROM_BASE_REQUEST_COUNT_START + "headNoParam" + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_TIME_START + "headNoParam" + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_START + "headNoParam" + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(PROM_BASE_REQUEST_START + "headNoParam" + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(PROM_BASE_REQUEST_START + "headNoParam" + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(PROM_BASE_REQUEST_START + "headNoParam" + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(PROM_BASE_REQUEST_START + "headNoParam" + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(PROM_BASE_REQUEST_START + "headNoParam" + PROM_BASE_REQUEST_QUANTILE_999_END));
 
     }
 
@@ -263,10 +300,14 @@ public class MpMetricOptionalTest {
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
-                containsString(OM_BASE_REQUEST_COUNT_START + "putNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "putNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "putNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "putNoParam" + OM_BASE_REQUEST_END));
+                containsString(PROM_BASE_REQUEST_COUNT_START + "putNoParam" + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_TIME_START + "putNoParam" + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_START + "putNoParam" + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(PROM_BASE_REQUEST_START + "putNoParam" + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(PROM_BASE_REQUEST_START + "putNoParam" + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(PROM_BASE_REQUEST_START + "putNoParam" + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(PROM_BASE_REQUEST_START + "putNoParam" + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(PROM_BASE_REQUEST_START + "putNoParam" + PROM_BASE_REQUEST_QUANTILE_999_END));
     }
 
     @Test
@@ -284,10 +325,14 @@ public class MpMetricOptionalTest {
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
-                containsString(OM_BASE_REQUEST_COUNT_START + "postNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "postNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "postNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "postNoParam" + OM_BASE_REQUEST_END));
+                containsString(PROM_BASE_REQUEST_COUNT_START + "postNoParam" + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_TIME_START + "postNoParam" + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_START + "postNoParam" + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(PROM_BASE_REQUEST_START + "postNoParam" + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(PROM_BASE_REQUEST_START + "postNoParam" + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(PROM_BASE_REQUEST_START + "postNoParam" + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(PROM_BASE_REQUEST_START + "postNoParam" + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(PROM_BASE_REQUEST_START + "postNoParam" + PROM_BASE_REQUEST_QUANTILE_999_END));
 
     }
 
@@ -306,11 +351,14 @@ public class MpMetricOptionalTest {
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
-                containsString(OM_BASE_REQUEST_COUNT_START + "deleteNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "deleteNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "deleteNoParam" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "deleteNoParam" + OM_BASE_REQUEST_END));
-
+                containsString(PROM_BASE_REQUEST_COUNT_START + "deleteNoParam" + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_TIME_START + "deleteNoParam" + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_START + "deleteNoParam" + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(PROM_BASE_REQUEST_START + "deleteNoParam" + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(PROM_BASE_REQUEST_START + "deleteNoParam" + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(PROM_BASE_REQUEST_START + "deleteNoParam" + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(PROM_BASE_REQUEST_START + "deleteNoParam" + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(PROM_BASE_REQUEST_START + "deleteNoParam" + PROM_BASE_REQUEST_QUANTILE_999_END));
     }
 
     /*
@@ -345,37 +393,94 @@ public class MpMetricOptionalTest {
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
                 containsString(
-                        OM_BASE_REQUEST_COUNT_START + "getSingleStringParam" + STRING_PARAM + OM_BASE_REQUEST_END),
+                        PROM_BASE_REQUEST_COUNT_START + "getSingleStringParam" + STRING_PARAM + PROM_BASE_REQUEST_END),
                 containsString(
-                        OM_BASE_REQUEST_TIME_START + "getSingleStringParam" + STRING_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getSingleStringParam" + STRING_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getSingleStringParam" + STRING_PARAM + OM_BASE_REQUEST_END)
+                        PROM_BASE_REQUEST_TIME_START + "getSingleStringParam" + STRING_PARAM + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_START + "getSingleStringParam" + STRING_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(PROM_BASE_REQUEST_START + "getSingleStringParam" + STRING_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(PROM_BASE_REQUEST_START + "getSingleStringParam" + STRING_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(PROM_BASE_REQUEST_START + "getSingleStringParam" + STRING_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(PROM_BASE_REQUEST_START + "getSingleStringParam" + STRING_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(PROM_BASE_REQUEST_START + "getSingleStringParam" + STRING_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_999_END),
 
-                , containsString(OM_BASE_REQUEST_COUNT_START + "getSingleIntParam" + INT_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "getSingleIntParam" + INT_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getSingleIntParam" + INT_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getSingleIntParam" + INT_PARAM + OM_BASE_REQUEST_END)
+                containsString(PROM_BASE_REQUEST_COUNT_START + "getSingleIntParam" + INT_PARAM + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_TIME_START + "getSingleIntParam" + INT_PARAM + PROM_BASE_REQUEST_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getSingleIntParam" + INT_PARAM + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getSingleIntParam" + INT_PARAM + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getSingleIntParam" + INT_PARAM + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getSingleIntParam" + INT_PARAM + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getSingleIntParam" + INT_PARAM + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getSingleIntParam" + INT_PARAM + PROM_BASE_REQUEST_QUANTILE_999_END),
 
-                ,
                 containsString(
-                        OM_BASE_REQUEST_COUNT_START + "getSingleDoubleParam" + DOUBLE_PARAM + OM_BASE_REQUEST_END),
+                        PROM_BASE_REQUEST_COUNT_START + "getSingleDoubleParam" + DOUBLE_PARAM + PROM_BASE_REQUEST_END),
                 containsString(
-                        OM_BASE_REQUEST_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + OM_BASE_REQUEST_END)
+                        PROM_BASE_REQUEST_TIME_START + "getSingleDoubleParam" + DOUBLE_PARAM + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_START + "getSingleDoubleParam" + DOUBLE_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(PROM_BASE_REQUEST_START + "getSingleDoubleParam" + DOUBLE_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(PROM_BASE_REQUEST_START + "getSingleDoubleParam" + DOUBLE_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(PROM_BASE_REQUEST_START + "getSingleDoubleParam" + DOUBLE_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(PROM_BASE_REQUEST_START + "getSingleDoubleParam" + DOUBLE_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(PROM_BASE_REQUEST_START + "getSingleDoubleParam" + DOUBLE_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_999_END),
 
-                , containsString(OM_BASE_REQUEST_COUNT_START + "getSingleLongParam" + LONG_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "getSingleLongParam" + LONG_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getSingleLongParam" + LONG_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getSingleLongParam" + LONG_PARAM + OM_BASE_REQUEST_END)
+                containsString(
+                        PROM_BASE_REQUEST_COUNT_START + "getSingleLongParam" + LONG_PARAM + PROM_BASE_REQUEST_END),
+                containsString(
+                        PROM_BASE_REQUEST_TIME_START + "getSingleLongParam" + LONG_PARAM + PROM_BASE_REQUEST_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getSingleLongParam" + LONG_PARAM
+                                + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getSingleLongParam" + LONG_PARAM
+                                + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getSingleLongParam" + LONG_PARAM
+                                + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getSingleLongParam" + LONG_PARAM
+                                + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getSingleLongParam" + LONG_PARAM
+                                + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getSingleLongParam" + LONG_PARAM
+                                + PROM_BASE_REQUEST_QUANTILE_999_END),
 
-                ,
                 containsString(
-                        OM_BASE_REQUEST_COUNT_START + "getSingleBooleanParam" + BOOLEAN_PARAM + OM_BASE_REQUEST_END),
+                        PROM_BASE_REQUEST_COUNT_START + "getSingleBooleanParam" + BOOLEAN_PARAM
+                                + PROM_BASE_REQUEST_END),
                 containsString(
-                        OM_BASE_REQUEST_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + OM_BASE_REQUEST_END));
+                        PROM_BASE_REQUEST_TIME_START + "getSingleBooleanParam" + BOOLEAN_PARAM + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_START + "getSingleBooleanParam" + BOOLEAN_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(PROM_BASE_REQUEST_START + "getSingleBooleanParam" + BOOLEAN_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(PROM_BASE_REQUEST_START + "getSingleBooleanParam" + BOOLEAN_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(PROM_BASE_REQUEST_START + "getSingleBooleanParam" + BOOLEAN_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(PROM_BASE_REQUEST_START + "getSingleBooleanParam" + BOOLEAN_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(PROM_BASE_REQUEST_START + "getSingleBooleanParam" + BOOLEAN_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_999_END));
 
     }
 
@@ -399,7 +504,7 @@ public class MpMetricOptionalTest {
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
                 containsString(
-                        OM_BASE_REQUEST_COUNT_START
+                        PROM_BASE_REQUEST_COUNT_START
                                 + "getContextParams"
                                 + HTTP_HEADERS_PARAM
                                 + REQUEST_PARAM
@@ -409,9 +514,9 @@ public class MpMetricOptionalTest {
                                 + APPLICATION_PARAM
                                 + SECURITY_CONTEXT_PARAM
                                 + CONFIGURATION_PARAM
-                                + OM_BASE_REQUEST_END),
+                                + PROM_BASE_REQUEST_END),
                 containsString(
-                        OM_BASE_REQUEST_TIME_START
+                        PROM_BASE_REQUEST_TIME_START
                                 + "getContextParams"
                                 + HTTP_HEADERS_PARAM
                                 + REQUEST_PARAM
@@ -421,31 +526,67 @@ public class MpMetricOptionalTest {
                                 + APPLICATION_PARAM
                                 + SECURITY_CONTEXT_PARAM
                                 + CONFIGURATION_PARAM
-                                + OM_BASE_REQUEST_END),
-                containsString(
-                        OM_BASE_MAX_TIME_START
-                                + "getContextParams"
-                                + HTTP_HEADERS_PARAM
-                                + REQUEST_PARAM
-                                + URI_INFO_PARAM
-                                + RESOURCE_CONTEXT_PARAM
-                                + PROVIDERS_PARAM
-                                + APPLICATION_PARAM
-                                + SECURITY_CONTEXT_PARAM
-                                + CONFIGURATION_PARAM
-                                + OM_BASE_REQUEST_END),
-                containsString(
-                        OM_BASE_MIN_TIME_START
-                                + "getContextParams"
-                                + HTTP_HEADERS_PARAM
-                                + REQUEST_PARAM
-                                + URI_INFO_PARAM
-                                + RESOURCE_CONTEXT_PARAM
-                                + PROVIDERS_PARAM
-                                + APPLICATION_PARAM
-                                + SECURITY_CONTEXT_PARAM
-                                + CONFIGURATION_PARAM
-                                + OM_BASE_REQUEST_END));
+                                + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_START + "getContextParams"
+                        + HTTP_HEADERS_PARAM
+                        + REQUEST_PARAM
+                        + URI_INFO_PARAM
+                        + RESOURCE_CONTEXT_PARAM
+                        + PROVIDERS_PARAM
+                        + APPLICATION_PARAM
+                        + SECURITY_CONTEXT_PARAM
+                        + CONFIGURATION_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(PROM_BASE_REQUEST_START + "getContextParams"
+                        + HTTP_HEADERS_PARAM
+                        + REQUEST_PARAM
+                        + URI_INFO_PARAM
+                        + RESOURCE_CONTEXT_PARAM
+                        + PROVIDERS_PARAM
+                        + APPLICATION_PARAM
+                        + SECURITY_CONTEXT_PARAM
+                        + CONFIGURATION_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(PROM_BASE_REQUEST_START + "getContextParams"
+                        + HTTP_HEADERS_PARAM
+                        + REQUEST_PARAM
+                        + URI_INFO_PARAM
+                        + RESOURCE_CONTEXT_PARAM
+                        + PROVIDERS_PARAM
+                        + APPLICATION_PARAM
+                        + SECURITY_CONTEXT_PARAM
+                        + CONFIGURATION_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(PROM_BASE_REQUEST_START + "getContextParams"
+                        + HTTP_HEADERS_PARAM
+                        + REQUEST_PARAM
+                        + URI_INFO_PARAM
+                        + RESOURCE_CONTEXT_PARAM
+                        + PROVIDERS_PARAM
+                        + APPLICATION_PARAM
+                        + SECURITY_CONTEXT_PARAM
+                        + CONFIGURATION_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(PROM_BASE_REQUEST_START + "getContextParams"
+                        + HTTP_HEADERS_PARAM
+                        + REQUEST_PARAM
+                        + URI_INFO_PARAM
+                        + RESOURCE_CONTEXT_PARAM
+                        + PROVIDERS_PARAM
+                        + APPLICATION_PARAM
+                        + SECURITY_CONTEXT_PARAM
+                        + CONFIGURATION_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(PROM_BASE_REQUEST_START + "getContextParams"
+                        + HTTP_HEADERS_PARAM
+                        + REQUEST_PARAM
+                        + URI_INFO_PARAM
+                        + RESOURCE_CONTEXT_PARAM
+                        + PROVIDERS_PARAM
+                        + APPLICATION_PARAM
+                        + SECURITY_CONTEXT_PARAM
+                        + CONFIGURATION_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_999_END));
 
     }
 
@@ -481,25 +622,54 @@ public class MpMetricOptionalTest {
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
-                containsString(OM_BASE_REQUEST_COUNT_START + "getListParam1" + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "getListParam1" + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getListParam1" + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getListParam1" + LIST_PARAM + OM_BASE_REQUEST_END)
+                containsString(PROM_BASE_REQUEST_COUNT_START + "getListParam1" + LIST_PARAM + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_TIME_START + "getListParam1" + LIST_PARAM + PROM_BASE_REQUEST_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getListParam1" + LIST_PARAM + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getListParam1" + LIST_PARAM + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getListParam1" + LIST_PARAM + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getListParam1" + LIST_PARAM + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getListParam1" + LIST_PARAM + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getListParam1" + LIST_PARAM + PROM_BASE_REQUEST_QUANTILE_999_END),
 
-                , containsString(OM_BASE_REQUEST_COUNT_START + "getListParam2" + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "getListParam2" + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getListParam2" + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getListParam2" + LIST_PARAM + OM_BASE_REQUEST_END)
+                containsString(PROM_BASE_REQUEST_COUNT_START + "getListParam2" + LIST_PARAM + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_TIME_START + "getListParam2" + LIST_PARAM + PROM_BASE_REQUEST_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getListParam2" + LIST_PARAM + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getListParam2" + LIST_PARAM + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getListParam2" + LIST_PARAM + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getListParam2" + LIST_PARAM + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getListParam2" + LIST_PARAM + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getListParam2" + LIST_PARAM + PROM_BASE_REQUEST_QUANTILE_999_END),
 
-                ,
                 containsString(
-                        OM_BASE_REQUEST_COUNT_START + "getListParam3" + LIST_PARAM + LIST_PARAM + OM_BASE_REQUEST_END),
+                        PROM_BASE_REQUEST_COUNT_START + "getListParam3" + LIST_PARAM + LIST_PARAM
+                                + PROM_BASE_REQUEST_END),
                 containsString(
-                        OM_BASE_REQUEST_TIME_START + "getListParam3" + LIST_PARAM + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(
-                        OM_BASE_MAX_TIME_START + "getListParam3" + LIST_PARAM + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(
-                        OM_BASE_MIN_TIME_START + "getListParam3" + LIST_PARAM + LIST_PARAM + OM_BASE_REQUEST_END));
+                        PROM_BASE_REQUEST_TIME_START + "getListParam3" + LIST_PARAM + LIST_PARAM
+                                + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_START + "getListParam3" + LIST_PARAM + LIST_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(PROM_BASE_REQUEST_START + "getListParam3" + LIST_PARAM + LIST_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(PROM_BASE_REQUEST_START + "getListParam3" + LIST_PARAM + LIST_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(PROM_BASE_REQUEST_START + "getListParam3" + LIST_PARAM + LIST_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(PROM_BASE_REQUEST_START + "getListParam3" + LIST_PARAM + LIST_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(PROM_BASE_REQUEST_START + "getListParam3" + LIST_PARAM + LIST_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_999_END));
 
     }
 
@@ -536,23 +706,45 @@ public class MpMetricOptionalTest {
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
-                containsString(OM_BASE_REQUEST_COUNT_START + "getMultipleParam1"
-                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "getMultipleParam1"
-                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getMultipleParam1"
-                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getMultipleParam1"
-                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END)
+                containsString(PROM_BASE_REQUEST_COUNT_START + "getMultipleParam1"
+                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_TIME_START + "getMultipleParam1"
+                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_START + "getMultipleParam1"
+                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(PROM_BASE_REQUEST_START + "getMultipleParam1"
+                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(PROM_BASE_REQUEST_START + "getMultipleParam1"
+                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(PROM_BASE_REQUEST_START + "getMultipleParam1"
+                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(PROM_BASE_REQUEST_START + "getMultipleParam1"
+                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(PROM_BASE_REQUEST_START + "getMultipleParam1"
+                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_999_END),
 
-                , containsString(OM_BASE_REQUEST_COUNT_START + "getMultipleParam2"
-                        + STRING_PARAM + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "getMultipleParam2"
-                        + STRING_PARAM + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getMultipleParam2"
-                        + STRING_PARAM + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getMultipleParam2"
-                        + STRING_PARAM + LIST_PARAM + OM_BASE_REQUEST_END));
+                containsString(PROM_BASE_REQUEST_COUNT_START + "getMultipleParam2"
+                        + STRING_PARAM + LIST_PARAM + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_TIME_START + "getMultipleParam2"
+                        + STRING_PARAM + LIST_PARAM + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_START + "getMultipleParam2"
+                        + STRING_PARAM + LIST_PARAM + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(PROM_BASE_REQUEST_START + "getMultipleParam2"
+                        + STRING_PARAM + LIST_PARAM + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(PROM_BASE_REQUEST_START + "getMultipleParam2"
+                        + STRING_PARAM + LIST_PARAM + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(PROM_BASE_REQUEST_START + "getMultipleParam2"
+                        + STRING_PARAM + LIST_PARAM + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(PROM_BASE_REQUEST_START + "getMultipleParam2"
+                        + STRING_PARAM + LIST_PARAM + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(PROM_BASE_REQUEST_START + "getMultipleParam2"
+                        + STRING_PARAM + LIST_PARAM + PROM_BASE_REQUEST_QUANTILE_999_END));
 
     }
 
@@ -574,10 +766,27 @@ public class MpMetricOptionalTest {
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
-                containsString(OM_BASE_REQUEST_COUNT_START + "getNameObject" + NAME_OBJECT_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "getNameObject" + NAME_OBJECT_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getNameObject" + NAME_OBJECT_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getNameObject" + NAME_OBJECT_PARAM + OM_BASE_REQUEST_END));
+                containsString(
+                        PROM_BASE_REQUEST_COUNT_START + "getNameObject" + NAME_OBJECT_PARAM + PROM_BASE_REQUEST_END),
+                containsString(
+                        PROM_BASE_REQUEST_TIME_START + "getNameObject" + NAME_OBJECT_PARAM + PROM_BASE_REQUEST_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getNameObject" + NAME_OBJECT_PARAM
+                                + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getNameObject" + NAME_OBJECT_PARAM
+                                + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getNameObject" + NAME_OBJECT_PARAM
+                                + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getNameObject" + NAME_OBJECT_PARAM
+                                + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getNameObject" + NAME_OBJECT_PARAM
+                                + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(PROM_BASE_REQUEST_START + "getNameObject" + NAME_OBJECT_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_999_END));
 
     }
 
@@ -595,38 +804,82 @@ public class MpMetricOptionalTest {
                 .statusCode(200);
 
         Response resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
+
         ResponseBuilder responseBuilder = new ResponseBuilder();
         responseBuilder.clone(resp);
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
-                containsString(OM_BASE_REQUEST_COUNT_START + "getAsync" + AYNC_RESP_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "getAsync" + AYNC_RESP_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getAsync" + AYNC_RESP_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getAsync" + AYNC_RESP_PARAM + OM_BASE_REQUEST_END));
+                containsString(PROM_BASE_REQUEST_COUNT_START + "getAsync" + AYNC_RESP_PARAM + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_TIME_START + "getAsync" + AYNC_RESP_PARAM + PROM_BASE_REQUEST_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getAsync" + AYNC_RESP_PARAM + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getAsync" + AYNC_RESP_PARAM + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getAsync" + AYNC_RESP_PARAM + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getAsync" + AYNC_RESP_PARAM + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getAsync" + AYNC_RESP_PARAM + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getAsync" + AYNC_RESP_PARAM + PROM_BASE_REQUEST_QUANTILE_999_END));
 
-        // Proceed to test that expected duration has elapsed
+        /*
+         * Only check that elapsed time was greater than 0
+         */
 
-        // TODO: Need to rewrite this in PROM - no implementation available
-        // TODO: Need to to this in a separate PR
-        // acceptHeader = new Header("Accept", APPLICATION_JSON);
+        String data = resp.asString();
+        String[] lines = data.split("\n");
 
-        // resp = given().header(acceptHeader).when().get(RESTREQUEST_METRIC_ENDPOINT);
-        // JsonPath filteredJSONPath = new JsonPath(filterOutAppLabelJSON(resp.jsonPath().prettify()));
-        // responseBuilder = new ResponseBuilder();
-        // responseBuilder.clone(resp);
-        // responseBuilder.setBody(filteredJSONPath.prettify());
-        // resp = responseBuilder.build();
-        // Object asyncDurationObject = resp.then().statusCode(200).contentType(APPLICATION_JSON).extract()
-        // .path(JSON_BASE_REQUEST_TIME_START + "getAsync" + AYNC_RESP_PARAM + JSON_BASE_REQUEST_END);
+        for (String line : lines) {
+            if (line.contains(PROM_BASE_REQUEST_TIME_START + "getAsync" + AYNC_RESP_PARAM + PROM_BASE_REQUEST_END)) {
+                double value = parseMetricLineValue(line);
+                assertThat("Expected duration to be greater than 5 seconds", value > 5.0);
+            }
+        }
+    }
 
-        // String asyncDurationString = (asyncDurationObject instanceof Number)
-        // ? ((Number) asyncDurationObject).toString()
-        // : (String) asyncDurationObject;
-        // Double asyncDurationDouble = Double.parseDouble(asyncDurationString);
+    @Test
+    @RunAsClient
+    @InSequence(15)
+    /**
+     * This test checks that all elapsed times are not 0 and that all counts are 1 (or 2 if it belongs to the the
+     * REST.request metric assosciated to the "getNoParam" endpoint as it was requested twice)
+     * 
+     * @throws InterruptedException
+     */
+    public void testForNonZeroValues() throws InterruptedException {
+        Header acceptHeader = new Header("Accept", TEXT_PLAIN);
 
-        // assertTrue("Expected duration to be greater than 5000000000 nanoseconds (i.e 5 seconds)",
-        // (asyncDurationDouble >= 5000000000.00));
+        given().header(acceptHeader).port(applicationPort).when().get(RESTREQUEST_METRIC_ENDPOINT).then()
+                .statusCode(200);
+
+        String data =
+                given().header(acceptHeader).port(applicationPort).when().get(RESTREQUEST_METRIC_ENDPOINT).toString();
+
+        String[] lines = data.split("\n");
+
+        for (String line : lines) {
+            // Checks for the elapsesd time (i.e. sum) or quantiles lines
+            if (line.contains(PROM_BASE_REQUEST_TIME_START) || line.contains(PROM_BASE_REQUEST_START)) {
+                double value = parseMetricLineValue(line);
+                assertThat("Expected duration values to be greater than 0 seconds", value > 0.0);
+            } else if (line.contains(PROM_BASE_REQUEST_COUNT_START)) { // check count
+                double value = parseMetricLineValue(line);
+                /*
+                 * Special case, getNoParam was hit twice above.
+                 */
+                if (line.contains("getNoParam")) {
+                    assertThat("Expected count was 2 for " + line, value == 2.0);
+                } else {
+                    assertThat("Expected count was 1 for " + line, value == 1.0);
+                }
+            }
+            /*
+             * We'll ignore checking the max value.
+             */
+        }
     }
 
     /*
@@ -662,23 +915,45 @@ public class MpMetricOptionalTest {
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
-                containsString(OM_BASE_REQUEST_COUNT_START + "postMultipleParam1"
-                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "postMultipleParam1"
-                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "postMultipleParam1"
-                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "postMultipleParam1"
-                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + OM_BASE_REQUEST_END)
+                containsString(PROM_BASE_REQUEST_COUNT_START + "postMultipleParam1"
+                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_TIME_START + "postMultipleParam1"
+                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_START + "postMultipleParam1"
+                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(PROM_BASE_REQUEST_START + "postMultipleParam1"
+                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(PROM_BASE_REQUEST_START + "postMultipleParam1"
+                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(PROM_BASE_REQUEST_START + "postMultipleParam1"
+                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(PROM_BASE_REQUEST_START + "postMultipleParam1"
+                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(PROM_BASE_REQUEST_START + "postMultipleParam1"
+                        + BOOLEAN_PARAM + INT_PARAM + DOUBLE_PARAM + STRING_PARAM + LONG_PARAM
+                        + PROM_BASE_REQUEST_QUANTILE_999_END),
 
-                , containsString(OM_BASE_REQUEST_COUNT_START + "postMultipleParam2"
-                        + STRING_PARAM + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_REQUEST_TIME_START + "postMultipleParam2"
-                        + STRING_PARAM + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "postMultipleParam2"
-                        + STRING_PARAM + LIST_PARAM + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "postMultipleParam2"
-                        + STRING_PARAM + LIST_PARAM + OM_BASE_REQUEST_END));
+                containsString(PROM_BASE_REQUEST_COUNT_START + "postMultipleParam2"
+                        + STRING_PARAM + LIST_PARAM + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_TIME_START + "postMultipleParam2"
+                        + STRING_PARAM + LIST_PARAM + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_START + "postMultipleParam2"
+                        + STRING_PARAM + LIST_PARAM + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(PROM_BASE_REQUEST_START + "postMultipleParam2"
+                        + STRING_PARAM + LIST_PARAM + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(PROM_BASE_REQUEST_START + "postMultipleParam2"
+                        + STRING_PARAM + LIST_PARAM + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(PROM_BASE_REQUEST_START + "postMultipleParam2"
+                        + STRING_PARAM + LIST_PARAM + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(PROM_BASE_REQUEST_START + "postMultipleParam2"
+                        + STRING_PARAM + LIST_PARAM + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(PROM_BASE_REQUEST_START + "postMultipleParam2"
+                        + STRING_PARAM + LIST_PARAM + PROM_BASE_REQUEST_QUANTILE_999_END));
 
     }
 
@@ -702,10 +977,16 @@ public class MpMetricOptionalTest {
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
-                containsString(OM_BASE_REQUEST_COUNT_START + "getMappedArithException" + OM_BASE_REQUEST_END + " 1"),
-                containsString(OM_BASE_REQUEST_TIME_START + "getMappedArithException" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getMappedArithException" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getMappedArithException" + OM_BASE_REQUEST_END));
+                containsString(
+                        PROM_BASE_REQUEST_COUNT_START + "getMappedArithException" + PROM_BASE_REQUEST_END + " 1"),
+                containsString(PROM_BASE_REQUEST_TIME_START + "getMappedArithException" + PROM_BASE_REQUEST_END),
+                containsString(PROM_BASE_REQUEST_START + "getMappedArithException" + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(PROM_BASE_REQUEST_START + "getMappedArithException" + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(PROM_BASE_REQUEST_START + "getMappedArithException" + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(PROM_BASE_REQUEST_START + "getMappedArithException" + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(PROM_BASE_REQUEST_START + "getMappedArithException" + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getMappedArithException" + PROM_BASE_REQUEST_QUANTILE_999_END));
 
         resp = given().header(acceptHeader).when().get(RESTREQUEST_UNMAPPED_EXCEPION_METRIC_ENDPOINT);
         responseBuilder = new ResponseBuilder();
@@ -713,7 +994,7 @@ public class MpMetricOptionalTest {
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(containsString(
-                OM_BASE_REQUEST_UNMAPPED_EXCEPTION_START + "getMappedArithException" + OM_BASE_REQUEST_END + " 0"));
+                PROM_BASE_REQUEST_UNMAPPED_EXCEPTION_START + "getMappedArithException" + PROM_BASE_REQUEST_END + " 0"));
     }
 
     @Test
@@ -736,10 +1017,21 @@ public class MpMetricOptionalTest {
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
-                containsString(OM_BASE_REQUEST_COUNT_START + "postMappedArithException" + OM_BASE_REQUEST_END + " 1"),
-                containsString(OM_BASE_REQUEST_TIME_START + "postMappedArithException" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "postMappedArithException" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "postMappedArithException" + OM_BASE_REQUEST_END));
+                containsString(
+                        PROM_BASE_REQUEST_COUNT_START + "postMappedArithException" + PROM_BASE_REQUEST_END + " 1"),
+                containsString(PROM_BASE_REQUEST_TIME_START + "postMappedArithException" + PROM_BASE_REQUEST_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "postMappedArithException" + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "postMappedArithException" + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "postMappedArithException" + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "postMappedArithException" + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "postMappedArithException" + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "postMappedArithException" + PROM_BASE_REQUEST_QUANTILE_999_END));
 
         resp = given().header(acceptHeader).when().get(RESTREQUEST_UNMAPPED_EXCEPION_METRIC_ENDPOINT);
         responseBuilder = new ResponseBuilder();
@@ -747,7 +1039,8 @@ public class MpMetricOptionalTest {
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(containsString(
-                OM_BASE_REQUEST_UNMAPPED_EXCEPTION_START + "postMappedArithException" + OM_BASE_REQUEST_END + " 0"));
+                PROM_BASE_REQUEST_UNMAPPED_EXCEPTION_START + "postMappedArithException" + PROM_BASE_REQUEST_END
+                        + " 0"));
     }
 
     @Test
@@ -770,10 +1063,21 @@ public class MpMetricOptionalTest {
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
-                containsString(OM_BASE_REQUEST_COUNT_START + "getUnmappedArithException" + OM_BASE_REQUEST_END + " 0"),
-                containsString(OM_BASE_REQUEST_TIME_START + "getUnmappedArithException" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "getUnmappedArithException" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "getUnmappedArithException" + OM_BASE_REQUEST_END));
+                containsString(
+                        PROM_BASE_REQUEST_COUNT_START + "getUnmappedArithException" + PROM_BASE_REQUEST_END + " 0"),
+                containsString(PROM_BASE_REQUEST_TIME_START + "getUnmappedArithException" + PROM_BASE_REQUEST_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getUnmappedArithException" + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getUnmappedArithException" + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getUnmappedArithException" + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getUnmappedArithException" + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getUnmappedArithException" + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "getUnmappedArithException" + PROM_BASE_REQUEST_QUANTILE_999_END));
 
         resp = given().header(acceptHeader).when().get(RESTREQUEST_UNMAPPED_EXCEPION_METRIC_ENDPOINT);
         responseBuilder = new ResponseBuilder();
@@ -781,7 +1085,8 @@ public class MpMetricOptionalTest {
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(containsString(
-                OM_BASE_REQUEST_UNMAPPED_EXCEPTION_START + "getUnmappedArithException" + OM_BASE_REQUEST_END + " 1"));
+                PROM_BASE_REQUEST_UNMAPPED_EXCEPTION_START + "getUnmappedArithException" + PROM_BASE_REQUEST_END
+                        + " 1"));
     }
 
     @Test
@@ -804,10 +1109,21 @@ public class MpMetricOptionalTest {
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(
-                containsString(OM_BASE_REQUEST_COUNT_START + "postUnmappedArithException" + OM_BASE_REQUEST_END + " 0"),
-                containsString(OM_BASE_REQUEST_TIME_START + "postUnmappedArithException" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MAX_TIME_START + "postUnmappedArithException" + OM_BASE_REQUEST_END),
-                containsString(OM_BASE_MIN_TIME_START + "postUnmappedArithException" + OM_BASE_REQUEST_END));
+                containsString(
+                        PROM_BASE_REQUEST_COUNT_START + "postUnmappedArithException" + PROM_BASE_REQUEST_END + " 0"),
+                containsString(PROM_BASE_REQUEST_TIME_START + "postUnmappedArithException" + PROM_BASE_REQUEST_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "postUnmappedArithException" + PROM_BASE_REQUEST_QUANTILE_50_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "postUnmappedArithException" + PROM_BASE_REQUEST_QUANTILE_75_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "postUnmappedArithException" + PROM_BASE_REQUEST_QUANTILE_95_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "postUnmappedArithException" + PROM_BASE_REQUEST_QUANTILE_98_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "postUnmappedArithException" + PROM_BASE_REQUEST_QUANTILE_99_END),
+                containsString(
+                        PROM_BASE_REQUEST_START + "postUnmappedArithException" + PROM_BASE_REQUEST_QUANTILE_999_END));
 
         resp = given().header(acceptHeader).when().get(RESTREQUEST_UNMAPPED_EXCEPION_METRIC_ENDPOINT);
         responseBuilder = new ResponseBuilder();
@@ -815,27 +1131,19 @@ public class MpMetricOptionalTest {
         responseBuilder.setBody(filterOutAppLabelOpenMetrics(resp.getBody().asString()));
         resp = responseBuilder.build();
         resp.then().statusCode(200).contentType(TEXT_PLAIN).body(containsString(
-                OM_BASE_REQUEST_UNMAPPED_EXCEPTION_START + "postUnmappedArithException" + OM_BASE_REQUEST_END + " 1"));
+                PROM_BASE_REQUEST_UNMAPPED_EXCEPTION_START + "postUnmappedArithException" + PROM_BASE_REQUEST_END
+                        + " 1"));
     }
 
-    Matcher<Object> nullOrGreaterThanZero() {
-        return new LambdaMatcher<>((value) -> {
-            if (value == null) {
-                return true;
-            } else {
-                return value instanceof Number && ((Number) value).doubleValue() > 0;
-            }
-        }, "Value should be either null, or a number greater than zero");
-    }
+    public double parseMetricLineValue(String line) {
+        String tmpLine = line.trim();
+        String[] elements = tmpLine.split(" ");
+        assertThat("Should be more than 2 elements <name> <value>", elements.length > 1);
+        // Last partitioned string should be the value;
+        String value = elements[elements.length - 1];
+        assertNotNull(value);
+        assertThat("Expected value to be not empty", value.length() > 0);
+        return Double.parseDouble(value);
 
-    Matcher<Object> zero() {
-        return new LambdaMatcher<>((value) -> {
-            if (value == null) {
-                return false;
-            } else {
-                return value instanceof Number && ((Number) value).doubleValue() == 0.0;
-            }
-        }, "Value should be zero");
     }
-
 }
