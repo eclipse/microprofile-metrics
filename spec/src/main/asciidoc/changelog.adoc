@@ -39,7 +39,6 @@
 ** Removed `getFiveMinuteRate()` method
 ** Removed `getMeanRate()` method
 ** Removed `getOneMinuteRate()` method
-** Removed `getMean()` method
 ** Removed `getStdDev()` method
 
 * Updated Histogram class
@@ -47,7 +46,6 @@
 ** Removed `getFiveMinuteRate()` method
 ** Removed `getMeanRate()` method
 ** Removed `getOneMinuteRate()` method
-** Removed `getMean()` method
 ** Removed `getStdDev()` method
 
 * Updated MetricRegistry class
