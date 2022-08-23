@@ -310,12 +310,12 @@ The OpenMetrics formatted rest metrics would be:
 # TYPE REST_request_seconds_max gauge
 REST_request_seconds_max{class="org.eclipse.microprofile.metrics.demo.RestDemo",method="postMethod_java.lang.Object_java.lang.String[]",mp_scope="base"} 1.0
 # TYPE REST_request_seconds summary
-REST_request_seconds{class="com.ibm.metrics.demo.MyMetrics",method="postMethod_java.lang.Object_java.lang.String[]",mp_scope="base"} 0.99999744
-REST_request_seconds{class="com.ibm.metrics.demo.MyMetrics",method="postMethod_java.lang.Object_java.lang.String[]",mp_scope="base"} 0.99999744
-REST_request_seconds{class="com.ibm.metrics.demo.MyMetrics",method="postMethod_java.lang.Object_java.lang.String[]",mp_scope="base"} 0.99999744
-REST_request_seconds{class="com.ibm.metrics.demo.MyMetrics",method="postMethod_java.lang.Object_java.lang.String[]",mp_scope="base"} 0.99999744
-REST_request_seconds{class="com.ibm.metrics.demo.MyMetrics",method="postMethod_java.lang.Object_java.lang.String[]",mp_scope="base"} 0.99999744
-REST_request_seconds{class="com.ibm.metrics.demo.MyMetrics",method="postMethod_java.lang.Object_java.lang.String[]",mp_scope="base"} 0.99999744
+REST_request_seconds{class="com.ibm.metrics.demo.MyMetrics",method="postMethod_java.lang.Object_java.lang.String[]",mp_scope="base",quantile="0.5"} 0.99999744
+REST_request_seconds{class="com.ibm.metrics.demo.MyMetrics",method="postMethod_java.lang.Object_java.lang.String[]",mp_scope="base",quantile="0.75"} 0.99999744
+REST_request_seconds{class="com.ibm.metrics.demo.MyMetrics",method="postMethod_java.lang.Object_java.lang.String[]",mp_scope="base",quantile="0.95"} 0.99999744
+REST_request_seconds{class="com.ibm.metrics.demo.MyMetrics",method="postMethod_java.lang.Object_java.lang.String[]",mp_scope="base",quantile="0.98"} 0.99999744
+REST_request_seconds{class="com.ibm.metrics.demo.MyMetrics",method="postMethod_java.lang.Object_java.lang.String[]",mp_scope="base",quantile="0.99"} 0.99999744
+REST_request_seconds{class="com.ibm.metrics.demo.MyMetrics",method="postMethod_java.lang.Object_java.lang.String[]",mp_scope="base",quantile="0.999"} 0.99999744
 REST_request_seconds_count{class="com.ibm.metrics.demo.MyMetrics",method="postMethod_java.lang.Object_java.lang.String[]",mp_scope="base"} 1.0
 REST_request_seconds_sum{class="com.ibm.metrics.demo.MyMetrics",method="postMethod_java.lang.Object_java.lang.String[]",mp_scope="base"} 1.0
 # TYPE REST_request_unmappedException_total counter

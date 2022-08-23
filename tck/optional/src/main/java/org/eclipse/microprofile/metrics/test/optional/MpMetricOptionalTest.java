@@ -52,7 +52,7 @@ import io.restassured.response.Response;
 @RunWith(Arquillian.class)
 public class MpMetricOptionalTest {
 
-    private static final String PRPROM_APP_LABEL_REGEX = "mp_app=\"[-/A-Za-z0-9]+\"";
+    private static final String PROM_APP_LABEL_REGEX = "mp_app=\"[-/A-Za-z0-9]+\"";
 
     // context root under which the application JAX-RS resources are expected to be
     private static String contextRoot;
@@ -131,7 +131,7 @@ public class MpMetricOptionalTest {
     private static final int DEFAULT_PORT = 8080;
 
     private static String filterOutAppLabelOpenMetrics(String responseBody) {
-        return responseBody.replaceAll(PRPROM_APP_LABEL_REGEX, "").replaceAll("\\{,", "{").replaceAll(",\\}", "}");
+        return responseBody.replaceAll(PROM_APP_LABEL_REGEX, "").replaceAll("\\{,", "{").replaceAll(",\\}", "}");
     }
 
     @BeforeClass
