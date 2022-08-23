@@ -127,6 +127,40 @@ public class MetricRegistryFactory {
 
 === Migration hints
 
+[[migration-hint-to-50]]
+==== To version 5.0
+
+===== SimpleTimer / @SimplyTimed
+
+The `SimpleTimer` class and `@SimplyTimed` annotation have been removed.  This change was made to make it possible to implement the spec using commonly used metrics libraries that lack a similar metric type.
+
+Use `Timer` class or `@Timer` annotation instead.  Alternatively, you can create your own `Gauge` to track the total time and your own `Counter` to track the total number of hits of something you want to time.
+
+===== ConcurrentGauge / @ConcurrentGauge
+
+The `ConcurrentGauge` class and `@ConcurrentGauge` annotation have been removed.  This change was made to make it possible to implement the spec using commonly used metrics libraries that lack a similar metric type.
+
+Use `Gauge` class or `@Gauge` annotation instead. A `Gauge` allows you to track a value that may go up or down over time. If you need to track the recent maximum or minimum with precision (as was handled by a `ConcurrentGauge`), create a separate `Gauge` for each of those statistics, in addition to the `Gauge` to track the current value of what you are observing.
+
+===== Meter / @Metered
+
+The `Meter` class and `@Metered` annotation have been removed.  This change was made to make it possible to implement the spec using commonly used metrics libraries that lack a similar metric type.
+
+Use `Counter` class or `@Counted` annotation instead. Tools, such as Prometheus, are able to compute the rate of increase of an observed metric over a specified period of time.
+
+===== Snapshot
+
+The `Snapshot` class has been modified to avoid restricting the list of percentiles to a fixed set of percentile values. This change was made in anticipation of making the list of percentiles be configurable in the future. As in prior releases, the `Timer` and `Histogram` classes still track the 50th, 75th, 95th, 98th, 99th, and 99.9th percentiles in the corresponding `Snapshot`.
+
+Use `snapshot.percentileValues()` method, then iterate over the returned array of `PercentileValue` objects to find the value at the specific percentile you're interested in.
+
+===== Metric names
+
+The `base_`, `vendor_` and `application_` prefixes for metric names that were used in prior releases have been replaced by a tag named `mp_scope` with value `base`, `vendor`, or `application` (you can also register metrics with custom scopes).
+
+When using the Prometheus format output from the `/metrics` endpoint, use `metric_name{mp_scope="scopeValue",...}` instead of `scopeValue_metric_name{...}` where `metric_name` is the Prometheus-formatted name of your metric and `scopeValue` is one of `base`, `vendor`, `application` or a custom value.
+
+
 [[migration-hint-to-20]]
 ==== To version 2.0
 
