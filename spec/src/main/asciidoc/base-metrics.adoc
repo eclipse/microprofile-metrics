@@ -319,5 +319,5 @@ REST_request_seconds{class="com.ibm.metrics.demo.MyMetrics",method="postMethod_j
 REST_request_seconds_count{class="com.ibm.metrics.demo.MyMetrics",method="postMethod_java.lang.Object_java.lang.String[]",mp_scope="base"} 1.0
 REST_request_seconds_sum{class="com.ibm.metrics.demo.MyMetrics",method="postMethod_java.lang.Object_java.lang.String[]",mp_scope="base"} 1.0
 # TYPE REST_request_unmappedException_total counter
-REST_request_unmappedException_total{class="org.eclipse.microprofile.metrics.demo.RestDemo",method="postMethod_java.lang.Object_java.lang.String[]",mp_scope="base""} 0
+REST_request_unmappedException_total{class="org.eclipse.microprofile.metrics.demo.RestDemo",method="postMethod_java.lang.Object_java.lang.String[]",mp_scope="base"} 0
 ----
