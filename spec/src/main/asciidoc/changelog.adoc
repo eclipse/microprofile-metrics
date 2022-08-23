@@ -41,13 +41,6 @@
 ** Removed `getOneMinuteRate()` method
 ** Removed `getStdDev()` method
 
-* Updated Histogram class
-** Removed `getFifteenMinuteRate()` method
-** Removed `getFiveMinuteRate()` method
-** Removed `getMeanRate()` method
-** Removed `getOneMinuteRate()` method
-** Removed `getStdDev()` method
-
 * Updated MetricRegistry class
 ** Removed `register(String name, T metric)` method
 ** Removed `register(Metadata metadata, T metric)` method
