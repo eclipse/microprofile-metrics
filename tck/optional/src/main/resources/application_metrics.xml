@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
-    Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
+    Copyright (c) 2022 Contributors to the Eclipse Foundation
 
     See the NOTICES file(s) distributed with this work for additional
     information regarding copyright ownership.
@@ -26,7 +26,7 @@
   <metric multi="false" name="jellybeanHistogram" type="histogram" unit="jellybeans" description="jellybeans-description"/>
   <metric multi="false" name="metricTest.test1.countMeA" type="counter" unit="none" description="count-me-a-description"/>
   <metric multi="false" name="metricTest.test1.countMeB" type="counter" unit="jellybean"/>
-  <metric multi="false" name="org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeA" type="gauge" unit="kibibits" description="gauge-me-a-description"/>
+  <metric multi="false" name="org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeA" type="gauge" unit="kibibits" description="gauge-me-a-description" />
   <metric multi="false" name="org.eclipse.microprofile.metrics.test.MetricAppBean.gaugeMeB" type="gauge" unit="hands"/>
   <metric multi="false" name="org.eclipse.microprofile.metrics.test.MetricAppBean.timeMeA" type="timer" unit="nanoseconds"/>
 </config>
