@@ -134,7 +134,7 @@ public class MetricRegistryFactory {
 
 The `SimpleTimer` class and `@SimplyTimed` annotation have been removed.  This change was made to make it possible to implement the spec using commonly used metrics libraries that lack a similar metric type.
 
-Use `Timer` class or `@Timer` annotation instead.  Alternatively, you can create your own `Gauge` to track the total time and your own `Counter` to track the total number of hits of something you want to time.
+Use `Timer` class or `@Timed` annotation instead.  Alternatively, you can create your own `Gauge` to track the total time and your own `Counter` to track the total number of hits of something you want to time.
 
 ===== ConcurrentGauge / @ConcurrentGauge
 
@@ -159,37 +159,6 @@ Use `snapshot.percentileValues()` method, then iterate over the returned array o
 The `base_`, `vendor_` and `application_` prefixes for metric names that were used in prior releases have been replaced by a tag named `mp_scope` with value `base`, `vendor`, or `application` (you can also register metrics with custom scopes).
 
 When using the Prometheus format output from the `/metrics` endpoint, use `metric_name{mp_scope="scopeValue",...}` instead of `scopeValue_metric_name{...}` where `metric_name` is the Prometheus-formatted name of your metric and `scopeValue` is one of `base`, `vendor`, `application` or a custom value.
-
-
-[[migration-hint-to-20]]
-==== To version 2.0
-
-===== @Counted
-
-The `@Counted` annotation has changed. Users of the previous `@Counted` annotation were surprised to learn that by default counters were not monotonic. Also, the OpenMetrics format expects all counters to be monotonic.
-To migrate:
-
-* Replace `@Counted()` or `@Counted(monotonic=false)` with `@ConcurrentGauge`.
-A set of gauges will be created in the OpenMetrics output for each `@ConcurrentGauge`.
-* Replace `@Counted(monotonic=true)` with `@Counted` (monotonic flag is gone)
-
-This change has also had an impact on the `Counter` interface to basically follow the above change:
-
-* Modify code which uses `Counter.dec()` to use a `Gauge` or `ConcurrentGauge`.
-
-Some base metrics' types have changed from `Counter` to `Gauge` since counters must now count monotonically.  Update code or dashboards that use the following metrics:
-
-* thread.count
-* thread.daemon.count
-* classloader.currentLoadedClass.count
-* thread.max.count
-
-Some base metrics' names have changed to follow the convention of ending the name of accumulating counters with `total`.  Update code or dashboards that use the following metrics:
-
-* gc.count -> gc.total
-* classloader.currentLoadedClass.count -> classloader.loadedClasses.count (changed to stay consistent with other classloader metric names)
-* classloader.totalLoadedClass.count -> classloader.loadedClasses.total
-* classloader.totalUnloadedClass.count -> classloader.unloadedClasses.total
 
 
 
