@@ -107,6 +107,7 @@
 === API/SPI Changes
 * Updated Snapshot class
 ** Added `percentileValues()` method
+** Added Snapshot.PercentileValue inner class
 
 === Functional Changes
 
