@@ -127,35 +127,38 @@ public class MetricRegistryFactory {
 
 === Migration hints
 
-[[migration-hint-to-20]]
-==== To version 2.0
+[[migration-hint-to-50]]
+==== To version 5.0
 
-===== @Counted
+===== SimpleTimer / @SimplyTimed
 
-The `@Counted` annotation has changed. Users of the previous `@Counted` annotation were surprised to learn that by default counters were not monotonic. Also, the OpenMetrics format expects all counters to be monotonic.
-To migrate:
+The `SimpleTimer` class and `@SimplyTimed` annotation have been removed.  This change was made to make it possible to implement the spec using commonly used metrics libraries that lack a similar metric type.
 
-* Replace `@Counted()` or `@Counted(monotonic=false)` with `@ConcurrentGauge`.
-A set of gauges will be created in the OpenMetrics output for each `@ConcurrentGauge`.
-* Replace `@Counted(monotonic=true)` with `@Counted` (monotonic flag is gone)
+Use `Timer` class or `@Timed` annotation instead.  Alternatively, you can create your own `Gauge` to track the total time and your own `Counter` to track the total number of hits of something you want to time.
 
-This change has also had an impact on the `Counter` interface to basically follow the above change:
+===== ConcurrentGauge / @ConcurrentGauge
 
-* Modify code which uses `Counter.dec()` to use a `Gauge` or `ConcurrentGauge`.
+The `ConcurrentGauge` class and `@ConcurrentGauge` annotation have been removed.  This change was made to make it possible to implement the spec using commonly used metrics libraries that lack a similar metric type.
 
-Some base metrics' types have changed from `Counter` to `Gauge` since counters must now count monotonically.  Update code or dashboards that use the following metrics:
+Use `Gauge` class or `@Gauge` annotation instead. A `Gauge` allows you to track a value that may go up or down over time. If you need to track the recent maximum or minimum with precision (as was handled by a `ConcurrentGauge`), create a separate `Gauge` for each of those statistics, in addition to the `Gauge` to track the current value of what you are observing.
 
-* thread.count
-* thread.daemon.count
-* classloader.currentLoadedClass.count
-* thread.max.count
+===== Meter / @Metered
 
-Some base metrics' names have changed to follow the convention of ending the name of accumulating counters with `total`.  Update code or dashboards that use the following metrics:
+The `Meter` class and `@Metered` annotation have been removed.  This change was made to make it possible to implement the spec using commonly used metrics libraries that lack a similar metric type.
 
-* gc.count -> gc.total
-* classloader.currentLoadedClass.count -> classloader.loadedClasses.count (changed to stay consistent with other classloader metric names)
-* classloader.totalLoadedClass.count -> classloader.loadedClasses.total
-* classloader.totalUnloadedClass.count -> classloader.unloadedClasses.total
+Use `Counter` class or `@Counted` annotation instead. Tools, such as Prometheus, are able to compute the rate of increase of an observed metric over a specified period of time.
+
+===== Snapshot
+
+The `Snapshot` class has been modified to avoid restricting the list of percentiles to a fixed set of percentile values. This change was made in anticipation of making the list of percentiles be configurable in the future. As in prior releases, the `Timer` and `Histogram` classes still track the 50th, 75th, 95th, 98th, 99th, and 99.9th percentiles in the corresponding `Snapshot`.
+
+Use `snapshot.percentileValues()` method, then iterate over the returned array of `PercentileValue` objects to find the value at the specific percentile you're interested in.
+
+===== Metric names
+
+The `base_`, `vendor_` and `application_` prefixes for metric names that were used in prior releases have been replaced by a tag named `mp_scope` with value `base`, `vendor`, or `application` (you can also register metrics with custom scopes).
+
+When using the Prometheus format output from the `/metrics` endpoint, use `metric_name{mp_scope="scopeValue",...}` instead of `scopeValue_metric_name{...}` where `metric_name` is the Prometheus-formatted name of your metric and `scopeValue` is one of `base`, `vendor`, `application` or a custom value.
 
 
 

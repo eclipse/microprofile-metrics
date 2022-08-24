@@ -25,14 +25,21 @@
 [[release_notes_5_0]]
 == Changes in 5.0
 
-=== Breaking changes
+=== Incompatible Changes
+** This release aligns with Jakarta EE 10, so it won’t work with earlier versions of Jakarta or Java EE
 
-=== API/SPI Changes
+=== Breaking changes
+* Removed SimpleTimer class and SimplyTimed annotation
+* Removed ConcurrentGauge class and ConcurrentGauge annotation
+* Removed Meter class and Metered annotation
+* Removed Metered interface
+
 * Updated Timer class
 ** Removed `getFifteenMinuteRate()` method
 ** Removed `getFiveMinuteRate()` method
-** Removed `getMeanMinuteRate()` method
+** Removed `getMeanRate()` method
 ** Removed `getOneMinuteRate()` method
+** Removed `getStdDev()` method
 
 * Updated MetricRegistry class
 ** Removed `register(String name, T metric)` method
@@ -63,10 +70,71 @@
 ** Removed `getSimpleTimers()` method
 ** Removed `getSimpleTimers(MetricFilter filter)` method
 
+* Updated DefaultMetadata class
+** Removed displayName from constructor
+** Removed `getDisplayname()` method
+** Removed `displayName()` method
+
+* Updated Metadata class
+** Removed `getDisplayname()` method
+** Removed `displayName()` method
+
+* Updated MetadataBuilder class
+** Removed `withDisplayName(String displayName)` method
+
+* Updated Snapshot class
+** Removed `getValue(double quantile)` method
+** Removed `getValues()` method
+** Removed `get75thPercentile()` method
+** Removed `get95thPercentile()` method
+** Removed `get98thPercentile()` method
+** Removed `get999thPercentile()` method
+** Removed `get99thPercentile()` method
+** Removed `getMedian()` method
+** Removed `getMin()` method
+** Removed `getStdDev()` method
+** Modified `size()` method to return long
+** Modified `getMax()` method to return double
+
+* Updated Gauge class
+** can now only work with types that extend Number
+
 * Updated MetricType class
-** Removed `CONCURRENT_GAUGE("concurrent gauge", ConcurrentGauge.class)` enum
-** Removed `METERED("meter", Meter.class)` enum
-** Removed `SIMPLE_TIMER("simple timer", SimpleTimer.class)` enum
+** Removed `CONCURRENT_GAUGE` enum
+** Removed `METERED` enum
+** Removed `SIMPLE_TIMER` enum
+
+=== API/SPI Changes
+* Updated Snapshot class
+** Added `percentileValues()` method
+** Added Snapshot.PercentileValue inner class
+
+=== Functional Changes
+
+* Added concept of custom scopes for metrics (https://github.com/eclipse/microprofile-metrics/issues/677[677])
+** added tagging of all metrics with mp_scope=value
+** changed /metrics/base to /metrics?scope=base (https://github.com/eclipse/microprofile-metrics/issues/692[692])
+** changed /metrics/vendor to /metrics?scope=vendor (https://github.com/eclipse/microprofile-metrics/issues/692[692])
+** changed /metrics/application to /metrics?scope=application (https://github.com/eclipse/microprofile-metrics/issues/692[692])
+** added /metrics?scope=myScope for custom scoped metrics (https://github.com/eclipse/microprofile-metrics/issues/677[677])
+** added ability for applications to add metrics to a custom scope (https://github.com/eclipse/microprofile-metrics/issues/677[677])
+** added ability to use custom scope names with @RegistryScope annotation (https://github.com/eclipse/microprofile-metrics/issues/677[677])
+** replaced @RegistryType with @RegistryScope (https://github.com/eclipse/microprofile-metrics/issues/677[677])
+
+* Other changes
+** removed requirement to convert metrics to base units for Prometheus output
+** changed from prepending scope to the metric name to putting the scope in mp_scope tag
+** clarified that implementations of /metrics endpoint must support Prometheus text-based exposition format, and may also support OpenMetrics exposition format. (https://github.com/eclipse/microprofile-metrics/issues/678[678])
+** removed JSON format for /metrics output (https://github.com/eclipse/microprofile-metrics/issues/685[685])
+** added restriction to block apps from adding metric IDs with the reserved mp_scope and mp_app tag names (https://github.com/eclipse/microprofile-metrics/issues/700[700])
+** changed _app tag name to mp_app (https://github.com/eclipse/microprofile-metrics/issues/705[705])
+** added mp_scope tag to indicate metric scope
+** added configuration recommendations for vendors implementing the API with Micrometer libraries
+** added rule that metrics of the same name must all contain the same label set (https://github.com/eclipse/microprofile-metrics/issues/721[721])
+** changed REST.request metric from SimpleTimer to Timer type
+** changed the base metrics to be optional (https://github.com/eclipse/microprofile-metrics/issues/680[680])
+
+
 
 [[release_notes_4_0]]
 == Changes in 4.0
