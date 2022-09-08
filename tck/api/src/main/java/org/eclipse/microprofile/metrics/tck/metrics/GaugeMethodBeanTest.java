@@ -1,4 +1,5 @@
 /**
+ * Copyright (c) 2013, 2022 Contributors to the Eclipse Foundation
  * Copyright © 2013 Antonin Stefanutti (antonin.stefanutti@gmail.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,7 +42,11 @@ public class GaugeMethodBeanTest {
 
     private final static String GAUGE_NAME = MetricRegistry.name(GaugeMethodBean.class, "gaugeMethod");
 
+    private final static String PRIVATE_GAUGE_NAME = MetricRegistry.name(GaugeMethodBean.class, "privateGaugeMethod");
+
     private static MetricID gaugeMID;
+
+    private static MetricID privateGaugeMID;
 
     @Deployment
     public static Archive<?> createTestArchive() {
@@ -63,6 +68,7 @@ public class GaugeMethodBeanTest {
         // Let's trigger the instantiation of the application scoped bean explicitly
         // as only a proxy gets injected otherwise
         bean.getGauge();
+
         /*
          * The MetricID relies on the MicroProfile Config API. Running a managed arquillian container will result with
          * the MetricID being created in a client process that does not contain the MPConfig impl.
@@ -70,6 +76,8 @@ public class GaugeMethodBeanTest {
          * This will cause client instantiated MetricIDs to throw an exception. (i.e the global MetricIDs)
          */
         gaugeMID = new MetricID(GAUGE_NAME);
+
+        privateGaugeMID = new MetricID(PRIVATE_GAUGE_NAME);
     }
 
     @Test
@@ -93,6 +101,30 @@ public class GaugeMethodBeanTest {
         // Call the setter method and assert the gauge is up-to-date
         long value = Math.round(Math.random() * Long.MAX_VALUE);
         bean.setGauge(value);
+        assertThat("Gauge value is incorrect", gauge.getValue(), is(equalTo(value)));
+    }
+
+    @Test
+    @InSequence(3)
+    public void privateGaugeCalledWithDefaultValue() {
+        @SuppressWarnings("unchecked")
+        Gauge<Long> gauge = (Gauge<Long>) registry.getGauge(privateGaugeMID);
+        assertThat("Gauge is not registered correctly", gauge, notNullValue());
+
+        // Make sure that the gauge has the expected value
+        assertThat("Gauge value is incorrect", gauge.getValue(), is(equalTo(0L)));
+    }
+
+    @Test
+    @InSequence(4)
+    public void callPrivateGaugeAfterSetterCall() {
+        @SuppressWarnings("unchecked")
+        Gauge<Long> gauge = (Gauge<Long>) registry.getGauge(privateGaugeMID);
+        assertThat("Gauge is not registered correctly", gauge, notNullValue());
+
+        // Call the setter method and assert the gauge is up-to-date
+        long value = Math.round(Math.random() * Long.MAX_VALUE);
+        bean.setPrivateGauge(value);
         assertThat("Gauge value is incorrect", gauge.getValue(), is(equalTo(value)));
     }
 }

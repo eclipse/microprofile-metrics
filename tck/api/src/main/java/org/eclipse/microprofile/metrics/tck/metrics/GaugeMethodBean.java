@@ -1,4 +1,5 @@
 /**
+ * Copyright (c) 2013, 2022 Contributors to the Eclipse Foundation
  * Copyright © 2013 Antonin Stefanutti (antonin.stefanutti@gmail.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,12 +26,23 @@ public class GaugeMethodBean {
 
     private long gauge;
 
+    private long privateGauge;
+
     @Gauge(name = "gaugeMethod", unit = MetricUnits.NONE)
     public long getGauge() {
         return gauge;
     }
 
+    @Gauge(name = "privateGaugeMethod", unit = MetricUnits.NONE)
+    private long getPrivateGauge() {
+        return privateGauge;
+    }
+
     public void setGauge(long gauge) {
         this.gauge = gauge;
+    }
+
+    public void setPrivateGauge(long gauge) {
+        this.privateGauge = gauge;
     }
 }
