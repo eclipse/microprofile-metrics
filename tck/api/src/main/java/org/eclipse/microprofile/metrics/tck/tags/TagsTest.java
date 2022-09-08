@@ -228,4 +228,38 @@ public class TagsTest {
         fail("No exception was caught");
 
     }
+
+    @Test
+    @InSequence(9)
+    public void illegalMpScopeTag() {
+        Tag mpScopeTag = new Tag("mp_scope", "aScope");
+
+        try {
+            registry.histogram("someHistogram", mpScopeTag);
+
+        } catch (Exception cause) {
+            assertThat(cause, is(Matchers.<Exception>instanceOf(IllegalArgumentException.class)));
+            return;
+        }
+
+        fail("No exception was caught");
+
+    }
+
+    @Test
+    @InSequence(10)
+    public void illegalMpAppTag() {
+        Tag mpAppTag = new Tag("mp_app", "anApp");
+
+        try {
+            registry.counter("someCounter", mpAppTag);
+
+        } catch (Exception cause) {
+            assertThat(cause, is(Matchers.<Exception>instanceOf(IllegalArgumentException.class)));
+            return;
+        }
+
+        fail("No exception was caught");
+
+    }
 }
