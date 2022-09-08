@@ -547,7 +547,6 @@ The object can be built via a `MetadataBuilder` with a fluent API.
 Metadata m = Metadata.builder()
     .withName("myMeter")
     .withDescription("Example meter")
-    .withType(MetricType.METER)
     .build();
 
 Meter me = new MyMeterImpl();
