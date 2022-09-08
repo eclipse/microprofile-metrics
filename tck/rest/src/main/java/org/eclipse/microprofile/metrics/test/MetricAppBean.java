@@ -30,7 +30,6 @@ import org.eclipse.microprofile.metrics.Histogram;
 import org.eclipse.microprofile.metrics.Metadata;
 import org.eclipse.microprofile.metrics.MetricID;
 import org.eclipse.microprofile.metrics.MetricRegistry;
-import org.eclipse.microprofile.metrics.MetricType;
 import org.eclipse.microprofile.metrics.MetricUnits;
 import org.eclipse.microprofile.metrics.Timer;
 import org.eclipse.microprofile.metrics.annotation.Counted;
@@ -183,7 +182,7 @@ public class MetricAppBean {
             };
 
             Metadata metadata = Metadata.builder().withName("metricTest.test1.gauge")
-                    .withType(MetricType.GAUGE).withUnit(MetricUnits.GIGABYTES).build();
+                    .withUnit(MetricUnits.GIGABYTES).build();
             metrics.gauge(metadata, gaugeSupp);
         }
 
@@ -202,7 +201,7 @@ public class MetricAppBean {
     public void histogramMe() {
 
         Metadata metadata = Metadata.builder().withName("metricTest.test1.histogram")
-                .withType(MetricType.HISTOGRAM).withUnit(MetricUnits.BYTES).build();
+                .withUnit(MetricUnits.BYTES).build();
         Histogram histogram = metrics.histogram(metadata);
 
         // Go both ways to minimize error due to decay
@@ -212,7 +211,7 @@ public class MetricAppBean {
         }
 
         Metadata metadata2 = Metadata.builder().withName("metricTest.test1.histogram2")
-                .withType(MetricType.HISTOGRAM).withUnit(MetricUnits.NONE).build();
+                .withUnit(MetricUnits.NONE).build();
         Histogram histogram2 = metrics.histogram(metadata2);
         histogram2.update(1);
     }

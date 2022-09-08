@@ -48,13 +48,6 @@ public class DefaultMetadata implements Metadata {
     private final String description;
 
     /**
-     * Type of the metric.
-     * <p>
-     * A required field which holds the type of the metric object.
-     * </p>
-     */
-    private final MetricType type;
-    /**
      * Unit of the metric.
      * <p>
      * An optional field which holds the Unit of the metric object.
@@ -62,11 +55,9 @@ public class DefaultMetadata implements Metadata {
      */
     private final String unit;
 
-    protected DefaultMetadata(String name, String description,
-            MetricType type, String unit) {
+    protected DefaultMetadata(String name, String description, String unit) {
         this.name = name;
         this.description = description;
-        this.type = type;
         this.unit = unit;
     }
 
@@ -83,16 +74,6 @@ public class DefaultMetadata implements Metadata {
     @Override
     public Optional<String> description() {
         return Optional.ofNullable(description);
-    }
-
-    @Override
-    public String getType() {
-        return Optional.ofNullable(type).orElse(MetricType.INVALID).toString();
-    }
-
-    @Override
-    public MetricType getTypeRaw() {
-        return Optional.ofNullable(type).orElse(MetricType.INVALID);
     }
 
     @Override
@@ -118,20 +99,18 @@ public class DefaultMetadata implements Metadata {
         // Use getters to compare the effective values
         return Objects.equals(name, that.getName()) &&
                 Objects.equals(this.getDescription(), that.getDescription()) &&
-                Objects.equals(this.getUnit(), that.getUnit()) &&
-                Objects.equals(this.getTypeRaw(), that.getTypeRaw());
+                Objects.equals(this.getUnit(), that.getUnit());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description, unit, type);
+        return Objects.hash(name, description, unit);
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("DefaultMetadata{");
         sb.append("name='").append(name).append('\'');
-        sb.append(", type=").append(type);
         sb.append(", unit='").append(unit).append('\'');
         if (description != null) {
             sb.append(", description='").append(description).append('\'');
