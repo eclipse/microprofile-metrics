@@ -36,13 +36,10 @@ public class MetadataBuilder {
 
     private String description;
 
-    private MetricType type;
-
     private String unit;
 
     MetadataBuilder(Metadata metadata) {
         this.name = metadata.getName();
-        this.type = metadata.getTypeRaw();
         metadata.description().ifPresent(this::withDescription);
         metadata.unit().ifPresent(this::withUnit);
     }
@@ -83,18 +80,6 @@ public class MetadataBuilder {
     }
 
     /**
-     * Sets the type.
-     *
-     * @param type
-     *            the type, {@link MetricType#INVALID} is considered as "not present" (null)
-     * @return the builder instance
-     */
-    public MetadataBuilder withType(MetricType type) {
-        this.type = MetricType.INVALID == type ? null : type;
-        return this;
-    }
-
-    /**
      * Sets the unit.
      *
      * @param unit
@@ -116,6 +101,6 @@ public class MetadataBuilder {
             throw new IllegalStateException("Name is required");
         }
 
-        return new DefaultMetadata(name, description, type, unit);
+        return new DefaultMetadata(name, description, unit);
     }
 }

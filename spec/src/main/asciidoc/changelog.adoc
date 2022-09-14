@@ -33,6 +33,7 @@
 * Removed ConcurrentGauge class and ConcurrentGauge annotation
 * Removed Meter class and Metered annotation
 * Removed Metered interface
+* Removed MetricType enum
 
 * Updated Timer class
 ** Removed `getFifteenMinuteRate()` method
@@ -74,13 +75,19 @@
 ** Removed displayName from constructor
 ** Removed `getDisplayname()` method
 ** Removed `displayName()` method
+** Removed metricType from constructor
+** Removed `getType()` method
+** Removed `getTypeRaw()` method
 
 * Updated Metadata class
 ** Removed `getDisplayname()` method
 ** Removed `displayName()` method
+** Removed `getType()` method
+** Removed `getTypeRaw()` method
 
 * Updated MetadataBuilder class
 ** Removed `withDisplayName(String displayName)` method
+** Removed `withType(MetricType type)` method
 
 * Updated Snapshot class
 ** Removed `getValue(double quantile)` method

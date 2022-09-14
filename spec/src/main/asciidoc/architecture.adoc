@@ -170,11 +170,6 @@ The Metadata:
 
 * name: The name of the metric.
 * unit: a fixed set of string units
-* type:
-** counter: a monotonically increasing numeric value (e.g. total number of requests received).
-** gauge: a metric that is sampled to obtain its value (e.g. cpu temperature or disk usage).
-** histogram: a metric which calculates the distribution of a value.
-** timer: a metric which aggregates timing durations and provides duration statistics.
 * description (optional): A human readable description of the metric.
 
 Metadata must not change over the lifetime of a process (i.e. it is not allowed

@@ -33,7 +33,6 @@ import java.util.Optional;
  * <ul>
  * <li>{@code Name}: (Required) The name of the metric.</li>
  * <li>{@code Description}: (Optional) A human readable description of the metric.</li>
- * <li>{@code Type}: (Required) The type of the metric. See {@link MetricType}.</li>
  * <li>{@code Unit}: (Optional) The unit of the metric. The unit may be any unit specified as a String or one specified
  * in {@link MetricUnits}.</li>
  * </ul>
@@ -57,21 +56,6 @@ public interface Metadata {
     String getDescription();
 
     Optional<String> description();
-
-    /**
-     * Returns the String representation of the {@link MetricType}.
-     *
-     * @return the MetricType as a String
-     * @see MetricType
-     */
-    String getType();
-
-    /**
-     * Returns the {@link MetricType} of the metric if set, otherwise it returns {@link MetricType#INVALID}
-     *
-     * @return the {@link MetricType}
-     */
-    MetricType getTypeRaw();
 
     /**
      * Returns the unit of this metric if set, otherwise this method returns {@link MetricUnits#NONE}
