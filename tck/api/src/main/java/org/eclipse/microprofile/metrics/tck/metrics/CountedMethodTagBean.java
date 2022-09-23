@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2019, 2022 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -23,6 +23,9 @@ package org.eclipse.microprofile.metrics.tck.metrics;
 
 import org.eclipse.microprofile.metrics.annotation.Counted;
 
+import jakarta.enterprise.context.Dependent;
+
+@Dependent
 public class CountedMethodTagBean {
 
     @Counted(name = "countedMethod", absolute = true, tags = {"number=one"})

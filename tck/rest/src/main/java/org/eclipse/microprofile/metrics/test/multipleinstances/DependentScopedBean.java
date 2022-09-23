@@ -25,6 +25,9 @@ package org.eclipse.microprofile.metrics.test.multipleinstances;
 import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
+import jakarta.enterprise.context.Dependent;
+
+@Dependent
 public class DependentScopedBean {
 
     @Counted(name = "counter", absolute = true)
