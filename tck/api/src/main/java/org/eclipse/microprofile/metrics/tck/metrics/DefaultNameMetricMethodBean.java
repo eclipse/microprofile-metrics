@@ -23,6 +23,9 @@ package org.eclipse.microprofile.metrics.tck.metrics;
 import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
+import jakarta.enterprise.context.Dependent;
+
+@Dependent
 public class DefaultNameMetricMethodBean {
 
     @Counted

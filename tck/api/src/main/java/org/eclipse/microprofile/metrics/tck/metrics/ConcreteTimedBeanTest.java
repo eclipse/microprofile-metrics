@@ -1,4 +1,5 @@
 /**
+ * Copyright (c) 2013, 2022 Contributors to the Eclipse Foundation
  * Copyright © 2013 Antonin Stefanutti (antonin.stefanutti@gmail.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +29,6 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +52,7 @@ public class ConcreteTimedBeanTest {
                 // Test bean
                 .addClasses(ConcreteTimedBean.class, AbstractGenericBean.class)
                 // Bean archive deployment descriptor
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+                .addAsWebInfResource("META-INF/beans.xml", "beans.xml");
     }
 
     @Inject

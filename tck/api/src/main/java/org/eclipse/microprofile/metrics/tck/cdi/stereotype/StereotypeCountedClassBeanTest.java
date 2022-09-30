@@ -32,7 +32,6 @@ import org.eclipse.microprofile.metrics.tck.cdi.stereotype.stereotypes.CountMeWi
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,7 +44,7 @@ public class StereotypeCountedClassBeanTest {
     @Deployment
     public static WebArchive createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
+                .addAsWebInfResource("META-INF/beans.xml", "beans.xml")
                 .addClasses(StereotypeCountedClassBean.class,
                         StereotypeCountedClassBeanWithSpecifiedMetadata.class,
                         CountMe.class,

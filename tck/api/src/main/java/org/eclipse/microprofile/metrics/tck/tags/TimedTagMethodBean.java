@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2019, 2022 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -23,6 +23,9 @@ package org.eclipse.microprofile.metrics.tck.tags;
 
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
+import jakarta.enterprise.context.Dependent;
+
+@Dependent
 public class TimedTagMethodBean {
 
     @Timed(name = "timedMethod", tags = {"number=one"})

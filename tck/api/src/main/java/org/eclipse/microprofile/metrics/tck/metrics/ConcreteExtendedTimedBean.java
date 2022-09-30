@@ -1,4 +1,5 @@
 /**
+ * Copyright (c) 2013, 2022 Contributors to the Eclipse Foundation
  * Copyright © 2013 Antonin Stefanutti (antonin.stefanutti@gmail.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +16,9 @@
  */
 package org.eclipse.microprofile.metrics.tck.metrics;
 
+import jakarta.enterprise.context.Dependent;
+
+@Dependent
 public class ConcreteExtendedTimedBean extends AbstractTimedBean {
 
     public void anotherTimedMethod() {

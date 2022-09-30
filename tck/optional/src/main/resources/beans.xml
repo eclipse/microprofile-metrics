@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Copyright (c) 2017 Contributors to the Eclipse Foundation
+    Copyright (c) 2022 Contributors to the Eclipse Foundation
     
     See the NOTICES file(s) distributed with this work for additional
     information regarding copyright ownership.
@@ -18,10 +18,9 @@
     limitations under the License.
     SPDX-License-Identifier: Apache-2.0
 -->
-<beans xmlns="http://xmlns.jcp.org/xml/ns/javaee"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
-                           http://xmlns.jcp.org/xml/ns/javaee/beans_1_1.xsd"
-       version="1.1" bean-discovery-mode="annotated">
-
+<beans xmlns="https://jakarta.ee/xml/ns/jakartaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+                            https://jakarta.ee/xml/ns/jakartaee/beans_4_0.xsd"
+        version="4.0" bean-discovery-mode="annotated">
 </beans>

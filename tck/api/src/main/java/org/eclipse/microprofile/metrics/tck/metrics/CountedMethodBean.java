@@ -1,4 +1,5 @@
 /**
+ * Copyright (c) 2013, 2022 Contributors to the Eclipse Foundation
  * Copyright © 2013 Antonin Stefanutti (antonin.stefanutti@gmail.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +20,9 @@ import java.util.concurrent.Callable;
 
 import org.eclipse.microprofile.metrics.annotation.Counted;
 
+import jakarta.enterprise.context.Dependent;
+
+@Dependent
 public class CountedMethodBean<T> {
 
     @Counted(name = "countedMethod", absolute = true)
