@@ -31,6 +31,7 @@ import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.Tag;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 import org.eclipse.microprofile.metrics.annotation.RegistryScope;
+import org.eclipse.microprofile.metrics.annotation.RegistryType;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -65,6 +66,18 @@ public class MetricRegistryTest {
     @Inject
     @RegistryScope(scope = CUSTOM_SCOPE)
     private MetricRegistry customScope;
+
+    @Inject
+    @RegistryType(type = MetricRegistry.Type.BASE)
+    private MetricRegistry baseMetrics_RegistryType;
+
+    @Inject
+    @RegistryType(type = MetricRegistry.Type.VENDOR)
+    private MetricRegistry vendorMetrics_RegistryType;
+
+    @Inject
+    @RegistryType(type = MetricRegistry.Type.APPLICATION)
+    private MetricRegistry applicationMetrics_RegistryType;
 
     @Deployment
     public static WebArchive createDeployment() {
@@ -112,6 +125,22 @@ public class MetricRegistryTest {
         Assert.assertEquals(MetricRegistry.BASE_SCOPE, baseMetrics.getScope());
         Assert.assertEquals(MetricRegistry.VENDOR_SCOPE, vendorMetrics.getScope());
         Assert.assertEquals(CUSTOM_SCOPE, customScope.getScope());
+    }
+
+    @Test
+    @InSequence(6)
+    public void testMetricRegistryScopeDeprecatedRegistryType() {
+        Assert.assertEquals(MetricRegistry.APPLICATION_SCOPE, applicationMetrics_RegistryType.getScope());
+        Assert.assertEquals(MetricRegistry.BASE_SCOPE, baseMetrics_RegistryType.getScope());
+        Assert.assertEquals(MetricRegistry.VENDOR_SCOPE, vendorMetrics_RegistryType.getScope());
+    }
+
+    @Test
+    @InSequence(7)
+    public void testMetricRegistryEquivalence() {
+        Assert.assertEquals(metrics, applicationMetrics_RegistryType);
+        Assert.assertEquals(baseMetrics, baseMetrics_RegistryType);
+        Assert.assertEquals(vendorMetrics, vendorMetrics_RegistryType);
     }
 
     private void assertExists(Class<? extends org.eclipse.microprofile.metrics.Metric> expected, MetricID metricID) {

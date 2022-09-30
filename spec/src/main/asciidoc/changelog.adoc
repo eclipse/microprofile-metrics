@@ -115,6 +115,7 @@
 * Updated Snapshot class
 ** Added `percentileValues()` method
 ** Added Snapshot.PercentileValue inner class
+* Deprecated @RegistryType and MetricRegistry.Type (https://github.com/eclipse/microprofile-metrics/issues/746[746])
 
 === Functional Changes
 

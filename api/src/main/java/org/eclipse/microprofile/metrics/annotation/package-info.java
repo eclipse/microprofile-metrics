@@ -69,7 +69,6 @@
  * </code>
  * </pre>
  *
- *
  * <h2>RegistryScope annotation</h2>
  * <p>
  * The {@link org.eclipse.microprofile.metrics.annotation.RegistryScope RegistryScope} is used to identify which
@@ -84,7 +83,24 @@
  *      MetricRegistry appRegistry;
  * </code>
  * </pre>
+ * 
+ * <h2>RegistryType CDI Qualifier</h2>
+ * <p>
+ * 
+ * <b> This is DEPRECATED. Please use {@link RegistryScope} instead. </b>
+ * 
+ * The {@link org.eclipse.microprofile.metrics.annotation.RegistryType RegistryType} is used to identify which
+ * <code>MetricRegistry</code> (Application, Base, or Vendor) should be injected. By default, no
+ * <code>RegistryType</code> will inject the application <code>MetricRegistry</code>.
  *
+ * <pre>
+ * <code>
+ *      {@literal @}Inject
+ *      {@literal @}RegistryType(type=MetricRegistry.Type.BASE)
+ *      MetricRegistry baseRegistry;
+ * </code>
+ * </pre>
+ * 
  */
 @org.osgi.annotation.versioning.Version("5.0")
 package org.eclipse.microprofile.metrics.annotation;
