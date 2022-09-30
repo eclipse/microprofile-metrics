@@ -34,6 +34,8 @@
 * Removed Meter class and Metered annotation
 * Removed Metered interface
 * Removed MetricType enum
+* Removed the `@RegistryType` qualifier annotation
+** Replaced with non-qualifier `@RegistryScope` annotation
 
 * Updated Timer class
 ** Removed `getFifteenMinuteRate()` method
