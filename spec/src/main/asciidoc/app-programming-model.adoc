@@ -470,7 +470,7 @@ If no _scope_ parameter is used, the default `MetricRegistry` returned is the `a
 If using the **deprecated** `@RegistryType`, it will be used as a qualifier to selectively inject one of the `application`, `base` or  `vendor` registries.
 If no qualifier is used, the default `MetricRegistry` returned is the `application` registry. Note that `@RegistryType` is now deprecated. Please use `@RegistryScope` instead.
 
-The `@RegistryScope` annotation and `@RegistryType` qualifer annotation should not be used together for the same `MetricRegistry` injection. The `application`, `base` or `vendor` registry produced by either injection strategies should be the same respective to the scope. That is to say, an injection of a `MetricRegistry` with `@RegistryScope(scope = MetricRegistry.APPLICATION_SCOPE)` will produce the same `MetricRegistry` from using`@RegistryType(type = MetricRegistry.Type.APPLICATION)` and vice-versa.
+The `@RegistryScope` annotation and `@RegistryType` qualifer annotation should not be used together for the same `MetricRegistry` injection. The `application`, `base` or `vendor` registry produced by either injection strategies should be the same respective to the scope. That is to say, an injection of a `MetricRegistry` with `@RegistryScope(scope = MetricRegistry.APPLICATION_SCOPE)` will produce the same `MetricRegistry` from using `@RegistryType(type = MetricRegistry.Type.APPLICATION)` and vice-versa.
 
 Implementations may choose to use a Factory class to produce the injectable `MetricRegistry` bean via CDI. See <<appendix#metric-registry-factory>>. Note: The factory would be an internal class and not exposed to the application.
 
@@ -513,7 +513,7 @@ MetricRegistry metricRegistry;
  * @RegistryType is deprecated. Please use @RegistryScope
  */
 @Inject
-@RegistryType(scope=MetricRegistry.Type.APPLICATION)
+@RegistryType(type=MetricRegistry.Type.APPLICATION)
 MetricRegistry metricRegistry;
 ----
 
@@ -532,7 +532,7 @@ MetricRegistry baseRegistry;
 [source, java]
 ----
 @Inject
-@RegistryType(scope=MetricRegistry.Type.BASE)
+@RegistryType(type=MetricRegistry.Type.BASE)
 MetricRegistry baseRegistry;
 ----
 
@@ -551,7 +551,7 @@ MetricRegistry vendorRegistry;
 [source, java]
 ----
 @Inject
-@RegistryType(scope=MetricRegistry.Type.VENDOR)
+@RegistryType(type=MetricRegistry.Type.VENDOR)
 MetricRegistry vendorRegistry;
 ----
 

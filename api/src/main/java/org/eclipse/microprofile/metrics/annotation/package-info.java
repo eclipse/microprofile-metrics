@@ -90,8 +90,9 @@
  * <b> This is DEPRECATED. Please use {@link RegistryScope} instead. </b>
  * 
  * The {@link org.eclipse.microprofile.metrics.annotation.RegistryType RegistryType} is used to identify which
- * <code>MetricRegistry</code> (Application, Base, or Vendor) should be injected. By default, no
- * <code>RegistryType</code> will inject the application <code>MetricRegistry</code>.
+ * <code>MetricRegistry</code> (Application, Base, or Vendor) should be injected. Injecting a
+ * <code>MetricRegistry</code> without a <code>RegistryType</code> annotation gives the application-scoped
+ * <code>MetricRegistry</code>.
  *
  * <pre>
  * <code>

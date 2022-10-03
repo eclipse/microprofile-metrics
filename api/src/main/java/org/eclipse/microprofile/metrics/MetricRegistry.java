@@ -47,7 +47,7 @@ public interface MetricRegistry {
     /**
      * An enumeration representing the provided scopes of the MetricRegistry.
      * 
-     * @deprecated As of release 5.0, please use either {@link MetricRegistry#APPLICATION_SCOPE},
+     * @deprecated As of release 5.0, please use {@link MetricRegistry#APPLICATION_SCOPE},
      *             {@link MetricRegistry#BASE_SCOPE} or {@link MetricRegistry#VENDOR_SCOPE} with {@link RegistryScope}
      *             instead.
      */
