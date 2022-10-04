@@ -109,11 +109,12 @@ The following Annotations exist, see below for common fields:
 |Annotation | Description | Default
 
 |@RegistryScope| Indicates the scope of Metric Registry to inject when injecting a MetricRegistry. |  _application_ (scope)
+|@RegistryType| Qualifies the scope of Metric Registry to inject when injecting a MetricRegistry. **Note: This is deprecated. Please use @RegistryScope** |  _application_ (scope)
 |===
 
 ==== Fields
 
-All annotations (Except `RegistryScope`) have the following fields that correspond to the metadata fields described
+All annotations (Except `RegistryScope` and `RegistryType`) have the following fields that correspond to the metadata fields described
 in <<architecture#meta-data-def>>.
 
 `String name`:: Optional. Sets the name of the metric. If not explicitly given the name of the annotated object is used.
@@ -466,16 +467,29 @@ When metrics are registered using annotations and no scope is provided, the metr
 When injected, the `@RegistryScope` is used to selectively inject one of the `application`, `base`, `vendor` or custom registries.
 If no _scope_ parameter is used, the default `MetricRegistry` returned is the `application` registry.
 
+If using the **deprecated** `@RegistryType`, it will be used as a qualifier to selectively inject one of the `application`, `base` or  `vendor` registries.
+If no qualifier is used, the default `MetricRegistry` returned is the `application` registry. Note that `@RegistryType` is now deprecated. Please use `@RegistryScope` instead.
+
+The `@RegistryScope` annotation and `@RegistryType` qualifer annotation should not be used together for the same `MetricRegistry` injection. The `application`, `base` or `vendor` registry produced by either injection strategies should be the same respective to the scope. That is to say, an injection of a `MetricRegistry` with `@RegistryScope(scope = MetricRegistry.APPLICATION_SCOPE)` will produce the same `MetricRegistry` from using `@RegistryType(type = MetricRegistry.Type.APPLICATION)` and vice-versa.
+
 Implementations may choose to use a Factory class to produce the injectable `MetricRegistry` bean via CDI. See <<appendix#metric-registry-factory>>. Note: The factory would be an internal class and not exposed to the application.
 
 ==== @RegistryScope
 The `@RegistryScope` can be used to retrieve the `MetricRegistry` for a specific scope.
 The implementation must produce the corresponding `MetricRegistry` specified by the `RegistryScope`.
 
+
+==== @RegistryType
+The `@RegistryType` can be used to retrieve the `MetricRegistry` for a specific scope.
+The implementation must produce the corresponding `MetricRegistry` specified by the `RegistryType`.
+
 NOTE: The implementor can optionally provide a _read_only_ copy of the `MetricRegistry` for _base_ and _vendor_ scopes.
 
+
+NOTE: The `@RegistryType` is **deprecated**. Please use `@RegistryScope` instead.
+
 ==== Application Metric Registry
-The implementation must produce the _application_ `MetricRegistry` when no `RegistryScope` is provided or when the `RegistryScope` is `application` (i.e. `MetricRegistry.APPLICATION_SCOPE`). Application-defined metrics can also be registered to <<pgm-custom-scope,user-defined scopes>>
+The implementation must produce the _application_ `MetricRegistry` when no `RegistryScope` (or `RegistryType`) is provided or when the `RegistryScope` is `application` (i.e. `MetricRegistry.APPLICATION_SCOPE`) or if the **deprecated** `RegistryType` is `application` (i.e. `MetricRegistry.Type.APPLICATION`). Application-defined metrics can also be registered to <<pgm-custom-scope,user-defined scopes>>
 
 .Example of the application injecting the application registry
 [source, java]
@@ -484,7 +498,7 @@ The implementation must produce the _application_ `MetricRegistry` when no `Regi
 MetricRegistry metricRegistry;
 ----
 
-.is equivalent to
+.is equivalent to the following with `@RegistryScope`
 [source, java]
 ----
 @Inject
@@ -492,10 +506,21 @@ MetricRegistry metricRegistry;
 MetricRegistry metricRegistry;
 ----
 
+.or is equivalent to the following with the **deprecated** `@RegistryType`
+[source, java]
+----
+/*
+ * @RegistryType is deprecated. Please use @RegistryScope
+ */
+@Inject
+@RegistryType(type=MetricRegistry.Type.APPLICATION)
+MetricRegistry metricRegistry;
+----
+
 ==== Base Metric Registry
 The implementation must produce the _base_ `MetricRegistry` when the `RegistryScope` is `base` (i.e. `MetricRegistry.BASE_SCOPE`). The _base_ `MetricRegistry` contains any metrics the vendor has chosen to provide from <<base-metrics#base-metrics>>.
 
-.Example of the application injecting the base registry
+.Example of the application injecting the base registry using `@RegistryScope`
 [source, java]
 ----
 @Inject
@@ -503,14 +528,30 @@ The implementation must produce the _base_ `MetricRegistry` when the `RegistrySc
 MetricRegistry baseRegistry;
 ----
 
+.Example of the application injecting the base registry using the **deprecated** `@RegistryType`
+[source, java]
+----
+@Inject
+@RegistryType(type=MetricRegistry.Type.BASE)
+MetricRegistry baseRegistry;
+----
+
 ==== Vendor Metric Registry
 The implementation must produce the _vendor_ `MetricRegistry` when the `RegistryScope` is `vendor` (i.e. `MetricRegistry.VENDOR_SCOPE`). The _vendor_ `MetricRegistry` must contain any vendor specific metrics.
 
-.Example of the application injecting the vendor registry
+.Example of the application injecting the vendor registry using `@RegistryScope`
 [source, java]
 ----
 @Inject
 @RegistryScope(scope=MetricRegistry.VENDOR_SCOPE)
+MetricRegistry vendorRegistry;
+----
+
+.Example of the application injecting the vendor registry using the **deprecated** `@RegistryType`
+[source, java]
+----
+@Inject
+@RegistryType(type=MetricRegistry.Type.VENDOR)
 MetricRegistry vendorRegistry;
 ----
 

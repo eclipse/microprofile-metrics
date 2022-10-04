@@ -33,6 +33,8 @@ import java.util.SortedSet;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.eclipse.microprofile.metrics.annotation.RegistryScope;
+
 /**
  * The registry that stores metrics and their metadata. The MetricRegistry provides methods to register, create and
  * retrieve metrics and their respective metadata.
@@ -41,6 +43,61 @@ import java.util.function.Supplier;
  * @see MetricFilter
  */
 public interface MetricRegistry {
+
+    /**
+     * An enumeration representing the provided scopes of the MetricRegistry.
+     * 
+     * @deprecated As of release 5.0, please use {@link MetricRegistry#APPLICATION_SCOPE},
+     *             {@link MetricRegistry#BASE_SCOPE} or {@link MetricRegistry#VENDOR_SCOPE} with {@link RegistryScope}
+     *             instead.
+     */
+    @Deprecated
+    enum Type {
+        /**
+         * The Application (default) scoped MetricRegistry. Any metric registered/accessed via CDI will use this
+         * MetricRegistry.
+         * 
+         * @deprecated As of release 5.0, please use {@link MetricRegistry#APPLICATION_SCOPE} with {@link RegistryScope}
+         *             instead.
+         */
+        @Deprecated
+        APPLICATION("application"),
+
+        /**
+         * The Base scoped MetricRegistry. This MetricRegistry will contain required metrics specified in the
+         * MicroProfile Metrics specification.
+         * 
+         * @deprecated As of release 5.0, please use {@link MetricRegistry#BASE_SCOPE} with {@link RegistryScope}
+         *             instead.
+         */
+        @Deprecated
+        BASE("base"),
+
+        /**
+         * The Vendor scoped MetricRegistry. This MetricRegistry will contain vendor provided metrics which may vary
+         * between different vendors.
+         * 
+         * @deprecated As of release 5.0, please use {@link MetricRegistry#VENDOR_SCOPE} with {@link RegistryScope}
+         *             instead.
+         */
+        @Deprecated
+        VENDOR("vendor");
+
+        private final String name;
+
+        Type(String name) {
+            this.name = name;
+        }
+
+        /**
+         * Returns the name of the MetricRegistry scope.
+         *
+         * @return the scope
+         */
+        public String getName() {
+            return name;
+        }
+    }
 
     /**
      * String constant to represent the scope value used for the application scope
