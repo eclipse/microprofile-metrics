@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016, 2020 Contributors to the Eclipse Foundation
+// Copyright (c) 2016, 2022 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -19,7 +19,7 @@
 
 = Running the Microprofile Metrics TCK
 
-Any implementation claiming Microprofile Metrics 2.3 compatibility must pass this test suite.
+Any implementation claiming Microprofile Metrics 5.0 compatibility must pass this test suite.
 The TCK uses `junit`.
 
 If an implementation supports non-mandatory features defined in the specification then the optional TCK
@@ -28,6 +28,7 @@ must be executed to validate compliance.
 The optional TCK currently validates the following non-mandatory features:
 
 - REST stat metrics
+- Base metrics
 
 == Dependencies
 
@@ -35,58 +36,71 @@ To enable the tests in your Arquillian based test project you need to add the fo
 
 [source, xml]
 ----
+
 <dependencies>
     <dependency>
         <groupId>org.eclipse.microprofile.metrics</groupId>
         <artifactId>microprofile-metrics-api</artifactId>
-        <version>3.0.0</version>
+        <version>${version.microprofile.metrics}</version>
     </dependency>
 
     <dependency>
         <groupId>org.eclipse.microprofile.metrics</groupId>
         <artifactId>microprofile-metrics-rest-tck</artifactId>
-        <version>3.1</version>
+        <version>${version.microprofile.metrics}</version>
     </dependency>
 
     <dependency>
         <groupId>org.eclipse.microprofile.metrics</groupId>
         <artifactId>microprofile-metrics-api-tck</artifactId>
-        <version>3.1</version>
+        <version>${version.microprofile.metrics}</version>
     </dependency>
 
+    <!-- version.jakartaee.coreprofile should correspond to the value 
+    specified in the MicroProfile Parent pom.xml used by the specified 
+    version of MicroProfile Metrics -->
     <dependency>
-        <groupId>jakarta.enterprise</groupId>
-        <artifactId>jakarta.enterprise.cdi-api</artifactId>
-        <version>3.0.0</version>
+        <groupId>jakarta.platform</groupId>
+        <artifactId>jakarta.jakartaee-core-api</artifactId>
+        <version>${version.jakartaee.coreprofile}</version>
         <scope>provided</scope>
     </dependency>
 
+    <!-- version.junit should correspond to the value specified in the
+     MicroProfile Parent TCK-bom pom.xml used by the specified version of
+     MicroProfile Metrics -->
     <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.12</version>
+        <version>${version.junit}</version>
         <scope>test</scope>
     </dependency>
 
+    <!-- version.hamcrest should correspond to the value specified in the
+     MicroProfile Parent TCK-bom pom.xml used by the specified version of
+     MicroProfile Metrics -->
     <dependency>
         <groupId>org.hamcrest</groupId>
         <artifactId>hamcrest-all</artifactId>
-        <version>1.3</version>
+        <version>${version.hamcrest}</version>
         <scope>test</scope>
     </dependency>
 
+    <!-- version.arquillian should correspond to the value specified in the
+     MicroProfile Parent TCK-bom pom.xml used by the specified version of
+     MicroProfile Metrics -->
     <dependency>
         <groupId>org.jboss.arquillian.junit</groupId>
         <artifactId>arquillian-junit-container</artifactId>
-        <version>1.1.8.Final</version>
+        <version>${version.arquillian}</version>
         <scope>test</scope>
     </dependency>
 
     <!-- You can replace this with your choice of container -->
     <dependency>
-        <groupId>org.jboss.arquillian.container</groupId>
-        <artifactId>arquillian-wlp-managed-8.5</artifactId>
-        <version>1.0.0.Final-SNAPSHOT</version>
+	    <groupId>io.openliberty.arquillian</groupId>
+        <artifactId>arquillian-liberty-managed-jakarta</artifactId>
+        <version>2.1.0</version>
         <scope>test</scope>
     </dependency>
 </dependencies>
@@ -103,14 +117,7 @@ If running the optional TCK module you will need the below *additional* dependen
     <dependency>
         <groupId>org.eclipse.microprofile.metrics</groupId>
         <artifactId>microprofile-metrics-optional-tck</artifactId>
-        <version>3.1</version>
-    </dependency>
-
-    <dependency>
-        <groupId>jakarta.ws.rs</groupId>
-        <artifactId>jakarta.ws.rs-api</artifactId>
-        <version>3.0.0</version>
-        <scope>provided</scope>
+        <version>${version.microprofile.metrics}</version>
     </dependency>
 
 ----

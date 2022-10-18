@@ -36,8 +36,6 @@
         <inceptionYear>2017</inceptionYear>
         <autorelease>false</autorelease>
         <version.microprofile.tck.bom>3.0</version.microprofile.tck.bom>
-        <version.jakarta.cdi>4.0.0</version.jakarta.cdi>
-        <version.jakarta.ws-rs>3.0.0</version.jakarta.ws-rs>
     </properties>
 
     <developers>
@@ -78,26 +76,10 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>jakarta.ws.rs</groupId>
-                <artifactId>jakarta.ws.rs-api</artifactId>
-                <version>${version.jakarta.ws-rs}</version>
+               <groupId>jakarta.platform</groupId>
+                <artifactId>jakarta.jakartaee-core-api</artifactId>
+                <version>${version.jakartaee.coreprofile}</version>
                 <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.enterprise</groupId>
-                <artifactId>jakarta.enterprise.cdi-api</artifactId>
-                <version>${version.jakarta.cdi}</version>
-                <scope>provided</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>jakarta.el</groupId>
-                        <artifactId>jakarta.el-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>jakarta.ejb</groupId>
-                        <artifactId>jakarta.ejb-api</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.osgi</groupId>
@@ -110,7 +92,7 @@
                 <artifactId>microprofile-metrics-api</artifactId>
                 <version>${project.version}</version>
                 <scope>provided</scope>
-            </dependency>  
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>
