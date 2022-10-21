@@ -33,8 +33,6 @@
     <properties>
         <rest-assured.version>4.3.0</rest-assured.version>
         <shrinkwrap.version>2.2.4</shrinkwrap.version>
-        <!-- TODO: current MicroProfile parent is using outdated version, next parent release remove this-->
-        <arquillian.temp.version>1.7.0.Alpha12</arquillian.temp.version>
     </properties>
 
     <dependencyManagement>

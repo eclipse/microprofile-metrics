@@ -61,8 +61,6 @@
         <dependency>
             <groupId>org.jboss.arquillian.junit</groupId>
             <artifactId>arquillian-junit-container</artifactId>
-            <!-- TODO: current MicroProfile parent is using outdated version, next parent release remove this-->
-            <version>${arquillian.temp.version}</version>
         </dependency>
 
         <dependency>
