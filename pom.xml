@@ -68,6 +68,7 @@
     <modules>
         <module>api</module>
         <module>spec</module>
+        <module>tck</module>
         <module>tck/rest</module>
         <module>tck/api</module>
         <module>tck/optional</module>
@@ -75,12 +76,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-               <groupId>jakarta.platform</groupId>
-                <artifactId>jakarta.jakartaee-core-api</artifactId>
-                <version>${version.jakartaee.coreprofile}</version>
-                <scope>provided</scope>
-            </dependency>
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.annotation.versioning</artifactId>

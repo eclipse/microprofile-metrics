@@ -37,70 +37,60 @@ To enable the tests in your Arquillian based test project you need to add the fo
 [source, xml]
 ----
 
+<!-- versions should correspond to the value specified in the MicroProfile Parent
+pom.xml and MicroProfile Parent TCK-BOM pom.xml used by the specified version of MicroProfile Metrics -->
 <properties>
-    <version.microprofile.metrics>5.0.0</version.microprofile.metrics>
-    <version.jakartaee.coreprofile>10.0.0</version.jakartaee.coreprofile>
-    <version.junit>4.13.2</version.junit>
-    <version.arquillian>1.7.0.Alpha12</version.arquillian>
-    <version.hamcrest>1.3</version.hamcrest>
+    <microprofile.metrics.version>5.0.0</microprofile.metrics.version>
+    <jakartaee.coreprofile.version>10.0.0</jakartaee.coreprofile.version>
+    <junit.version>4.13.2</junit.version>
+    <arquillian.version>1.7.0.Alpha12</arquillian.version>
+    <hamcrest.version>1.3</hamcrest.version>
 </properties>
 
 <dependencies>
     <dependency>
         <groupId>org.eclipse.microprofile.metrics</groupId>
         <artifactId>microprofile-metrics-api</artifactId>
-        <version>${version.microprofile.metrics}</version>
+        <version>${microprofile.metrics.version}</version>
     </dependency>
 
     <dependency>
         <groupId>org.eclipse.microprofile.metrics</groupId>
         <artifactId>microprofile-metrics-rest-tck</artifactId>
-        <version>${version.microprofile.metrics}</version>
+        <version>${microprofile.metrics.version}</version>
     </dependency>
 
     <dependency>
         <groupId>org.eclipse.microprofile.metrics</groupId>
         <artifactId>microprofile-metrics-api-tck</artifactId>
-        <version>${version.microprofile.metrics}</version>
+        <version>${microprofile.metrics.version}</version>
     </dependency>
 
-    <!-- version.jakartaee.coreprofile should correspond to the value 
-    specified in the MicroProfile Parent pom.xml used by the specified 
-    version of MicroProfile Metrics -->
     <dependency>
         <groupId>jakarta.platform</groupId>
         <artifactId>jakarta.jakartaee-core-api</artifactId>
-        <version>${version.jakartaee.coreprofile}</version>
+        <version>${jakartaee.coreprofile.version}</version>
         <scope>provided</scope>
     </dependency>
 
-    <!-- version.junit should correspond to the value specified in the
-     MicroProfile Parent TCK-bom pom.xml used by the specified version of
-     MicroProfile Metrics -->
     <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>${version.junit}</version>
+        <version>${junit.version}</version>
         <scope>test</scope>
     </dependency>
 
-    <!-- version.hamcrest should correspond to the value specified in the
-     MicroProfile Parent TCK-bom pom.xml used by the specified version of
-     MicroProfile Metrics -->
     <dependency>
         <groupId>org.hamcrest</groupId>
         <artifactId>hamcrest-all</artifactId>
-        <version>${version.hamcrest}</version>
+        <version>${hamcrest.version}</version>
         <scope>test</scope>
     </dependency>
 
-    <!-- version.arquillian should correspond to the value specified in the
-     MicroProfile Parent TCK-bom pom.xml used by the specified version of
-     MicroProfile Metrics -->
     <dependency>
         <groupId>org.jboss.arquillian.junit</groupId>
         <artifactId>arquillian-junit-container</artifactId>
-        <version>${version.arquillian}</version>
+        <version>${arquillian.version}</version>
         <scope>test</scope>
     </dependency>
 
@@ -125,7 +115,7 @@ If running the optional TCK module you will need the below *additional* dependen
     <dependency>
         <groupId>org.eclipse.microprofile.metrics</groupId>
         <artifactId>microprofile-metrics-optional-tck</artifactId>
-        <version>${version.microprofile.metrics}</version>
+        <version>${microprofile.metrics.version}</version>
     </dependency>
 
 ----
