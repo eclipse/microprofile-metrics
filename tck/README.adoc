@@ -38,10 +38,13 @@ To enable the tests in your Arquillian based test project you need to add the fo
 ----
 
 <!-- versions should correspond to the value specified in the MicroProfile Parent
-pom.xml and MicroProfile Parent TCK-BOM pom.xml used by the specified version of MicroProfile Metrics -->
+pom.xml, MicroProfile Parent TCK-BOM pom.xml and Jakartaa EE Core API pom.xml 
+used by the specified version of MicroProfile Metrics -->
 <properties>
     <microprofile.metrics.version>5.0.0</microprofile.metrics.version>
     <jakartaee.coreprofile.version>10.0.0</jakartaee.coreprofile.version>
+    <jakarta.enterprise.cdi-api.version>4.0.1</jakartaee.enterprise.cdi-api.version>
+    <jakartaee.ws.rs-api.version>3.1.0</jakartaee.ws.rs-api.version>
     <junit.version>4.13.2</junit.version>
     <arquillian.version>1.7.0.Alpha12</arquillian.version>
     <hamcrest.version>1.3</hamcrest.version>
@@ -70,6 +73,20 @@ pom.xml and MicroProfile Parent TCK-BOM pom.xml used by the specified version of
         <groupId>jakarta.platform</groupId>
         <artifactId>jakarta.jakartaee-core-api</artifactId>
         <version>${jakartaee.coreprofile.version}</version>
+        <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>jakarta.enterprise</groupId>
+        <artifactId>jakarta.enterprise.cdi-api</artifactId>
+        <version>${jakartaee.enterprise.cdi-api.version}</version>
+        <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>jakarta.ws.rs</groupId>
+        <artifactId>jakarta.ws.rs-api</artifactId>
+        <version>${jakartaee.ws.rs-api.version}</version>
         <scope>provided</scope>
     </dependency>
 
