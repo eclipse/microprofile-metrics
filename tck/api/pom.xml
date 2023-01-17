@@ -39,9 +39,15 @@
             <groupId>org.eclipse.microprofile.metrics</groupId>
             <artifactId>microprofile-metrics-api</artifactId>
         </dependency>
+        
         <dependency>
-            <groupId>jakarta.platform</groupId>
-            <artifactId>jakarta.jakartaee-core-api</artifactId>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.inject</groupId>
+            <artifactId>jakarta.inject-api</artifactId>
         </dependency>
 
         <dependency>
