@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2023 Contributors to the Eclipse Foundation
  *               2010-2013 Coda Hale, Yammer.com
  *
  * See the NOTICES file(s) distributed with this work for additional
@@ -127,7 +127,7 @@ public @interface Timed {
      * @see org.eclipse.microprofile.metrics.MetricUnits
      */
     @Nonbinding
-    String unit() default MetricUnits.SECONDS;
+    String unit() default MetricUnits.NANOSECONDS;
 
     /**
      * The scope that this Timer belongs to.
