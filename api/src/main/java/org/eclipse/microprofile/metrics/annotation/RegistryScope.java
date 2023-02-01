@@ -48,8 +48,8 @@ import org.eclipse.microprofile.metrics.MetricRegistry;
  * </code>
  * </pre>
  *
- * see {@link MetricRegistry.APPLICATION_SCOPE}, {@link MetricRegistry.BASE_SCOPE} and
- * {@link MetricRegistry.VENDOR_SCOPE}
+ * see {@link MetricRegistry#APPLICATION_SCOPE}, {@link MetricRegistry#BASE_SCOPE} and
+ * {@link MetricRegistry#VENDOR_SCOPE}
  *
  * @author Raymond Lam
  *
@@ -65,8 +65,8 @@ public @interface RegistryScope {
      *         {@code application}, {@code base} and {@code vendor} scopes automatically and creates user-defined scopes
      *         as needed.
      * 
-     *         see {@link MetricRegistry.APPLICATION_SCOPE}, {@link MetricRegistry.BASE_SCOPE} and
-     *         {@link MetricRegistry.VENDOR_SCOPE}
+     *         see {@link MetricRegistry#APPLICATION_SCOPE}, {@link MetricRegistry#BASE_SCOPE} and
+     *         {@link MetricRegistry#VENDOR_SCOPE}
      */
     String scope() default MetricRegistry.APPLICATION_SCOPE;
 }

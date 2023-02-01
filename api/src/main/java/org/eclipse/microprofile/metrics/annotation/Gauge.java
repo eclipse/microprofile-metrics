@@ -112,7 +112,7 @@ public @interface Gauge {
     /**
      * The scope that this gauge belongs to.
      * 
-     * @return The scope this gauge belongs to. By default, the value is {@link MetricRegistry.APPLICATION_SCOPE}.
+     * @return The scope this gauge belongs to. By default, the value is {@link MetricRegistry#APPLICATION_SCOPE}.
      *
      */
     @Nonbinding

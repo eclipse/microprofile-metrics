@@ -132,7 +132,7 @@ public @interface Timed {
     /**
      * The scope that this Timer belongs to.
      * 
-     * @return The scope this Timer belongs to. By default, the value is {@link MetricRegistry.APPLICATION_SCOPE}.
+     * @return The scope this Timer belongs to. By default, the value is {@link MetricRegistry#APPLICATION_SCOPE}.
      *
      */
     @Nonbinding

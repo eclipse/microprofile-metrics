@@ -108,7 +108,7 @@ public @interface Metric {
     /**
      * The scope that this metric belongs to.
      * 
-     * @return The scope this metric belongs to. By default, the value is {@link MetricRegistry.APPLICATION_SCOPE}.
+     * @return The scope this metric belongs to. By default, the value is {@link MetricRegistry#APPLICATION_SCOPE}.
      *
      */
     @Nonbinding

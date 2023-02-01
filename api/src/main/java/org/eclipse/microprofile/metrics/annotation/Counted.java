@@ -138,7 +138,7 @@ public @interface Counted {
     /**
      * The scope that this counter belongs to.
      * 
-     * @return The scope this counter belongs to. By default, the value is {@link MetricRegistry.APPLICATION_SCOPE}.
+     * @return The scope this counter belongs to. By default, the value is {@link MetricRegistry#APPLICATION_SCOPE}.
      *
      */
     @Nonbinding
