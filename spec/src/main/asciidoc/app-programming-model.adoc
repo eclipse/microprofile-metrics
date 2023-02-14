@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016, 2020 Contributors to the Eclipse Foundation
+// Copyright (c) 2016, 2023 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -131,12 +131,13 @@ MAY stop the deployment of an application if Metadata is missing.
 ==== Annotated Naming Convention
 Annotated metrics are registered into the _application_ `MetricRegistry` with the name computed using the rules in the following tables.
 
-If the metric annotation is placed on a method or field:
+If the metric annotation is placed on a method, parameter, or field:
 |===
-| | `name` is specified | `name` is not specified
+| | `name` is specified | `name` is not specified ^1^
 | `absolute=true` | Value of the `name` argument | Name of the annotated element
 | `absolute=false` | `<canonical-name-of-declaring-class>.<value-of-name-argument>` | `<canonical-name-of-declaring-class>.<name-of-element>`
 |===
+[small]#^1^ Java parameter names are not always available at runtime, so developers of Microprofile applications are encouraged to use a `@Metric` annotation which specifies at least `name` with each injected metric parameter.#
 
 If the metric annotation is placed on a class, then for each method (including constructors), the metric name will be:
 
