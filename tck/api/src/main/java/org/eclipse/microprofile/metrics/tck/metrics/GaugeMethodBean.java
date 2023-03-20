@@ -1,4 +1,5 @@
 /**
+ * Copyright (c) 2013, 2023 Contributors to the Eclipse Foundation
  * Copyright © 2013 Antonin Stefanutti (antonin.stefanutti@gmail.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
