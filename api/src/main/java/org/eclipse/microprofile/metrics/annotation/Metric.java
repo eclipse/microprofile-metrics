@@ -37,7 +37,7 @@ import jakarta.enterprise.util.Nonbinding;
  * MetricRegistry.
  *
  * Given an injected field annotated with {@literal @}Metric like this:
- * 
+ *
  * <pre>
  * <code>
  *     {@literal @}Inject
@@ -45,7 +45,7 @@ import jakarta.enterprise.util.Nonbinding;
  *     public Histogram histogram;
  * </code>
  * </pre>
- * 
+ *
  * A meter of the field's type will be created and injected into managed objects. It will be up to the user to interact
  * with the metric. This annotation can be used on fields of type Meter, Timer, SimpleTimer, Counter, and Histogram.
  * <p>
@@ -58,7 +58,7 @@ public @interface Metric {
 
     /**
      * The name of the metric.
-     * 
+     *
      * @return The name of the metric.
      */
     @Nonbinding
@@ -66,7 +66,7 @@ public @interface Metric {
 
     /**
      * The tags of the metric.
-     * 
+     *
      * @return The tags of the metric. Each {@code String} tag must be in the form of 'key=value'. If the input is empty
      *         or does not contain a '=' sign, the entry is ignored.
      *
@@ -77,7 +77,7 @@ public @interface Metric {
 
     /**
      * Denotes whether to use the absolute name or use the default given name relative to the annotated class.
-     * 
+     *
      * @return If {@code true}, use the given name as an absolute name. If {@code false} (default), use the given name
      *         relative to the annotated class.
      */
@@ -86,7 +86,7 @@ public @interface Metric {
 
     /**
      * The description of the metric.
-     * 
+     *
      * @return The description of the metric.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -96,7 +96,7 @@ public @interface Metric {
 
     /**
      * The unit of the metric.
-     * 
+     *
      * @return The unit of the metric. By default, the value is {@link MetricUnits#NONE}.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -107,7 +107,7 @@ public @interface Metric {
 
     /**
      * The scope that this metric belongs to.
-     * 
+     *
      * @return The scope this metric belongs to. By default, the value is {@link MetricRegistry#APPLICATION_SCOPE}.
      *
      */

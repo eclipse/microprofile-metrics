@@ -25,7 +25,7 @@ package org.eclipse.microprofile.metrics;
 
 /**
  * A gauge metric is an instantaneous reading of a particular value. To instrument a queue's depth, for example:<br>
- * 
+ *
  * <pre>
  * <code>
  * final Queue&lt;String&gt; queue = new ConcurrentLinkedQueue&lt;String&gt;();

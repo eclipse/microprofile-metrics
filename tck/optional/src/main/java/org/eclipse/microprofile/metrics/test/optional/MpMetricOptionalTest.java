@@ -845,7 +845,7 @@ public class MpMetricOptionalTest {
     /**
      * This test checks that all elapsed times are not 0 and that all counts are 1 (or 2 if it belongs to the the
      * REST.request metric assosciated to the "getNoParam" endpoint as it was requested twice)
-     * 
+     *
      * @throws InterruptedException
      */
     public void testForNonZeroValues() throws InterruptedException {

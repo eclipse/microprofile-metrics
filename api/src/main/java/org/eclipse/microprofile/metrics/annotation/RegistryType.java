@@ -36,7 +36,7 @@ import jakarta.inject.Qualifier;
  * <p>
  * This can be used to obtain the respective scoped {@link MetricRegistry}:
  * </p>
- * 
+ *
  * <pre>
  * <code>
  *      {@literal @}Inject
@@ -48,7 +48,7 @@ import jakarta.inject.Qualifier;
  * @see org.eclipse.microprofile.metrics.MetricRegistry.Type
  *
  * @author Raymond Lam
- * 
+ *
  * @deprecated As of rlease 5.0, please use {@link RegistryScope} instead
  *
  */
@@ -60,7 +60,7 @@ import jakarta.inject.Qualifier;
 public @interface RegistryType {
     /**
      * The scope of the MetricRegistry.
-     * 
+     *
      * @return Returns the scope of the MetricRegistry. The {@link MetricRegistry.Type} can be {@code APPLICATION},
      *         {@code BASE}, or {@code VENDOR}.
      * @see org.eclipse.microprofile.metrics.MetricRegistry.Type

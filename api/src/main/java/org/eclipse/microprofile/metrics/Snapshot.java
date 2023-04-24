@@ -68,7 +68,7 @@ public abstract class Snapshot {
 
     /**
      * Represents a percentile and its value at the moment it was sampled from the Snapshot.
-     * 
+     *
      * See {@link #percentileValue()}
      */
     public static class PercentileValue {
@@ -76,7 +76,7 @@ public abstract class Snapshot {
         private final double value;
 
         /**
-         * 
+         *
          * @param percentile
          *            percentile
          * @param value
@@ -89,7 +89,7 @@ public abstract class Snapshot {
 
         /**
          * Returns percentile
-         * 
+         *
          * @return double percentile
          */
         public double getPercentile() {
@@ -98,7 +98,7 @@ public abstract class Snapshot {
 
         /**
          * Returns value at percentile
-         * 
+         *
          * @return double value at percentile
          */
         public double getValue() {
