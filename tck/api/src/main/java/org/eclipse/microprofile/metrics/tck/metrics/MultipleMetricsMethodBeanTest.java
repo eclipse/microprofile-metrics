@@ -2,7 +2,7 @@
  **********************************************************************
  * Copyright (c) 2013, 2022 Contributors to the Eclipse Foundation
  * Copyright © 2013 Antonin Stefanutti (antonin.stefanutti@gmail.com)
- * 
+ *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
  *

@@ -42,7 +42,7 @@ import jakarta.interceptor.InterceptorBinding;
  * <p>
  * Given a method annotated with {@literal @}Counted like this:
  * </p>
- * 
+ *
  * <pre>
  * <code>
  *     {@literal @}Counted(name = "fancyName")
@@ -51,7 +51,7 @@ import jakarta.interceptor.InterceptorBinding;
  *     }
  * </code>
  * </pre>
- * 
+ *
  * A counter with the fully qualified class name + {@code fancyName} will be created and each time the
  * {@code #fancyName(String)} method is invoked, the counter will be marked. Similarly, the same applies for a
  * constructor annotated with counted.
@@ -59,7 +59,7 @@ import jakarta.interceptor.InterceptorBinding;
  * <p>
  * Given a class annotated with {@literal @}Counted like this:
  * </p>
- * 
+ *
  * <pre>
  * <code>
  *     {@literal @}Counted
@@ -69,7 +69,7 @@ import jakarta.interceptor.InterceptorBinding;
  *     }
  * </code>
  * </pre>
- * 
+ *
  * A counter for the defining class will be created for each of the constructors/methods. Each time the
  * constructor/method is invoked, the respective counter will be marked.
  *
@@ -88,7 +88,7 @@ public @interface Counted {
 
     /**
      * The name of the counter.
-     * 
+     *
      * @return The name of the counter.
      */
     @Nonbinding
@@ -96,7 +96,7 @@ public @interface Counted {
 
     /**
      * The tags of the counter.
-     * 
+     *
      * @return The tags of the counter. Each {@code String} tag must be in the form of 'key=value'. If the input is
      *         empty or does not contain a '=' sign, the entry is ignored.
      *
@@ -107,7 +107,7 @@ public @interface Counted {
 
     /**
      * Denotes whether to use the absolute name or use the default given name relative to the annotated class.
-     * 
+     *
      * @return If {@code true}, use the given name as an absolute name. If {@code false} (default), use the given name
      *         relative to the annotated class. When annotating a class, this must be {@code false}.
      */
@@ -116,7 +116,7 @@ public @interface Counted {
 
     /**
      * The description of the counter.
-     * 
+     *
      * @return The description of the counter.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -126,7 +126,7 @@ public @interface Counted {
 
     /**
      * The unit of the counter.
-     * 
+     *
      * @return The unit of the counter. By default, the value is {@link MetricUnits#NONE}.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -137,7 +137,7 @@ public @interface Counted {
 
     /**
      * The scope that this counter belongs to.
-     * 
+     *
      * @return The scope this counter belongs to. By default, the value is {@link MetricRegistry#APPLICATION_SCOPE}.
      *
      */

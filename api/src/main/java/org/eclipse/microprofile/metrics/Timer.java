@@ -40,7 +40,7 @@ public interface Timer extends Metric, Sampling {
         /**
          * Updates the timer with the difference between current and start time. Call to this method will not reset the
          * start time. Multiple calls result in multiple updates.
-         * 
+         *
          * @return the elapsed time in nanoseconds
          */
         long stop();
@@ -92,7 +92,7 @@ public interface Timer extends Metric, Sampling {
     /**
      * Returns the total elapsed timing durations of all completed timing events that are recorded with
      * {@link #update(Duration)}.
-     * 
+     *
      * @return the elapsed time {@link java.time.Duration duration}
      */
     Duration getElapsedTime();

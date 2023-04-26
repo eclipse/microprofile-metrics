@@ -33,7 +33,7 @@ public class TestUtils {
 
     /**
      * Assert equals with a tolerance factor of {@link #TOLERANCE} times the expected value
-     * 
+     *
      * @param expected
      *            expected value
      * @param actual

@@ -62,7 +62,7 @@ public class TimedConstructorBeanTest {
     // This test case becomes irrelevant as the registry already contains Timers from other test cases.
     /*
      * @Test
-     * 
+     *
      * @InSequence(1) public void timedConstructorNotCalledYet() { assertThat("Timer is not registered correctly",
      * registry.getTimers().keySet(), is(empty())); }
      */

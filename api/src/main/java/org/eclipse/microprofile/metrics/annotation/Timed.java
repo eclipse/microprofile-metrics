@@ -42,7 +42,7 @@ import jakarta.interceptor.InterceptorBinding;
  * <p>
  * Given a method annotated with {@literal @}Timed like this:
  * </p>
- * 
+ *
  * <pre>
  * <code>
  *     {@literal @}Timed(name = "fancyName")
@@ -51,14 +51,14 @@ import jakarta.interceptor.InterceptorBinding;
  *     }
  * </code>
  * </pre>
- * 
+ *
  * A timer with the fully qualified class name + {@code fancyName} will be created and each time the
  * {@code #fancyName(String)} method is invoked, the method's execution will be timed.
  *
  * <p>
  * Given a class annotated with {@literal @}Timed like this:
  * </p>
- * 
+ *
  * <pre>
  * <code>
  *     {@literal @}Timed
@@ -68,7 +68,7 @@ import jakarta.interceptor.InterceptorBinding;
  *     }
  * </code>
  * </pre>
- * 
+ *
  * A timer for the defining class will be created for each of the constructors/methods. Each time a constructor/method
  * is invoked, the execution will be timed with the respective timer.
  *
@@ -84,7 +84,7 @@ public @interface Timed {
 
     /**
      * The name of the timer.
-     * 
+     *
      * @return The name of the timer.
      */
     @Nonbinding
@@ -101,7 +101,7 @@ public @interface Timed {
 
     /**
      * Denotes whether to use the absolute name or use the default given name relative to the annotated class.
-     * 
+     *
      * @return If {@code true}, use the given name as an absolute name. If {@code false} (default), use the given name
      *         relative to the annotated class. When annotating a class, this must be {@code false}.
      */
@@ -110,7 +110,7 @@ public @interface Timed {
 
     /**
      * The description of the timer.
-     * 
+     *
      * @return The description of the timer.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -120,7 +120,7 @@ public @interface Timed {
 
     /**
      * The unit of the timer.
-     * 
+     *
      * @return The unit of the timer. By default, the value is {@link MetricUnits#NANOSECONDS}.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -131,7 +131,7 @@ public @interface Timed {
 
     /**
      * The scope that this Timer belongs to.
-     * 
+     *
      * @return The scope this Timer belongs to. By default, the value is {@link MetricRegistry#APPLICATION_SCOPE}.
      *
      */

@@ -39,7 +39,7 @@ import jakarta.interceptor.InterceptorBinding;
  * <p>
  * Given a method annotated with {@literal @}Gauge like this:
  * </p>
- * 
+ *
  * <pre>
  * <code>
  *     {@literal @}Gauge(name = "queueSize")
@@ -48,10 +48,10 @@ import jakarta.interceptor.InterceptorBinding;
  *     }
  * </code>
  * </pre>
- * 
+ *
  * A gauge with the fully qualified class name + {@code queueSize} will be created which uses the annotated method's
  * return value as its value.
- * 
+ *
  * The annotated method/field must be of numeric type (extends {@link java.lang.Number}).
  *
  */
@@ -62,7 +62,7 @@ public @interface Gauge {
 
     /**
      * The name of the gauge.
-     * 
+     *
      * @return The name of the gauge.
      */
     @Nonbinding
@@ -70,7 +70,7 @@ public @interface Gauge {
 
     /**
      * The tags of the gauge.
-     * 
+     *
      * @return The tags of the gauge. Each {@code String} tag must be in the form of 'key=value'. If the input is empty
      *         or does not contain a '=' sign, the entry is ignored.
      *
@@ -81,7 +81,7 @@ public @interface Gauge {
 
     /**
      * Denotes whether to use the absolute name or use the default given name relative to the annotated class.
-     * 
+     *
      * @return If {@code true}, use the given name as an absolute name. If {@code false} (default), use the given name
      *         relative to the annotated class.
      */
@@ -90,7 +90,7 @@ public @interface Gauge {
 
     /**
      * The description of the gauge.
-     * 
+     *
      * @return The description of the gauge.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -100,7 +100,7 @@ public @interface Gauge {
 
     /**
      * The unit of the gauge.
-     * 
+     *
      * @return (Required) The unit of the gauge.
      *
      * @see org.eclipse.microprofile.metrics.Metadata
@@ -111,7 +111,7 @@ public @interface Gauge {
 
     /**
      * The scope that this gauge belongs to.
-     * 
+     *
      * @return The scope this gauge belongs to. By default, the value is {@link MetricRegistry#APPLICATION_SCOPE}.
      *
      */

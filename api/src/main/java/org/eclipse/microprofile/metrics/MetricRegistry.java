@@ -46,7 +46,7 @@ public interface MetricRegistry {
 
     /**
      * An enumeration representing the provided scopes of the MetricRegistry.
-     * 
+     *
      * @deprecated As of release 5.0, please use {@link MetricRegistry#APPLICATION_SCOPE},
      *             {@link MetricRegistry#BASE_SCOPE} or {@link MetricRegistry#VENDOR_SCOPE} with {@link RegistryScope}
      *             instead.
@@ -56,7 +56,7 @@ public interface MetricRegistry {
         /**
          * The Application (default) scoped MetricRegistry. Any metric registered/accessed via CDI will use this
          * MetricRegistry.
-         * 
+         *
          * @deprecated As of release 5.0, please use {@link MetricRegistry#APPLICATION_SCOPE} with {@link RegistryScope}
          *             instead.
          */
@@ -66,7 +66,7 @@ public interface MetricRegistry {
         /**
          * The Base scoped MetricRegistry. This MetricRegistry will contain required metrics specified in the
          * MicroProfile Metrics specification.
-         * 
+         *
          * @deprecated As of release 5.0, please use {@link MetricRegistry#BASE_SCOPE} with {@link RegistryScope}
          *             instead.
          */
@@ -76,7 +76,7 @@ public interface MetricRegistry {
         /**
          * The Vendor scoped MetricRegistry. This MetricRegistry will contain vendor provided metrics which may vary
          * between different vendors.
-         * 
+         *
          * @deprecated As of release 5.0, please use {@link MetricRegistry#VENDOR_SCOPE} with {@link RegistryScope}
          *             instead.
          */

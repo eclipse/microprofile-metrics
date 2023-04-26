@@ -34,17 +34,17 @@ import org.eclipse.microprofile.metrics.MetricRegistry;
  * <p>
  * This can be used to obtain the respective scoped {@link MetricRegistry}:
  * </p>
- * 
+ *
  * <pre>
  * <code>
  *      {@literal @}Inject
  *      {@literal @}RegistryScope(scope=MetricRegistry.APPLICATION_SCOPE)
  *      MetricRegistry appRegistry;
- * 
+ *
  *      {@literal @}Inject
  *      {@literal @}RegistryScope(scope="customScope")
  *      MetricRegistry customRegistry;
- * 
+ *
  * </code>
  * </pre>
  *
@@ -60,11 +60,11 @@ import org.eclipse.microprofile.metrics.MetricRegistry;
 public @interface RegistryScope {
     /**
      * The scope of the MetricRegistry.
-     * 
+     *
      * @return Indicates the scope of the MetricRegistry to be injected. The MicroProfile runtimes provides
      *         {@code application}, {@code base} and {@code vendor} scopes automatically and creates user-defined scopes
      *         as needed.
-     * 
+     *
      *         see {@link MetricRegistry#APPLICATION_SCOPE}, {@link MetricRegistry#BASE_SCOPE} and
      *         {@link MetricRegistry#VENDOR_SCOPE}
      */
