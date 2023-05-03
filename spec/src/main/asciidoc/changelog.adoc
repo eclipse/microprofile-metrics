@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016, 2021 Contributors to the Eclipse Foundation
+// Copyright (c) 2016, 2023 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -24,6 +24,8 @@
 
 [[release_notes_5_0]]
 == Changes in 5.0
+
+A full list of changes may be found on the link:https://github.com/eclipse/microprofile-metrics/milestone/15[MicroProfile Metrics 5.0 Milestone] and link:https://github.com/eclipse/microprofile-metrics/milestone/17[MicroProfile Metrics 5.0.1 Milestone]
 
 === Incompatible Changes
 ** This release aligns with Jakarta EE 10, so it won’t work with earlier versions of Jakarta or Java EE
@@ -142,7 +144,14 @@
 ** changed REST.request metric from SimpleTimer to Timer type
 ** changed the base metrics to be optional (https://github.com/eclipse/microprofile-metrics/issues/680[680])
 
+=== Specification Changes
+* (5.0.1) Clarify naming convention when `@Metric` applies to a parameter (https://github.com/eclipse/microprofile-metrics/issues/767[767])
 
+
+=== Other Changes
+* (5.0.1) Removed private gauges from TCK (https://github.com/eclipse/microprofile-metrics/pull/770[770])
+* (5.0.1) The `@Timed` annotation defaults to SECONDS when it should be NANOSECONDS (https://github.com/eclipse/microprofile-metrics/issues/760[760])
+* (5.0.1) Errors in MicroProfile 6.0 javadoc generation (https://github.com/eclipse/microprofile-metrics/issues/764[764])
 
 [[release_notes_4_0]]
 == Changes in 4.0
