@@ -194,7 +194,7 @@ public class MetricAppBeanOptional {
                 Thread.sleep(5000);
                 asyncResponse.resume("This is a GET request with AsyncResponse");
             } catch (Exception e) {
-                System.err.println(e.toString());
+                System.err.println(e);
             }
         });
         thread.start();
@@ -250,3 +250,4 @@ public class MetricAppBeanOptional {
     }
 
 }
+

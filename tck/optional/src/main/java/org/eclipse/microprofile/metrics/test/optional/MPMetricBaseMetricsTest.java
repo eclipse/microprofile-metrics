@@ -212,10 +212,10 @@ public class MPMetricBaseMetricsTest {
 
                 if (tmp[2].startsWith(promName)) {
                     found = true;
-                    assertEquals("Expected [" + mm.toString() + "] got [" + line + "]", tmp[3], mm.type);
+                    assertEquals("Expected [" + mm + "] got [" + line + "]", tmp[3], mm.type);
                 }
             }
-            assertTrue("Not found [" + mm.toString() + "]", found);
+            assertTrue("Not found [" + mm + "]", found);
 
         }
     }
@@ -425,3 +425,5 @@ public class MPMetricBaseMetricsTest {
     }
 
 }
+
+
