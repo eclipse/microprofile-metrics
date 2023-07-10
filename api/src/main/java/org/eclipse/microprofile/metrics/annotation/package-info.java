@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -103,5 +103,5 @@
  * </pre>
  *
  */
-@org.osgi.annotation.versioning.Version("5.0.1")
+@org.osgi.annotation.versioning.Version("5.1.0")
 package org.eclipse.microprofile.metrics.annotation;
