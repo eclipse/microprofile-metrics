@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016, 2022 Contributors to the Eclipse Foundation
+// Copyright (c) 2016, 2023 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -119,6 +119,18 @@ public class MetricRegistryFactory {
             String annoScope = registryTypeAnnotation.scope();
             return getOrCreate(annoScope);
         }
+    }
+
+    @Produces
+    @RegistryScope
+    public MetricRegistry getMetricRegistryScope(InjectionPoint ip) {
+        for (Annotation annotation : ip.getQualifiers()) {
+            if (annotation.annotationType().equals(RegistryScope.class)) {
+                RegistryScope registryScope = (RegistryScope) annotation;
+                return getOrCreate(registryScope.scope());
+            }
+        }
+        return null;
     }
 
     @Produces
