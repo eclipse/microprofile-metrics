@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016, 2022 Contributors to the Eclipse Foundation
+// Copyright (c) 2016, 2023 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -104,20 +104,20 @@ distance_to_hole_meters_sum{mp_scope="golf_stats"} 1569.3785694223322 <3>
 .Prometheus format mapping for a Histogram metric
 [cols="6,4,8,3"]
 |===
-| Suffix{label}                   | TYPE    | Value (Histogram method)            | Units
+| Suffix{label}                   | TYPE    | Value (Histogram method)                 | Units
 
-| `<units>_max`                   | Gauge   | `getSnapshot().getMax()`            | <units>
-| `<units>{quantile="0.5"}`       | Summary | `getSnapshot().getValue(0.5)`       | <units>
-| `<units>{quantile="0.75"}`      | Summary | `getSnapshot().getValue(0.75)`      | <units>
-| `<units>{quantile="0.95"}`      | Summary | `getSnapshot().getValue(0.95)`      | <units>
-| `<units>{quantile="0.98"}`      | Summary | `getSnapshot().getValue(0.98)`      | <units>
-| `<units>{quantile="0.99"}`      | Summary | `getSnapshot().getValue(0.99)`      | <units>
-| `<units>{quantile="0.999"}`     | Summary | `getSnapshot().getValue(0.999)`     | <units>
-| `<units>_count`                 | Summary | `getCount()`                        | <units>
-| `<units>_sum`                   | Summary | `getSum()`                          | <units>
+| `<units>_max`                   | Gauge   | `getSnapshot().getMax()`                 | <units>
+| `<units>{quantile="0.5"}`       | Summary | `getSnapshot().percentileValues()` ^1^   | <units>
+| `<units>{quantile="0.75"}`      | Summary | `getSnapshot().percentileValues()` ^1^   | <units>
+| `<units>{quantile="0.95"}`      | Summary | `getSnapshot().percentileValues()` ^1^   | <units>
+| `<units>{quantile="0.98"}`      | Summary | `getSnapshot().percentileValues()` ^1^   | <units>
+| `<units>{quantile="0.99"}`      | Summary | `getSnapshot().percentileValues()` ^1^   | <units>
+| `<units>{quantile="0.999"}`     | Summary | `getSnapshot().percentileValues()` ^1^   | <units>
+| `<units>_count`                 | Summary | `getCount()`                             | <units>
+| `<units>_sum`                   | Summary | `getSum()`                               | <units>
 |===
 
-
+^1^ This will return an array of `PercentileValue` objects that will need to be iterated through to find the specific percentile and its value
 
 ==== Timer
 
@@ -151,22 +151,22 @@ myClass_myMethod_seconds_max{mp_scope="vendor"} 0.05507899 <3>
 .Prometheus format mapping for a Timer metric
 [cols="6,4,8,3"]
 |===
-| Suffix{label}                   | TYPE    | Value (Timer method)                | Units
+| Suffix{label}                   | TYPE    | Value (Timer method)                   | Units
 
-| `max_seconds`                   | Gauge   | `getSnapshot().getMax()`            | SECONDS^1^
-| `seconds{quantile="0.5"}`       | Summary | `getSnapshot().getValue(0.5)`       | SECONDS^1^
-| `seconds{quantile="0.75"}`      | Summary | `getSnapshot().getValue(0.75)`      | SECONDS^1^
-| `seconds{quantile="0.95"}`      | Summary | `getSnapshot().getValue(0.95)`      | SECONDS^1^
-| `seconds{quantile="0.98"}`      | Summary | `getSnapshot().getValue(0.98)`      | SECONDS^1^
-| `seconds{quantile="0.99"}`      | Summary | `getSnapshot().getValue(0.99)`      | SECONDS^1^
-| `seconds{quantile="0.999"}`     | Summary | `getSnapshot().getValue(0.999)`     | SECONDS^1^
-| `seconds_count`                 | Summary | `getCount()`                        | SECONDS^1^
-| `seconds_sum`                   | Summary | `getElapsedTime()`                  | SECONDS^1^
+| `max_seconds`                   | Gauge   | `getSnapshot().getMax()`               | SECONDS^1^
+| `seconds{quantile="0.5"}`       | Summary | `getSnapshot().percentileValues()` ^2^ | SECONDS^1^
+| `seconds{quantile="0.75"}`      | Summary | `getSnapshot().percentileValues()` ^2^ | SECONDS^1^
+| `seconds{quantile="0.95"}`      | Summary | `getSnapshot().percentileValues()` ^2^ | SECONDS^1^
+| `seconds{quantile="0.98"}`      | Summary | `getSnapshot().percentileValues()` ^2^ | SECONDS^1^
+| `seconds{quantile="0.99"}`      | Summary | `getSnapshot().percentileValues()` ^2^ | SECONDS^1^
+| `seconds{quantile="0.999"}`     | Summary | `getSnapshot().percentileValues()` ^2^ | SECONDS^1^
+| `seconds_count`                 | Summary | `getCount()`                           | SECONDS^1^
+| `seconds_sum`                   | Summary | `getElapsedTime()`                     | SECONDS^1^
 |===
 
 ^1^ The implementation is expected to convert the result returned by the `Timer` into seconds
 
-
+^2^ This will return an array of `PercentileValue` objects that will need to be iterated through to find the specific percentile and its value
 
 === Security
 
