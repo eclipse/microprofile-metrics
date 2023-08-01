@@ -68,6 +68,7 @@ public abstract class Snapshot {
 
     /**
      * Represents a percentile and its value at the moment it was sampled from the Snapshot.
+     * Percentile values of a {@link Timer} are represented in units of nanoseconds.
      *
      * See {@link #percentileValue()}
      */
