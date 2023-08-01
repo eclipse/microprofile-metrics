@@ -21,6 +21,14 @@
 
 = Release Notes
 
+[[release_notes_5_1]]
+== Changes in 5.1
+A full list of changes may be found on the link:https://github.com/eclipse/microprofile-metrics/milestone/16[MicroProfile Metrics 5.1 Milestone]
+
+=== Other Changes
+
+* Introduced the MP Config Property `mp.metrics.enable` MP  (https://github.com/eclipse/microprofile-metrics/issues/686[686])
+
 
 [[release_notes_5_0]]
 == Changes in 5.0

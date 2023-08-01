@@ -48,6 +48,31 @@ public int getQueueSize() {
 create a huge number of metrics, because the downstream time series databases
 that need to store the metrics may not deal well with this amount of data.
 
+
+[[enable-disable-config]]
+=== Disabling metrics during deployment
+
+There may be situations where a metric instrumented in an application, or provided by the runtime, are not desired during runtime. MicroProfile Metrics supports the MicroProfile Config property `mp.metrics.enabled` to allow users to _disable_ metrics through configuration. Disabled metrics will be blocked from registration and a no-op instance of the metric is returned. Disabled metrics instrumented through annotations will do nothing.
+This property is set at the server level and is read upon server startup. The property follows the following rules:
+
+* The property accepts a semi-colon separated set of values that consists of a metric name followed by a equals sign (`=`) and a `true` or `false` boolean value.
+* The asterisk (`*`) can be used as a wildcard at the end when defining the metric name.
+* Values defined later takes precedence over values before (i.e., right to left precedence).
+
+[[enable-disable-sample]]
+.MicroProfile Config `mp.metrics.enabled` property examples
+----
+//metrics with a name that match demo.app.* will be disabled, except the demo.app.testCounter metric
+mp.metrics.enabled=demo.app.*=false;demo.app.testCounter=true
+----
+
+CAUTION: Before disabling metrics, be aware if your application uses any `getMetric(...)` or `getCounter(...)`/`getHistogram(...)`/`getTimer(...)`/`getGauge(...)` method calls that try to retrieve a specific metric. Due to the _disabled_ metric not being registered this will return a null value.
+
+==== Vendor consideration for re-enabling metrics
+
+Vendors may optionally support dynamically enabling or disabling metrics during runtime. This specification will not detail the expected behavior and is up to the vendor to implement. The behavior of dynamically enabling and disabling metrics will not be portable across different MicroProfile Metric implementations. Consult the vendor documentation for more information.
+
+
 === Responsibility of the MicroProfile Metrics implementation
 
 * The implementation must scan the application at deploy time for <<api-annotations>> and register the
@@ -68,6 +93,10 @@ and throw an `IllegalArgumentException` if such duplicate exists
 ** The implementation must throw an `IllegalArgumentException` when the metric is rejected.
 * The implementation must throw an `IllegalStateException` if an annotated metric is invoked, but the metric no longer exists in the MetricRegistry. This applies to the following annotations : @Timed, @Counted
 * The implementation must make sure that metric registries are thread-safe, in other words, concurrent calls to methods of `MetricRegistry` must not leave the registry in an inconsistent state.
+* Metrics that are configured to be disabled will not be registered to the metric registry
+** Metrics that are registered/retrieved programmatically will return a no-op metric
+** Injected metrics will return a no-op metric
+** Annotations will take no effect
 
 
 === Base Package
