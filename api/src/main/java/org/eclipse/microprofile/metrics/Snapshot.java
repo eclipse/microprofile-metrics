@@ -75,8 +75,8 @@ public abstract class Snapshot {
     public abstract void dump(OutputStream output);
 
     /**
-     * Represents a percentile and its value at the moment it was sampled from the Snapshot.
-     * Percentile values of a {@link Timer} are represented in units of nanoseconds.
+     * Represents a percentile and its value at the moment it was sampled from the Snapshot. Percentile values of a
+     * {@link Timer} are represented in units of nanoseconds.
      *
      * See {@link #percentileValue()}
      */

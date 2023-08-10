@@ -182,7 +182,7 @@ The percentiles that are tracked and are output can be overridden and customized
 * The percentile values are decimal values between 0.0 and 1.0 inclusively. 
 * Setting the property with a metric name but no percentile values disables percentile output for that metric.
 * Setting the property without any value disables percentiles for all histogram and timer metrics.
-* Values defined later take precedence over values before (i.e. right to left precedence).
+* Values defined later take precedence over values before (i.e., right to left precedence).
 
 [[percentiles-examples]]
 .MicroProfile Config `mp.metrics.distribution.percentiles` property examples
@@ -203,26 +203,26 @@ mp.metrics.distribution.percentiles=*=
 mp.metrics.distribution.percentiles=
 ----
 
-NOTE: Histograms and Timers that do not match the metric name definitions of the  `mp.metrics.distribution.percentiles` property will output the default 50th, 75th, 95th,99th and 99.9th percentiles.
+NOTE: Histograms and Timers that do not match the metric name definitions of the `mp.metrics.distribution.percentiles` property will output the default 50th, 75th, 95th, 99th and 99.9th percentiles.
 
 ==== Defining histogram-buckets for histograms and timers
 
 The MicroProfile Metrics runtime offers MicroProfile Config properties to enable and explicitly set (cumulative) histogram-buckets for histograms and timers.
-The property `mp.metrics.distribution.timer.slo` applies to timer metrics and the property `mp.metrics.distribution.histogram.buckets` applies to histograms. These two properties follows these rules unless explicitly describing a specific property:
+The property `mp.metrics.distribution.timer.slo` applies to timer metrics and the property `mp.metrics.distribution.histogram.buckets` applies to histograms. These two properties follow these rules unless explicitly describing a specific property:
 
 * The property accepts a semi-colon separated set of values that consists of a metric name followed by an equals sign (`=`) and comma separated bucket values:
 ** `mp.metrics.distribution.histogram.buckets` accepts a comma separated list of decimal and integer values greater than 0 _(See <<histogram-bucket-sample,examples>> below)_.
-** `mp.metrics.distribution.timer.slo` accepts a comma separated list of integers with an appended time unit (valid time units are `ms` for milliseconds, `s` for seconds, `m` for minutes and `h` for hours). Decimal values  will not be accepted. Values with no time unit default to seconds. _(See <<timer-slo-sample,examples>> below)_
+** `mp.metrics.distribution.timer.slo` accepts a comma separated list of integers with an appended time unit (valid time units are `ms` for milliseconds, `s` for seconds, `m` for minutes and `h` for hours). Decimal values will not be accepted. Values with no time unit default to seconds. _(See <<timer-slo-sample,examples>> below)_
 * The asterisk (`*`) can be used as a wildcard at the end of the metric name.
 * Defining a metric name with no bucket values provides no effect.
-* Values defined later take precedence over values before (i.e. right to left precedence).
+* Values defined later take precedence over values before (i.e., right to left precedence).
 
 NOTE: When customizing histogram-bucket values for the histogram and timer metrics, the metrics included in the Prometheus output will automatically switch from a `summary` type to the `histogram` type. Any percentile values that are also outputted will belong under the `histogram` type. The Prometheus output will also automatically include a `+Inf` bucket to capture all values. This will be demonstrated in the <<histogram-bucket-output, histogram sample output>> and <<timer-slo-output, timer sample output>>. The metric output for the buckets will also be appended with `_bucket`, and a tag `le` is used to denote the bucket value.
 
 [[histogram-bucket-sample]]
 .MicroProfile Config `mp.metrics.distribution.histogram.buckets` property examples
 ----
-//alpha.histogram will publish histogram-buckets with maximum values of 10.0 and 50.0 and 100.0 while the beta.histogram will publish histogram buckets with maximum values of 30.0, 50 and 123.
+//alpha.histogram will publish histogram-buckets with maximum values of 10.0, 50.0 and 100.0 while the beta.histogram will publish histogram buckets with maximum values of 30.0, 50 and 123.
 mp.metrics.distribution.histogram.buckets=alpha.histogram=10.0,50.0,100.0;beta.histogram=30.0,50.0,123
 
 //any histogram that matches with `beta.*` will publish histograms buckets with maximum values of 50.0 and 100.0 except the beta.test.histogram which will publish a bucket with a maximum value of 100.0 due to precedence.
@@ -255,9 +255,9 @@ alpha_histogram_cookies_sum{mp_scope="application",} 64.0
 # TYPE alpha_histogram_cookies_max gauge
 alpha_histogram_cookies_max{mp_scope="application",} 50.0
 ----
-<1> The prometheus metric type is `histogram`
+<1> The Prometheus metric type is `histogram`
 
-<2> percentiles are part of  the  `histogram` type instead of `summary`
+<2> percentiles are part of  the `histogram` type instead of `summary`
 
 <3> histogram buckets
 
@@ -268,7 +268,7 @@ alpha_histogram_cookies_max{mp_scope="application",} 50.0
 [[timer-slo-sample]]
 .MicroProfile Config `mp.metrics.distribution.timer.slo` property examples
 ----
-//alpha.timer will publish histogram-buckets with maximum values of 500 milliseconds, 2 second, and 3 minutes while the beta.histogram will publish histogram buckets with maximum values of 10 seconds, 2 minutes and 5 hours. Timer metrics that do not match will not have any histogram buckets.
+//alpha.timer will publish histogram-buckets with maximum values of 500 milliseconds, 2 seconds, and 3 minutes while the beta.histogram will publish histogram buckets with maximum values of 10 seconds, 2 minutes and 5 hours. Timer metrics that do not match will not have any histogram buckets.
 mp.metrics.distribution.timer.slo=alpha.timer=10,500ms,2s,3m;beta.timer=10s,2m,5h
 
 //any histogram that matches with `alpha.*` will publish histograms buckets with maximum values of 50 seconds and 100 seconds the alpha.test.histogram which will publish a bucket with a maximum value 100.0 due to precedence. Timer metrics that do not match will not have any histogram buckets.
@@ -304,9 +304,9 @@ alpha_timer_seconds_count{mp_scope="application"} 2.0
 alpha_timer_seconds_sum{mp_scope="application"} 6.333
 ----
 
-<1> The prometheus metric type is `histogram`
+<1> The Prometheus metric type is `histogram`
 
-<2> percentiles are part of  the  `histogram` type instead of `summary`
+<2> percentiles are part of  the `histogram` type instead of `summary`
 
 <3> histogram buckets
 
@@ -321,7 +321,7 @@ Vendors may choose to optionally provide the `mp.metrics.distribution.percentile
 * The property accepts a semi-colon separated set of values that consists of a metric name followed by an equals sign (`=`) and either `true` or `false` (see <<default-buckets-sample,example>> below).
 * The asterisk (`*`) can be used as a wildcard at the end of the metric name.
 * Defining a metric name with no values or invalid values has no effect.
-* Values defined later take precedence over values before (i.e. right to left precedence).
+* Values defined later take precedence over values before (i.e., right to left precedence).
 
 [[default-buckets-sample]]
 .MicroProfile Config `mp.metrics.distribution.percentiles-histogram.enabled` property examples
@@ -343,10 +343,10 @@ The number of default buckets and maximum value of each of those default buckets
 
 * The property accepts a semi-colon separated set of values that define a metric name followed by an equals sign (`=`) and a value:
 ** `mp.metrics.distribution.histogram.*` properties accepts a decimal or integer values greater than 0 _(See <<min-max-sample,examples>> below)_.
-** `mp.metrics.distribution.timer.*` accepts an integer value with an appended time unit (valid time units are `ms` for milliseconds, `s` for seconds, `m` for minutes and `h` for hours). Decimal values  will not be accepted. Values with no time unit will default to seconds. _(See <<min-max-sample,examples>> below)_
+** `mp.metrics.distribution.timer.*` accepts an integer value with an appended time unit (valid time units are `ms` for milliseconds, `s` for seconds, `m` for minutes and `h` for hours). Decimal values will not be accepted. Values with no time unit will default to seconds. _(See <<min-max-sample,examples>> below)_
 * The asterisk (`*`) can be used as a wildcard at the end of the metric name.
 * Defining a metric name with no value provides no effect.
-* Values defined later take precedence over values before (i.e. right to left precedence).
+* Values defined later take precedence over values before (i.e., right to left precedence).
 
 
 
