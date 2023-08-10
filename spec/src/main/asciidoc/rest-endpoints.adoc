@@ -170,7 +170,7 @@ myClass_myMethod_seconds_max{mp_scope="vendor"} 0.05507899 <3>
 
 === Additional output and customization for histograms and timers
 
-This section defines MicroProfile Config properties that extend the output of histogram and timers. This includes customizing the percentile output as well as enabling and customizing histogram-bucket values. These MicroProfile config properties are defined at the server level.
+This section defines MicroProfile Config properties that extend the output of histogram and timers. This includes customizing the percentile output as well as enabling and customizing histogram-bucket values. These MicroProfile config properties can be defined at the server level or at the application level through the `META-INF/microprofile-config.properties` file within the application archive.
 
 [[percentile-configuration]]
 ==== Percentile customization for histogram and timers
