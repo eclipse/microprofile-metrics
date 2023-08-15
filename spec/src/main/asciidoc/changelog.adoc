@@ -21,6 +21,13 @@
 
 = Release Notes
 
+[[release_notes_5_1]]
+== Changes in 5.1
+A full list of changes may be found on the link:https://github.com/eclipse/microprofile-metrics/milestone/16[MicroProfile Metrics 5.1 Milestone]
+
+=== Other changes
+
+* Include new recommendation for multi-application deployments to use a  `mp.metrics.defaultAppName` property (https://github.com/eclipse/microprofile-metrics/issues/766[766])
 
 [[release_notes_5_0]]
 == Changes in 5.0
