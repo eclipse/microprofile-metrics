@@ -31,8 +31,8 @@
     <packaging>pom</packaging>
 
     <properties>
-        <rest-assured.version>4.3.0</rest-assured.version>
-        <shrinkwrap.version>2.2.4</shrinkwrap.version>
+        <rest-assured.version>5.3.1</rest-assured.version>
+        <shrinkwrap.version>3.2.1</shrinkwrap.version>
     </properties>
 
     <dependencyManagement>
