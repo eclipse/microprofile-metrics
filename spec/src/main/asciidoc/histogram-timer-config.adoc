@@ -29,7 +29,7 @@ The percentiles that are tracked and are output can be overridden and customized
 
 * The property accepts a semi-colon separated set of values that consist of a metric name followed by an equals sign (`=`) and comma separated percentile values _(See <<percentiles-examples,examples>> below)_.
 * The asterisk (`*`) can be used as a wildcard at the end of the metric name.
-* The percentile values are float values between 0.0 and 1.0 inclusively.
+* The percentile values are float values between 0.0 and 1.0 inclusively. Invalid values will be ignored.
 * Setting the property with a metric name but no percentile values disables percentile output for that metric.
 * Setting the property without any value disables percentiles for all histogram and timer metrics.
 * Values defined later take precedence over values before (i.e., right to left precedence).
@@ -64,7 +64,7 @@ The property `mp.metrics.distribution.timer.buckets` applies to timer metrics an
 ** `mp.metrics.distribution.histogram.buckets` accepts a comma separated list of float and integer values greater than 0 _(See <<histogram-bucket-sample,examples>> below)_.
 ** `mp.metrics.distribution.timer.buckets` accepts a comma separated list of integers with an appended time unit (valid time units are `ms` for milliseconds, `s` for seconds, `m` for minutes and `h` for hours). Float values will not be accepted. Values with no time unit default to milliseconds. _(See <<timer-buckets-sample,examples>> below)_
 * The asterisk (`*`) can be used as a wildcard at the end of the metric name.
-* Defining a metric name with no bucket values provides no effect.
+* Defining a metric name with no bucket values or invalid values provides no effect.
 * Values defined later take precedence over values before (i.e., right to left precedence).
 
 NOTE: When customizing histogram-bucket values for the histogram and timer metrics, the metrics included in the Prometheus output will automatically switch from a `summary` type to the `histogram` type. Any percentile values that are also outputted will belong under the `histogram` type. The Prometheus output will also automatically include a `+Inf` bucket to capture all values. This will be demonstrated in the <<histogram-bucket-output, histogram sample output>> and <<timer-buckets-output, timer sample output>>. The metric output for the buckets will also be appended with `_bucket`, and a tag `le` is used to denote the bucket value.
@@ -195,7 +195,7 @@ The number of default buckets and maximum value of each of those default buckets
 ** `mp.metrics.distribution.histogram.*` properties accepts a float or integer values greater than 0 _(See <<min-max-sample,examples>> below)_.
 ** `mp.metrics.distribution.timer.*` accepts an integer value with an appended time unit (valid time units are `ms` for milliseconds, `s` for seconds, `m` for minutes and `h` for hours). Float values will not be accepted. Values with no time unit will default to milliseconds. _(See <<min-max-sample,examples>> below)_
 * The asterisk (`*`) can be used as a wildcard at the end of the metric name.
-* Defining a metric name with no value provides no effect.
+* Defining a metric name with no value or an invalid value provides no effect.
 * Values defined later take precedence over values before (i.e., right to left precedence).
 
 
