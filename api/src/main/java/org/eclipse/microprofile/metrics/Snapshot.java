@@ -128,7 +128,7 @@ public abstract class Snapshot {
      */
     public static class HistogramBucket {
         private final double bucket;
-        private final double count;
+        private final long count;
 
         /**
          *
@@ -137,7 +137,7 @@ public abstract class Snapshot {
          * @param bucket
          *            the upper limit value of this bucket
          */
-        public HistogramBucket(double bucket, double count) {
+        public HistogramBucket(double bucket, long count) {
             this.bucket = bucket;
             this.count = count;
         }
@@ -147,7 +147,7 @@ public abstract class Snapshot {
          *
          * @return double the count of the bucket
          */
-        public double getCount() {
+        public long getCount() {
             return this.count;
         }
 
