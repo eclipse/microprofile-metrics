@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016, 2022 Contributors to the Eclipse Foundation
+// Copyright (c) 2016, 2023 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -282,13 +282,21 @@ how such application servers should behave if they want to support MicroProfile 
 Metrics from all applications and scopes should be available under a single REST endpoint ending with `/metrics` similarly as
 in case of single-application deployments (microservices).
 
-To help distinguish between metrics pertaining to each deployed application, a tag named `mp_app` should be added to each metric. 
+To help distinguish between metrics pertaining to each deployed application, a tag named `mp_app` should be added to each metric.
 
-The value of the `mp_app` tag should be passed by the application server to the application via a MicroProfile Config property named `mp.metrics.appName`.
-It should be possible to override this value by bundling the file `META-INF/microprofile-config.properties` within the application archive
-and setting a custom value for the property `mp.metrics.appName` inside it.
+The value of the `mp_app` tag should be passed by the application server to the application via a MicroProfile Config property named `mp.metrics.appName`. The property is to be defined at the application level through the `META-INF/microprofile-config.properties` file within the application archive. The value of the property will be used for the `mp_app` tag for metrics that originate from the application.
+
+As metrics of the same-name must contain the same set of tag names, a conflict for metric registration may occur for runtimes that support vendor metrics that can originate from both a server context and an application context. For example, a vendor implementation that provides servlet metrics could track servlet requests to the application(s) and to the server. However, the servlet metrics that track requests to the application may originate from the application-context and may include the `mp_app` tag. This will cause a mismatched set of tags compared to the servlet metrics that originate from the server-context.
+
+To avoid this, it is recommended that the MicroProfile Config property `mp.metrics.defaultAppName` be defined in conjunction with the use of the `mp.metrics.appName` property. The `mp.metrics.defaultAppName` should be defined by users at the server level. The value of the property will be used for the `mp_app` tag for all metrics that do not have an `mp_app` tag value defined by the `mp.metrics.appName` property.
+
+In summary, when running multiple applications in the same server, the configuration should be set as follows:
+
+* set the property `mp.metrics.appName` in the `META-INF/microprofile-config.properties` file within each application archive (for example, to the application name).
+* set the property `mp.metrics.defaultAppName` to a value to be used for all metrics that are not associated with an application (for example, to "server").
+
+NOTE: If the MicroProfile Metrics runtime only supports one application or if only a single application is deployed, the use of `mp.metrics.appName` and `mp.metrics.defaultAppName` is not necessary.
 
 It is allowed for application servers to choose to not add the `mp_app` tag at all. Implementations may differ in how they handle cases where 
-metrics are registered with the same name from two or more applications running in the same server.  This behavior is not expected to be 
-portable across vendors.
+metrics are registered with the same name from two or more applications running in the same server.  This behavior is not expected to be portable across vendors.
 
