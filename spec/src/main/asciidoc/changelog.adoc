@@ -29,6 +29,16 @@ A full list of changes may be found on the link:https://github.com/eclipse/micro
 
 * Include new recommendation for multi-application deployments to use a  `mp.metrics.defaultAppName` property (https://github.com/eclipse/microprofile-metrics/issues/766[766])
 
+[[release_notes_5_1]]
+== Changes in 5.1
+A full list of changes may be found on the link:https://github.com/eclipse/microprofile-metrics/milestone/16[MicroProfile Metrics 5.1 Milestone]
+
+=== Functional Changes
+
+* @RegistryScope is now a qualifier  (https://github.com/eclipse/microprofile-metrics/issues/749[749])
+
+
+
 [[release_notes_5_0]]
 == Changes in 5.0
 
@@ -137,8 +147,9 @@ A full list of changes may be found on the link:https://github.com/eclipse/micro
 ** added ability for applications to add metrics to a custom scope (https://github.com/eclipse/microprofile-metrics/issues/677[677])
 ** added ability to use custom scope names with @RegistryScope annotation (https://github.com/eclipse/microprofile-metrics/issues/677[677])
 ** replaced @RegistryType with @RegistryScope (https://github.com/eclipse/microprofile-metrics/issues/677[677])
+** (5.1.0) @RegistryScope is now a qualifier  (https://github.com/eclipse/microprofile-metrics/issues/749[749])
 
-* Other changes
+=== Other changes
 ** removed requirement to convert metrics to base units for Prometheus output
 ** changed from prepending scope to the metric name to putting the scope in mp_scope tag
 ** clarified that implementations of /metrics endpoint must support Prometheus text-based exposition format, and may also support OpenMetrics exposition format. (https://github.com/eclipse/microprofile-metrics/issues/678[678])

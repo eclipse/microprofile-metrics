@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -29,6 +29,9 @@ import java.lang.annotation.Target;
 
 import org.eclipse.microprofile.metrics.MetricRegistry;
 
+import jakarta.enterprise.util.Nonbinding;
+import jakarta.inject.Qualifier;
+
 /**
  * Specifies the scope of Metric Registry to inject.
  * <p>
@@ -55,6 +58,7 @@ import org.eclipse.microprofile.metrics.MetricRegistry;
  *
  */
 @Documented
+@Qualifier
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
 public @interface RegistryScope {
@@ -68,5 +72,6 @@ public @interface RegistryScope {
      *         see {@link MetricRegistry#APPLICATION_SCOPE}, {@link MetricRegistry#BASE_SCOPE} and
      *         {@link MetricRegistry#VENDOR_SCOPE}
      */
+    @Nonbinding
     String scope() default MetricRegistry.APPLICATION_SCOPE;
 }
