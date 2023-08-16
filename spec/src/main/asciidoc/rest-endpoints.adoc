@@ -167,3 +167,14 @@ myClass_myMethod_seconds_max{mp_scope="vendor"} 0.05507899 <3>
 ^1^ The implementation is expected to convert the result returned by the `Timer` into seconds
 
 ^2^ This will return an array of `PercentileValue` objects that will need to be iterated through to find the specific percentile and its value
+
+=== Security
+
+It must be possible to secure the endpoints via the usual means. The definition of 'usual means' is in
+this version of the specification implementation specific.
+
+In case of a secured endpoint, accessing `/metrics` without valid credentials must return a `401 Unauthorized` header.
+
+A server SHOULD implement TLS encryption by default.
+
+It is allowed to ignore security for trusted origins (e.g. localhost)

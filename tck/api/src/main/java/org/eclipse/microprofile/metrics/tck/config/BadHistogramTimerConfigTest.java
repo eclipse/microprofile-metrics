@@ -83,7 +83,7 @@ public class BadHistogramTimerConfigTest {
     }
 
     @Test
-    public void checkBadTimermPercentiles() {
+    public void checkBadTimerPercentiles() {
         Timer timer = registry.getTimer(new MetricID("badTimerPercentiles"));
         PercentileValue[] percentiles = timer.getSnapshot().percentileValues();
 

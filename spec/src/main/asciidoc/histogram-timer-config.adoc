@@ -23,7 +23,7 @@
 This section defines MicroProfile Config properties that extend the ability of the histogram and timer metrics to track and output additional statistics. This includes customizing the percentile output as well as enabling and customizing histogram-bucket values. These MicroProfile config properties can be defined at the server level or at the application level through the `META-INF/microprofile-config.properties` file within the application archive.
 
 [[percentile-configuration]]
-=== Percentile customization for histogram and timers
+=== Percentile customization for histograms and timers
 
 The percentiles that are tracked and are output can be overridden and customized by using the MicroProfile Config property `mp.metrics.distribution.percentiles`. The property follows these rules:
 
@@ -75,12 +75,12 @@ NOTE: When customizing histogram-bucket values for the histogram and timer metri
 //alpha.histogram will publish histogram-buckets with maximum values of 10.0, 50.0 and 100.0 while the beta.histogram will publish histogram buckets with maximum values of 30.0, 50 and 123.
 mp.metrics.distribution.histogram.buckets=alpha.histogram=10.0,50.0,100.0;beta.histogram=30.0,50.0,123
 
-//any histogram that matches with `beta.*` will publish histograms buckets with maximum values of 50.0 and 100.0 except the beta.test.histogram which will publish a bucket with a maximum value of 100.0 due to precedence.
+//any histogram that matches with `beta.*` will publish histogram buckets with maximum values of 50.0 and 100.0 except the beta.test.histogram which will publish a bucket with a maximum value of 100.0 due to precedence.
 mp.metrics.distribution.histogram.buckets=beta.*=50.0,100.0;beta.test.histogram=100.0
 
 ----
 
-NOTE: Histograms that do not match the metric name definitions of the `mp.metrics.distribution.histogram.buckets` property will output no buckets.
+NOTE: Histograms that do not match any of the metric names defined by the `mp.metrics.distribution.histogram.buckets` property will output no buckets.
 
 The following is a sample output of the `alpha.histogram` defined in the first `mp.metrics.distribution.histogram.buckets` definition above.
 
@@ -121,12 +121,12 @@ alpha_histogram_cookies_max{mp_scope="application",} 50.0
 //alpha.timer will publish histogram-buckets with maximum values of 500 milliseconds, 2 seconds, and 3 minutes while the beta.timer will publish histogram buckets with maximum values of 10 seconds, 2 minutes and 5 hours. Timer metrics that do not match will not have any histogram buckets.
 mp.metrics.distribution.timer.buckets=alpha.timer=500ms,2s,3m;beta.timer=10s,2m,5h
 
-//any timer that matches with `alpha.*` will publish histograms buckets with maximum values of 50 seconds and 100 seconds while the alpha.test.timer which will publish a bucket with a maximum value 100 milliseconds due to precedence. Timer metrics that do not match will not have any histogram buckets.
+//any timer that matches with `alpha.*` will publish histogram buckets with maximum values of 50 seconds and 100 seconds while the alpha.test.timer which will publish a bucket with a maximum value 100 milliseconds due to precedence. Timer metrics that do not match will not have any histogram buckets.
 mp.metrics.distribution.timer.buckets=alpha.*=50s,100s;alpha.test.timer=100
 
 ----
 
-NOTE: Timers that do not match the metric name definitions of the `mp.metrics.distribution.timer.buckets` property will output no buckets.
+NOTE: Timers that do not match any of the metric names defined by the `mp.metrics.distribution.timer.buckets` property will output no buckets.
 
 NOTE: The time units defined by the property will be converted to second based buckets for the Prometheus output as timers are based in seconds.
 
@@ -164,9 +164,9 @@ alpha_timer_seconds_sum{mp_scope="application"} 6.333
 
 <5> bucket values converted to seconds
 
-=== (Optional) Enabling a default set of histogram-buckets for histogram and timers
+=== (Optional) Enabling a default set of histogram-buckets for histograms and timers
 
-Vendors may choose to optionally provide the `mp.metrics.distribution.percentiles-histogram.enabled` property. This will enable a matching histogram or timer metrics to output a default set of bucket values defined by the vendor. The property follows these rules:
+Vendors may choose to optionally provide the `mp.metrics.distribution.percentiles-histogram.enabled` property. This will enable a matching histogram or timer metric to output a default set of bucket values defined by the vendor. The property follows these rules:
 
 * The property accepts a semi-colon separated set of values that consist of a metric name followed by an equals sign (`=`) and either `true` or `false` (see <<default-buckets-sample,example>> below).
 * The asterisk (`*`) can be used as a wildcard at the end of the metric name.
@@ -192,7 +192,7 @@ It is recommended that if the vendor provides support for the `mp.metrics.distri
 The number of default buckets and maximum value of each of those default buckets may vary between vendor implementations. These properties are used to set a minimum and maximum limit for the default buckets provided when `mp.metrics.distribution.percentiles-histogram.enabled` has enabled default buckets for the matching metric. The properties share the following rules and explicit rules are outlined for specific properties:
 
 * The property accepts a semi-colon separated set of values that define a metric name followed by an equals sign (`=`) and a value:
-** `mp.metrics.distribution.histogram.*` properties accepts a float or integer values greater than 0 _(See <<min-max-sample,examples>> below)_.
+** `mp.metrics.distribution.histogram.*` properties accepts float or integer values greater than 0 _(See <<min-max-sample,examples>> below)_.
 ** `mp.metrics.distribution.timer.*` accepts an integer value with an appended time unit (valid time units are `ms` for milliseconds, `s` for seconds, `m` for minutes and `h` for hours). Float values will not be accepted. Values with no time unit will default to milliseconds. _(See <<min-max-sample,examples>> below)_
 * The asterisk (`*`) can be used as a wildcard at the end of the metric name.
 * Defining a metric name with no value or an invalid value provides no effect.
@@ -213,19 +213,8 @@ mp.metrics.distribution.histogram.max-value=alpha.*=500;alpha.histogram=400
 //any timer matching alpha.* will not have any buckets in the output that are above 1 second except alpha.timer which has a upper bound of 0.5 seconds due to precedence
 mp.metrics.distribution.timer.max-value=alpha.*=1s;alpha.timer=500ms
 
-//any timer matching alpha.* will not have any buckets in the output that are below 0.4 second except alpha.timer which has a lower bound of 0.5 seconds due to precedence
+//any timer matching alpha.* will not have any buckets in the output that are below 0.4 seconds except alpha.timer which has a lower bound of 0.5 seconds due to precedence
 mp.metrics.distribution.timer.min-value=alpha.*=400ms;alpha.timer=500ms
 ----
 
 NOTE: The use of the min and max properties do not apply to the buckets defined through `mp.metrics.distribution.timer.buckets` and `mp.metrics.distribution.histogram.buckets` properties.
-
-=== Security
-
-It must be possible to secure the endpoints via the usual means. The definition of 'usual means' is in
-this version of the specification implementation specific.
-
-In case of a secured endpoint, accessing `/metrics` without valid credentials must return a `401 Unauthorized` header.
-
-A server SHOULD implement TLS encryption by default.
-
-It is allowed to ignore security for trusted origins (e.g. localhost)
