@@ -119,10 +119,10 @@ alpha_histogram_cookies_max{mp_scope="application",} 50.0
 .MicroProfile Config `mp.metrics.distribution.timer.buckets` property examples
 ----
 //alpha.timer will publish histogram-buckets with maximum values of 500 milliseconds, 2 seconds, and 3 minutes while the beta.timer will publish histogram buckets with maximum values of 10 seconds, 2 minutes and 5 hours. Timer metrics that do not match will not have any histogram buckets.
-mp.metrics.distribution.timer.buckets=alpha.timer=10,500ms,2s,3m;beta.timer=10s,2m,5h
+mp.metrics.distribution.timer.buckets=alpha.timer=500ms,2s,3m;beta.timer=10s,2m,5h
 
 //any timer that matches with `alpha.*` will publish histograms buckets with maximum values of 50 seconds and 100 seconds while the alpha.test.timer which will publish a bucket with a maximum value 100 milliseconds due to precedence. Timer metrics that do not match will not have any histogram buckets.
-mp.metrics.distribution.timer.buckets=alpha.*=50s, 100s;alpha.test.timer=100
+mp.metrics.distribution.timer.buckets=alpha.*=50s,100s;alpha.test.timer=100
 
 ----
 
