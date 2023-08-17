@@ -97,18 +97,18 @@ public abstract class Snapshot {
         }
 
         /**
-         * Returns percentile
+         * Returns the percentile
          *
-         * @return double percentile
+         * @return the percentile
          */
         public double getPercentile() {
             return this.percentile;
         }
 
         /**
-         * Returns value at percentile
+         * Returns the value at percentile
          *
-         * @return double value at percentile
+         * @return the value at the percentile
          */
         public double getValue() {
             return this.value;
@@ -145,7 +145,7 @@ public abstract class Snapshot {
         /**
          * Returns the count of the bucket
          *
-         * @return double the count of the bucket
+         * @return the count of the bucket
          */
         public long getCount() {
             return this.count;
@@ -154,7 +154,7 @@ public abstract class Snapshot {
         /**
          * Returns the upper limit value of this bucket
          *
-         * @return double the upper limit value of this bucket
+         * @return the upper limit value of this bucket
          */
         public double getBucket() {
             return this.bucket;

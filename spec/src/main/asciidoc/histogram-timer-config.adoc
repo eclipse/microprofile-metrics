@@ -192,7 +192,7 @@ It is recommended that if the vendor provides support for the `mp.metrics.distri
 The number of default buckets and maximum value of each of those default buckets may vary between vendor implementations. These properties are used to set a minimum and maximum limit for the default buckets provided when `mp.metrics.distribution.percentiles-histogram.enabled` has enabled default buckets for the matching metric. The properties share the following rules and explicit rules are outlined for specific properties:
 
 * The property accepts a semi-colon separated set of values that define a metric name followed by an equals sign (`=`) and a value:
-** `mp.metrics.distribution.histogram.*` properties accepts float or integer values greater than 0 _(See <<min-max-sample,examples>> below)_.
+** `mp.metrics.distribution.histogram.*` properties accept float or integer values greater than 0 _(See <<min-max-sample,examples>> below)_.
 ** `mp.metrics.distribution.timer.*` accepts an integer value with an appended time unit (valid time units are `ms` for milliseconds, `s` for seconds, `m` for minutes and `h` for hours). Float values will not be accepted. Values with no time unit will default to milliseconds. _(See <<min-max-sample,examples>> below)_
 * The asterisk (`*`) can be used as a wildcard at the end of the metric name.
 * Defining a metric name with no value or an invalid value provides no effect.
