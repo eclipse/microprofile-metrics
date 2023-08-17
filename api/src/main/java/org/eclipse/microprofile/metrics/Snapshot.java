@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2023 Contributors to the Eclipse Foundation
  *               2010-2013 Coda Hale, Yammer.com
  *
  * See the NOTICES file(s) distributed with this work for additional
@@ -54,9 +54,17 @@ public abstract class Snapshot {
      * Returns an array of {@link PercentileValue} containing the percentiles and associated values of this
      * {@link Snapshot} at the moment invocation.
      *
-     * @return an array of {@link PercentileValue}
+     * @return an array of {@link PercentileValue} if it is available or an empty array if not available
      */
     public abstract PercentileValue[] percentileValues();
+
+    /**
+     * Returns an array of {@link HistogramBucket} containing the bucket and associated value of this {@link Snapshot}
+     * at the moment invocation.
+     *
+     * @return an array of {@link HistogramBucket} if it is available or an empty array if not available
+     */
+    public abstract HistogramBucket[] bucketValues();
 
     /**
      * Writes the values of the snapshot to the given stream.
@@ -67,8 +75,8 @@ public abstract class Snapshot {
     public abstract void dump(OutputStream output);
 
     /**
-     * Represents a percentile and its value at the moment it was sampled from the Snapshot.
-     * Percentile values of a {@link Timer} are represented in units of nanoseconds.
+     * Represents a percentile and its value at the moment it was sampled from the Snapshot. Percentile values of a
+     * {@link Timer} are represented in units of nanoseconds.
      *
      * See {@link #percentileValue()}
      */
@@ -89,18 +97,18 @@ public abstract class Snapshot {
         }
 
         /**
-         * Returns percentile
+         * Returns the percentile
          *
-         * @return double percentile
+         * @return the percentile
          */
         public double getPercentile() {
             return this.percentile;
         }
 
         /**
-         * Returns value at percentile
+         * Returns the value at percentile
          *
-         * @return double value at percentile
+         * @return the value at the percentile
          */
         public double getValue() {
             return this.value;
@@ -108,6 +116,52 @@ public abstract class Snapshot {
 
         public String toString() {
             return "[Percentile: " + (this.percentile * 100.0) + "% with Value: " + this.value + "]";
+        }
+
+    }
+
+    /**
+     * Represents a cumulative histogram bucket at the moment it was sampled from the Snapshot. The bucket of
+     * {@link Timer} will be represented in nanoseconds.
+     *
+     * See {@link #bucketValues()}
+     */
+    public static class HistogramBucket {
+        private final double bucket;
+        private final long count;
+
+        /**
+         *
+         * @param count
+         *            count at this bucket
+         * @param bucket
+         *            the upper limit value of this bucket
+         */
+        public HistogramBucket(double bucket, long count) {
+            this.bucket = bucket;
+            this.count = count;
+        }
+
+        /**
+         * Returns the count of the bucket
+         *
+         * @return the count of the bucket
+         */
+        public long getCount() {
+            return this.count;
+        }
+
+        /**
+         * Returns the upper limit value of this bucket
+         *
+         * @return the upper limit value of this bucket
+         */
+        public double getBucket() {
+            return this.bucket;
+        }
+
+        public String toString() {
+            return "[Bucket: " + (this.bucket) + " with count: " + this.count + "]";
         }
 
     }

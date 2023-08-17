@@ -57,6 +57,8 @@ include::base-metrics.adoc[]
 
 include::app-programming-model.adoc[]
 
+include::histogram-timer-config.adoc[]
+
 include::micrometer-backends.adoc[]
 
 include::appendix.adoc[]
