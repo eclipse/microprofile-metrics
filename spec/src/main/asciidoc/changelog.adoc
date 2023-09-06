@@ -152,6 +152,7 @@ A full list of changes may be found on the link:https://github.com/eclipse/micro
 * (5.0.1) Removed private gauges from TCK (https://github.com/eclipse/microprofile-metrics/pull/770[770])
 * (5.0.1) The `@Timed` annotation defaults to SECONDS when it should be NANOSECONDS (https://github.com/eclipse/microprofile-metrics/issues/760[760])
 * (5.0.1) Errors in MicroProfile 6.0 javadoc generation (https://github.com/eclipse/microprofile-metrics/issues/764[764])
+* (5.0.2) Fix `MPMetricBaseMetricsTest` TCK test where gc.time was being checked as a counter. The `gc.time` metric is a gauge. (https://github.com/eclipse/microprofile-metrics/issues/786[786])
 
 [[release_notes_4_0]]
 == Changes in 4.0
