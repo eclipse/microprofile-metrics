@@ -45,10 +45,7 @@
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>jakarta.inject</groupId>
-            <artifactId>jakarta.inject-api</artifactId>
-        </dependency>
+       
 
         <dependency>
             <groupId>org.hamcrest</groupId>
