@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -303,28 +303,28 @@ public class MPMetricBaseMetricsTest {
         String data = given().header(wantPromMetricsFormat).get("/metrics?scope=base").asString();
 
         Map<String, MiniMeta> baseNames = getExpectedMetadataFromXmlFile(MetricRegistry.BASE_SCOPE);
-        MiniMeta gcCountMetricMeta = baseNames.get("gc.time");
-        Set<String> expectedTags = gcCountMetricMeta.tags.keySet();
+        MiniMeta gcTimeMetricMeta = baseNames.get("gc.time");
+        Set<String> expectedTags = gcTimeMetricMeta.tags.keySet();
 
         String[] lines = data.split("\n");
 
         boolean found = false;
         for (String line : lines) {
             // explicitly check for the metric line wth value (i.e. the use of `{`)
-            if (line.contains("gc_time_seconds_total{")) {
-                final Pattern gcTimeTotalPattern = Pattern.compile("(gc_time_seconds_total\\{.*?\\}) (\\d+\\.\\d+)");
-                assertThat("Line format should be gc_time_seconds_total\\{.*?\\} \\d+\\.\\d+",
+            if (line.contains("gc_time_seconds{")) {
+                final Pattern gcTimeTotalPattern = Pattern.compile("(gc_time_seconds\\{.*?\\}) (\\d+\\.\\d+)");
+                assertThat("Line format should be gc_time_seconds\\{.*?\\} \\d+\\.\\d+",
                         gcTimeTotalPattern.matcher(line).matches());
 
                 final String metricID = gcTimeTotalPattern.matcher(line).replaceAll("$1");
-                final String tags = metricID.replaceAll("^gc_time_seconds_total\\{", "").replaceAll("\\}$", "");
+                final String tags = metricID.replaceAll("^gc_time_seconds\\{", "").replaceAll("\\}$", "");
 
                 for (String expectedTag : expectedTags) {
                     assertThat("The metric should contain a " + expectedTag + " tag", tags,
                             containsString(expectedTag + "="));
                 }
                 final String value = gcTimeTotalPattern.matcher(line).replaceAll("$2");
-                Assert.assertTrue("gc.time.seconds.total value should be numeric and not negative",
+                Assert.assertTrue("gc.time value should be numeric and not negative",
                         Double.valueOf(value).doubleValue() >= 0);
 
                 found = true;
