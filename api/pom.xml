@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.eclipse.microprofile.metrics</groupId>
         <artifactId>microprofile-metrics-parent</artifactId>
-        <version>5.1.1-RC1</version>
+        <version>5.1.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>microprofile-metrics-api</artifactId>
