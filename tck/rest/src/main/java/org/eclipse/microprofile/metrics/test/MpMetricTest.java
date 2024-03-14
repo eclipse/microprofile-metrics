@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017, 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICES file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -49,8 +49,8 @@ import jakarta.inject.Inject;
 /**
  * Rest Test Kit
  *
- * @author Heiko W. Rupp <hrupp@redhat.com>
- * @author Don Bourne <dbourne@ca.ibm.com>
+ * @author <a href="mailto:hrupp@redhat.com">Heiko W. Rupp</a>
+ * @author <a href="mailto:dbourne@ca.ibm.com">Don Bourne</a>
  */
 @SuppressWarnings("CdiInjectionPointsInspection")
 @RunWith(Arquillian.class)
