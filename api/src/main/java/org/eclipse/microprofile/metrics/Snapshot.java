@@ -1,6 +1,6 @@
 /*
  **********************************************************************
- * Copyright (c) 2017, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017, 2024 Contributors to the Eclipse Foundation
  *               2010-2013 Coda Hale, Yammer.com
  *
  * See the NOTICES file(s) distributed with this work for additional
@@ -78,7 +78,7 @@ public abstract class Snapshot {
      * Represents a percentile and its value at the moment it was sampled from the Snapshot. Percentile values of a
      * {@link Timer} are represented in units of nanoseconds.
      *
-     * See {@link #percentileValue()}
+     * See {@link Snapshot#percentileValues()}
      */
     public static class PercentileValue {
         private final double percentile;
