@@ -170,6 +170,16 @@ public class MetricAppBean {
         return 666666;
     }
 
+    @Counted(name = "counter.with.desc", tags = {"number=one"}, description = "description")
+    public void counterWithDesc1() {
+
+    }
+
+    @Counted(name = "counter.with.desc", tags = {"number=two"}, description = "description")
+    public void counterWithDesc2() {
+
+    }
+
     public void gaugeMe() {
 
         @SuppressWarnings("unchecked")
