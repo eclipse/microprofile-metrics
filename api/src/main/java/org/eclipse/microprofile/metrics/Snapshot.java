@@ -64,7 +64,9 @@ public abstract class Snapshot {
      *
      * @return an array of {@link HistogramBucket} if it is available or an empty array if not available
      */
-    public abstract HistogramBucket[] bucketValues();
+    public HistogramBucket[] bucketValues() {
+        return null;
+    };
 
     /**
      * Writes the values of the snapshot to the given stream.
