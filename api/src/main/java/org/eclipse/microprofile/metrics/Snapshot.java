@@ -64,7 +64,10 @@ public abstract class Snapshot {
      *
      * @return an array of {@link HistogramBucket} if it is available or an empty array if not available
      */
-    public abstract HistogramBucket[] bucketValues();
+    @aQute.bnd.annotation.baseline.BaselineIgnore("5.2")
+    public HistogramBucket[] bucketValues() {
+        return new HistogramBucket[0];
+    };
 
     /**
      * Writes the values of the snapshot to the given stream.

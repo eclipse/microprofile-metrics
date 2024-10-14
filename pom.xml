@@ -33,6 +33,7 @@
 
     <properties>
         <version.osgi.versioning>1.1.0</version.osgi.versioning>
+        <version.bnd>7.0.0</version.bnd>
         <inceptionYear>2017</inceptionYear>
         <autorelease>false</autorelease>
         <version.microprofile.tck.bom>3.2</version.microprofile.tck.bom>
@@ -79,7 +80,7 @@
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.annotation.versioning</artifactId>
-                <version>1.1.0</version>
+                <version>${version.osgi.versioning}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -87,6 +88,11 @@
                 <artifactId>microprofile-metrics-api</artifactId>
                 <version>${project.version}</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>biz.aQute.bnd</groupId>
+                <artifactId>bnd-baseline-maven-plugin</artifactId>
+                <version>${version.bnd}</version>
             </dependency>
             
         </dependencies>
