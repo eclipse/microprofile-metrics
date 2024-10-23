@@ -31,7 +31,7 @@
             <groupId>jakarta.enterprise</groupId>
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.annotation.versioning</artifactId>
@@ -39,7 +39,9 @@
         <dependency>
             <groupId>biz.aQute.bnd</groupId>
             <artifactId>bnd-baseline-maven-plugin</artifactId>
+            <!-- Needed to build to resolve annotation but should not be in the runtime path for downstream consumers. -->
+            <scope>provided</scope>
         </dependency>
     </dependencies>
-    
+
 </project>
