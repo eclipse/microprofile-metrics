@@ -28,11 +28,13 @@ A full list of changes may be found on the link:https://github.com/eclipse/micro
 === Functional Changes
 * Introduced MP Config properties that customize how Histogram and Timer metrics track and output statistics for percentiles and histogram-buckets. (https://github.com/eclipse/microprofile-metrics/issues/691[691])(https://github.com/eclipse/microprofile-metrics/issues/676[676])(https://github.com/eclipse/microprofile-metrics/issues/675[675])(https://github.com/eclipse/microprofile-metrics/issues/674[674])(https://github.com/eclipse/microprofile-metrics/issues/587[587])
 * @RegistryScope is now a qualifier  (https://github.com/eclipse/microprofile-metrics/issues/749[749])
+* (5.1.2) Provide default implementation for `bucketValues()` in the `Snapshot` class. (https://github.com/eclipse/microprofile-metrics/issues/796[796])
 
 === Other changes
 
 * Include new recommendation for multi-application deployments to use a  `mp.metrics.defaultAppName` property (https://github.com/eclipse/microprofile-metrics/issues/766[766])
 * (5.1.1) Fix `MPMetricBaseMetricsTest` TCK test where gc.time was being checked as a counter. The `gc.time` metric is a gauge. (https://github.com/eclipse/microprofile-metrics/issues/786[786])
+* (5.1.2) Fix doclint errors. (https://github.com/eclipse/microprofile-metrics/issues/793[793])
 
 [[release_notes_5_0]]
 == Changes in 5.0
