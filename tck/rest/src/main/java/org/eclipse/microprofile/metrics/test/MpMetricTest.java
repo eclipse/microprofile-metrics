@@ -29,7 +29,11 @@ import static org.hamcrest.Matchers.anyOf;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.regex.Pattern;
 
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -801,7 +805,43 @@ public class MpMetricTest {
                         "taggedTimer_seconds_sum{mp_scope=\"application\",number=\"two\",tier=\"integration\"} "))
                 .body(containsString(
                         "taggedTimer_seconds_max{mp_scope=\"application\",number=\"two\",tier=\"integration\"} "));
+    }
 
+    @Test
+    @RunAsClient
+    public void testApplicationContainsHelpMessageOnce() {
+        given().header("Accept", TEXT_PLAIN).when().get("/metrics?scope=application")
+                .then().statusCode(200)
+                .and()
+                .body(containsLineOnce(
+                        "HELP application_org_eclipse_microprofile_metrics_test_MetricAppBean_counter_with_desc_total description"));
+    }
+
+    /**
+     * Checks that given line appears in the body only once.
+     *
+     * @param expected
+     * @return
+     */
+    private Matcher<String> containsLineOnce(String expected) {
+        return new BaseMatcher<String>() {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Body should contain line [" + expected + "] only once.");
+            }
+
+            @Override
+            public boolean matches(Object o) {
+                String body = (String) o;
+                Pattern pattern = Pattern.compile(expected);
+                java.util.regex.Matcher matcher = pattern.matcher(body);
+                int count = 0;
+                while (matcher.find()) {
+                    count++;
+                }
+                return count == 1;
+            }
+        };
     }
 
 }
